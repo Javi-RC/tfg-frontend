@@ -1,0 +1,128 @@
+/* Updated stepper styles to match provided Figma markup
+   - 20px circles, 1px connectors with opacity 0.35
+   - Number uses Avenir 12px, label uses Poppins 16px weight 300
+*/
+:root{
+  --dot-color: #333333;
+  --dot-inactive: #f0f0f0;
+  --connector-inactive: rgba(51,51,51,0.12);
+  --connector-active: rgba(51,51,51,0.35);
+}
+
+.stepper{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.step{
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-start;
+}
+
+.step-circle{
+  width: 20px;
+  height: 20px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--dot-inactive);
+  color: #999;
+}
+
+.step.completed .step-circle,
+.step.active .step-circle{
+  background: var(--dot-color);
+  color: #fff;
+}
+
+.step-circle .step-num{
+  font-size: 12px;
+  font-family: 'Avenir', system-ui, -apple-system, 'Helvetica Neue', Arial;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.step-label{
+  font-size: 16px;
+  font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+  font-weight: 300;
+  color: var(--dot-color);
+  text-align: center;
+}
+
+.connector{
+  width: 232px; /* fixed width as in provided design */
+  height: 1px;
+  background: var(--connector-inactive);
+  opacity: 1;
+}
+
+.connector.filled{
+  background: var(--connector-active);
+}
+
+@media (max-width: 520px){
+  .connector{ width: 80px }
+  .step-label{ font-size: 14px }
+}
+
+/* Welcome block (Figma) */
+.welcome-block{
+  width: 100%;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  justify-content: center;
+}
+
+.welcome-title{
+  width: 197px;
+  color: #333333;
+  font-size: 32px;
+  font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+  font-weight: 500;
+  word-wrap: break-word;
+  text-align: center;
+}
+
+.welcome-subtext{
+  display: inline-flex;
+  padding: 2px;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.welcome-subtext .already{
+  color: #333333;
+  font-size: 16px;
+  font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+  font-weight: 400;
+  word-wrap: break-word;
+  margin-right: 6px;
+}
+
+.welcome-subtext .login-link{
+  color: #111111;
+  font-size: 16px;
+  font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+  font-weight: 400;
+  text-decoration: underline;
+}
+
+.welcome-divider{
+  align-self: stretch;
+  height: 1px;
+  background: #D9D9D9;
+  outline: 1px #0F172A solid;
+  outline-offset: -0.5px;
+}
+
