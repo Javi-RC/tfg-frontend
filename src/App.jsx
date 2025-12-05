@@ -1,6 +1,7 @@
 import './App.css'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
+import { NotificationProvider } from './contexts/NotificationContext'
 import TopNavBar from './components/TopNavBar'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -12,6 +13,7 @@ import OAuthSuccess from './pages/OAuthSuccess'
 import MyCVPage from './pages/MyCVPage'
 import CVStatsPage from './pages/CVStatsPage'
 import AdminCVListPage from './pages/AdminCVListPage'
+import NotificationsPage from './pages/NotificationsPage'
 
 function AppRoutes() {
   const location = useLocation();
@@ -34,6 +36,7 @@ function AppRoutes() {
         <Route path="/my-cv" element={<ProtectedRoute><MyCVPage/></ProtectedRoute>} />
         <Route path="/cv-stats" element={<ProtectedRoute><CVStatsPage/></ProtectedRoute>} />
         <Route path="/admin/cvs" element={<ProtectedRoute><AdminCVListPage/></ProtectedRoute>} />
+        <Route path="/notifications" element={<ProtectedRoute><NotificationsPage/></ProtectedRoute>} />
       </Routes>
     </>
   );
@@ -42,9 +45,11 @@ function AppRoutes() {
 function App(){
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <AppRoutes />
-      </BrowserRouter>
+      <NotificationProvider>
+        <BrowserRouter>
+          <AppRoutes />
+        </BrowserRouter>
+      </NotificationProvider>
     </AuthProvider>
   )
 }

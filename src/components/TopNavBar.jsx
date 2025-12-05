@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../contexts/AuthContext';
+import NotificationBell from './notifications/NotificationBell';
 
 /**
  * TopNavBar Component
@@ -111,6 +112,9 @@ export default function TopNavBar() {
         alignItems: 'center',
         gap: '16px'
       }}>
+        {/* Campanita de Notificaciones */}
+        <NotificationBell />
+        
         <div style={{
           fontSize: '14px',
           color: '#4a5568',
