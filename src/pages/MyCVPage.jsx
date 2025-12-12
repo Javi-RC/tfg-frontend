@@ -13,6 +13,7 @@ import SkillsSection from '../components/cv/SkillsSection';
 import LanguagesSection from '../components/cv/LanguagesSection';
 import ProjectsSection from '../components/cv/ProjectsSection';
 import CertificationsSection from '../components/cv/CertificationsSection';
+import SubmitCVToOrganization from '../components/SubmitCVToOrganization';
 import useCVEditor from '../hooks/useCVEditor';
 
 /**
@@ -24,6 +25,7 @@ export default function MyCVPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showUpload, setShowUpload] = useState(false);
+  const [showSubmitToOrg, setShowSubmitToOrg] = useState(false);
 
   const cvEditor = useCVEditor(cv);
   const { 
@@ -227,6 +229,7 @@ export default function MyCVPage() {
         onSave={handleSaveEdit}
         onUpload={() => setShowUpload(true)}
         onDelete={handleDelete}
+        onSubmitToOrg={() => setShowSubmitToOrg(true)}
       />
       
       <div style={{
@@ -308,6 +311,17 @@ export default function MyCVPage() {
         </CVWrapper>
         </div>
       </div>
+
+      {showSubmitToOrg && (
+        <SubmitCVToOrganization
+          onClose={() => setShowSubmitToOrg(false)}
+          onSuccess={() => {
+            setShowSubmitToOrg(false);
+            setError(null);
+            alert('CV submitted successfully to organization!');
+          }}
+        />
+      )}
     </div>
   );
 }

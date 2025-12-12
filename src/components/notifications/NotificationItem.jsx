@@ -1,14 +1,30 @@
+import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '../../contexts/NotificationContext';
 import { formatDistanceToNow } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { getNotificationTypeIcon } from '../../types/notificationTypes';
 import './NotificationItem.css';
 
 /**
  * NotificationItem Component
  * Componente individual de notificación
  * Muestra título, mensaje, tiempo relativo y acciones
+ * 
+ * Estructura de una notificación:
+ * {
+ *   _id: string,
+ *   type: string (cv_processed, org_employee_added, etc.),
+ *   title: string,
+ *   message: string,
+ *   priority: 'low' | 'medium' | 'high' | 'urgent',
+ *   readAt: Date | null,
+ *   actionUrl: string (URL para navegar),
+ *   actionText: string,
+ *   createdAt: Date
+ * }
  */
 const NotificationItem = ({ notification, onClose }) => {
+  const navigate = useNavigate();
   const { markAsRead, deleteNotification } = useNotifications();
   const isUnread = !notification.readAt;
 
@@ -17,9 +33,15 @@ const NotificationItem = ({ notification, onClose }) => {
       await markAsRead(notification._id);
     }
     
-    // Si tiene URL de acción, navegar
+    // Si tiene URL de acción, navegar usando React Router
     if (notification.actionUrl) {
-      window.location.href = notification.actionUrl;
+      // Verificar si es una URL interna o externa
+      const isInternalUrl = notification.actionUrl.startsWith('/');
+      if (isInternalUrl) {
+        navigate(notification.actionUrl);
+      } else {
+        window.open(notification.actionUrl, '_blank', 'noopener,noreferrer');
+      }
       onClose?.();
     }
   };
@@ -88,23 +110,11 @@ const NotificationItem = ({ notification, onClose }) => {
  * Renderiza el icono apropiado según el tipo de notificación
  */
 const NotificationIcon = ({ type }) => {
-  const icons = {
-    email_confirmation: '✉️',
-    password_reset: '🔒',
-    account_updated: '👤',
-    role_changed: '⚡',
-    cv_uploaded: '📄',
-    cv_processed: '✅',
-    cv_analysis_ready: '📊',
-    cv_analysis_failed: '❌',
-    admin_announcement: '📢',
-    system_update: '🔄',
-    custom: '📬'
-  };
-
+  const icon = getNotificationTypeIcon(type);
+  
   return (
     <span className="notification-icon" role="img" aria-label={`Tipo: ${type}`}>
-      {icons[type] || icons.custom}
+      {icon}
     </span>
   );
 };

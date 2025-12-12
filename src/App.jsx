@@ -14,6 +14,9 @@ import MyCVPage from './pages/MyCVPage'
 import CVStatsPage from './pages/CVStatsPage'
 import AdminCVListPage from './pages/AdminCVListPage'
 import NotificationsPage from './pages/NotificationsPage'
+import MyOrganizationsPage from './pages/MyOrganizationsPage'
+import OrganizationDetailPage from './pages/OrganizationDetailPage'
+import CVDetailPage from './pages/CVDetailPage'
 
 function AppRoutes() {
   const location = useLocation();
@@ -34,9 +37,13 @@ function AppRoutes() {
         <Route path="/complete-profile" element={<CompleteProfile />} />
         <Route path="/" element={<ProtectedRoute><Profile/></ProtectedRoute>} />
         <Route path="/my-cv" element={<ProtectedRoute><MyCVPage/></ProtectedRoute>} />
+        <Route path="/cv/:cvId" element={<ProtectedRoute><MyCVPage/></ProtectedRoute>} />
         <Route path="/cv-stats" element={<ProtectedRoute><CVStatsPage/></ProtectedRoute>} />
         <Route path="/admin/cvs" element={<ProtectedRoute><AdminCVListPage/></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute><NotificationsPage/></ProtectedRoute>} />
+        <Route path="/organizations" element={<ProtectedRoute><MyOrganizationsPage/></ProtectedRoute>} />
+        <Route path="/organizations/:id" element={<ProtectedRoute><OrganizationDetailPage/></ProtectedRoute>} />
+        <Route path="/organizations/:orgId/cvs/:cvId" element={<ProtectedRoute><CVDetailPage/></ProtectedRoute>} />
       </Routes>
     </>
   );

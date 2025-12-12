@@ -13,7 +13,8 @@ export default function CVHeader({
   onCancelEdit, 
   onSave, 
   onUpload, 
-  onDelete 
+  onDelete,
+  onSubmitToOrg
 }) {
   return (
     <div style={{
@@ -65,6 +66,15 @@ export default function CVHeader({
             >
               Upload New
             </SecondaryButton>
+            {onSubmitToOrg && (
+              <PrimaryButton 
+                onClick={onSubmitToOrg} 
+                aria-label="Submit CV to organization"
+                style={{ width: '100%', justifyContent: 'center' }}
+              >
+                Submit to Organization
+              </PrimaryButton>
+            )}
             <SecondaryButton 
               onClick={onDelete}
               style={{ 

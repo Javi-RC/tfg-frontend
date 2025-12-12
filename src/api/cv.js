@@ -61,6 +61,14 @@ export const getAllCVs = () => api.get('/api/cv/admin/all');
  */
 export const searchCVs = (searchParams) => api.post('/api/cv/admin/search', searchParams);
 
+/**
+ * Submit CV to organization
+ * @param {string} organizationId - Organization ID
+ * @returns {Promise} API response
+ */
+export const submitCVToOrganization = (organizationId) => 
+  api.post('/api/cv/submit-to-organization', { organizationId });
+
 export default {
   uploadCV,
   getMyCV,
@@ -68,5 +76,6 @@ export default {
   updateCV,
   deleteCV,
   getAllCVs,
-  searchCVs
+  searchCVs,
+  submitCVToOrganization
 };
