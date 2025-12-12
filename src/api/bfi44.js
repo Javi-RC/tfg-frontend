@@ -1,0 +1,45 @@
+import api from './axios';
+
+/**
+ * BFI-44 API Service
+ * Handles all Big Five Inventory (BFI-44) related API calls
+ */
+
+/**
+ * Get all 44 questions with the Likert scale
+ * @returns {Promise} Response with questions and scale
+ */
+export const getQuestions = () => api.get('/api/bfi-44/questions');
+
+/**
+ * Submit responses for the BFI-44 questionnaire
+ * @param {Object} responses - Object with question IDs as keys and values 1-5
+ * @returns {Promise} Response with calculated results
+ */
+export const submitResponses = (responses) => api.post('/api/bfi-44/submit', { responses });
+
+/**
+ * Get the authenticated user's BFI-44 profile
+ * @returns {Promise} Response with user's personality profile
+ */
+export const getMyProfile = () => api.get('/api/bfi-44/my-profile');
+
+/**
+ * Check if the authenticated user has completed the BFI-44
+ * @returns {Promise} Response with hasProfile boolean
+ */
+export const hasProfile = () => api.get('/api/bfi-44/has-profile');
+
+/**
+ * Get a specific user's BFI-44 profile (admin or own profile)
+ * @param {string} userId - User ID to fetch profile for
+ * @returns {Promise} Response with user's personality profile
+ */
+export const getProfileByUserId = (userId) => api.get(`/api/bfi-44/profile/${userId}`);
+
+/**
+ * Recalculate results for an existing response (admin only)
+ * @param {string} responseId - Response ID to recalculate
+ * @returns {Promise} Response with recalculated results
+ */
+export const recalculateProfile = (responseId) => api.post(`/api/bfi-44/recalculate/${responseId}`);

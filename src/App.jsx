@@ -17,6 +17,7 @@ import NotificationsPage from './pages/NotificationsPage'
 import MyOrganizationsPage from './pages/MyOrganizationsPage'
 import OrganizationDetailPage from './pages/OrganizationDetailPage'
 import CVDetailPage from './pages/CVDetailPage'
+import BFI44Page from './pages/BFI44Page'
 
 function AppRoutes() {
   const location = useLocation();
@@ -35,6 +36,7 @@ function AppRoutes() {
         <Route path="/auth/callback" element={<OAuthSuccess />} />
         <Route path="/oauth-success" element={<OAuthSuccess />} />
         <Route path="/complete-profile" element={<CompleteProfile />} />
+        <Route path="/bfi-44" element={<ProtectedRoute><BFI44Page /></ProtectedRoute>} />
         <Route path="/" element={<ProtectedRoute><Profile/></ProtectedRoute>} />
         <Route path="/my-cv" element={<ProtectedRoute><MyCVPage/></ProtectedRoute>} />
         <Route path="/cv/:cvId" element={<ProtectedRoute><MyCVPage/></ProtectedRoute>} />

@@ -23,6 +23,7 @@ export default function TopNavBar() {
     { path: '/', label: 'Profile' },
     { path: '/my-cv', label: 'My CV' },
     { path: '/cv-stats', label: 'CV Stats' },
+    { path: '/bfi-44', label: 'Personality' },
     { path: '/organizations', label: 'Organizations' },
     ...(isAdmin ? [{ path: '/admin/cvs', label: 'All CVs', adminOnly: true }] : [])
   ];
