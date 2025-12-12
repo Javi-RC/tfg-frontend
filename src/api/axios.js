@@ -39,7 +39,12 @@ api.interceptors.response.use(
         lowerUrl.includes('/auth/')
       );
 
-      if (!isAuthEndpoint) {
+      // Avoid redirect loops if we're already on a public/auth page
+      const publicPaths = ['/login', '/register', '/auth/confirm', '/auth/callback', '/oauth-success'];
+      const currentPath = (typeof window !== 'undefined' && window.location && window.location.pathname) || '';
+      const isOnPublicPage = publicPaths.includes(currentPath);
+
+      if (!isAuthEndpoint && !isOnPublicPage) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         window.location.href = '/login';

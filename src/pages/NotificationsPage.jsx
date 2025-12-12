@@ -7,21 +7,29 @@ import './NotificationsPage.css';
  * NotificationsPage Component
  * Página completa dedicada a la gestión de notificaciones
  * Incluye filtros, paginación y lista completa de notificaciones
+ * 
+ * Consume la API: GET /api/notifications con paginación
  */
 const NotificationsPage = () => {
   const { 
     notifications, 
     loading, 
+    pagination,
     fetchNotifications,
     markAllAsRead 
   } = useNotifications();
   const [filter, setFilter] = useState('all'); // 'all' | 'unread' | 'read'
-  const [page, setPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState('recent'); // 'recent' | 'oldest'
+  const ITEMS_PER_PAGE = 20;
 
   useEffect(() => {
-    fetchNotifications(page, 20);
-  }, [page, fetchNotifications]);
+    fetchNotifications({ 
+      page: currentPage, 
+      limit: ITEMS_PER_PAGE,
+      unreadOnly: filter === 'unread'
+    });
+  }, [currentPage, fetchNotifications, filter]);
 
   const filteredNotifications = (notifications || [])
     .filter(n => {
@@ -37,9 +45,21 @@ const NotificationsPage = () => {
 
   const unreadCount = (notifications || []).filter(n => !n.readAt).length;
   const readCount = (notifications || []).filter(n => n.readAt).length;
+  const totalCount = pagination?.total || (notifications || []).length;
 
   const handleMarkAllAsRead = async () => {
     await markAllAsRead();
+  };
+
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+    setCurrentPage(1); // Resetear a página 1 cuando cambia el filtro
+  };
+
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= (pagination?.pages || 1)) {
+      setCurrentPage(newPage);
+    }
   };
 
   return (
@@ -66,7 +86,7 @@ const NotificationsPage = () => {
 
         <div className="notifications-stats">
           <div className="stat-card">
-            <div className="stat-value">{(notifications || []).length}</div>
+            <div className="stat-value">{totalCount}</div>
             <div className="stat-label">Total</div>
           </div>
           <div className="stat-card">
@@ -83,19 +103,19 @@ const NotificationsPage = () => {
           <div className="notifications-filters">
             <button 
               className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
-              onClick={() => setFilter('all')}
+              onClick={() => handleFilterChange('all')}
             >
-              Todas ({(notifications || []).length})
+              Todas ({totalCount})
             </button>
             <button 
               className={`filter-btn ${filter === 'unread' ? 'active' : ''}`}
-              onClick={() => setFilter('unread')}
+              onClick={() => handleFilterChange('unread')}
             >
               No leídas ({unreadCount})
             </button>
             <button 
               className={`filter-btn ${filter === 'read' ? 'active' : ''}`}
-              onClick={() => setFilter('read')}
+              onClick={() => handleFilterChange('read')}
             >
               Leídas ({readCount})
             </button>
@@ -127,7 +147,7 @@ const NotificationsPage = () => {
                 <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                 <path d="M13.73 21a2 2 0 0 1-3.46 0" />
               </svg>
-              <h3>No tienes notificaciones {filter !== 'all' && filter}</h3>
+              <h3>No tienes notificaciones {filter !== 'all' && filter === 'unread' ? 'sin leer' : filter === 'read' ? 'leídas' : ''}</h3>
               <p>Cuando recibas notificaciones, aparecerán aquí</p>
             </div>
           ) : (
@@ -141,6 +161,31 @@ const NotificationsPage = () => {
             </div>
           )}
         </div>
+
+        {/* Paginación */}
+        {pagination && pagination.pages > 1 && (
+          <div className="notifications-pagination">
+            <button 
+              className="pagination-btn"
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              aria-label="Página anterior"
+            >
+              ← Anterior
+            </button>
+            <span className="pagination-info">
+              Página {currentPage} de {pagination.pages}
+            </span>
+            <button 
+              className="pagination-btn"
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === pagination.pages}
+              aria-label="Página siguiente"
+            >
+              Siguiente →
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

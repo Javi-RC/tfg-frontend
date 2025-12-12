@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useNotifications } from '../../contexts/NotificationContext';
 import NotificationItem from './NotificationItem';
 import './NotificationDropdown.css';
@@ -7,6 +8,8 @@ import './NotificationDropdown.css';
  * NotificationDropdown Component
  * Dropdown que muestra la lista de notificaciones
  * Incluye tabs para filtrar entre todas y no leídas
+ * 
+ * Se carga al abrir el panel (GET /api/notifications)
  */
 const NotificationDropdown = ({ onClose }) => {
   const { 
@@ -18,7 +21,7 @@ const NotificationDropdown = ({ onClose }) => {
   const [activeTab, setActiveTab] = useState('all'); // 'all' | 'unread'
 
   useEffect(() => {
-    fetchNotifications();
+    fetchNotifications({ page: 1, limit: 20 });
   }, [fetchNotifications]);
 
   const filteredNotifications = activeTab === 'unread' 
@@ -86,9 +89,9 @@ const NotificationDropdown = ({ onClose }) => {
       </div>
 
       <div className="notification-dropdown-footer">
-        <a href="/notifications" className="view-all-link">
+        <Link to="/notifications" className="view-all-link" onClick={onClose}>
           Ver todas las notificaciones →
-        </a>
+        </Link>
       </div>
     </div>
   );

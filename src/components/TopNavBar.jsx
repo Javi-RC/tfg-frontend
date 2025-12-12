@@ -14,10 +14,16 @@ export default function TopNavBar() {
 
   const isAdmin = user?.role === 'org_admin';
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
+
   const navItems = [
     { path: '/', label: 'Profile' },
     { path: '/my-cv', label: 'My CV' },
     { path: '/cv-stats', label: 'CV Stats' },
+    { path: '/organizations', label: 'Organizations' },
     ...(isAdmin ? [{ path: '/admin/cvs', label: 'All CVs', adminOnly: true }] : [])
   ];
 
@@ -123,7 +129,7 @@ export default function TopNavBar() {
           {user?.username || user?.name || user?.email}
         </div>
         <button
-          onClick={logout}
+          onClick={handleLogout}
           style={{
             background: 'transparent',
             color: '#c0392b',

@@ -14,10 +14,29 @@ export const AuthProvider = ({ children }) => {
   const isLoadingProfile = useRef(false);
 
   useEffect(() => {
+    // No intentar cargar perfil si estamos en páginas públicas
+    const publicPages = ['/login', '/register', '/auth/confirm', '/auth/callback', '/oauth-success'];
+    if (publicPages.includes(window.location.pathname)) {
+      return;
+    }
+    
     if (token && !user && !isLoadingProfile.current) {
       isLoadingProfile.current = true;
       try {
-        jwtDecode(token);
+        const decoded = jwtDecode(token);
+        
+        // Verificar si el token ha expirado
+        const currentTime = Date.now() / 1000;
+        if (decoded.exp && decoded.exp < currentTime) {
+          isLoadingProfile.current = false;
+          // Token expirado, limpiar y no redirigir (ProtectedRoute se encargará)
+          setToken(null);
+          setUser(null);
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          return;
+        }
+        
         // Normalize roles coming from the backend to avoid invalid enum values
         const ALLOWED_ROLES = ['employee', 'org_admin', 'unassigned'];
         const normalizeRole = (r) => (ALLOWED_ROLES.includes(r) ? r : 'unassigned');
@@ -29,14 +48,22 @@ export const AuthProvider = ({ children }) => {
           isLoadingProfile.current = false;
         }).catch(() => {
           isLoadingProfile.current = false;
-          logout();
+          // Limpiar datos inválidos sin redirigir (ProtectedRoute se encargará)
+          setToken(null);
+          setUser(null);
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
         });
       } catch {
         isLoadingProfile.current = false;
-        logout();
+        // Token inválido o corrupto, limpiar sin redirigir
+        setToken(null);
+        setUser(null);
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
       }
     }
-  }, [token]);
+  }, [token, user]);
 
   const setSession = useCallback((tokenValue, userData) => {
     setToken(tokenValue);
@@ -86,7 +113,7 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    window.location.href = '/login';
+    // No redirigir aquí, dejamos que el componente que llama a logout maneje la navegación
   };
 
   return (
