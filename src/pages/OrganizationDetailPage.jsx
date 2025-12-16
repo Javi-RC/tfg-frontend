@@ -164,6 +164,12 @@ export default function OrganizationDetailPage() {
         >
           Employees
         </button>
+        <button
+          style={activeTab === 'projects' ? styles.tabActive : styles.tab}
+          onClick={() => setActiveTab('projects')}
+        >
+          Projects
+        </button>
         {isAdmin && (
           <button
             style={activeTab === 'cvs' ? styles.tabActive : styles.tab}
@@ -194,6 +200,12 @@ export default function OrganizationDetailPage() {
             onUpdate={loadStats}
           />
         )}
+        {activeTab === 'projects' && (
+          <ProjectsTab 
+            organizationId={id}
+            isAdmin={isAdmin}
+          />
+        )}
         {activeTab === 'cvs' && isAdmin && (
           <CVsTab 
             organizationId={id}
@@ -207,6 +219,135 @@ export default function OrganizationDetailPage() {
           />
         )}
       </div>
+    </div>
+  );
+}
+
+/**
+ * ProjectsTab Component
+ */
+function ProjectsTab({ organizationId, isAdmin }) {
+  const navigate = useNavigate();
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState(null);
+
+  useEffect(() => {
+    loadProjects();
+    if (isAdmin) {
+      loadStats();
+    }
+  }, [organizationId]);
+
+  const loadProjects = async () => {
+    try {
+      setLoading(true);
+      const { getOrganizationProjects } = await import('../api/projects');
+      const res = await getOrganizationProjects(organizationId);
+      const data = res.data?.success ? res.data.data : res.data;
+      setProjects(data || []);
+    } catch (err) {
+      console.error('Error loading projects:', err);
+      setProjects([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadStats = async () => {
+    try {
+      const { getOrganizationProjectStats } = await import('../api/projects');
+      const res = await getOrganizationProjectStats(organizationId);
+      const data = res.data?.success ? res.data.data : res.data;
+      setStats(data);
+    } catch (err) {
+      console.error('Error loading project stats:', err);
+    }
+  };
+
+  if (loading) {
+    return <p style={styles.loadingText}>Loading projects...</p>;
+  }
+
+  return (
+    <div style={styles.card}>
+      <div style={styles.cardHeader}>
+        <h2 style={styles.cardTitle}>Projects</h2>
+      </div>
+
+      {/* Stats Cards */}
+      {isAdmin && stats && (
+        <div style={styles.statsSection}>
+          <div style={styles.statCard}>
+            <div style={styles.statValue}>{stats.total || 0}</div>
+            <div style={styles.statLabel}>Total Projects</div>
+          </div>
+          <div style={styles.statCard}>
+            <div style={styles.statValue}>{stats.byStatus?.active || 0}</div>
+            <div style={styles.statLabel}>Active</div>
+          </div>
+          <div style={styles.statCard}>
+            <div style={styles.statValue}>{stats.byStatus?.completed || 0}</div>
+            <div style={styles.statLabel}>Completed</div>
+          </div>
+          <div style={styles.statCard}>
+            <div style={styles.statValue}>{stats.totalAssignedEmployees || 0}</div>
+            <div style={styles.statLabel}>Team Members</div>
+          </div>
+        </div>
+      )}
+
+      {projects.length === 0 ? (
+        <p style={styles.emptyText}>No projects found for this organization</p>
+      ) : (
+        <div style={styles.projectsList}>
+          {projects.map((project) => (
+            <div key={project._id} style={styles.projectCard}>
+              <div style={styles.projectHeader}>
+                <div>
+                  <h3 style={styles.projectName}>{project.projectName}</h3>
+                  <p style={styles.projectDescription}>
+                    {project.briefDescription?.substring(0, 100)}
+                    {project.briefDescription?.length > 100 && '...'}
+                  </p>
+                </div>
+                <span style={{
+                  ...styles.statusBadge,
+                  background: 
+                    project.status === 'active' ? '#e8f5e9' :
+                    project.status === 'draft' ? '#f3f4f6' :
+                    project.status === 'completed' ? '#e3f2fd' : '#ffebee',
+                  color:
+                    project.status === 'active' ? '#2e7d32' :
+                    project.status === 'draft' ? '#6b7280' :
+                    project.status === 'completed' ? '#1976d2' : '#c62828'
+                }}>
+                  {project.status}
+                </span>
+              </div>
+              <div style={styles.projectInfo}>
+                <div>
+                  <strong>PM:</strong> {project.projectManager?.name || 'N/A'}
+                </div>
+                <div>
+                  <strong>Team:</strong> {project.assignedEmployeesCount || 0} members
+                </div>
+                <div>
+                  <strong>Risk Score:</strong> {project.riskScore || 0}
+                </div>
+              </div>
+              <div style={styles.projectActions}>
+                <button
+                  style={styles.actionButton}
+                  onClick={() => navigate(`/projects/${project._id}`)}
+                >
+                  View Details
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
@@ -351,6 +492,20 @@ function EmployeesTab({ organizationId, isAdmin, onUpdate }) {
     }
   };
 
+  const handleToggleProjectManager = async (userId, currentStatus) => {
+    const action = currentStatus ? 'remove' : 'assign';
+    if (!confirm(`Are you sure you want to ${action} project manager role ${currentStatus ? 'from' : 'to'} this employee?`)) return;
+    
+    try {
+      const { updateProjectManagerRole } = await import('../api/projects');
+      await updateProjectManagerRole(organizationId, userId, !currentStatus);
+      loadEmployees();
+      if (onUpdate) onUpdate();
+    } catch (err) {
+      alert(err.response?.data?.error || err.message || 'Error updating project manager role');
+    }
+  };
+
   if (loading) {
     return <p style={styles.loadingText}>Loading employees...</p>;
   }
@@ -398,6 +553,7 @@ function EmployeesTab({ organizationId, isAdmin, onUpdate }) {
             <div style={styles.tableCell}>Position</div>
             <div style={styles.tableCell}>Department</div>
             <div style={styles.tableCell}>Status</div>
+            <div style={styles.tableCell}>Role</div>
             {isAdmin && <div style={styles.tableCell}>Actions</div>}
           </div>
           {employees.map((emp) => {
@@ -423,6 +579,17 @@ function EmployeesTab({ organizationId, isAdmin, onUpdate }) {
                     {emp.status}
                   </span>
                 </div>
+                <div style={styles.tableCell}>
+                  {emp.isProjectManager && (
+                    <span style={{
+                      ...styles.statusBadge,
+                      background: '#E0E7FF',
+                      color: '#4338CA'
+                    }}>
+                      🎯 Project Manager
+                    </span>
+                  )}
+                </div>
                 {isAdmin && (
                   <div style={styles.tableCell}>
                     <div style={styles.actionButtons}>
@@ -435,12 +602,24 @@ function EmployeesTab({ organizationId, isAdmin, onUpdate }) {
                         </button>
                       )}
                       {emp.status === 'active' && (
-                        <button
-                          style={styles.actionButton}
-                          onClick={() => handleStatusChange(user._id, 'inactive')}
-                        >
-                          Deactivate
-                        </button>
+                        <>
+                          <button
+                            style={{
+                              ...styles.actionButton,
+                              background: emp.isProjectManager ? '#FEE2E2' : '#E0E7FF',
+                              color: emp.isProjectManager ? '#DC2626' : '#4338CA'
+                            }}
+                            onClick={() => handleToggleProjectManager(user._id, emp.isProjectManager)}
+                          >
+                            {emp.isProjectManager ? 'Remove PM' : 'Make PM'}
+                          </button>
+                          <button
+                            style={styles.actionButton}
+                            onClick={() => handleStatusChange(user._id, 'inactive')}
+                          >
+                            Deactivate
+                          </button>
+                        </>
                       )}
                       <button
                         style={{ ...styles.actionButton, color: '#c62828' }}
@@ -1042,6 +1221,47 @@ const styles = {
     marginBottom: '16px'
   },
   cvActions: {
+    display: 'flex',
+    gap: '8px',
+    flexWrap: 'wrap'
+  },
+  projectsList: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+    marginTop: '20px'
+  },
+  projectCard: {
+    border: '1px solid #eee',
+    borderRadius: '12px',
+    padding: '20px'
+  },
+  projectHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'start',
+    marginBottom: '16px'
+  },
+  projectName: {
+    fontSize: '18px',
+    fontWeight: '600',
+    color: '#1a1a1a',
+    margin: '0 0 8px 0'
+  },
+  projectDescription: {
+    fontSize: '14px',
+    color: '#666',
+    margin: 0
+  },
+  projectInfo: {
+    display: 'flex',
+    gap: '20px',
+    fontSize: '14px',
+    color: '#666',
+    marginBottom: '16px',
+    flexWrap: 'wrap'
+  },
+  projectActions: {
     display: 'flex',
     gap: '8px',
     flexWrap: 'wrap'

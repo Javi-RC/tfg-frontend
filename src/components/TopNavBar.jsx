@@ -25,6 +25,7 @@ export default function TopNavBar() {
     { path: '/cv-stats', label: 'CV Stats' },
     { path: '/bfi-44', label: 'Personality' },
     { path: '/organizations', label: 'Organizations' },
+    { path: '/projects', label: 'Projects' },
     ...(isAdmin ? [{ path: '/admin/cvs', label: 'All CVs', adminOnly: true }] : [])
   ];
 

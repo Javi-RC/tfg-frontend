@@ -18,6 +18,9 @@ import MyOrganizationsPage from './pages/MyOrganizationsPage'
 import OrganizationDetailPage from './pages/OrganizationDetailPage'
 import CVDetailPage from './pages/CVDetailPage'
 import BFI44Page from './pages/BFI44Page'
+import ProjectsPage from './pages/ProjectsPage'
+import ProjectFormPage from './pages/ProjectFormPage'
+import ProjectDetailPage from './pages/ProjectDetailPage'
 
 function AppRoutes() {
   const location = useLocation();
@@ -37,6 +40,7 @@ function AppRoutes() {
         <Route path="/oauth-success" element={<OAuthSuccess />} />
         <Route path="/complete-profile" element={<CompleteProfile />} />
         <Route path="/bfi-44" element={<ProtectedRoute><BFI44Page /></ProtectedRoute>} />
+        <Route path="/bfi-44/:testId" element={<ProtectedRoute><BFI44Page /></ProtectedRoute>} />
         <Route path="/" element={<ProtectedRoute><Profile/></ProtectedRoute>} />
         <Route path="/my-cv" element={<ProtectedRoute><MyCVPage/></ProtectedRoute>} />
         <Route path="/cv/:cvId" element={<ProtectedRoute><MyCVPage/></ProtectedRoute>} />
@@ -46,6 +50,10 @@ function AppRoutes() {
         <Route path="/organizations" element={<ProtectedRoute><MyOrganizationsPage/></ProtectedRoute>} />
         <Route path="/organizations/:id" element={<ProtectedRoute><OrganizationDetailPage/></ProtectedRoute>} />
         <Route path="/organizations/:orgId/cvs/:cvId" element={<ProtectedRoute><CVDetailPage/></ProtectedRoute>} />
+        <Route path="/projects" element={<ProtectedRoute><ProjectsPage/></ProtectedRoute>} />
+        <Route path="/projects/new" element={<ProtectedRoute><ProjectFormPage/></ProtectedRoute>} />
+        <Route path="/projects/:id" element={<ProtectedRoute><ProjectDetailPage/></ProtectedRoute>} />
+        <Route path="/projects/:id/edit" element={<ProtectedRoute><ProjectFormPage/></ProtectedRoute>} />
       </Routes>
     </>
   );
