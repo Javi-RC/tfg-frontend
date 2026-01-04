@@ -18,6 +18,19 @@ export default function LanguagesSection({
   const languages = editMode ? editData?.languages : cv?.languages;
   if (!languages) return null;
 
+  const formatLanguageLevel = (level) => {
+    const mapping = {
+      nativo: 'Native',
+      bilingüe: 'Bilingual',
+      fluido: 'Fluent',
+      avanzado: 'Advanced',
+      intermedio: 'Intermediate',
+      básico: 'Basic'
+    };
+
+    return mapping[level] || level;
+  };
+
   return (
     <section style={{ marginBottom: '56px' }} role="region" aria-labelledby="languages-heading">
       <SectionHeader 
@@ -53,7 +66,20 @@ export default function LanguagesSection({
                   value={langObj.level}
                   onChange={(value) => onLanguageChange(index, 'level', value)}
                   placeholder="Select level"
-                  options={['nativo', 'bilingüe', 'fluido', 'avanzado', 'intermedio', 'básico', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2']}
+                  options={[
+                    { value: 'nativo', label: 'Native' },
+                    { value: 'bilingüe', label: 'Bilingual' },
+                    { value: 'fluido', label: 'Fluent' },
+                    { value: 'avanzado', label: 'Advanced' },
+                    { value: 'intermedio', label: 'Intermediate' },
+                    { value: 'básico', label: 'Basic' },
+                    'A1',
+                    'A2',
+                    'B1',
+                    'B2',
+                    'C1',
+                    'C2'
+                  ]}
                   required
                 />
                 <button
@@ -92,7 +118,7 @@ export default function LanguagesSection({
               color: '#975a16',
               border: '1px solid #f9e3b8'
             }}>
-              {typeof lang === 'string' ? lang : `${lang.language} (${lang.level})`}
+              {typeof lang === 'string' ? lang : `${lang.language} (${formatLanguageLevel(lang.level)})`}
             </span>
           ))}
         </div>

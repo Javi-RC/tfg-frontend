@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { CheckCircle, X, Search, UserPlus } from 'lucide-react';
 import { getOrganizationEmployees } from '../../api/organization';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
@@ -75,13 +76,16 @@ export default function EmployeeAssignmentModal({
 
         <div style={styles.content}>
           {/* Search */}
-          <input
-            type="text"
-            placeholder="Search employees by name, email, or position..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={styles.searchInput}
-          />
+          <div style={{ position: 'relative' }}>
+            <Search size={18} color="#999" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+            <input
+              type="text"
+              placeholder="Search employees by name, email, or position..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{...styles.searchInput, paddingLeft: '48px'}}
+            />
+          </div>
 
           {/* Employee List */}
           {loading ? (
@@ -111,7 +115,7 @@ export default function EmployeeAssignmentModal({
                     )}
                   </div>
                   {selectedEmployee?.user._id === emp.user._id && (
-                    <div style={styles.checkmark}>✓</div>
+                    <div style={styles.checkmark}><CheckCircle size={24} color="#10b981" /></div>
                   )}
                 </div>
               ))}
@@ -134,12 +138,13 @@ export default function EmployeeAssignmentModal({
         </div>
 
         <div style={styles.footer}>
-          <SecondaryButton onClick={onClose}>
+          <SecondaryButton onClick={onClose} leftIcon={<X size={16} />}>
             Cancel
           </SecondaryButton>
           <PrimaryButton 
-            onClick={handleAssign}
+            onClick={handleAssign} 
             disabled={!selectedEmployee}
+            leftIcon={<UserPlus size={16} />}
           >
             Assign Employee
           </PrimaryButton>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { Users } from 'lucide-react';
 import { AuthContext } from '../contexts/AuthContext';
 import { 
   getMyOrganizations, 
@@ -67,8 +68,8 @@ export default function MyOrganizationsPage() {
           </p>
         </div>
         {isOrgAdmin && (
-          <PrimaryButton onClick={() => setShowCreateModal(true)}>
-            + Create Organization
+          <PrimaryButton onClick={() => setShowCreateModal(true)} leftIcon={<Building2 size={18} />}>
+            Create Organization
           </PrimaryButton>
         )}
       </div>
@@ -76,7 +77,9 @@ export default function MyOrganizationsPage() {
       {/* Organizations List */}
       {organizations.length === 0 ? (
         <div style={styles.emptyState}>
-          <div style={styles.emptyIcon}>🏢</div>
+          <div style={styles.emptyIcon}>
+            <Building2 size={64} color="#6c757d" style={{ opacity: 0.3 }} />
+          </div>
           <h3 style={styles.emptyTitle}>No organizations yet</h3>
           <p style={styles.emptyText}>
             {isOrgAdmin 
@@ -84,7 +87,7 @@ export default function MyOrganizationsPage() {
               : 'You are not part of any organization yet'}
           </p>
           {isOrgAdmin && (
-            <PrimaryButton onClick={() => setShowCreateModal(true)}>
+            <PrimaryButton onClick={() => setShowCreateModal(true)} leftIcon={<Building2 size={18} />}>
               Create Organization
             </PrimaryButton>
           )}
@@ -185,7 +188,17 @@ function OrganizationCard({ organization, isAdmin, onClick }) {
 
       <div style={styles.cardFooter}>
         <span style={styles.footerText}>
-          {isAdmin ? '👤 Administrator' : '👥 Employee'}
+          {isAdmin ? (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <User size={14} />
+              Administrator
+            </span>
+          ) : (
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+              <Users size={14} />
+              Employee
+            </span>
+          )}
         </span>
       </div>
     </div>
@@ -412,23 +425,23 @@ function CreateOrganizationModal({ onClose, onSuccess }) {
                 style={styles.input}
               >
                 <option value="">Select industry</option>
-                <option value="software_development">Desarrollo de software</option>
-                <option value="web_development">Desarrollo web</option>
-                <option value="mobile_development">Desarrollo móvil</option>
+                <option value="software_development">Software development</option>
+                <option value="web_development">Web development</option>
+                <option value="mobile_development">Mobile development</option>
                 <option value="devops_cloud">DevOps y Cloud</option>
-                <option value="data_science">Ciencia de datos</option>
-                <option value="cybersecurity">Ciberseguridad</option>
-                <option value="ai_machine_learning">IA y Machine Learning</option>
+                <option value="data_science">Data science</option>
+                <option value="cybersecurity">Cybersecurity</option>
+                <option value="ai_machine_learning">AI & Machine Learning</option>
                 <option value="blockchain">Blockchain</option>
-                <option value="game_development">Desarrollo de videojuegos</option>
-                <option value="qa_testing">QA y Testing</option>
-                <option value="consulting">Consultoría tecnológica</option>
-                <option value="fintech">Tecnología financiera</option>
-                <option value="healthtech">Tecnología de salud</option>
-                <option value="edtech">Tecnología educativa</option>
-                <option value="ecommerce">Comercio electrónico</option>
+                <option value="game_development">Game development</option>
+                <option value="qa_testing">QA & Testing</option>
+                <option value="consulting">Technology consulting</option>
+                <option value="fintech">Financial technology</option>
+                <option value="healthtech">Health technology</option>
+                <option value="edtech">Education technology</option>
+                <option value="ecommerce">E-commerce</option>
                 <option value="saas">Software as a Service</option>
-                <option value="other">Otro</option>
+                <option value="other">Other</option>
               </select>
             </div>
 

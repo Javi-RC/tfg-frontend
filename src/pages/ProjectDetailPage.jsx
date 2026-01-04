@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Lightbulb, Edit, Trash, Save, AlertCircle, CheckCircle, UserPlus } from 'lucide-react';
 import { AuthContext } from '../contexts/AuthContext';
 import {
   getProjectById,
@@ -14,6 +15,7 @@ import PrimaryButton from '../components/PrimaryButton';
 import SecondaryButton from '../components/SecondaryButton';
 import ProjectStatusBadge from '../components/projects/ProjectStatusBadge';
 import EmployeeAssignmentModal from '../components/projects/EmployeeAssignmentModal';
+import DraftTeamAnalysis from '../components/projects/DraftTeamAnalysis';
 import { PROJECT_STATUS } from '../types/projectTypes';
 
 /**
@@ -45,6 +47,11 @@ export default function ProjectDetailPage() {
       const res = await getProjectById(id, true);
       const data = res.data?.success ? res.data.data : res.data;
       setProject(data);
+      
+      // Set default tab to 'teamAnalysis' for Draft projects
+      if (data.status === PROJECT_STATUS.DRAFT && activeTab === 'overview') {
+        setActiveTab('teamAnalysis');
+      }
     } catch (error) {
       alert(error.response?.data?.error || 'Error loading project');
       navigate('/projects');
@@ -171,27 +178,28 @@ export default function ProjectDetailPage() {
           
           <div style={styles.headerActions}>
             {canEdit && project.status === PROJECT_STATUS.DRAFT && (
-              <PrimaryButton onClick={handleActivate}>
+              <PrimaryButton onClick={handleActivate} leftIcon={<CheckCircle size={18} />}>
                 Activate Project
               </PrimaryButton>
             )}
             {canEdit && project.status === PROJECT_STATUS.ACTIVE && (
-              <PrimaryButton onClick={handleComplete}>
+              <PrimaryButton onClick={handleComplete} leftIcon={<CheckCircle size={18} />}>
                 Complete Project
               </PrimaryButton>
             )}
             {canEdit && (
-              <SecondaryButton onClick={() => navigate(`/projects/${id}/edit`)}>
+              <SecondaryButton onClick={() => navigate(`/projects/${id}/edit`)} leftIcon={<Edit size={16} />}>
                 Edit
               </SecondaryButton>
             )}
             {canDelete && project.status !== PROJECT_STATUS.CANCELLED && (
-              <SecondaryButton onClick={handleCancel}>
+              <SecondaryButton onClick={handleCancel} leftIcon={<AlertCircle size={16} />}>
                 Cancel Project
               </SecondaryButton>
             )}
             {canDelete && (
-              <button style={styles.deleteButton} onClick={handleDelete}>
+              <button style={{...styles.deleteButton, display: 'flex', alignItems: 'center', gap: '6px'}} onClick={handleDelete}>
+                <Trash size={16} />
                 Delete
               </button>
             )}
@@ -210,6 +218,21 @@ export default function ProjectDetailPage() {
         >
           Overview
         </button>
+        {project.status === PROJECT_STATUS.DRAFT && (
+          <button
+            style={{
+              ...styles.tab,
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              ...(activeTab === 'teamAnalysis' && styles.tabActive)
+            }}
+            onClick={() => setActiveTab('teamAnalysis')}
+          >
+            <Lightbulb size={16} />
+            Team Analysis
+          </button>
+        )}
         <button
           style={{
             ...styles.tab,
@@ -232,6 +255,13 @@ export default function ProjectDetailPage() {
 
       {/* Content */}
       <div style={styles.content}>
+        {activeTab === 'teamAnalysis' && project.status === PROJECT_STATUS.DRAFT && (
+          <DraftTeamAnalysis 
+            project={project} 
+            onProjectUpdate={loadProject}
+          />
+        )}
+
         {activeTab === 'overview' && (
           <div>
             {/* Basic Info */}

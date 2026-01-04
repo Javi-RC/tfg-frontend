@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { FileText, ClipboardList, Phone, MapPin, Globe, Briefcase, Search, X, RefreshCcw } from 'lucide-react';
 import { getAllCVs } from '../api/cv';
 import { AuthContext } from '../contexts/AuthContext';
 import SecondaryButton from '../components/SecondaryButton';
@@ -126,15 +127,15 @@ export default function AdminCVListPage() {
             All CVs ({filteredCVs.length})
           </h1>
           <div style={{ display: 'flex', gap: '12px' }}>
-            <SecondaryButton onClick={() => setShowSearch(!showSearch)} aria-label={showSearch ? 'Hide search panel' : 'Show search panel'}>
+            <SecondaryButton onClick={() => setShowSearch(!showSearch)} aria-label={showSearch ? 'Hide search panel' : 'Show search panel'} leftIcon={showSearch ? <X size={16} /> : <Search size={16} />}>
               {showSearch ? 'Hide Search' : 'Search CVs'}
             </SecondaryButton>
             {filteredCVs.length !== cvs.length && (
-              <SecondaryButton onClick={handleResetSearch} aria-label="Reset search filters">
+              <SecondaryButton onClick={handleResetSearch} aria-label="Reset search filters" leftIcon={<X size={16} />}>
                 Reset Filters
               </SecondaryButton>
             )}
-            <SecondaryButton onClick={loadAllCVs} aria-label="Refresh CV list">
+            <SecondaryButton onClick={loadAllCVs} aria-label="Refresh CV list" leftIcon={<RefreshCcw size={16} />}>
               Refresh
             </SecondaryButton>
           </div>
@@ -157,7 +158,7 @@ export default function AdminCVListPage() {
             borderRadius: '16px',
             boxShadow: '0 2px 12px rgba(0,0,0,0.08)'
           }} role="status">
-            <div style={{ fontSize: '64px', marginBottom: '16px', opacity: 0.3 }} aria-hidden="true">📄</div>
+            <div style={{ fontSize: '64px', marginBottom: '16px', opacity: 0.3 }} aria-hidden="true"><FileText size={64} color="#9ca3af" /></div>
             <h2 style={{ fontSize: '20px', fontWeight: '600', marginBottom: '8px', color: '#1a1a1a' }}>
               No CVs Found
             </h2>
@@ -268,9 +269,13 @@ function CVCard({ cv, onClick, isSelected }) {
             <p style={{
               fontSize: '13px',
               color: '#999',
-              marginTop: '4px'
+              marginTop: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px'
             }}>
-              <span aria-hidden="true">📍</span> {location}
+              <MapPin size={14} />
+              <span>{location}</span>
             </p>
           )}
         </div>
@@ -288,18 +293,21 @@ function CVCard({ cv, onClick, isSelected }) {
 
       <div style={{ display: 'flex', gap: '16px', marginBottom: '12px', flexWrap: 'wrap' }}>
         {skillsCount > 0 && (
-          <div style={{ fontSize: '13px', color: '#666' }}>
-            <span aria-hidden="true">💼</span> {skillsCount} skills
+          <div style={{ fontSize: '13px', color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <Briefcase size={16} />
+            <span>{skillsCount} skills</span>
           </div>
         )}
         {languagesCount > 0 && (
-          <div style={{ fontSize: '13px', color: '#666' }}>
-            <span aria-hidden="true">🌍</span> {languagesCount} languages
+          <div style={{ fontSize: '13px', color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <Globe size={16} />
+            <span>{languagesCount} languages</span>
           </div>
         )}
         {experienceCount > 0 && (
-          <div style={{ fontSize: '13px', color: '#666' }}>
-            <span aria-hidden="true">📋</span> {experienceCount} experiences
+          <div style={{ fontSize: '13px', color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <ClipboardList size={16} />
+            <span>{experienceCount} experiences</span>
           </div>
         )}
       </div>
@@ -369,13 +377,15 @@ function CVDetailPanel({ cv, onClose }) {
           {email}
         </p>
         {phone && (
-          <p style={{ fontSize: '14px', color: '#666', marginBottom: '4px' }}>
-            <span aria-hidden="true">📱</span> {phone}
+          <p style={{ fontSize: '14px', color: '#666', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <Phone size={16} />
+            <span>{phone}</span>
           </p>
         )}
         {location && (
-          <p style={{ fontSize: '14px', color: '#666', marginBottom: '4px' }}>
-            <span aria-hidden="true">📍</span> {location}
+          <p style={{ fontSize: '14px', color: '#666', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <MapPin size={16} />
+            <span>{location}</span>
           </p>
         )}
         {linkedin && (

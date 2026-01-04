@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Search, Send, X, Building2 } from 'lucide-react';
 import { searchOrganizations } from '../api/organization';
 import { submitCVToOrganization } from '../api/cv';
 import PrimaryButton from './PrimaryButton';
@@ -86,12 +87,20 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
         )}
 
         <div style={styles.searchSection}>
+          <Search size={18} color="#666" style={{
+            position: 'absolute',
+            left: '16px',
+            top: '50%',
+            transform: 'translateY(-50%)',
+            pointerEvents: 'none',
+            zIndex: 1
+          }} />
           <input
             type="text"
-            placeholder="Search organizations by name..."
+            placeholder="Search organizations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={styles.searchInput}
+            style={{...styles.searchInput, paddingLeft: '48px'}}
           />
         </div>
 
@@ -122,7 +131,7 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
                     </div>
                   </div>
                   {selectedOrg?._id === org._id && (
-                    <div style={styles.checkmark}>✓</div>
+                    <div style={styles.checkmark}><CheckCircle size={24} color="#10b981" /></div>
                   )}
                 </div>
               ))}
@@ -131,10 +140,10 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
         </div>
 
         <div style={styles.actions}>
-          <SecondaryButton onClick={onClose}>
+          <SecondaryButton onClick={onClose} leftIcon={<X size={16} />}>
             Cancel
           </SecondaryButton>
-          <PrimaryButton onClick={handleSubmit} disabled={!selectedOrg || submitting}>
+          <PrimaryButton onClick={handleSubmit} disabled={!selectedOrg || submitting} leftIcon={<Send size={16} />}>
             {submitting ? 'Submitting...' : 'Submit CV'}
           </PrimaryButton>
         </div>
@@ -200,7 +209,8 @@ const styles = {
   },
   searchSection: {
     padding: '16px 24px',
-    borderBottom: '1px solid #eee'
+    borderBottom: '1px solid #eee',
+    position: 'relative'
   },
   searchInput: {
     width: '100%',

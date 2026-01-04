@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { CheckCheck, BellOff, ArrowRight } from 'lucide-react';
 import { useNotifications } from '../../contexts/NotificationContext';
 import NotificationItem from './NotificationItem';
 import './NotificationDropdown.css';
@@ -37,14 +38,15 @@ const NotificationDropdown = ({ onClose }) => {
   return (
     <div className="notification-dropdown">
       <div className="notification-dropdown-header">
-        <h3>Notificaciones</h3>
+        <h3>Notifications</h3>
         <button 
           className="mark-all-read-btn"
           onClick={handleMarkAllAsRead}
           disabled={!hasUnreadNotifications}
-          title={hasUnreadNotifications ? 'Marcar todas como leídas' : 'No hay notificaciones sin leer'}
+          title={hasUnreadNotifications ? 'Mark all as read' : 'No unread notifications'}
         >
-          Marcar todas como leídas
+          <CheckCheck size={16} />
+          Mark all as read
         </button>
       </div>
 
@@ -53,13 +55,13 @@ const NotificationDropdown = ({ onClose }) => {
           className={`tab ${activeTab === 'all' ? 'active' : ''}`}
           onClick={() => setActiveTab('all')}
         >
-          Todas ({(notifications || []).length})
+          All ({(notifications || []).length})
         </button>
         <button 
           className={`tab ${activeTab === 'unread' ? 'active' : ''}`}
           onClick={() => setActiveTab('unread')}
         >
-          No leídas ({(notifications || []).filter(n => !n.readAt).length})
+          Unread ({(notifications || []).filter(n => !n.readAt).length})
         </button>
       </div>
 
@@ -67,15 +69,12 @@ const NotificationDropdown = ({ onClose }) => {
         {loading ? (
           <div className="notification-loading">
             <div className="loading-spinner"></div>
-            <p>Cargando notificaciones...</p>
+            <p>Loading notifications...</p>
           </div>
         ) : filteredNotifications.length === 0 ? (
           <div className="notification-empty">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-              <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-            </svg>
-            <p>No tienes notificaciones {activeTab === 'unread' ? 'sin leer' : ''}</p>
+            <BellOff size={48} />
+            <p>You don't have any {activeTab === 'unread' ? 'unread ' : ''}notifications</p>
           </div>
         ) : (
           filteredNotifications.map(notification => (
@@ -90,7 +89,8 @@ const NotificationDropdown = ({ onClose }) => {
 
       <div className="notification-dropdown-footer">
         <Link to="/notifications" className="view-all-link" onClick={onClose}>
-          Ver todas las notificaciones →
+          View all notifications
+          <ArrowRight size={16} />
         </Link>
       </div>
     </div>

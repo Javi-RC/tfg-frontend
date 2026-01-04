@@ -133,11 +133,20 @@ export default function Field({
           }}
         >
           <option value="">{placeholder || 'Select an option'}</option>
-          {options.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
+          {options.map((option) => {
+            const optionValue = typeof option === 'string' ? option : option?.value;
+            const optionLabel = typeof option === 'string' ? option : (option?.label ?? option?.value);
+
+            if (!optionValue) {
+              return null;
+            }
+
+            return (
+              <option key={optionValue} value={optionValue}>
+                {optionLabel}
+              </option>
+            );
+          })}
         </select>
       ) : (
         <input

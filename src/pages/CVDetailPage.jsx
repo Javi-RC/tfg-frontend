@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { FileText, Edit } from 'lucide-react';
 import { getOrganizationCV } from '../api/organization';
 import SecondaryButton from '../components/SecondaryButton';
 import PrimaryButton from '../components/PrimaryButton';
@@ -81,7 +82,7 @@ export default function CVDetailPage() {
           borderRadius: '16px',
           boxShadow: '0 2px 12px rgba(0,0,0,0.08)'
         }}>
-          <div style={{ fontSize: '64px', marginBottom: '16px', opacity: 0.3 }}>📄</div>
+          <div style={{ fontSize: '64px', marginBottom: '16px', opacity: 0.3 }}><FileText size={64} color="#9ca3af" /></div>
           <h2 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
             CV Not Found
           </h2>
@@ -239,7 +240,7 @@ export default function CVDetailPage() {
                   alignItems: 'center',
                   gap: '8px'
                 }}>
-                  <span>📝</span> Organization Notes
+                  <Edit size={20} /> Organization Notes
                 </h2>
                 <p style={{
                   fontSize: '15px',

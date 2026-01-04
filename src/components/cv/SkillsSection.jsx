@@ -18,6 +18,17 @@ export default function SkillsSection({
   const skills = editMode ? editData?.skills?.technical : cv?.skills?.technical;
   if (!skills) return null;
 
+  const formatSkillLevel = (level) => {
+    const mapping = {
+      básico: 'Basic',
+      intermedio: 'Intermediate',
+      avanzado: 'Advanced',
+      experto: 'Expert'
+    };
+
+    return mapping[level] || level;
+  };
+
   return (
     <section style={{ marginBottom: '56px' }} role="region" aria-labelledby="skills-heading">
       <SectionHeader 
@@ -51,7 +62,12 @@ export default function SkillsSection({
                 value={skill.level}
                 onChange={(value) => onSkillChange(index, 'level', value)}
                 placeholder="Select level"
-                options={['básico', 'intermedio', 'avanzado', 'experto']}
+                options={[
+                  { value: 'básico', label: 'Basic' },
+                  { value: 'intermedio', label: 'Intermediate' },
+                  { value: 'avanzado', label: 'Advanced' },
+                  { value: 'experto', label: 'Expert' }
+                ]}
               />
               <Field
                 editable={true}
@@ -60,7 +76,14 @@ export default function SkillsSection({
                 value={skill.category}
                 onChange={(value) => onSkillChange(index, 'category', value)}
                 placeholder="Select category"
-                options={['lenguaje', 'framework', 'herramienta', 'base_datos', 'cloud', 'otro']}
+                options={[
+                  { value: 'lenguaje', label: 'Language' },
+                  { value: 'framework', label: 'Framework' },
+                  { value: 'herramienta', label: 'Tool' },
+                  { value: 'base_datos', label: 'Database' },
+                  { value: 'cloud', label: 'Cloud' },
+                  { value: 'otro', label: 'Other' }
+                ]}
               />
               <button
                 onClick={() => onRemoveSkill(index)}
@@ -100,7 +123,7 @@ export default function SkillsSection({
               {skill.name}
               {skill.level && skill.level !== 'básico' && (
                 <span style={{ fontSize: '11px', opacity: 0.7, marginLeft: '4px' }}>
-                  ({skill.level})
+                  ({formatSkillLevel(skill.level)})
                 </span>
               )}
             </span>

@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Briefcase, Users as UsersIcon, FileQuestion, Files } from 'lucide-react';
 
 /**
  * OrganizationCard Component
@@ -25,10 +26,12 @@ export default function OrganizationCard({ organization, onClick, showStats = fa
 
       <div style={styles.info}>
         <div style={styles.infoItem}>
+          <Briefcase size={14} color="#999" />
           <span style={styles.infoLabel}>Industry:</span>
           <span style={styles.infoValue}>{organization.industry || 'N/A'}</span>
         </div>
         <div style={styles.infoItem}>
+          <UsersIcon size={14} color="#999" />
           <span style={styles.infoLabel}>Size:</span>
           <span style={styles.infoValue}>{organization.size || 'N/A'}</span>
         </div>
@@ -37,14 +40,17 @@ export default function OrganizationCard({ organization, onClick, showStats = fa
       {showStats && stats && (
         <div style={styles.statsContainer}>
           <div style={styles.statItem}>
+            <UsersIcon size={20} color="#2563eb" style={{ marginBottom: '4px' }} />
             <span style={styles.statValue}>{stats.totalEmployees || 0}</span>
             <span style={styles.statLabel}>Employees</span>
           </div>
           <div style={styles.statItem}>
+            <FileQuestion size={20} color="#f59e0b" style={{ marginBottom: '4px' }} />
             <span style={styles.statValue}>{stats.pendingCVs || 0}</span>
             <span style={styles.statLabel}>Pending CVs</span>
           </div>
           <div style={styles.statItem}>
+            <Files size={20} color="#10b981" style={{ marginBottom: '4px' }} />
             <span style={styles.statValue}>{stats.totalCVs || 0}</span>
             <span style={styles.statLabel}>Total CVs</span>
           </div>
@@ -119,7 +125,10 @@ const styles = {
     marginBottom: '16px'
   },
   infoItem: {
-    flex: 1
+    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px'
   },
   infoLabel: {
     fontSize: '12px',
@@ -141,7 +150,10 @@ const styles = {
   },
   statItem: {
     flex: 1,
-    textAlign: 'center'
+    textAlign: 'center',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
   },
   statValue: {
     display: 'block',

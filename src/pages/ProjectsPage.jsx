@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Plus, ClipboardList } from 'lucide-react';
 import { AuthContext } from '../contexts/AuthContext';
 import { 
   getMyProjects, 
@@ -196,8 +197,8 @@ export default function ProjectsPage() {
           </p>
         </div>
         {isProjectManager && (
-          <PrimaryButton onClick={() => navigate('/projects/new')}>
-            + Create Project
+          <PrimaryButton onClick={() => navigate('/projects/new')} leftIcon={<Plus size={18} />}>
+            Create Project
           </PrimaryButton>
         )}
       </div>
@@ -260,7 +261,9 @@ export default function ProjectsPage() {
       {/* Projects Grid */}
       {filteredProjects.length === 0 ? (
         <div style={styles.emptyState}>
-          <div style={styles.emptyIcon}>📋</div>
+          <div style={styles.emptyIcon}>
+            <ClipboardList size={64} color="#6c757d" style={{ opacity: 0.3 }} />
+          </div>
           <h3 style={styles.emptyTitle}>
             {activeTab === 'my-projects' ? 'No projects created yet' : 'No projects assigned'}
           </h3>
@@ -270,7 +273,7 @@ export default function ProjectsPage() {
               : 'You will see projects here when assigned by a project manager'}
           </p>
           {activeTab === 'my-projects' && isProjectManager && (
-            <PrimaryButton onClick={() => navigate('/projects/new')}>
+            <PrimaryButton onClick={() => navigate('/projects/new')} leftIcon={<Plus size={18} />}>
               Create First Project
             </PrimaryButton>
           )}

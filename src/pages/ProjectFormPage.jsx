@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ArrowLeft, ArrowRight, Save, CheckCircle } from 'lucide-react';
 import { AuthContext } from '../contexts/AuthContext';
 import { 
   createProject, 
@@ -579,19 +580,19 @@ export default function ProjectFormPage() {
         <div style={styles.actions}>
           <div style={styles.leftActions}>
             {currentStep > 1 && (
-              <SecondaryButton onClick={handlePrevious}>
+              <SecondaryButton onClick={handlePrevious} leftIcon={<ArrowLeft size={16} />}>
                 Previous
               </SecondaryButton>
             )}
           </div>
           
           <div style={styles.rightActions}>
-            <SecondaryButton onClick={handleSaveDraft} disabled={loading}>
+            <SecondaryButton onClick={handleSaveDraft} disabled={loading} leftIcon={<Save size={16} />}>
               Save as Draft
             </SecondaryButton>
             
             {currentStep < FORM_STEPS.length ? (
-              <PrimaryButton onClick={handleNext}>
+              <PrimaryButton onClick={handleNext} rightIcon={<ArrowRight size={16} />}>
                 Next
               </PrimaryButton>
             ) : (
@@ -599,6 +600,7 @@ export default function ProjectFormPage() {
                 <PrimaryButton 
                   onClick={() => handleSubmit(false)}
                   disabled={loading}
+                  leftIcon={<CheckCircle size={18} />}
                 >
                   {isEditMode ? 'Update Project' : 'Create Project'}
                 </PrimaryButton>
@@ -606,6 +608,7 @@ export default function ProjectFormPage() {
                   onClick={() => handleSubmit(true)}
                   disabled={loading}
                   style={{ background: '#10B981' }}
+                  leftIcon={<CheckCircle size={18} />}
                 >
                   {isEditMode ? 'Update & Activate' : 'Create & Activate'}
                 </PrimaryButton>

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { User, Users, Calendar, Clock, Eye, Edit, Trash2 } from 'lucide-react';
 import ProjectStatusBadge from './ProjectStatusBadge';
 
 /**
@@ -41,28 +42,40 @@ export default function ProjectCard({ project, onEdit, onDelete, showActions = t
 
       <div style={styles.metadata}>
         <div style={styles.metaItem}>
-          <span style={styles.metaLabel}>Project Manager:</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
+            <User size={16} color="#666" style={{ flexShrink: 0 }} />
+            <span style={styles.metaLabel}>Project Manager:</span>
+          </div>
           <span style={styles.metaValue}>
             {project.projectManager?.name || 'N/A'}
           </span>
         </div>
         
         <div style={styles.metaItem}>
-          <span style={styles.metaLabel}>Team Size:</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
+            <Users size={16} color="#666" style={{ flexShrink: 0 }} />
+            <span style={styles.metaLabel}>Team Size:</span>
+          </div>
           <span style={styles.metaValue}>
             {project.assignedEmployeesCount || 0} members
           </span>
         </div>
 
         <div style={styles.metaItem}>
-          <span style={styles.metaLabel}>Timeline:</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
+            <Calendar size={16} color="#666" style={{ flexShrink: 0 }} />
+            <span style={styles.metaLabel}>Timeline:</span>
+          </div>
           <span style={styles.metaValue}>
             {formatDate(project.estimatedStartDate)} - {formatDate(project.estimatedEndDate)}
           </span>
         </div>
 
         <div style={styles.metaItem}>
-          <span style={styles.metaLabel}>Duration:</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
+            <Clock size={16} color="#666" style={{ flexShrink: 0 }} />
+            <span style={styles.metaLabel}>Duration:</span>
+          </div>
           <span style={styles.metaValue}>
             {project.expectedDuration?.value} {project.expectedDuration?.unit}
           </span>
@@ -79,7 +92,10 @@ export default function ProjectCard({ project, onEdit, onDelete, showActions = t
                 handleCardClick();
               }}
             >
-              View Details
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <Eye size={16} />
+                View Details
+              </span>
             </button>
             {onEdit && (
               <button
@@ -89,7 +105,10 @@ export default function ProjectCard({ project, onEdit, onDelete, showActions = t
                   onEdit(project);
                 }}
               >
-                Edit
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Edit size={16} />
+                  Edit
+                </span>
               </button>
             )}
             {onDelete && (

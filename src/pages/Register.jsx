@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { CheckCircle, Circle, Mail, User, Shield, Lock, Eye, EyeOff } from 'lucide-react';
 import { register as apiRegister, resendConfirmation } from '../api/auth';
 import AuthLayout from '../components/AuthLayout';
 import PrimaryButton from '../components/PrimaryButton';
@@ -121,12 +122,12 @@ function Register() {
 
       <nav className="stepper" role="progressbar" aria-label="Registration progress" aria-valuenow={step} aria-valuemin="1" aria-valuemax="3" aria-valuetext={`Step ${step} of 3`}>
         <div className={`step ${step >= 1 ? 'completed' : ''} ${step === 1 ? 'active' : ''}`} aria-current={step === 1 ? 'step' : undefined}>
-          <div className="step-circle">{step > 1 ? '✓' : '1'}</div>
+          <div className="step-circle">{step > 1 ? <CheckCircle size={16} /> : '1'}</div>
           <div className="step-label">Enter your personal data</div>
         </div>
         <div className={`connector ${step > 1 ? 'filled' : ''}`} aria-hidden="true" />
         <div className={`step ${step >= 2 ? 'completed' : ''} ${step === 2 ? 'active' : ''}`} aria-current={step === 2 ? 'step' : undefined}>
-          <div className="step-circle">{step > 2 ? '✓' : '2'}</div>
+          <div className="step-circle">{step > 2 ? <CheckCircle size={16} /> : '2'}</div>
           <div className="step-label">Create your password</div>
         </div>
         <div className={`connector ${step > 2 ? 'filled' : ''}`} aria-hidden="true" />
@@ -249,12 +250,27 @@ function Register() {
 
             <div id="password-requirements" role="region" aria-label="Password requirements" style={{ padding: 12, borderRadius: 8, background: '#fafafa', border: '1px solid rgba(0,0,0,0.04)' }}>
               <div style={{ fontSize: 14, marginBottom: 8, color: '#1a1a1a' }}>Password requirements:</div>
-              <ul style={{ margin: 0, paddingLeft: 18, fontSize: 14 }}>
-                <li style={{ color: passwordRules.length ? '#15803d' : '#1a1a1a' }}>{passwordRules.length ? '✓' : '○'} 8 or more characters</li>
-                <li style={{ color: passwordRules.uppercase ? '#15803d' : '#1a1a1a' }}>{passwordRules.uppercase ? '✓' : '○'} One uppercase character</li>
-                <li style={{ color: passwordRules.lowercase ? '#15803d' : '#1a1a1a' }}>{passwordRules.lowercase ? '✓' : '○'} One lowercase character</li>
-                <li style={{ color: passwordRules.number ? '#15803d' : '#1a1a1a' }}>{passwordRules.number ? '✓' : '○'} One number</li>
-                <li style={{ color: passwordRules.special ? '#15803d' : '#1a1a1a' }}>{passwordRules.special ? '✓' : '○'} One special character</li>
+              <ul style={{ margin: 0, padding: 0, listStyle: 'none', fontSize: 14 }}>
+                <li style={{ color: passwordRules.length ? '#15803d' : '#1a1a1a', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
+                  {passwordRules.length ? <CheckCircle size={16} /> : <Circle size={16} />}
+                  8 or more characters
+                </li>
+                <li style={{ color: passwordRules.uppercase ? '#15803d' : '#1a1a1a', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
+                  {passwordRules.uppercase ? <CheckCircle size={16} /> : <Circle size={16} />}
+                  One uppercase character
+                </li>
+                <li style={{ color: passwordRules.lowercase ? '#15803d' : '#1a1a1a', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
+                  {passwordRules.lowercase ? <CheckCircle size={16} /> : <Circle size={16} />}
+                  One lowercase character
+                </li>
+                <li style={{ color: passwordRules.number ? '#15803d' : '#1a1a1a', display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px' }}>
+                  {passwordRules.number ? <CheckCircle size={16} /> : <Circle size={16} />}
+                  One number
+                </li>
+                <li style={{ color: passwordRules.special ? '#15803d' : '#1a1a1a', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  {passwordRules.special ? <CheckCircle size={16} /> : <Circle size={16} />}
+                  One special character
+                </li>
               </ul>
               <div style={{ marginTop: 8, fontSize: 13, color: (confirm && password !== confirm) ? '#b91c1c' : '#1a1a1a' }}>
                 {confirm ? (password === confirm ? 'Passwords match' : 'Passwords do not match') : 'Repeat password to confirm'}

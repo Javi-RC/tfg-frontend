@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { BellOff } from 'lucide-react';
 import { useNotifications } from '../contexts/NotificationContext';
 import NotificationItem from '../components/notifications/NotificationItem';
 import './NotificationsPage.css';
@@ -67,9 +68,9 @@ const NotificationsPage = () => {
       <div className="notifications-page-container">
         <div className="notifications-page-header">
           <div>
-            <h1>Notificaciones</h1>
+            <h1>Notifications</h1>
             <p className="notifications-subtitle">
-              Gestiona tus notificaciones y mantente al día
+              Manage your notifications and stay up to date
             </p>
           </div>
           <button 
@@ -80,7 +81,7 @@ const NotificationsPage = () => {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
-            Marcar todas como leídas
+            Mark all as read
           </button>
         </div>
 
@@ -91,11 +92,11 @@ const NotificationsPage = () => {
           </div>
           <div className="stat-card">
             <div className="stat-value">{unreadCount}</div>
-            <div className="stat-label">No leídas</div>
+            <div className="stat-label">Unread</div>
           </div>
           <div className="stat-card">
             <div className="stat-value">{readCount}</div>
-            <div className="stat-label">Leídas</div>
+            <div className="stat-label">Read</div>
           </div>
         </div>
 
@@ -105,32 +106,32 @@ const NotificationsPage = () => {
               className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
               onClick={() => handleFilterChange('all')}
             >
-              Todas ({totalCount})
+              All ({totalCount})
             </button>
             <button 
               className={`filter-btn ${filter === 'unread' ? 'active' : ''}`}
               onClick={() => handleFilterChange('unread')}
             >
-              No leídas ({unreadCount})
+              Unread ({unreadCount})
             </button>
             <button 
               className={`filter-btn ${filter === 'read' ? 'active' : ''}`}
               onClick={() => handleFilterChange('read')}
             >
-              Leídas ({readCount})
+              Read ({readCount})
             </button>
           </div>
 
           <div className="notifications-sort">
-            <label htmlFor="sort-select">Ordenar por:</label>
+            <label htmlFor="sort-select">Sort by:</label>
             <select 
               id="sort-select"
               value={sortBy} 
               onChange={(e) => setSortBy(e.target.value)}
               className="sort-select"
             >
-              <option value="recent">Más recientes</option>
-              <option value="oldest">Más antiguas</option>
+              <option value="recent">Most recent</option>
+              <option value="oldest">Oldest</option>
             </select>
           </div>
         </div>
@@ -139,16 +140,13 @@ const NotificationsPage = () => {
           {loading ? (
             <div className="loading-container">
               <div className="loading-spinner"></div>
-              <p>Cargando notificaciones...</p>
+              <p>Loading notifications...</p>
             </div>
           ) : filteredNotifications.length === 0 ? (
             <div className="empty-state-large">
-              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-                <path d="M13.73 21a2 2 0 0 1-3.46 0" />
-              </svg>
-              <h3>No tienes notificaciones {filter !== 'all' && filter === 'unread' ? 'sin leer' : filter === 'read' ? 'leídas' : ''}</h3>
-              <p>Cuando recibas notificaciones, aparecerán aquí</p>
+              <BellOff size={64} color="#999" />
+              <h3>You don't have any {filter !== 'all' && filter === 'unread' ? 'unread ' : filter === 'read' ? 'read ' : ''}notifications</h3>
+              <p>When you receive notifications, they'll appear here</p>
             </div>
           ) : (
             <div className="notifications-grid">
@@ -169,20 +167,20 @@ const NotificationsPage = () => {
               className="pagination-btn"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              aria-label="Página anterior"
+              aria-label="Previous page"
             >
-              ← Anterior
+              ← Previous
             </button>
             <span className="pagination-info">
-              Página {currentPage} de {pagination.pages}
+              Page {currentPage} of {pagination.pages}
             </span>
             <button 
               className="pagination-btn"
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === pagination.pages}
-              aria-label="Página siguiente"
+              aria-label="Next page"
             >
-              Siguiente →
+              Next →
             </button>
           </div>
         )}

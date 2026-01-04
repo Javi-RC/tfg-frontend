@@ -1,4 +1,5 @@
 import React from 'react';
+import { Edit, Upload, Send, Trash2, Save, X } from 'lucide-react';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 
@@ -56,6 +57,7 @@ export default function CVHeader({
               onClick={onEdit} 
               aria-label="Edit CV information"
               style={{ width: '100%', justifyContent: 'center' }}
+              leftIcon={<Edit size={16} />}
             >
               Edit
             </SecondaryButton>
@@ -63,6 +65,7 @@ export default function CVHeader({
               onClick={onUpload} 
               aria-label="Upload a new CV"
               style={{ width: '100%', justifyContent: 'center' }}
+              leftIcon={<Upload size={16} />}
             >
               Upload New
             </SecondaryButton>
@@ -71,6 +74,7 @@ export default function CVHeader({
                 onClick={onSubmitToOrg} 
                 aria-label="Submit CV to organization"
                 style={{ width: '100%', justifyContent: 'center' }}
+                leftIcon={<Send size={16} />}
               >
                 Submit to Organization
               </PrimaryButton>
@@ -84,6 +88,7 @@ export default function CVHeader({
                 borderColor: '#c0392b' 
               }}
               aria-label="Delete current CV"
+              leftIcon={<Trash2 size={16} />}
             >
               Delete
             </SecondaryButton>
@@ -95,6 +100,7 @@ export default function CVHeader({
               disabled={saving} 
               aria-label="Cancel editing"
               style={{ width: '100%', justifyContent: 'center' }}
+              leftIcon={<X size={16} />}
             >
               Cancel
             </SecondaryButton>
@@ -103,6 +109,7 @@ export default function CVHeader({
               disabled={saving} 
               aria-label="Save CV changes"
               style={{ width: '100%', justifyContent: 'center' }}
+              leftIcon={<Save size={16} />}
             >
               {saving ? 'Saving...' : 'Save Changes'}
             </PrimaryButton>

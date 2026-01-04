@@ -133,3 +133,43 @@ export const updateProjectManagerRole = (orgId, employeeId, isProjectManager) =>
   api.patch(`/api/organizations/${orgId}/employees/${employeeId}/project-manager`, {
     isProjectManager
   });
+
+// ==================== Team Analysis & Risk Prediction ====================
+
+/**
+ * Get team analysis for a project
+ * When project has NO assigned employees: Returns optimal team suggestions
+ * When project HAS assigned employees: Analyzes current team fit
+ * @param {string} id - Project ID
+ * @returns {Promise} API response with team analysis
+ */
+export const getTeamAnalysis = (id) => 
+  api.get(`/api/projects/${id}/team-analysis`);
+
+/**
+ * Suggest optimal team for project requirements (without creating project)
+ * Useful for testing different team configurations before assignment
+ * @param {Object} data - { projectRequirements, organizationId, teamSize }
+ * @returns {Promise} API response with team suggestions
+ */
+export const suggestTeam = (data) => 
+  api.post('/api/projects/suggest-team', data);
+
+/**
+ * Predict project risks using Decision Tree + CBR + Team Analysis
+ * Combines expert rules, historical cases, and team composition analysis
+ * @param {string} id - Project ID
+ * @returns {Promise} API response with comprehensive risk analysis
+ */
+export const predictProjectRisks = (id) => 
+  api.post(`/api/projects/${id}/risks/predict`);
+
+/**
+ * Preview project risks with hypothetical team composition
+ * Used for real-time risk updates as team is being modified
+ * @param {string} id - Project ID
+ * @param {Object} data - { selectedEmployeeIds }
+ * @returns {Promise} API response with risk preview
+ */
+export const previewProjectRisks = (id, data) => 
+  api.post(`/api/projects/${id}/risks/preview`, data);

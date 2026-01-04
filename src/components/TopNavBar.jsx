@@ -1,5 +1,6 @@
 import React, { useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { User, FileText, BarChart3, Brain, Building2, FolderKanban, Database } from 'lucide-react';
 import { AuthContext } from '../contexts/AuthContext';
 import NotificationBell from './notifications/NotificationBell';
 
@@ -20,13 +21,13 @@ export default function TopNavBar() {
   };
 
   const navItems = [
-    { path: '/', label: 'Profile' },
-    { path: '/my-cv', label: 'My CV' },
-    { path: '/cv-stats', label: 'CV Stats' },
-    { path: '/bfi-44', label: 'Personality' },
-    { path: '/organizations', label: 'Organizations' },
-    { path: '/projects', label: 'Projects' },
-    ...(isAdmin ? [{ path: '/admin/cvs', label: 'All CVs', adminOnly: true }] : [])
+    { path: '/', label: 'Profile', icon: User },
+    { path: '/my-cv', label: 'My CV', icon: FileText },
+    { path: '/cv-stats', label: 'CV Stats', icon: BarChart3 },
+    { path: '/bfi-44', label: 'Personality', icon: Brain },
+    { path: '/organizations', label: 'Organizations', icon: Building2 },
+    { path: '/projects', label: 'Projects', icon: FolderKanban },
+    ...(isAdmin ? [{ path: '/admin/cvs', label: 'All CVs', icon: Database, adminOnly: true }] : [])
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -98,6 +99,7 @@ export default function TopNavBar() {
             aria-label={`Navigate to ${item.label}`}
             aria-current={isActive(item.path) ? 'page' : undefined}
           >
+            {item.icon && <item.icon size={18} />}
             <span>{item.label}</span>
             {item.adminOnly && (
               <span style={{

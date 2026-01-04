@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { Target, FolderOpen, Users, FileText } from 'lucide-react';
 import { AuthContext } from '../contexts/AuthContext';
 import {
   getOrganizationById,
@@ -298,7 +299,10 @@ function ProjectsTab({ organizationId, isAdmin }) {
       )}
 
       {projects.length === 0 ? (
-        <p style={styles.emptyText}>No projects found for this organization</p>
+        <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+          <FolderOpen size={48} color="#999" style={{ marginBottom: '16px', opacity: 0.5 }} />
+          <p style={styles.emptyText}>No projects found for this organization</p>
+        </div>
       ) : (
         <div style={styles.projectsList}>
           {projects.map((project) => (
@@ -545,7 +549,10 @@ function EmployeesTab({ organizationId, isAdmin, onUpdate }) {
       </div>
 
       {employees.length === 0 ? (
-        <p style={styles.emptyText}>No employees found</p>
+        <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+          <Users size={48} color="#999" style={{ marginBottom: '16px', opacity: 0.5 }} />
+          <p style={styles.emptyText}>No employees found</p>
+        </div>
       ) : (
         <div style={styles.table}>
           <div style={styles.tableHeader}>
@@ -584,9 +591,13 @@ function EmployeesTab({ organizationId, isAdmin, onUpdate }) {
                     <span style={{
                       ...styles.statusBadge,
                       background: '#E0E7FF',
-                      color: '#4338CA'
+                      color: '#4338CA',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '4px'
                     }}>
-                      🎯 Project Manager
+                      <Target size={14} />
+                      Project Manager
                     </span>
                   )}
                 </div>
@@ -755,7 +766,10 @@ function CVsTab({ organizationId, onUpdate }) {
       </div>
 
       {cvs.length === 0 ? (
-        <p style={styles.emptyText}>No CVs found</p>
+        <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+          <FileText size={48} color="#999" style={{ marginBottom: '16px', opacity: 0.5 }} />
+          <p style={styles.emptyText}>No CVs found</p>
+        </div>
       ) : (
         <div style={styles.cvList}>
           {cvs.map((cv) => (

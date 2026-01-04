@@ -9,11 +9,16 @@ export const getProfile = () => api.get('/api/profile');
 // so the full endpoint is PUT /auth/profile
 export const updateProfile = (profileData) => api.put('/auth/profile', profileData);
 
+// New profile update endpoint
+// PATCH /api/profile updates only provided fields
+export const patchProfile = (profileData) => api.patch('/api/profile', profileData);
+
 export default {
   register,
   login,
   confirmAccount,
   resendConfirmation,
   getProfile,
-  updateProfile
+  updateProfile,
+  patchProfile
 };

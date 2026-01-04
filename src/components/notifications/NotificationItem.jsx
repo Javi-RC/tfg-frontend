@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
+import { X } from 'lucide-react';
 import { useNotifications } from '../../contexts/NotificationContext';
 import { formatDistanceToNow } from 'date-fns';
-import { es } from 'date-fns/locale';
+import { enUS } from 'date-fns/locale';
 import { getNotificationTypeIcon } from '../../types/notificationTypes';
 import './NotificationItem.css';
 
@@ -53,7 +54,7 @@ const NotificationItem = ({ notification, onClose }) => {
 
   const timeAgo = formatDistanceToNow(new Date(notification.createdAt), {
     addSuffix: true,
-    locale: es
+    locale: enUS
   });
 
   const priorityClass = `priority-${notification.priority || 'normal'}`;
@@ -72,7 +73,7 @@ const NotificationItem = ({ notification, onClose }) => {
       }}
     >
       <div className="notification-indicator">
-        {isUnread && <span className="unread-dot" aria-label="No leída" />}
+        {isUnread && <span className="unread-dot" aria-label="Unread" />}
         <NotificationIcon type={notification.type} />
       </div>
 
@@ -82,10 +83,10 @@ const NotificationItem = ({ notification, onClose }) => {
         <div className="notification-meta">
           <span className="notification-time">{timeAgo}</span>
           {notification.priority === 'urgent' && (
-            <span className="urgent-badge">Urgente</span>
+            <span className="urgent-badge">Urgent</span>
           )}
           {notification.priority === 'high' && (
-            <span className="high-badge">Alta</span>
+            <span className="high-badge">High</span>
           )}
         </div>
       </div>
@@ -93,13 +94,10 @@ const NotificationItem = ({ notification, onClose }) => {
       <button 
         className="notification-delete-btn"
         onClick={handleDelete}
-        aria-label="Eliminar notificación"
-        title="Eliminar"
+        aria-label="Delete notification"
+        title="Delete"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
+        <X size={16} />
       </button>
     </div>
   );
@@ -110,11 +108,11 @@ const NotificationItem = ({ notification, onClose }) => {
  * Renderiza el icono apropiado según el tipo de notificación
  */
 const NotificationIcon = ({ type }) => {
-  const icon = getNotificationTypeIcon(type);
+  const IconComponent = getNotificationTypeIcon(type);
   
   return (
-    <span className="notification-icon" role="img" aria-label={`Tipo: ${type}`}>
-      {icon}
+    <span className="notification-icon" role="img" aria-label={`Type: ${type}`}>
+      <IconComponent size={18} />
     </span>
   );
 };

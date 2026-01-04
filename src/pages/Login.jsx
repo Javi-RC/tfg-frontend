@@ -1,4 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
+import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { AuthContext } from '../contexts/AuthContext';
 import AuthLayout from '../components/AuthLayout';
 import PrimaryButton from '../components/PrimaryButton';
@@ -112,27 +113,19 @@ export default function Login() {
       <form onSubmit={handleSubmit} aria-busy={isLoading} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
         <div style={{ width: '100%' }}>
           <label htmlFor="email" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500, color: '#1a1a1a', width: '100%' }}>Email address <span style={{ color: '#c0392b' }} aria-label="required">*</span></label>
-          <input id="email" type="email" placeholder="you@example.com" value={form.email} onChange={handleInputChange('email')} onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)} disabled={isLoading} autoComplete="email" required aria-required="true" aria-invalid={error && !form.email.trim() ? "true" : "false"} aria-describedby={error ? "login-error" : undefined} style={{ width: '100%', height: '56px', borderRadius: '12px', border: '1px solid rgba(102,102,102,0.25)', padding: '0 16px', fontSize: '16px', outline: 'none', transition: 'all 0.15s', fontFamily: 'inherit', background: isLoading ? '#f5f5f5' : 'white', boxSizing: 'border-box' }} onFocus={(e) => { e.target.style.borderColor = '#111'; e.target.style.boxShadow = '0 0 0 3px rgba(17,17,17,0.1)'; }} onBlur={(e) => { e.target.style.borderColor = 'rgba(102,102,102,0.25)'; e.target.style.boxShadow = 'none'; }} />
+          <div style={{ position: 'relative', width: '100%' }}>
+            <Mail size={18} color="#666" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 1 }} />
+            <input id="email" type="email" placeholder="you@example.com" value={form.email} onChange={handleInputChange('email')} onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)} disabled={isLoading} autoComplete="email" required aria-required="true" aria-invalid={error && !form.email.trim() ? "true" : "false"} aria-describedby={error ? "login-error" : undefined} style={{ width: '100%', height: '56px', borderRadius: '12px', border: '1px solid rgba(102,102,102,0.25)', padding: '0 16px 0 48px', fontSize: '16px', outline: 'none', transition: 'all 0.15s', fontFamily: 'inherit', background: isLoading ? '#f5f5f5' : 'white', boxSizing: 'border-box' }} onFocus={(e) => { e.target.style.borderColor = '#111'; e.target.style.boxShadow = '0 0 0 3px rgba(17,17,17,0.1)'; }} onBlur={(e) => { e.target.style.borderColor = 'rgba(102,102,102,0.25)'; e.target.style.boxShadow = 'none'; }} />
+          </div>
         </div>
 
         <div style={{ width: '100%' }}>
           <label htmlFor="password" style={{ display: 'block', marginBottom: '8px', fontSize: '14px', fontWeight: 500, color: '#1a1a1a', width: '100%' }}>Password <span style={{ color: '#c0392b' }} aria-label="required">*</span></label>
           <div style={{ position: 'relative', width: '100%' }}>
-            <input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" value={form.password} onChange={handleInputChange('password')} onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)} disabled={isLoading} autoComplete="current-password" required aria-required="true" aria-invalid={error && !form.password ? "true" : "false"} aria-describedby={error ? "login-error" : undefined} style={{ width: '100%', height: '56px', borderRadius: '12px', border: '1px solid rgba(102,102,102,0.25)', padding: '0 16px', paddingRight: '48px', fontSize: '16px', outline: 'none', transition: 'all 0.15s', fontFamily: 'inherit', background: isLoading ? '#f5f5f5' : 'white', boxSizing: 'border-box' }} onFocus={(e) => { e.target.style.borderColor = '#111'; e.target.style.boxShadow = '0 0 0 3px rgba(17,17,17,0.1)'; }} onBlur={(e) => { e.target.style.borderColor = 'rgba(102,102,102,0.25)'; e.target.style.boxShadow = 'none'; }} />
+            <Lock size={18} color="#666" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none', zIndex: 1 }} />
+            <input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" value={form.password} onChange={handleInputChange('password')} onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)} disabled={isLoading} autoComplete="current-password" required aria-required="true" aria-invalid={error && !form.password ? "true" : "false"} aria-describedby={error ? "login-error" : undefined} style={{ width: '100%', height: '56px', borderRadius: '12px', border: '1px solid rgba(102,102,102,0.25)', padding: '0 48px', fontSize: '16px', outline: 'none', transition: 'all 0.15s', fontFamily: 'inherit', background: isLoading ? '#f5f5f5' : 'white', boxSizing: 'border-box' }} onFocus={(e) => { e.target.style.borderColor = '#111'; e.target.style.boxShadow = '0 0 0 3px rgba(17,17,17,0.1)'; }} onBlur={(e) => { e.target.style.borderColor = 'rgba(102,102,102,0.25)'; e.target.style.boxShadow = 'none'; }} />
             <button type="button" onClick={() => setShowPassword(!showPassword)} disabled={isLoading} aria-label={showPassword ? "Hide password" : "Show password"} style={{ position: 'absolute', right: '12px', top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: isLoading ? 'not-allowed' : 'pointer', padding: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: isLoading ? 0.5 : 1 }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                {showPassword ? (
-                  <>
-                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-                    <line x1="1" y1="1" x2="23" y2="23"/>
-                  </>
-                ) : (
-                  <>
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                  </>
-                )}
-              </svg>
+              {showPassword ? <EyeOff size={20} color="#1a1a1a" /> : <Eye size={20} color="#1a1a1a" />}
             </button>
           </div>
         </div>

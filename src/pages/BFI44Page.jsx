@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, Tooltip, ResponsiveContainer } from 'recharts';
+import { Users, Handshake, Target, Frown, Sparkles, TrendingUp, TrendingDown, BarChart3, Lightbulb, RefreshCcw, CheckCircle } from 'lucide-react';
 import { getQuestions, submitResponses, getMyProfile, hasProfile } from '../api/bfi44';
 import PrimaryButton from '../components/PrimaryButton';
 import SecondaryButton from '../components/SecondaryButton';
@@ -22,7 +23,7 @@ const SCALE_LABELS = {
 const FACTOR_CONFIG = {
   Extraversion: { 
     color: '#3b82f6', 
-    icon: '🗣️', 
+    icon: 'Users', 
     description: 'Sociability, assertiveness, positive emotions',
     interpretation: {
       low: 'Introverted, reserved, prefers solitude',
@@ -32,7 +33,7 @@ const FACTOR_CONFIG = {
   },
   Agreeableness: { 
     color: '#10b981', 
-    icon: '🤝', 
+    icon: 'Handshake', 
     description: 'Cooperation, trust, empathy',
     interpretation: {
       low: 'Independent, competitive, critical',
@@ -42,7 +43,7 @@ const FACTOR_CONFIG = {
   },
   Conscientiousness: { 
     color: '#8b5cf6', 
-    icon: '🎯', 
+    icon: 'Target', 
     description: 'Organization, dependability, self-discipline',
     interpretation: {
       low: 'Spontaneous, disorganized, flexible',
@@ -52,7 +53,7 @@ const FACTOR_CONFIG = {
   },
   Neuroticism: { 
     color: '#ef4444', 
-    icon: '😰', 
+    icon: 'Frown', 
     description: 'Emotional instability, anxiety, moodiness',
     interpretation: {
       low: 'Emotionally stable, resilient',
@@ -62,7 +63,7 @@ const FACTOR_CONFIG = {
   },
   Openness: { 
     color: '#f59e0b', 
-    icon: '🎨', 
+    icon: 'Sparkles', 
     description: 'Creativity, curiosity, openness to experience',
     interpretation: {
       low: 'Practical, traditional, conventional',
@@ -270,11 +271,15 @@ export default function BFI44Page() {
         <div style={styles.contentWide}>
           {/* Header */}
           <div style={styles.headerCard}>
-            <h1 style={styles.title}>✨ Your Personality Profile</h1>
+            <h1 style={{...styles.title, display: 'flex', alignItems: 'center', gap: '8px'}}>
+              <Sparkles size={32} />
+              Your Personality Profile
+            </h1>
             <p style={styles.subtitle}>Big Five Inventory Results (BFI-44)</p>
             {completedAt && (
-              <p style={styles.completedDate}>
-                ✓ Completed on {new Date(completedAt).toLocaleDateString('en-US', { 
+              <p style={{...styles.completedDate, display: 'flex', alignItems: 'center', gap: '6px'}}>
+                <CheckCircle size={16} />
+                Completed on {new Date(completedAt).toLocaleDateString('en-US', { 
                   year: 'numeric', 
                   month: 'long', 
                   day: 'numeric' 
@@ -288,15 +293,25 @@ export default function BFI44Page() {
             {/* Left Column: Factor Cards */}
             <div style={styles.factorsColumn}>
               {Object.entries(results).map(([factor, score], index) => {
-                const config = FACTOR_CONFIG[factor] || { color: '#666', icon: '📊', description: '', interpretation: {} };
+                const config = FACTOR_CONFIG[factor] || { color: '#666', icon: 'BarChart3', description: '', interpretation: {} };
                 const maxScore = factor === 'Openness' ? 50 : (factor === 'Extraversion' || factor === 'Neuroticism' ? 40 : 45);
                 const percentage = Math.round((score / maxScore) * 100);
                 const interpretation = getInterpretation(factor, score);
+                
+                // Map icon string to Lucide component
+                const IconComponent = {
+                  'Users': Users,
+                  'Handshake': Handshake,
+                  'Target': Target,
+                  'Frown': Frown,
+                  'Sparkles': Sparkles,
+                  'BarChart3': BarChart3
+                }[config.icon] || BarChart3;
 
                 return (
                   <div key={factor} style={{...styles.factorCard, animation: `slideIn 0.5s ease forwards ${index * 0.1}s`, opacity: 0, borderTopColor: config.color}}>
                     <div style={styles.factorHeader}>
-                      <span style={styles.factorIcon}>{config.icon}</span>
+                      <span style={styles.factorIcon}><IconComponent size={32} color={config.color} /></span>
                       <div style={{ flex: 1 }}>
                         <h3 style={{...styles.factorName, color: config.color}}>{factor}</h3>
                         <p style={styles.factorDescription}>{config.description}</p>
@@ -320,7 +335,10 @@ export default function BFI44Page() {
                     </div>
 
                     <div style={{...styles.interpretationBox, borderLeftColor: config.color, background: `${config.color}08`}}>
-                      <p style={styles.interpretationText}>💡 {interpretation}</p>
+                      <p style={{ ...styles.interpretationText, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Lightbulb size={16} />
+                        {interpretation}
+                      </p>
                     </div>
                   </div>
                 );
@@ -330,7 +348,10 @@ export default function BFI44Page() {
             {/* Right Column: Radar Chart */}
             <div style={styles.radarColumn}>
               <div style={styles.radarCard}>
-                <h2 style={styles.radarTitle}>📊 Visual Overview</h2>
+                <h2 style={{...styles.radarTitle, display: 'flex', alignItems: 'center', gap: '8px'}}>
+                  <BarChart3 size={24} />
+                  Visual Overview
+                </h2>
                 <p style={styles.radarSubtitle}>Your personality across five dimensions</p>
                 <div style={styles.radarContainer}>
                   <ResponsiveContainer width="100%" height={500}>
@@ -384,7 +405,10 @@ export default function BFI44Page() {
           {/* Actions */}
           <div style={styles.actionsRow}>
             <PrimaryButton onClick={retakeQuestionnaire} style={{ minWidth: '200px' }}>
-              🔄 Retake Assessment
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <RefreshCcw size={16} />
+                Retake Assessment
+              </span>
             </PrimaryButton>
             <SecondaryButton onClick={() => navigate('/')} style={{ minWidth: '200px' }}>
               ← Back to Profile

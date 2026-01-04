@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Upload, FileText, X } from 'lucide-react';
 import PrimaryButton from './PrimaryButton';
 import SecondaryButton from './SecondaryButton';
+import CVConsentModal from './cv/CVConsentModal';
+import { getCVConsent } from '../api/cvConsent';
 
 /**
  * CVUpload Component
@@ -14,12 +17,47 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
   const [error, setError] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
 
+  const [checkingConsent, setCheckingConsent] = useState(true);
+  const [hasConsent, setHasConsent] = useState(false);
+  const [showConsentModal, setShowConsentModal] = useState(false);
+
   const ALLOWED_TYPES = [
     'application/pdf',
     'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
   ];
   const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+
+  useEffect(() => {
+    let mounted = true;
+
+    const loadConsent = async () => {
+      setCheckingConsent(true);
+      try {
+        const res = await getCVConsent();
+        const nextHasConsent = Boolean(res?.data?.hasConsent);
+        if (!mounted) return;
+        setHasConsent(nextHasConsent);
+        setShowConsentModal(!nextHasConsent);
+      } catch (err) {
+        if (!mounted) return;
+        // Fail closed: if we cannot verify consent, block upload and show message.
+        setHasConsent(false);
+        setShowConsentModal(false);
+        setError(
+          err?.response?.data?.error ||
+            'Could not verify consent status. Please try again.'
+        );
+      } finally {
+        if (mounted) setCheckingConsent(false);
+      }
+    };
+
+    loadConsent();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const validateFile = (selectedFile) => {
     if (!selectedFile) {
@@ -76,6 +114,12 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
       return;
     }
 
+    if (!hasConsent) {
+      setShowConsentModal(true);
+      setError('You must accept the AI CV processing consent before uploading.');
+      return;
+    }
+
     setUploading(true);
     setError(null);
 
@@ -92,6 +136,10 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
         throw new Error('Invalid response format');
       }
     } catch (err) {
+      if (err?.response?.status === 403) {
+        setHasConsent(false);
+        setShowConsentModal(true);
+      }
       setError(
         err.response?.data?.error || 
         err.message ||
@@ -108,6 +156,22 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
   };
 
   return (
+    <>
+    <CVConsentModal
+      show={showConsentModal}
+      onClose={() => {
+        setShowConsentModal(false);
+        if (!hasConsent && typeof onCancel === 'function') {
+          onCancel();
+        }
+      }}
+      onAccepted={() => {
+        setHasConsent(true);
+        setShowConsentModal(false);
+        setError(null);
+      }}
+    />
+
     <div style={{
       maxWidth: '600px',
       margin: '0 auto',
@@ -132,6 +196,43 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
       }}>
         Upload your CV in PDF or Word format (max 5MB)
       </p>
+
+      {checkingConsent && (
+        <div style={{
+          padding: '12px 16px',
+          background: '#f5f5f5',
+          border: '1px solid #e8e8e8',
+          borderRadius: '8px',
+          color: '#333',
+          fontSize: '14px',
+          marginBottom: '20px'
+        }}>
+          Checking consent status...
+        </div>
+      )}
+
+      {!checkingConsent && !hasConsent && (
+        <div style={{
+          padding: '12px 16px',
+          background: '#fff7ed',
+          border: '1px solid #fed7aa',
+          borderRadius: '8px',
+          color: '#9a3412',
+          fontSize: '14px',
+          marginBottom: '20px',
+          display: 'flex',
+          justifyContent: 'space-between',
+          gap: '12px',
+          alignItems: 'center'
+        }}>
+          <span>
+            You must accept the AI CV processing consent before uploading.
+          </span>
+          <SecondaryButton onClick={() => setShowConsentModal(true)}>
+            Review consent
+          </SecondaryButton>
+        </div>
+      )}
 
       <div
         onDragOver={handleDragOver}
@@ -225,14 +326,15 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
                 background: 'none',
                 border: 'none',
                 color: '#c0392b',
-                fontSize: '20px',
                 cursor: 'pointer',
-                padding: '4px 8px'
+                padding: '4px 8px',
+                display: 'flex',
+                alignItems: 'center'
               }}
               title="Remove file"
               aria-label={`Remove selected file: ${file.name}`}
             >
-              ×
+              <X size={20} />
             </button>
           </div>
         )}
@@ -262,18 +364,21 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
             onClick={onCancel}
             disabled={uploading}
             aria-label="Cancel CV upload"
+            leftIcon={<X size={16} />}
           >
             Cancel
           </SecondaryButton>
         )}
         <PrimaryButton
           onClick={handleUpload}
-          disabled={!file || uploading}
+          disabled={!file || uploading || checkingConsent || !hasConsent}
           aria-label={uploading ? 'Uploading CV file' : 'Upload selected CV file'}
+          leftIcon={<Upload size={16} />}
         >
           {uploading ? 'Uploading...' : 'Upload CV'}
         </PrimaryButton>
       </div>
     </div>
+    </>
   );
 }

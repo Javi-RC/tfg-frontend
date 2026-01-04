@@ -21,6 +21,7 @@ import BFI44Page from './pages/BFI44Page'
 import ProjectsPage from './pages/ProjectsPage'
 import ProjectFormPage from './pages/ProjectFormPage'
 import ProjectDetailPage from './pages/ProjectDetailPage'
+import TermsPage from './pages/TermsPage'
 
 function AppRoutes() {
   const location = useLocation();
@@ -33,6 +34,7 @@ function AppRoutes() {
     <>
       {showNavBar && <TopNavBar />}
       <Routes>
+        <Route path="/terms" element={<TermsPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/auth/confirm" element={<ConfirmAccount />} />

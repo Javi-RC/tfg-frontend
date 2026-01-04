@@ -55,7 +55,7 @@ export default function Step9Maturity({ formData, onChange, errors = {} }) {
       />
 
       <div style={styles.completionCard}>
-        <div style={styles.completionIcon}>✅</div>
+        <div style={styles.completionIcon}><CheckCircle size={48} color="#10b981" /></div>
         <h3 style={styles.completionTitle}>Form Complete!</h3>
         <p style={styles.completionText}>
           You've filled in all the sections. Review your information and save the project 

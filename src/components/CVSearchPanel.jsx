@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Search, X, Filter } from 'lucide-react';
 import { searchCVs } from '../api/cv';
 import PrimaryButton from './PrimaryButton';
 import SecondaryButton from './SecondaryButton';
@@ -85,8 +86,12 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
         fontSize: '18px',
         fontWeight: '600',
         marginBottom: '20px',
-        color: '#1a1a1a'
+        color: '#1a1a1a',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
       }}>
+        <Search size={20} />
         Search CVs
       </h3>
 

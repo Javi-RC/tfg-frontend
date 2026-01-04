@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BarChart3, GraduationCap, ClipboardList, Rocket, Trophy, Globe, RefreshCcw } from 'lucide-react';
 import { getCVStats } from '../api/cv';
 import SecondaryButton from '../components/SecondaryButton';
 
@@ -66,7 +67,7 @@ export default function CVStatsPage() {
           borderRadius: '16px',
           boxShadow: '0 2px 12px rgba(0,0,0,0.08)'
         }} role="alert" aria-live="assertive">
-          <div style={{ fontSize: '64px', marginBottom: '16px', opacity: 0.3 }} aria-hidden="true">📊</div>
+          <div style={{ fontSize: '64px', marginBottom: '16px', opacity: 0.3 }} aria-hidden="true"><BarChart3 size={64} color="#9ca3af" /></div>
           <h2 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
             Error Loading Statistics
           </h2>
@@ -131,42 +132,42 @@ export default function CVStatsPage() {
           marginBottom: '48px'
         }} role="region" aria-label="Statistics summary">
           <StatCard
-            icon="💼"
+            icon={<ClipboardList size={32} />}
             title="Total Skills"
             value={stats.totalSkills || 0}
             description="Technical skills"
             color="#0066cc"
           />
           <StatCard
-            icon="🎓"
+            icon={<GraduationCap size={32} />}
             title="Education"
             value={stats.totalEducation || 0}
             description="Academic degrees"
             color="#27ae60"
           />
           <StatCard
-            icon="📋"
+            icon={<ClipboardList size={32} />}
             title="Experience"
             value={stats.totalExperience || 0}
             description="Work experiences"
             color="#f39c12"
           />
           <StatCard
-            icon="🚀"
+            icon={<Rocket size={32} />}
             title="Projects"
             value={stats.totalProjects || 0}
             description="Personal projects"
             color="#9b59b6"
           />
           <StatCard
-            icon="🏆"
+            icon={<Trophy size={32} />}
             title="Certifications"
             value={stats.totalCertifications || 0}
             description="Professional certs"
             color="#e74c3c"
           />
           <StatCard
-            icon="🌍"
+            icon={<Globe size={32} />}
             title="Languages"
             value={stats.totalLanguages || 0}
             description="Spoken languages"

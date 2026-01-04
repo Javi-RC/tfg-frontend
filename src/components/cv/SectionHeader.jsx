@@ -1,4 +1,5 @@
 import React from 'react';
+import { Plus } from 'lucide-react';
 import SecondaryButton from '../SecondaryButton';
 
 /**
@@ -37,8 +38,9 @@ export default function SectionHeader({ id, title, editMode, onAdd, addLabel }) 
             flexShrink: 0
           }}
           aria-label={addLabel || `Add new ${title.toLowerCase()} entry`}
+          leftIcon={<Plus size={16} />}
         >
-          + Add
+          Add
         </SecondaryButton>
       )}
     </div>
