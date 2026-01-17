@@ -12,18 +12,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout
+      # Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # Setup Node.js y cache
+      # Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: npm
 
-      # Install dependencies
+      # Instalar dependencias
       - name: Install dependencies
         run: npm ci
 
@@ -31,15 +31,15 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      # Run tests with coverage
-      - name: Tests with coverage
-        run: npm run test:ci
+      # Run tests con coverage
+      - name: Run tests with coverage
+        run: npm run test:coverage -- --watch=false
 
       # Security audit
       - name: Security audit
         run: npm audit --audit-level=high
 
-      # Load environment variables
+      # Cargar variables de entorno según rama
       - name: Load environment variables
         run: |
           if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
@@ -48,8 +48,8 @@ jobs:
             echo "${{ secrets.ENV_PREVIEW }}" > .env
           fi
 
-      # Build project
-      - name: Build
+      # Build
+      - name: Build project
         run: npm run build
 
       # Deploy Preview (develop)
