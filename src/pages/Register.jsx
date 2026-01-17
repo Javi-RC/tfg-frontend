@@ -9,7 +9,7 @@ import FormField from '../components/form/FormField';
 import PasswordField from '../components/form/PasswordField';
 import ErrorState from '../components/common/ErrorState';
 import { useRegister } from '../hooks/useRegister';
-import './Register.css';
+import './register.css';
 
 /**
  * Register Page Component
