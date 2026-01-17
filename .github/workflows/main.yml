@@ -1,0 +1,65 @@
+name: Frontend CI/CD
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+
+jobs:
+  frontend:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Setup Node.js y cache
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # Lint
+      - name: Lint
+        run: npm run lint
+
+      # Run tests with coverage
+      - name: Tests with coverage
+        run: npm run test:ci
+
+      # Security audit
+      - name: Security audit
+        run: npm audit --audit-level=high
+
+      # Load environment variables
+      - name: Load environment variables
+        run: |
+          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+            echo "${{ secrets.ENV_PRODUCTION }}" > .env
+          else
+            echo "${{ secrets.ENV_PREVIEW }}" > .env
+          fi
+
+      # Build project
+      - name: Build
+        run: npm run build
+
+      # Deploy Preview (develop)
+      - name: Deploy to Vercel (Preview)
+        if: github.ref == 'refs/heads/develop'
+        run: |
+          curl -X POST ${{ secrets.VERCEL_DEPLOY_DEVELOP_HOOK }}
+
+      # Deploy Production (main)
+      - name: Deploy to Vercel (Production)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          curl -X POST ${{ secrets.VERCEL_DEPLOY_MAIN_HOOK }}
