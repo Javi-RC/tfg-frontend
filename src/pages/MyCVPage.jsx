@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { getMyCV, deleteCV, updateCV } from '../api/cv';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
 import CVUpload from '../components/CVUpload';
 import CVHeader from '../components/cv/CVHeader';
 import CVErrorBanner from '../components/cv/CVErrorBanner';
@@ -14,6 +14,7 @@ import LanguagesSection from '../components/cv/LanguagesSection';
 import ProjectsSection from '../components/cv/ProjectsSection';
 import CertificationsSection from '../components/cv/CertificationsSection';
 import SubmitCVToOrganization from '../components/SubmitCVToOrganization';
+import { useMyCVPage } from '../hooks/useMyCVPage';
 import useCVEditor from '../hooks/useCVEditor';
 
 /**
@@ -21,11 +22,20 @@ import useCVEditor from '../hooks/useCVEditor';
  * Displays the user's processed CV with edit and delete capabilities
  */
 export default function MyCVPage() {
-  const [cv, setCV] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showUpload, setShowUpload] = useState(false);
-  const [showSubmitToOrg, setShowSubmitToOrg] = useState(false);
+  const { t } = useTranslation();
+  const {
+    cv,
+    loading,
+    error,
+    showUpload,
+    showSubmitToOrg,
+    handleDelete,
+    handleUploadSuccess,
+    handleSaveCV,
+    toggleUploadModal,
+    toggleSubmitToOrgModal,
+    clearError
+  } = useMyCVPage();
 
   const cvEditor = useCVEditor(cv);
   const { 
@@ -39,155 +49,27 @@ export default function MyCVPage() {
     ...handlers 
   } = cvEditor;
 
-  useEffect(() => {
-    loadCV();
-  }, []);
-
-  const loadCV = async () => {
-    setLoading(true);
-    setError(null);
-    
-    try {
-      const response = await getMyCV();
-      const cvData = response.data?.cv || response.data;
-      setCV(cvData);
-      updateEditData(cvData);
-    } catch (err) {
-      if (err.response?.status === 404) {
-        setError('No CV found. Please upload one.');
-      } else {
-        setError(err.response?.data?.error || 'Error loading CV');
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    if (!cv?._id) return;
-    
-    if (!window.confirm('Are you sure you want to delete your CV? This action cannot be undone.')) {
-      return;
-    }
-
-    try {
-      await deleteCV(cv._id);
-      setCV(null);
-      setError(null);
-    } catch (err) {
-      setError(err.response?.data?.error || 'Error deleting CV');
-    }
-  };
-
-  const handleUploadSuccess = async (cvData) => {
-    // El backend devuelve un resumen, necesitamos recargar el CV completo
-    setShowUpload(false);
-    setError(null);
-    
-    // Recargar el CV completo desde el backend
-    await loadCV();
-  };
-
   const handleStartEditing = () => {
-    setError(null); // Limpiar errores al entrar en modo edición
+    clearError();
     startEditing();
   };
 
   const handleCancelEditing = () => {
-    setError(null); // Limpiar errores al cancelar edición
+    clearError();
     cancelEditing(cv);
   };
 
   const handleSaveEdit = async () => {
-    if (!cv?._id) return;
-    
-    // Validar campos requeridos
-    const validationErrors = [];
-    
-    // Validar experiencia
-    if (editData.experience && editData.experience.length > 0) {
-      editData.experience.forEach((exp, index) => {
-        if (!exp.company || exp.company.trim() === '') {
-          validationErrors.push(`Experience ${index + 1}: Company is required`);
-        }
-        if (!exp.position || exp.position.trim() === '') {
-          validationErrors.push(`Experience ${index + 1}: Position is required`);
-        }
-      });
-    }
-    
-    // Validar educación
-    if (editData.education && editData.education.length > 0) {
-      editData.education.forEach((edu, index) => {
-        if (!edu.institution || edu.institution.trim() === '') {
-          validationErrors.push(`Education ${index + 1}: Institution is required`);
-        }
-        if (!edu.degree || edu.degree.trim() === '') {
-          validationErrors.push(`Education ${index + 1}: Degree is required`);
-        }
-      });
-    }
-    
-    // Validar skills
-    if (editData.skills?.technical && editData.skills.technical.length > 0) {
-      editData.skills.technical.forEach((skill, index) => {
-        if (!skill.name || skill.name.trim() === '') {
-          validationErrors.push(`Skill ${index + 1}: Name is required`);
-        }
-      });
-    }
-    
-    // Validar idiomas
-    if (editData.languages && editData.languages.length > 0) {
-      editData.languages.forEach((lang, index) => {
-        const langObj = typeof lang === 'string' ? { language: lang, level: '' } : lang;
-        if (!langObj.language || langObj.language.trim() === '') {
-          validationErrors.push(`Language ${index + 1}: Language name is required`);
-        }
-        if (!langObj.level || langObj.level.trim() === '') {
-          validationErrors.push(`Language ${index + 1}: Level is required`);
-        }
-      });
-    }
-    
-    // Validar proyectos
-    if (editData.projects && editData.projects.length > 0) {
-      editData.projects.forEach((project, index) => {
-        if (!project.name || project.name.trim() === '') {
-          validationErrors.push(`Project ${index + 1}: Name is required`);
-        }
-      });
-    }
-    
-    // Validar certificaciones
-    if (editData.certifications && editData.certifications.length > 0) {
-      editData.certifications.forEach((cert, index) => {
-        if (!cert.name || cert.name.trim() === '') {
-          validationErrors.push(`Certification ${index + 1}: Name is required`);
-        }
-      });
-    }
-    
-    // Si hay errores de validación, mostrarlos y no continuar
-    if (validationErrors.length > 0) {
-      const errorMessage = 'Please fill in all required fields:\n\n' + validationErrors.join('\n');
-      setError(errorMessage);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-      return;
-    }
-    
     setSaving(true);
-    try {
-      const response = await updateCV(cv._id, editData);
-      const updatedCV = response.data?.cv || response.data;
-      setCV(updatedCV);
-      updateEditData(updatedCV);
-      cancelEditing(updatedCV);
-      setError(null);
-    } catch (err) {
-      setError(err.response?.data?.error || 'Error updating CV');
-    } finally {
-      setSaving(false);
+    const result = await handleSaveCV(editData);
+    setSaving(false);
+    
+    if (result.success) {
+      updateEditData(cv);
+      cancelEditing(cv);
+    } else {
+      // Errors are already set in the hook
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -204,14 +86,14 @@ export default function MyCVPage() {
       }}>
         <CVUpload
           onUploadSuccess={handleUploadSuccess}
-          onCancel={() => setShowUpload(false)}
+          onCancel={toggleUploadModal}
         />
       </div>
     );
   }
 
   if (!cv) {
-    return <EmptyState error={error} onUpload={() => setShowUpload(true)} />;
+    return <EmptyState error={error} onUpload={toggleUploadModal} />;
   }
 
   return (
@@ -220,16 +102,16 @@ export default function MyCVPage() {
       background: '#f5f7fa',
       display: 'flex',
       paddingTop: '64px'
-    }} role="main" aria-label="My CV page">
+    }} role="main" aria-label={t('cv.aria.myCvPage')}>
       <CVHeader
         editMode={editMode}
         saving={saving}
         onEdit={handleStartEditing}
         onCancelEdit={handleCancelEditing}
         onSave={handleSaveEdit}
-        onUpload={() => setShowUpload(true)}
+        onUpload={toggleUploadModal}
         onDelete={handleDelete}
-        onSubmitToOrg={() => setShowSubmitToOrg(true)}
+        onSubmitToOrg={toggleSubmitToOrgModal}
       />
       
       <div style={{
@@ -314,10 +196,10 @@ export default function MyCVPage() {
 
       {showSubmitToOrg && (
         <SubmitCVToOrganization
-          onClose={() => setShowSubmitToOrg(false)}
+          onClose={toggleSubmitToOrgModal}
           onSuccess={() => {
-            setShowSubmitToOrg(false);
-            setError(null);
+            toggleSubmitToOrgModal();
+            clearError();
             alert('CV submitted successfully to organization!');
           }}
         />

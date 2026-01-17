@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Building2, Star, BarChart3, AlertTriangle, PartyPopper, ClipboardList, Info } from 'lucide-react';
 import { FormSelect } from './FormComponents';
 import { YES_NO_PARTIAL, COMPLEXITY_LEVELS } from '../../types/projectTypes';
@@ -7,7 +8,8 @@ import { YES_NO_PARTIAL, COMPLEXITY_LEVELS } from '../../types/projectTypes';
  * Step 11: Organizational Maturity
  * Assess organization's development processes maturity
  */
-export default function Step11Maturity({ formData, onChange, errors = {} }) {
+export default function Step11Maturity({ formData, onChange }) {
+  const { t } = useTranslation();
   const handleChange = (e) => {
     const { name, value } = e.target;
     onChange({ [name]: value });
@@ -19,57 +21,57 @@ export default function Step11Maturity({ formData, onChange, errors = {} }) {
     <div>
       <h2 style={{...styles.sectionTitle, display: 'flex', alignItems: 'center', gap: '8px'}}>
         <Building2 size={24} />
-        Organizational Maturity
+        {t('projects.steps.step11.title')}
       </h2>
       <p style={styles.stepDescription}>
-        Assess your organization's development maturity (Optional)
+        {t('projects.steps.step11.description')}
       </p>
 
       <div style={styles.infoBox}>
         <Info size={20} color="#004085" style={{ flexShrink: 0 }} />
         <div>
-          <strong>Final Step</strong>
-          <p>This optional assessment helps predict risks related to organizational processes</p>
+          <strong>{t('projects.steps.step11.finalStep')}</strong>
+          <p>{t('projects.steps.step11.finalStepDescription')}</p>
         </div>
       </div>
 
       <FormSelect
-        label="Has Onboarding Processes"
+        label={t('projects.steps.step11.hasOnboardingProcesses')}
         name="hasOnboardingProcesses"
         value={formData.hasOnboardingProcesses || 'partial'}
         onChange={handleChange}
         options={[
-          { value: YES_NO_PARTIAL.YES, label: 'Yes - Comprehensive onboarding' },
-          { value: YES_NO_PARTIAL.PARTIAL, label: 'Partial - Basic onboarding' },
-          { value: YES_NO_PARTIAL.NO, label: 'No - Ad-hoc onboarding' }
+          { value: YES_NO_PARTIAL.YES, label: t('projects.steps.step11.onboardingYes') },
+          { value: YES_NO_PARTIAL.PARTIAL, label: t('projects.steps.step11.onboardingPartial') },
+          { value: YES_NO_PARTIAL.NO, label: t('projects.steps.step11.onboardingNo') }
         ]}
-        helperText="Proper onboarding reduces time-to-productivity for new team members"
+        helperText={t('projects.steps.step11.onboardingHelp')}
       />
 
       <FormSelect
-        label="Has Version Control and CI/CD"
+        label={t('projects.steps.step11.hasVersionControlAndCICD')}
         name="hasVersionControlAndCICD"
         value={formData.hasVersionControlAndCICD || 'yes'}
         onChange={handleChange}
         options={[
-          { value: YES_NO_PARTIAL.YES, label: 'Yes - Full CI/CD pipeline' },
-          { value: YES_NO_PARTIAL.PARTIAL, label: 'Partial - Version control only' },
-          { value: YES_NO_PARTIAL.NO, label: 'No - Manual deployment' }
+          { value: YES_NO_PARTIAL.YES, label: t('projects.steps.step11.cicdYes') },
+          { value: YES_NO_PARTIAL.PARTIAL, label: t('projects.steps.step11.cicdPartial') },
+          { value: YES_NO_PARTIAL.NO, label: t('projects.steps.step11.cicdNo') }
         ]}
-        helperText="CI/CD automation reduces deployment risks and speeds up delivery"
+        helperText={t('projects.steps.step11.cicdHelp')}
       />
 
       <FormSelect
-        label="Internal Tools Fragmentation"
+        label={t('projects.steps.step11.internalToolsFragmentation')}
         name="internalToolsFragmentation"
         value={formData.internalToolsFragmentation || 'medium'}
         onChange={handleChange}
         options={[
-          { value: COMPLEXITY_LEVELS.LOW, label: 'Low - Well integrated tools' },
-          { value: COMPLEXITY_LEVELS.MEDIUM, label: 'Medium - Some fragmentation' },
-          { value: COMPLEXITY_LEVELS.HIGH, label: 'High - Many disparate tools' }
+          { value: COMPLEXITY_LEVELS.LOW, label: t('projects.steps.step9.wellIntegrated') },
+          { value: COMPLEXITY_LEVELS.MEDIUM, label: t('projects.steps.step9.someFragmentation') },
+          { value: COMPLEXITY_LEVELS.HIGH, label: t('projects.steps.step9.highlyFragmented') }
         ]}
-        helperText="Tool fragmentation can increase overhead and reduce productivity"
+        helperText={t('projects.steps.step11.fragmentationHelp')}
       />
 
       {/* Maturity Score Card */}
@@ -86,46 +88,46 @@ export default function Step11Maturity({ formData, onChange, errors = {} }) {
              <AlertTriangle size={32} color="#dc3545" />}
           </span>
           <div>
-            <h4 style={styles.maturityTitle}>Maturity Score</h4>
+            <h4 style={styles.maturityTitle}>{t('projects.steps.step11.maturityScore')}</h4>
             <p style={styles.maturityScore}>{maturityScore}%</p>
           </div>
         </div>
         <p style={styles.maturityDescription}>
-          {maturityScore >= 80 && 'Excellent! Your organization has strong processes in place.'}
-          {maturityScore >= 50 && maturityScore < 80 && 'Good foundation. Consider improving CI/CD and onboarding.'}
-          {maturityScore < 50 && 'Consider investing in process improvements to reduce project risks.'}
+          {maturityScore >= 80 && t('projects.steps.step11.excellent')}
+          {maturityScore >= 50 && maturityScore < 80 && t('projects.steps.step11.good')}
+          {maturityScore < 50 && t('projects.steps.step11.needsImprovement')}
         </p>
       </div>
 
       {/* Completion Card */}
       <div style={styles.completionCard}>
         <PartyPopper size={48} color="#667eea" style={{ marginBottom: '16px' }} />
-        <h3 style={styles.completionTitle}>Form Complete!</h3>
+        <h3 style={styles.completionTitle}>{t('projects.steps.step11.formComplete')}</h3>
         <p style={styles.completionText}>
-          You've filled in all 11 steps. Click "Create Project" to save as DRAFT.
+          {t('projects.steps.step11.formCompleteAllSteps')}
         </p>
         <div style={styles.workflowInfo}>
           <p style={{ ...styles.workflowInfoTitle, display: 'flex', alignItems: 'center', gap: '4px' }}>
             <ClipboardList size={16} />
-            Next Steps After Creation:
+            {t('projects.steps.step11.nextStepsTitle')}
           </p>
           <div style={styles.nextSteps}>
             <div style={styles.nextStepItem}>
               <span style={styles.stepNumber}>1</span>
-              <span>Analyze Risks with AI</span>
+              <span>{t('projects.steps.step11.step1Label')}</span>
             </div>
             <div style={styles.nextStepItem}>
               <span style={styles.stepNumber}>2</span>
-              <span>Select Optimal Team</span>
+              <span>{t('projects.steps.step11.step2Label')}</span>
             </div>
             <div style={styles.nextStepItem}>
               <span style={styles.stepNumber}>3</span>
-              <span>Review & Activate</span>
+              <span>{t('projects.steps.step11.step3Label')}</span>
             </div>
           </div>
           <p style={{ ...styles.workflowFooter, display: 'flex', alignItems: 'center', gap: '4px' }}>
             <AlertTriangle size={16} style={{ color: '#856404' }} />
-            The project will be created as <strong>DRAFT</strong> and must be activated after team selection.
+            {t('projects.steps.step11.draftWarning')} <strong>{t('projects.steps.step11.draft')}</strong> {t('projects.steps.step11.draftWarningEnd')}
           </p>
         </div>
       </div>

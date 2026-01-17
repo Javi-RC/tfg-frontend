@@ -6,11 +6,7 @@ import { COMPLIANCE_STANDARDS } from '../../types/projectTypes';
  * Step 7: Standards & Compliance
  * NEW CRITICAL STEP - Manages compliance and standardization requirements
  */
-export default function Step7StandardsCompliance({ formData, onChange, errors }) {
-  const handleComplianceChange = (standards) => {
-    const standardsArray = standards.split(',').map(s => s.trim()).filter(s => s.length > 0);
-    onChange({ complianceStandards: standardsArray });
-  };
+export default function Step7StandardsCompliance({ formData, onChange }) {
 
   const handleStandardToggle = (standard) => {
     const current = formData.complianceStandards || [];
@@ -60,9 +56,6 @@ export default function Step7StandardsCompliance({ formData, onChange, errors })
             No
           </label>
         </div>
-        {errors?.requiresRegulatoryCompliance && (
-          <span style={styles.error}>{errors.requiresRegulatoryCompliance}</span>
-        )}
       </div>
 
       {/* Conditional: Compliance Standards */}

@@ -1,83 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, Tooltip, ResponsiveContainer } from 'recharts';
-import { Users, Handshake, Target, Frown, Sparkles, TrendingUp, TrendingDown, BarChart3, Lightbulb, RefreshCcw, CheckCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Sparkles, CheckCircle } from 'lucide-react';
 import { getQuestions, submitResponses, getMyProfile, hasProfile } from '../api/bfi44';
-import PrimaryButton from '../components/PrimaryButton';
-import SecondaryButton from '../components/SecondaryButton';
+import { ProgressIndicator, BFI44ResultsView, BFI44QuestionnaireView } from '../components/personality';
 
-/**
- * Likert scale labels
- */
-const SCALE_LABELS = {
-  1: 'Disagree strongly',
-  2: 'Disagree a little',
-  3: 'Neither agree nor disagree',
-  4: 'Agree a little',
-  5: 'Agree strongly'
-};
 
-/**
- * Factor display configuration
- */
-const FACTOR_CONFIG = {
-  Extraversion: { 
-    color: '#3b82f6', 
-    icon: 'Users', 
-    description: 'Sociability, assertiveness, positive emotions',
-    interpretation: {
-      low: 'Introverted, reserved, prefers solitude',
-      medium: 'Balanced social engagement',
-      high: 'Extroverted, sociable, enjoys interaction'
-    }
-  },
-  Agreeableness: { 
-    color: '#10b981', 
-    icon: 'Handshake', 
-    description: 'Cooperation, trust, empathy',
-    interpretation: {
-      low: 'Independent, competitive, critical',
-      medium: 'Balanced interpersonal approach',
-      high: 'Cooperative, empathetic, altruistic'
-    }
-  },
-  Conscientiousness: { 
-    color: '#8b5cf6', 
-    icon: 'Target', 
-    description: 'Organization, dependability, self-discipline',
-    interpretation: {
-      low: 'Spontaneous, disorganized, flexible',
-      medium: 'Balanced approach to structure',
-      high: 'Organized, disciplined, reliable'
-    }
-  },
-  Neuroticism: { 
-    color: '#ef4444', 
-    icon: 'Frown', 
-    description: 'Emotional instability, anxiety, moodiness',
-    interpretation: {
-      low: 'Emotionally stable, resilient',
-      medium: 'Balanced emotional responsiveness',
-      high: 'Prone to anxiety, emotional reactivity'
-    }
-  },
-  Openness: { 
-    color: '#f59e0b', 
-    icon: 'Sparkles', 
-    description: 'Creativity, curiosity, openness to experience',
-    interpretation: {
-      low: 'Practical, traditional, conventional',
-      medium: 'Balanced openness to experience',
-      high: 'Creative, curious, intellectually adventurous'
-    }
-  }
-};
 
 /**
  * BFI-44 Page Component
  * Displays the Big Five Inventory questionnaire and results
  */
 export default function BFI44Page() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -136,7 +71,7 @@ export default function BFI44Page() {
     // Validate all questions answered
     const answeredCount = Object.keys(responses).length;
     if (answeredCount < 44) {
-      setError(`Please answer all questions. You have answered ${answeredCount} of 44.`);
+      setError(t('bfi44.pleaseAnswerAllQuestions', { answered: answeredCount, total: 44 }));
       return;
     }
 
@@ -150,25 +85,10 @@ export default function BFI44Page() {
       setHasExistingProfile(true);
     } catch (err) {
       console.error('Error submitting BFI-44:', err);
-      setError(err.response?.data?.error || 'Error submitting questionnaire');
+      setError(err.response?.data?.error || t('bfi44.errorSubmittingQuestionnaire'));
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const getProgressPercentage = () => {
-    return Math.round((Object.keys(responses).length / 44) * 100);
-  };
-
-  const getCurrentPageQuestions = () => {
-    const start = currentPage * QUESTIONS_PER_PAGE;
-    const end = start + QUESTIONS_PER_PAGE;
-    return questions.slice(start, end);
-  };
-
-  const canGoNext = () => {
-    const pageQuestions = getCurrentPageQuestions();
-    return pageQuestions.every(q => responses[q.id] !== undefined);
   };
 
   const goToNextPage = () => {
@@ -183,16 +103,6 @@ export default function BFI44Page() {
       setCurrentPage(prev => prev - 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-  };
-
-  const getInterpretation = (factor, score) => {
-    const config = FACTOR_CONFIG[factor];
-    const maxScore = factor === 'Openness' ? 50 : (factor === 'Extraversion' || factor === 'Neuroticism' ? 40 : 45);
-    const percentage = score / maxScore;
-    
-    if (percentage < 0.4) return config.interpretation.low;
-    if (percentage > 0.65) return config.interpretation.high;
-    return config.interpretation.medium;
   };
 
   const retakeQuestionnaire = async () => {
@@ -215,42 +125,7 @@ export default function BFI44Page() {
     }
   };
 
-  const prepareRadarData = () => {
-    if (!results) return [];
-    
-    return [
-      {
-        factor: 'Extraversion',
-        value: results.Extraversion || 0,
-        maxScore: 40,
-        fill: '#3b82f6'
-      },
-      {
-        factor: 'Agreeableness',
-        value: results.Agreeableness || 0,
-        maxScore: 45,
-        fill: '#10b981'
-      },
-      {
-        factor: 'Conscientiousness',
-        value: results.Conscientiousness || 0,
-        maxScore: 45,
-        fill: '#8b5cf6'
-      },
-      {
-        factor: 'Neuroticism',
-        value: results.Neuroticism || 0,
-        maxScore: 40,
-        fill: '#ef4444'
-      },
-      {
-        factor: 'Openness',
-        value: results.Openness || 0,
-        maxScore: 50,
-        fill: '#f59e0b'
-      }
-    ];
-  };
+
 
   // Loading state
   if (loading) {
@@ -258,7 +133,7 @@ export default function BFI44Page() {
       <div style={styles.container}>
         <div style={styles.loadingWrapper}>
           <div style={styles.spinner} />
-          <p style={styles.loadingText}>Loading personality assessment...</p>
+          <p style={styles.loadingText}>{t('bfi44.loading')}</p>
         </div>
       </div>
     );
@@ -273,13 +148,13 @@ export default function BFI44Page() {
           <div style={styles.headerCard}>
             <h1 style={{...styles.title, display: 'flex', alignItems: 'center', gap: '8px'}}>
               <Sparkles size={32} />
-              Your Personality Profile
+              {t('bfi44.yourProfile')}
             </h1>
-            <p style={styles.subtitle}>Big Five Inventory Results (BFI-44)</p>
+            <p style={styles.subtitle}>{t('bfi44.resultsSubtitle')}</p>
             {completedAt && (
               <p style={{...styles.completedDate, display: 'flex', alignItems: 'center', gap: '6px'}}>
                 <CheckCircle size={16} />
-                Completed on {new Date(completedAt).toLocaleDateString('en-US', { 
+                {t('bfi44.completedOn')} {new Date(completedAt).toLocaleDateString('en-US', { 
                   year: 'numeric', 
                   month: 'long', 
                   day: 'numeric' 
@@ -288,132 +163,11 @@ export default function BFI44Page() {
             )}
           </div>
 
-          {/* Two Column Layout: Factors Left, Radar Right */}
-          <div style={styles.resultsLayout}>
-            {/* Left Column: Factor Cards */}
-            <div style={styles.factorsColumn}>
-              {Object.entries(results).map(([factor, score], index) => {
-                const config = FACTOR_CONFIG[factor] || { color: '#666', icon: 'BarChart3', description: '', interpretation: {} };
-                const maxScore = factor === 'Openness' ? 50 : (factor === 'Extraversion' || factor === 'Neuroticism' ? 40 : 45);
-                const percentage = Math.round((score / maxScore) * 100);
-                const interpretation = getInterpretation(factor, score);
-                
-                // Map icon string to Lucide component
-                const IconComponent = {
-                  'Users': Users,
-                  'Handshake': Handshake,
-                  'Target': Target,
-                  'Frown': Frown,
-                  'Sparkles': Sparkles,
-                  'BarChart3': BarChart3
-                }[config.icon] || BarChart3;
-
-                return (
-                  <div key={factor} style={{...styles.factorCard, animation: `slideIn 0.5s ease forwards ${index * 0.1}s`, opacity: 0, borderTopColor: config.color}}>
-                    <div style={styles.factorHeader}>
-                      <span style={styles.factorIcon}><IconComponent size={32} color={config.color} /></span>
-                      <div style={{ flex: 1 }}>
-                        <h3 style={{...styles.factorName, color: config.color}}>{factor}</h3>
-                        <p style={styles.factorDescription}>{config.description}</p>
-                      </div>
-                    </div>
-                    
-                    <div style={styles.scoreWrapper}>
-                      <div style={styles.progressBar}>
-                        <div
-                          style={{
-                            ...styles.progressFill,
-                            width: `${percentage}%`,
-                            background: `linear-gradient(90deg, ${config.color}, ${config.color}dd)`
-                          }}
-                        />
-                      </div>
-                      <div style={styles.scoreInfo}>
-                        <span style={{ ...styles.scoreValue, color: config.color }}>{score}</span>
-                        <span style={styles.scoreMax}>/{maxScore}</span>
-                      </div>
-                    </div>
-
-                    <div style={{...styles.interpretationBox, borderLeftColor: config.color, background: `${config.color}08`}}>
-                      <p style={{ ...styles.interpretationText, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Lightbulb size={16} />
-                        {interpretation}
-                      </p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Right Column: Radar Chart */}
-            <div style={styles.radarColumn}>
-              <div style={styles.radarCard}>
-                <h2 style={{...styles.radarTitle, display: 'flex', alignItems: 'center', gap: '8px'}}>
-                  <BarChart3 size={24} />
-                  Visual Overview
-                </h2>
-                <p style={styles.radarSubtitle}>Your personality across five dimensions</p>
-                <div style={styles.radarContainer}>
-                  <ResponsiveContainer width="100%" height={500}>
-                    <RadarChart data={prepareRadarData()} cx="50%" cy="50%" outerRadius="70%">
-                      <PolarGrid stroke="#cbd5e0" strokeDasharray="3 3" />
-                      <PolarAngleAxis 
-                        dataKey="factor" 
-                        tick={{ fontSize: 12, fill: '#1a1a1a', fontWeight: '600' }}
-                        tickLine={false}
-                      />
-                      <PolarRadiusAxis 
-                        angle={90}
-                        domain={[0, 50]}
-                        tick={{ fontSize: 11, fill: '#666' }}
-                        axisLine={false}
-                      />
-                      <Radar 
-                        name="Your Score" 
-                        dataKey="value" 
-                        stroke="#3b82f6" 
-                        strokeWidth={3}
-                        fill="#3b82f6" 
-                        fillOpacity={0.3}
-                      />
-                      <Tooltip 
-                        contentStyle={{
-                          background: 'white',
-                          border: 'none',
-                          borderRadius: '12px',
-                          boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-                          padding: '12px 16px'
-                        }}
-                        formatter={(value, name, props) => {
-                          const maxScore = props.payload.maxScore;
-                          return [`${value} / ${maxScore}`, 'Score'];
-                        }}
-                      />
-                    </RadarChart>
-                  </ResponsiveContainer>
-                </div>
-                <div style={styles.radarLegend}>
-                  <div style={styles.legendItem}>
-                    <div style={styles.legendDot} />
-                    <span style={styles.legendText}>Larger area = Higher scores across traits</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div style={styles.actionsRow}>
-            <PrimaryButton onClick={retakeQuestionnaire} style={{ minWidth: '200px' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                <RefreshCcw size={16} />
-                Retake Assessment
-              </span>
-            </PrimaryButton>
-            <SecondaryButton onClick={() => navigate('/')} style={{ minWidth: '200px' }}>
-              ← Back to Profile
-            </SecondaryButton>
-          </div>
+          <BFI44ResultsView
+            results={results}
+            onRetake={retakeQuestionnaire}
+            onNavigateBack={() => navigate('/')}
+          />
         </div>
       </div>
     );
@@ -424,107 +178,29 @@ export default function BFI44Page() {
     <div style={styles.container}>
       <div style={styles.content}>
         <div style={styles.headerCard}>
-          <h1 style={styles.title}>Big Five Inventory</h1>
+          <h1 style={styles.title}>{t('bfi44.bigFiveInventory')}</h1>
           <p style={styles.subtitle}>
-            Please rate each statement based on how well it describes you.
+            {t('bfi44.rateStatements')}
           </p>
           
-          {/* Progress bar */}
-          <div style={styles.progressSection}>
-            <div style={styles.progressInfo}>
-              <span>Progress: {getProgressPercentage()}%</span>
-              <span>{Object.keys(responses).length} of 44 answered</span>
-            </div>
-            <div style={styles.mainProgressBar}>
-              <div
-                style={{
-                  ...styles.mainProgressFill,
-                  width: `${getProgressPercentage()}%`
-                }}
-              />
-            </div>
-          </div>
+          <ProgressIndicator 
+            answeredCount={Object.keys(responses).length} 
+            totalQuestions={44} 
+          />
         </div>
 
-        {error && (
-          <div style={styles.errorBanner}>
-            {error}
-          </div>
-        )}
-
-        {/* Scale legend */}
-        <div style={styles.scaleLegend}>
-          <p style={styles.legendTitle}>Rating Scale:</p>
-          <div style={styles.legendItems}>
-            {Object.entries(SCALE_LABELS).map(([value, label]) => (
-              <div key={value} style={styles.legendItem}>
-                <span style={styles.legendNumber}>{value}</span>
-                <span style={styles.legendLabel}>{label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Questions */}
-        <div style={styles.questionsContainer}>
-          <div style={styles.pageIndicator}>
-            Page {currentPage + 1} of {totalPages}
-          </div>
-
-          {getCurrentPageQuestions().map((question, index) => (
-            <div key={question.id} style={styles.questionCard}>
-              <div style={styles.questionHeader}>
-                <span style={styles.questionNumber}>{question.id}.</span>
-                <span style={styles.questionText}>I see myself as someone who {question.text.toLowerCase()}</span>
-              </div>
-              <div style={styles.optionsRow}>
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <div key={value} style={styles.optionWrapper}>
-                    <button
-                      type="button"
-                      onClick={() => handleResponseChange(question.id, value)}
-                      style={{
-                        ...styles.optionButton,
-                        ...(responses[question.id] === value ? styles.optionButtonSelected : {})
-                      }}
-                      aria-label={`${SCALE_LABELS[value]} - ${value}`}
-                    >
-                      {value}
-                    </button>
-                    <span style={styles.optionLabel}>{SCALE_LABELS[value]}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Navigation */}
-        <div style={styles.navigationRow}>
-          <SecondaryButton
-            onClick={goToPrevPage}
-            disabled={currentPage === 0}
-            style={{ opacity: currentPage === 0 ? 0.5 : 1 }}
-          >
-            Previous
-          </SecondaryButton>
-
-          {currentPage === totalPages - 1 ? (
-            <PrimaryButton
-              onClick={handleSubmit}
-              disabled={submitting || Object.keys(responses).length < 44}
-            >
-              {submitting ? 'Submitting...' : 'Submit Questionnaire'}
-            </PrimaryButton>
-          ) : (
-            <PrimaryButton
-              onClick={goToNextPage}
-              disabled={!canGoNext()}
-            >
-              Next
-            </PrimaryButton>
-          )}
-        </div>
+        <BFI44QuestionnaireView
+          questions={questions}
+          responses={responses}
+          onResponseChange={handleResponseChange}
+          currentPage={currentPage}
+          onNextPage={goToNextPage}
+          onPrevPage={goToPrevPage}
+          onSubmit={handleSubmit}
+          submitting={submitting}
+          error={error}
+          questionsPerPage={QUESTIONS_PER_PAGE}
+        />
       </div>
     </div>
   );
@@ -592,313 +268,6 @@ const styles = {
     paddingTop: '20px',
     borderTop: '1px solid rgba(255, 255, 255, 0.2)',
     margin: 0,
-    fontWeight: '500'
-  },
-  progressSection: {
-    marginTop: '16px'
-  },
-  progressInfo: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    fontSize: '14px',
-    color: '#666',
-    marginBottom: '8px'
-  },
-  mainProgressBar: {
-    height: '8px',
-    background: '#e2e8f0',
-    borderRadius: '4px',
-    overflow: 'hidden'
-  },
-  mainProgressFill: {
-    height: '100%',
-    background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)',
-    borderRadius: '4px',
-    transition: 'width 0.3s ease'
-  },
-  errorBanner: {
-    background: 'rgba(239, 68, 68, 0.1)',
-    border: '1px solid rgba(239, 68, 68, 0.3)',
-    color: '#dc2626',
-    padding: '12px 16px',
-    borderRadius: '12px',
-    marginBottom: '24px',
-    fontSize: '14px'
-  },
-  scaleLegend: {
-    background: 'white',
-    borderRadius: '12px',
-    padding: '16px 24px',
-    marginBottom: '24px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
-  },
-  legendTitle: {
-    fontSize: '14px',
-    fontWeight: '600',
-    color: '#1a1a1a',
-    marginBottom: '12px'
-  },
-  legendItems: {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '16px'
-  },
-  legendItem: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '8px'
-  },
-  legendNumber: {
-    width: '24px',
-    height: '24px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: '#f0f4f8',
-    borderRadius: '6px',
-    fontSize: '12px',
-    fontWeight: '600',
-    color: '#4a5568'
-  },
-  legendLabel: {
-    fontSize: '13px',
-    color: '#666'
-  },
-  questionsContainer: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '16px'
-  },
-  pageIndicator: {
-    textAlign: 'center',
-    fontSize: '14px',
-    color: '#666',
-    marginBottom: '8px'
-  },
-  questionCard: {
-    background: 'white',
-    borderRadius: '12px',
-    padding: '20px 24px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
-  },
-  questionHeader: {
-    display: 'flex',
-    gap: '12px',
-    marginBottom: '16px'
-  },
-  questionNumber: {
-    fontSize: '14px',
-    fontWeight: '600',
-    color: '#3b82f6',
-    minWidth: '28px'
-  },
-  questionText: {
-    fontSize: '15px',
-    color: '#1a1a1a',
-    lineHeight: '1.5'
-  },
-  optionsRow: {
-    display: 'flex',
-    gap: '12px',
-    justifyContent: 'center'
-  },
-  optionWrapper: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: '8px'
-  },
-  optionLabel: {
-    fontSize: '11px',
-    color: '#666',
-    textAlign: 'center',
-    maxWidth: '48px',
-    lineHeight: '1.2'
-  },
-  optionButton: {
-    width: '48px',
-    height: '48px',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    background: '#f7fafc',
-    border: '2px solid #e2e8f0',
-    borderRadius: '12px',
-    fontSize: '16px',
-    fontWeight: '600',
-    color: '#4a5568',
-    cursor: 'pointer',
-    transition: 'all 0.2s'
-  },
-  optionButtonSelected: {
-    background: '#3b82f6',
-    borderColor: '#3b82f6',
-    color: 'white'
-  },
-  navigationRow: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    marginTop: '32px',
-    gap: '16px'
-  },
-  resultsLayout: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 500px',
-    gap: '32px',
-    marginBottom: '40px',
-    alignItems: 'start',
-    '@media (max-width: 1200px)': {
-      gridTemplateColumns: '1fr',
-      gap: '24px'
-    }
-  },
-  factorsColumn: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px'
-  },
-  radarColumn: {
-    position: 'sticky',
-    top: '120px',
-    '@media (max-width: 1200px)': {
-      position: 'relative',
-      top: 0
-    }
-  },
-  factorCard: {
-    background: 'white',
-    borderRadius: '16px',
-    padding: '26px',
-    boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
-    borderTop: '4px solid',
-    transition: 'all 0.3s ease',
-    cursor: 'default'
-  },
-  factorHeader: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '14px',
-    marginBottom: '20px'
-  },
-  factorIcon: {
-    fontSize: '32px',
-    lineHeight: 1
-  },
-  factorName: {
-    fontSize: '20px',
-    fontWeight: '700',
-    margin: 0,
-    marginBottom: '6px'
-  },
-  factorDescription: {
-    fontSize: '13px',
-    color: '#64748b',
-    lineHeight: '1.5',
-    margin: 0
-  },
-  scoreWrapper: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '18px',
-    marginBottom: '16px'
-  },
-  progressBar: {
-    flex: 1,
-    height: '12px',
-    background: '#e2e8f0',
-    borderRadius: '6px',
-    overflow: 'hidden'
-  },
-  progressFill: {
-    height: '100%',
-    borderRadius: '6px',
-    transition: 'width 0.8s cubic-bezier(0.4, 0, 0.2, 1)'
-  },
-  scoreInfo: {
-    display: 'flex',
-    alignItems: 'baseline',
-    gap: '4px',
-    minWidth: '75px'
-  },
-  scoreValue: {
-    fontSize: '24px',
-    fontWeight: '800'
-  },
-  scoreMax: {
-    fontSize: '15px',
-    color: '#94a3b8',
-    fontWeight: '600'
-  },
-  interpretationBox: {
-    padding: '14px 18px',
-    borderRadius: '10px',
-    borderLeft: '4px solid'
-  },
-  interpretationText: {
-    fontSize: '14px',
-    color: '#475569',
-    margin: 0,
-    lineHeight: '1.6',
-    fontWeight: '500'
-  },
-  actionsRow: {
-    display: 'flex',
-    justifyContent: 'center',
-    gap: '20px',
-    marginTop: '48px',
-    marginBottom: '40px',
-    flexWrap: 'wrap'
-  },
-  radarCard: {
-    background: 'white',
-    borderRadius: '20px',
-    padding: '32px',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.08)',
-    border: '1px solid rgba(0,0,0,0.04)'
-  },
-  radarTitle: {
-    fontSize: '22px',
-    fontWeight: '700',
-    color: '#1a1a1a',
-    marginBottom: '6px',
-    margin: 0
-  },
-  radarSubtitle: {
-    fontSize: '14px',
-    color: '#64748b',
-    marginBottom: '28px',
-    margin: 0
-  },
-  radarContainer: {
-    width: '100%',
-    display: 'flex',
-    justifyContent: 'center',
-    padding: '20px 0',
-    background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-    borderRadius: '16px'
-  },
-  radarLegend: {
-    marginTop: '24px',
-    padding: '16px',
-    background: '#f8fafc',
-    borderRadius: '12px',
-    textAlign: 'center'
-  },
-  legendItem: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '10px'
-  },
-  legendDot: {
-    width: '12px',
-    height: '12px',
-    borderRadius: '50%',
-    background: '#3b82f6'
-  },
-  legendText: {
-    fontSize: '13px',
-    color: '#475569',
     fontWeight: '500'
   }
 };

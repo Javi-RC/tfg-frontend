@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FileText, RefreshCw } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { getTerms } from '../api/legal';
 import SecondaryButton from '../components/SecondaryButton';
 
 export default function TermsPage() {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [doc, setDoc] = useState(null);
@@ -28,7 +30,7 @@ export default function TermsPage() {
 
       // Some backends may require an explicit supported locale.
       if (!document) {
-        throw new Error('Invalid server response.');
+        throw new Error(t('errors.invalidServerResponse'));
       }
 
       setDoc(document);
@@ -48,12 +50,12 @@ export default function TermsPage() {
           // fall through to final error
         }
 
-        setError('This locale is not supported by the server.');
+        setError(t('errors.localeNotSupported'));
         setDoc(null);
         return;
       }
 
-      setError(err?.response?.data?.error || err?.message || 'Could not load terms.');
+      setError(err?.response?.data?.error || err?.message || t('legal.couldNotLoadTerms'));
       setDoc(null);
     } finally {
       setLoading(false);
@@ -81,19 +83,19 @@ export default function TermsPage() {
               <FileText size={18} color="#111" />
             </div>
             <div>
-              <h1 style={styles.title}>Terms</h1>
+              <h1 style={styles.title}>{t('legal.terms')}</h1>
               <p style={styles.subtitle}>
-                Version: {doc?.version || '—'} · Last updated: {formatDateTime(doc?.lastUpdated)}
+                {t('legal.versionLabel')}: {doc?.version || '—'} · {t('legal.lastUpdatedLabel')}: {formatDateTime(doc?.lastUpdated)}
               </p>
             </div>
           </div>
 
           <SecondaryButton onClick={load} disabled={loading} leftIcon={<RefreshCw size={16} />}>
-            Refresh
+            {t('legal.refresh')}
           </SecondaryButton>
         </div>
 
-        {loading && <p style={styles.statusText}>Loading…</p>}
+        {loading && <p style={styles.statusText}>{t('common.loading')}</p>}
 
         {error && (
           <div style={styles.error} role="alert" aria-live="assertive">
@@ -102,7 +104,7 @@ export default function TermsPage() {
         )}
 
         {!loading && !error && (
-          <div style={styles.content} aria-label="Terms content">
+          <div style={styles.content} aria-label={t('legal.aria.termsContent')}>
             <ReactMarkdown
               components={{
                 a: ({ children, ...props }) => (

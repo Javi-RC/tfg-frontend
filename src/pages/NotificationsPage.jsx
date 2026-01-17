@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BellOff } from 'lucide-react';
-import { useNotifications } from '../contexts/NotificationContext';
+import { useTranslation } from 'react-i18next';
+import { useNotifications } from '../contexts/useNotifications';
 import NotificationItem from '../components/notifications/NotificationItem';
 import './NotificationsPage.css';
 
@@ -12,6 +13,7 @@ import './NotificationsPage.css';
  * Consume la API: GET /api/notifications con paginación
  */
 const NotificationsPage = () => {
+  const { t } = useTranslation();
   const { 
     notifications, 
     loading, 
@@ -68,9 +70,9 @@ const NotificationsPage = () => {
       <div className="notifications-page-container">
         <div className="notifications-page-header">
           <div>
-            <h1>Notifications</h1>
+            <h1>{t('notifications.title')}</h1>
             <p className="notifications-subtitle">
-              Manage your notifications and stay up to date
+              {t('notifications.manageNotifications')}
             </p>
           </div>
           <button 
@@ -81,22 +83,22 @@ const NotificationsPage = () => {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
-            Mark all as read
+            {t('notifications.markAllAsRead')}
           </button>
         </div>
 
         <div className="notifications-stats">
           <div className="stat-card">
             <div className="stat-value">{totalCount}</div>
-            <div className="stat-label">Total</div>
+            <div className="stat-label">{t('notifications.all')}</div>
           </div>
           <div className="stat-card">
             <div className="stat-value">{unreadCount}</div>
-            <div className="stat-label">Unread</div>
+            <div className="stat-label">{t('notifications.unread')}</div>
           </div>
           <div className="stat-card">
             <div className="stat-value">{readCount}</div>
-            <div className="stat-label">Read</div>
+            <div className="stat-label">{t('notifications.read')}</div>
           </div>
         </div>
 
@@ -106,32 +108,32 @@ const NotificationsPage = () => {
               className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
               onClick={() => handleFilterChange('all')}
             >
-              All ({totalCount})
+              {t('notifications.all')} ({totalCount})
             </button>
             <button 
               className={`filter-btn ${filter === 'unread' ? 'active' : ''}`}
               onClick={() => handleFilterChange('unread')}
             >
-              Unread ({unreadCount})
+              {t('notifications.unread')} ({unreadCount})
             </button>
             <button 
               className={`filter-btn ${filter === 'read' ? 'active' : ''}`}
               onClick={() => handleFilterChange('read')}
             >
-              Read ({readCount})
+              {t('notifications.read')} ({readCount})
             </button>
           </div>
 
           <div className="notifications-sort">
-            <label htmlFor="sort-select">Sort by:</label>
+            <label htmlFor="sort-select">{t('notifications.sortBy')}:</label>
             <select 
               id="sort-select"
               value={sortBy} 
               onChange={(e) => setSortBy(e.target.value)}
               className="sort-select"
             >
-              <option value="recent">Most recent</option>
-              <option value="oldest">Oldest</option>
+              <option value="recent">{t('notifications.recent')}</option>
+              <option value="oldest">{t('notifications.oldest')}</option>
             </select>
           </div>
         </div>
@@ -140,13 +142,13 @@ const NotificationsPage = () => {
           {loading ? (
             <div className="loading-container">
               <div className="loading-spinner"></div>
-              <p>Loading notifications...</p>
+              <p>{t('notifications.loadingNotifications')}</p>
             </div>
           ) : filteredNotifications.length === 0 ? (
             <div className="empty-state-large">
               <BellOff size={64} color="#999" />
-              <h3>You don't have any {filter !== 'all' && filter === 'unread' ? 'unread ' : filter === 'read' ? 'read ' : ''}notifications</h3>
-              <p>When you receive notifications, they'll appear here</p>
+              <h3>{t('notifications.noNotifications')}</h3>
+              <p>{t('notifications.noNotificationsDesc')}</p>
             </div>
           ) : (
             <div className="notifications-grid">
@@ -167,7 +169,7 @@ const NotificationsPage = () => {
               className="pagination-btn"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
-              aria-label="Previous page"
+              aria-label={t('notifications.aria.previousPage')}
             >
               ← Previous
             </button>
@@ -178,7 +180,7 @@ const NotificationsPage = () => {
               className="pagination-btn"
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === pagination.pages}
-              aria-label="Next page"
+              aria-label={t('notifications.aria.nextPage')}
             >
               Next →
             </button>

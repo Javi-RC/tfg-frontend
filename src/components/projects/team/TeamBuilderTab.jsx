@@ -1,5 +1,8 @@
-import React from 'react';
-import { Users, Search, Rocket, X, Loader, CheckCircle, Star } from 'lucide-react';
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Users, Search, Rocket, X, Loader, CheckCircle, Star, Eye } from 'lucide-react';
+import EmployeeDetailPanel from '../../team/EmployeeDetailPanel';
+import { SynergyImpactIndicator, TeamSynergyCard } from '../../team';
 
 /**
  * TeamBuilderTab - Team management interface
@@ -14,6 +17,8 @@ export default function TeamBuilderTab({
   project,
   currentTeam,
   filteredEmployees,
+  synergy,
+  synergyValidation,
   selectedEmployees,
   searchQuery,
   assignLoading,
@@ -24,63 +29,103 @@ export default function TeamBuilderTab({
   onAssign,
   onRemove
 }) {
+  const { t } = useTranslation();
+  const [selectedEmployeeForDetails, setSelectedEmployeeForDetails] = useState(null);
+
+  /**
+   * @param {string} userId
+   * @returns {import('../../../types/personality.jsdoc').SynergyValidation|undefined}
+   */
+  const getSynergyValidation = (userId) => {
+    if (!Array.isArray(synergyValidation)) {
+      return undefined;
+    }
+    return synergyValidation.find(v => v.userId === userId);
+  };
+  
   const hasSelection = selectedEmployees.length > 0;
   const canSelectAll = filteredEmployees.length > selectedEmployees.length;
 
   return (
+    <>
     <div style={styles.container}>
       {/* Left Section - Current Team */}
       <div style={styles.leftSection}>
         <div style={styles.sectionHeader}>
           <h3 style={{ ...styles.sectionTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Users size={20} />
-            Current Team
+            {t('projects.teamBuilder.sections.currentTeam')}
           </h3>
           <span style={styles.badge}>{currentTeam.length}</span>
         </div>
 
+        {synergy && (
+          <div>
+            <TeamSynergyCard synergy={synergy} compact={false} />
+          </div>
+        )}
+
         {currentTeam.length === 0 ? (
           <div style={styles.emptyState}>
             <Rocket size={48} color="#6c757d" style={{ opacity: 0.3, marginBottom: '16px' }} />
-            <p style={styles.emptyTitle}>No team members yet</p>
+            <p style={styles.emptyTitle}>{t('projects.teamBuilder.empty.noTeamMembersTitle')}</p>
             <p style={styles.emptyText}>
-              Start building your team by selecting employees from the right panel
+              {t('projects.teamBuilder.empty.noTeamMembersText')}
             </p>
           </div>
         ) : (
           <div style={styles.teamList}>
-            {currentTeam.map((member) => (
-              <div key={member.user._id} style={styles.teamCard}>
+            {currentTeam.map((member) => {
+              const userId = member?.user?._id;
+              const memberName = (typeof member?.user?.name === 'string' ? member.user.name : '').trim();
+              const safeMemberName = memberName || t('projects.teamBuilder.fallbackMemberName', { defaultValue: 'Unknown user' });
+              const memberInitial = safeMemberName.trim().charAt(0).toUpperCase();
+              const memberEmail = typeof member?.user?.email === 'string' ? member.user.email : '';
+
+              return (
+              <div 
+                key={userId ?? member.userId} 
+                style={styles.teamCard}
+                onClick={() => setSelectedEmployeeForDetails(member)}
+              >
                 <div style={styles.teamCardContent}>
                   <div style={styles.memberInfo}>
                     <div style={styles.memberAvatar}>
-                      {member.user.name.charAt(0).toUpperCase()}
+                      {memberInitial}
                     </div>
                     <div style={styles.memberDetails}>
-                      <div style={styles.memberName}>{member.user.name}</div>
-                      <div style={styles.memberEmail}>{member.user.email}</div>
+                      <div style={styles.memberName}>{safeMemberName}</div>
+                      <div style={styles.memberEmail}>{memberEmail}</div>
                       {member.role && (
                         <div style={styles.memberRole}>{member.role}</div>
                       )}
                     </div>
                   </div>
-                  <button
-                    onClick={() => onRemove(member.user._id)}
-                    style={styles.removeButton}
-                    title="Remove from team"
-                  >
-                    <X size={16} />
-                  </button>
+                  <div style={styles.teamCardActions}>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (userId) onRemove(userId);
+                      }}
+                      style={styles.removeButton}
+                      title={t('projects.teamBuilder.actions.removeFromTeam')}
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Skills Preview */}
                 {member.matchedSkills && member.matchedSkills.length > 0 && (
                   <div style={styles.skillsPreview}>
-                    {member.matchedSkills.slice(0, 3).map((skill, idx) => (
-                      <span key={idx} style={styles.skillChip}>
-                        {skill}
-                      </span>
-                    ))}
+                    {member.matchedSkills.slice(0, 3).map((skill, idx) => {
+                      const skillName = typeof skill === 'string' ? skill : skill.skill;
+                      return (
+                        <span key={`${userId ?? member.userId}-skill-${skillName}-${idx}`} style={styles.skillChip}>
+                          {skillName}
+                        </span>
+                      );
+                    })}
                     {member.matchedSkills.length > 3 && (
                       <span style={styles.skillMore}>
                         +{member.matchedSkills.length - 3}
@@ -89,7 +134,8 @@ export default function TeamBuilderTab({
                   </div>
                 )}
               </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
@@ -99,7 +145,7 @@ export default function TeamBuilderTab({
         <div style={styles.sectionHeader}>
           <h3 style={{ ...styles.sectionTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Search size={20} />
-            Available Employees
+            {t('projects.teamBuilder.sections.availableEmployees')}
           </h3>
           <span style={styles.badge}>{filteredEmployees.length}</span>
         </div>
@@ -108,7 +154,7 @@ export default function TeamBuilderTab({
         <div style={styles.actionBar}>
           <input
             type="text"
-            placeholder="Search by name, email, or skills..."
+            placeholder={t('projects.teamBuilder.actions.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             style={styles.searchInput}
@@ -121,7 +167,7 @@ export default function TeamBuilderTab({
                   onClick={onClearSelection}
                   style={styles.secondaryButton}
                 >
-                  Clear ({selectedEmployees.length})
+                  {t('projects.teamBuilder.actions.clearWithCount', { count: selectedEmployees.length })}
                 </button>
                 <button
                   onClick={onAssign}
@@ -131,12 +177,12 @@ export default function TeamBuilderTab({
                   {assignLoading ? (
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                       <Loader size={14} style={{ animation: 'spin 1s linear infinite' }} />
-                      Assigning...
+                      {t('projects.teamBuilder.actions.assigning')}
                     </span>
                   ) : (
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                       <CheckCircle size={14} />
-                      Assign {selectedEmployees.length}
+                      {t('projects.teamBuilder.actions.assignWithCount', { count: selectedEmployees.length })}
                     </span>
                   )}
                 </button>
@@ -147,7 +193,7 @@ export default function TeamBuilderTab({
                 disabled={!canSelectAll}
                 style={styles.secondaryButton}
               >
-                Select All
+                {t('common.selectAll')}
               </button>
             )}
           </div>
@@ -157,33 +203,45 @@ export default function TeamBuilderTab({
         {filteredEmployees.length === 0 ? (
           <div style={styles.emptyState}>
             <Search size={48} color="#6c757d" style={{ opacity: 0.3, marginBottom: '16px' }} />
-            <p style={styles.emptyTitle}>No employees found</p>
+            <p style={styles.emptyTitle}>{t('projects.teamBuilder.empty.noEmployeesTitle')}</p>
             <p style={styles.emptyText}>
-              {searchQuery ? 'Try a different search term' : 'All employees are already assigned'}
+              {searchQuery
+                ? t('projects.teamBuilder.empty.tryDifferentSearch')
+                : t('projects.teamBuilder.empty.allEmployeesAssigned')}
             </p>
           </div>
         ) : (
           <div style={styles.employeeList}>
             {filteredEmployees.map((emp) => {
-              const isSelected = selectedEmployees.includes(emp.user._id);
+              const empUser = emp?.user ?? {};
+              const userId = empUser._id ?? emp.userId;
+              const empName = (typeof empUser.name === 'string' ? empUser.name : '').trim();
+              const safeEmpName = empName || t('projects.teamBuilder.fallbackMemberName', { defaultValue: 'Unknown user' });
+              const empEmail = typeof empUser.email === 'string' ? empUser.email : '';
+
+              const isSelected = userId ? selectedEmployees.includes(userId) : false;
               const isRecommended = emp.isRecommended;
+              const validation = userId ? getSynergyValidation(userId) : null;
 
               return (
                 <div
-                  key={emp.user._id}
-                  onClick={() => onToggleSelection(emp.user._id)}
+                  key={userId}
                   style={{
                     ...styles.employeeCard,
                     ...(isSelected ? styles.selectedCard : {}),
                     ...(isRecommended ? styles.recommendedCard : {})
                   }}
+                  onClick={() => setSelectedEmployeeForDetails(emp)}
                 >
                   {/* Selection Checkbox */}
                   <div style={styles.checkbox}>
                     <input
                       type="checkbox"
                       checked={isSelected}
-                      onChange={() => {}}
+                      onChange={() => {
+                        if (userId) onToggleSelection(userId);
+                      }}
+                      onClick={(e) => e.stopPropagation()}
                       style={styles.checkboxInput}
                     />
                   </div>
@@ -192,31 +250,40 @@ export default function TeamBuilderTab({
                   <div style={styles.employeeInfo}>
                     <div style={styles.employeeHeader}>
                       <div style={styles.employeeName}>
-                        {emp.user.name}
+                        {safeEmpName}
                         {isRecommended && (
                           <span style={{ ...styles.recommendedBadge, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                             <Star size={14} />
-                            <span>Recommended</span>
+                            <span>{t('projects.teamBuilder.badges.recommended')}</span>
                           </span>
                         )}
                       </div>
-                      {emp.matchPercentage > 0 && (
-                        <div style={styles.matchBadge}>
-                          {emp.matchPercentage}% match
-                        </div>
-                      )}
+                      {/* Siempre mostrar match badge, incluso si es 0% */}
+                      <div style={styles.matchBadge}>
+                        {t('projects.teamBuilder.labels.matchPercent', { percent: emp.matchPercentage || 0 })}
+                      </div>
                     </div>
 
-                    <div style={styles.employeeEmail}>{emp.user.email}</div>
+                    <div style={styles.employeeEmail}>{empEmail}</div>
+                    
+                    {/* Mostrar posición/departamento si no hay skills */}
+                    {emp.position && (
+                      <div style={styles.employeePosition}>
+                        {emp.position}{emp.department ? ` · ${emp.department}` : ''}
+                      </div>
+                    )}
 
                     {/* Matched Skills */}
                     {emp.matchedSkills && emp.matchedSkills.length > 0 && (
                       <div style={styles.skillsList}>
-                        {emp.matchedSkills.slice(0, 4).map((skill, idx) => (
-                          <span key={idx} style={styles.skillTag}>
-                            {skill}
-                          </span>
-                        ))}
+                        {emp.matchedSkills.slice(0, 4).map((skill, idx) => {
+                          const skillName = typeof skill === 'string' ? skill : skill.skill;
+                          return (
+                            <span key={`${userId}-skill-${skillName}-${idx}`} style={styles.skillTag}>
+                              {skillName}
+                            </span>
+                          );
+                        })}
                         {emp.matchedSkills.length > 4 && (
                           <span style={styles.skillMore}>
                             +{emp.matchedSkills.length - 4}
@@ -224,6 +291,11 @@ export default function TeamBuilderTab({
                         )}
                       </div>
                     )}
+
+                    {/* Show synergy indicator for ALL employees */}
+                    <div style={styles.synergyImpactRow}>
+                      <SynergyImpactIndicator validation={validation} />
+                    </div>
                   </div>
                 </div>
               );
@@ -232,6 +304,20 @@ export default function TeamBuilderTab({
         )}
       </div>
     </div>
+
+    {/* Employee Detail Panel */}
+    {selectedEmployeeForDetails && (
+      <EmployeeDetailPanel
+        employee={selectedEmployeeForDetails}
+        project={project}
+        onClose={() => setSelectedEmployeeForDetails(null)}
+        onAssign={(employeeId) => {
+          onToggleSelection(employeeId);
+          setSelectedEmployeeForDetails(null);
+        }}
+      />
+    )}
+  </>
   );
 }
 
@@ -323,6 +409,7 @@ const styles = {
     border: '1px solid #e1e4e8',
     borderRadius: '8px',
     padding: '16px',
+    cursor: 'pointer',
     transition: 'all 0.2s ease',
   },
   teamCardContent: {
@@ -330,6 +417,12 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: '8px',
+  },
+  teamCardActions: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    flexShrink: 0,
   },
   memberInfo: {
     display: 'flex',
@@ -521,6 +614,12 @@ const styles = {
     color: '#586069',
     marginBottom: '8px',
   },
+  employeePosition: {
+    fontSize: '12px',
+    color: '#0366d6',
+    marginBottom: '8px',
+    fontWeight: '500',
+  },
   skillsList: {
     display: 'flex',
     flexWrap: 'wrap',
@@ -538,5 +637,11 @@ const styles = {
     fontSize: '12px',
     color: '#586069',
     fontWeight: '500',
+  },
+
+  synergyImpactRow: {
+    marginTop: '10px',
+    paddingTop: '10px',
+    borderTop: '1px solid #f1f3f5',
   },
 };

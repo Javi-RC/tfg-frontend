@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { CheckCircle, X, Search, UserPlus } from 'lucide-react';
 import { getOrganizationEmployees } from '../../api/organization';
 import PrimaryButton from '../PrimaryButton';
@@ -14,6 +15,7 @@ export default function EmployeeAssignmentModal({
   onAssign,
   onClose 
 }) {
+  const { t } = useTranslation();
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -22,6 +24,7 @@ export default function EmployeeAssignmentModal({
 
   useEffect(() => {
     loadEmployees();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [organizationId]);
 
   const loadEmployees = async () => {
@@ -70,7 +73,7 @@ export default function EmployeeAssignmentModal({
     <div style={styles.overlay} onClick={onClose}>
       <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div style={styles.header}>
-          <h2 style={styles.title}>Assign Employee to Project</h2>
+          <h2 style={styles.title}>{t('employeeAssignment.title')}</h2>
           <button style={styles.closeButton} onClick={onClose}>×</button>
         </div>
 
@@ -80,7 +83,7 @@ export default function EmployeeAssignmentModal({
             <Search size={18} color="#999" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
             <input
               type="text"
-              placeholder="Search employees by name, email, or position..."
+              placeholder={t('employeeAssignment.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{...styles.searchInput, paddingLeft: '48px'}}
@@ -89,11 +92,11 @@ export default function EmployeeAssignmentModal({
 
           {/* Employee List */}
           {loading ? (
-            <p style={styles.loadingText}>Loading employees...</p>
+            <p style={styles.loadingText}>{t('employeeAssignment.loadingEmployees')}</p>
           ) : filteredEmployees.length === 0 ? (
             <div style={styles.emptyState}>
               <p style={styles.emptyText}>
-                {searchTerm ? 'No employees match your search' : 'No available employees to assign'}
+                {searchTerm ? t('employeeAssignment.noMatches') : t('employeeAssignment.noAvailable')}
               </p>
             </div>
           ) : (
@@ -125,10 +128,10 @@ export default function EmployeeAssignmentModal({
           {/* Role Input */}
           {selectedEmployee && (
             <div style={styles.roleSection}>
-              <label style={styles.label}>Role in Project (Optional)</label>
+              <label style={styles.label}>{t('employeeAssignment.roleLabel')}</label>
               <input
                 type="text"
-                placeholder="e.g., Frontend Developer, QA Engineer..."
+                placeholder={t('employeeAssignment.rolePlaceholder')}
                 value={assignedRole}
                 onChange={(e) => setAssignedRole(e.target.value)}
                 style={styles.input}
@@ -139,14 +142,14 @@ export default function EmployeeAssignmentModal({
 
         <div style={styles.footer}>
           <SecondaryButton onClick={onClose} leftIcon={<X size={16} />}>
-            Cancel
+            {t('employeeAssignment.cancel')}
           </SecondaryButton>
           <PrimaryButton 
             onClick={handleAssign} 
             disabled={!selectedEmployee}
             leftIcon={<UserPlus size={16} />}
           >
-            Assign Employee
+            {t('employeeAssignment.assignButton')}
           </PrimaryButton>
         </div>
       </div>

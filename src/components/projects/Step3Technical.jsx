@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FormTextarea, FormSelect, FormCheckbox } from './FormComponents';
 import { 
   EXPERIENCE_LEVELS,
@@ -9,7 +10,8 @@ import {
 /**
  * Step 3: Technical Requirements
  */
-export default function Step3Technical({ formData, onChange, errors = {} }) {
+export default function Step3Technical({ formData, onChange }) {
+  const { t } = useTranslation();
   const handleChange = (e) => {
     const { name, value } = e.target;
     onChange({ [name]: value });
@@ -18,7 +20,7 @@ export default function Step3Technical({ formData, onChange, errors = {} }) {
   const handleTechnologiesChange = (e) => {
     const value = e.target.value;
     const technologies = value.split(',').map(t => t.trim()).filter(t => t);
-    onChange({ mainTechnologies: technologies });
+    onChange({ mainTechnologiesText: value, mainTechnologies: technologies });
   };
 
   const handleSpecializedToolsChange = (e) => {
@@ -42,60 +44,60 @@ export default function Step3Technical({ formData, onChange, errors = {} }) {
 
   return (
     <div>
-      <h2 style={styles.stepTitle}>Technical Requirements</h2>
+      <h2 style={styles.stepTitle}>{t('projects.steps.step3.title')}</h2>
       <p style={styles.stepDescription}>
-        Define the technical aspects of the project
+        {t('projects.steps.step3.description')}
       </p>
 
       <FormTextarea
-        label="Main Technologies"
+        label={t('projects.steps.step3.mainTechnologies')}
         name="mainTechnologies"
-        value={formData.mainTechnologies?.join(', ') || ''}
+        value={formData.mainTechnologiesText ?? formData.mainTechnologies?.join(', ') ?? ''}
         onChange={handleTechnologiesChange}
-        placeholder="Enter technologies separated by commas (e.g., React, Node.js, PostgreSQL)"
+        placeholder={t('projects.steps.step3.technologiesPlaceholder')}
         rows={3}
       />
 
       <FormSelect
-        label="Required Experience Level"
+        label={t('projects.steps.step3.requiredExperienceLevel')}
         name="requiredExperienceLevel"
         value={formData.requiredExperienceLevel || 'mid'}
         onChange={handleChange}
         required
         options={[
-          { value: EXPERIENCE_LEVELS.JUNIOR, label: 'Junior' },
-          { value: EXPERIENCE_LEVELS.MID, label: 'Mid-level' },
-          { value: EXPERIENCE_LEVELS.SENIOR, label: 'Senior' },
-          { value: EXPERIENCE_LEVELS.EXPERT, label: 'Expert' }
+          { value: EXPERIENCE_LEVELS.JUNIOR, label: t('projects.levels.junior') },
+          { value: EXPERIENCE_LEVELS.MID, label: t('projects.levels.mid') },
+          { value: EXPERIENCE_LEVELS.SENIOR, label: t('projects.levels.senior') },
+          { value: EXPERIENCE_LEVELS.EXPERT, label: t('projects.levels.expert') }
         ]}
       />
 
       <FormSelect
-        label="System Complexity"
+        label={t('projects.steps.step3.systemComplexity')}
         name="systemComplexity"
         value={formData.systemComplexity || 'medium'}
         onChange={handleChange}
         required
         options={[
-          { value: COMPLEXITY_LEVELS.LOW, label: 'Low' },
-          { value: COMPLEXITY_LEVELS.MEDIUM, label: 'Medium' },
-          { value: COMPLEXITY_LEVELS.HIGH, label: 'High' }
+          { value: COMPLEXITY_LEVELS.LOW, label: t('projects.levels.low') },
+          { value: COMPLEXITY_LEVELS.MEDIUM, label: t('projects.levels.medium') },
+          { value: COMPLEXITY_LEVELS.HIGH, label: t('projects.levels.high') }
         ]}
       />
 
       <FormTextarea
-        label="Shared Infrastructure Dependency"
+        label={t('projects.steps.step3.sharedInfrastructureDependency')}
         name="sharedInfrastructureDependency"
         value={formData.sharedInfrastructureDependency || ''}
         onChange={handleChange}
-        placeholder="Describe any shared infrastructure dependencies..."
+        placeholder={t('projects.steps.step3.infrastructurePlaceholder')}
         rows={3}
         maxLength={500}
       />
 
       <div style={styles.section}>
         <FormCheckbox
-          label="Requires Specialized Tools"
+          label={t('projects.steps.step3.requiresSpecializedTools')}
           name="specializedToolsNeeded"
           checked={formData.requiresSpecializedTools?.needed || false}
           onChange={handleSpecializedToolsChange}
@@ -103,11 +105,11 @@ export default function Step3Technical({ formData, onChange, errors = {} }) {
 
         {formData.requiresSpecializedTools?.needed && (
           <FormTextarea
-            label="Describe Specialized Tools"
+            label={t('projects.steps.step3.describeSpecializedTools')}
             name="specializedToolsDescription"
             value={formData.requiresSpecializedTools?.description || ''}
             onChange={handleSpecializedToolsChange}
-            placeholder="Describe the specialized tools needed..."
+            placeholder={t('projects.steps.step3.specializedToolsPlaceholder')}
             rows={3}
             maxLength={500}
           />
@@ -115,16 +117,16 @@ export default function Step3Technical({ formData, onChange, errors = {} }) {
       </div>
 
       <FormSelect
-        label="Documentation Level"
+        label={t('projects.steps.step3.documentationLevel')}
         name="documentationLevel"
         value={formData.documentationLevel || 'partial'}
         onChange={handleChange}
         required
         options={[
-          { value: DOCUMENTATION_LEVELS.COMPLETE, label: 'Complete' },
-          { value: DOCUMENTATION_LEVELS.PARTIAL, label: 'Partial' },
-          { value: DOCUMENTATION_LEVELS.MINIMAL, label: 'Minimal' },
-          { value: DOCUMENTATION_LEVELS.NONE, label: 'None' }
+          { value: DOCUMENTATION_LEVELS.COMPLETE, label: t('projects.steps.step3.complete') },
+          { value: DOCUMENTATION_LEVELS.PARTIAL, label: t('projects.steps.step3.partial') },
+          { value: DOCUMENTATION_LEVELS.MINIMAL, label: t('projects.steps.step3.minimal') },
+          { value: DOCUMENTATION_LEVELS.NONE, label: t('projects.steps.step3.none') }
         ]}
       />
     </div>

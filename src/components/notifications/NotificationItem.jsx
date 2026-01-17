@@ -1,15 +1,16 @@
 import { useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
-import { useNotifications } from '../../contexts/NotificationContext';
+import { useTranslation } from 'react-i18next';
+import { useNotifications } from '../../contexts/useNotifications';
 import { formatDistanceToNow } from 'date-fns';
-import { enUS } from 'date-fns/locale';
+import { enUS, es } from 'date-fns/locale';
 import { getNotificationTypeIcon } from '../../types/notificationTypes';
 import './NotificationItem.css';
 
 /**
  * NotificationItem Component
- * Componente individual de notificación
- * Muestra título, mensaje, tiempo relativo y acciones
+ * Single notification item.
+ * Shows title, message, relative time, and actions.
  * 
  * Estructura de una notificación:
  * {
@@ -25,6 +26,7 @@ import './NotificationItem.css';
  * }
  */
 const NotificationItem = ({ notification, onClose }) => {
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { markAsRead, deleteNotification } = useNotifications();
   const isUnread = !notification.readAt;
@@ -34,9 +36,9 @@ const NotificationItem = ({ notification, onClose }) => {
       await markAsRead(notification._id);
     }
     
-    // Si tiene URL de acción, navegar usando React Router
+    // If it has an action URL, navigate using React Router
     if (notification.actionUrl) {
-      // Verificar si es una URL interna o externa
+      // Check whether the URL is internal or external
       const isInternalUrl = notification.actionUrl.startsWith('/');
       if (isInternalUrl) {
         navigate(notification.actionUrl);
@@ -52,9 +54,10 @@ const NotificationItem = ({ notification, onClose }) => {
     await deleteNotification(notification._id);
   };
 
+  const timeLocale = i18n.language?.toLowerCase().startsWith('es') ? es : enUS;
   const timeAgo = formatDistanceToNow(new Date(notification.createdAt), {
     addSuffix: true,
-    locale: enUS
+    locale: timeLocale
   });
 
   const priorityClass = `priority-${notification.priority || 'normal'}`;
@@ -73,7 +76,7 @@ const NotificationItem = ({ notification, onClose }) => {
       }}
     >
       <div className="notification-indicator">
-        {isUnread && <span className="unread-dot" aria-label="Unread" />}
+        {isUnread && <span className="unread-dot" aria-label={t('notifications.aria.unread')} />}
         <NotificationIcon type={notification.type} />
       </div>
 
@@ -83,10 +86,10 @@ const NotificationItem = ({ notification, onClose }) => {
         <div className="notification-meta">
           <span className="notification-time">{timeAgo}</span>
           {notification.priority === 'urgent' && (
-            <span className="urgent-badge">Urgent</span>
+            <span className="urgent-badge">{t('notifications.priority.urgent')}</span>
           )}
           {notification.priority === 'high' && (
-            <span className="high-badge">High</span>
+            <span className="high-badge">{t('notifications.priority.high')}</span>
           )}
         </div>
       </div>
@@ -94,8 +97,8 @@ const NotificationItem = ({ notification, onClose }) => {
       <button 
         className="notification-delete-btn"
         onClick={handleDelete}
-        aria-label="Delete notification"
-        title="Delete"
+        aria-label={t('notifications.aria.delete')}
+        title={t('common.delete')}
       >
         <X size={16} />
       </button>
@@ -108,11 +111,12 @@ const NotificationItem = ({ notification, onClose }) => {
  * Renderiza el icono apropiado según el tipo de notificación
  */
 const NotificationIcon = ({ type }) => {
+  const { t } = useTranslation();
   const IconComponent = getNotificationTypeIcon(type);
   
   return (
-    <span className="notification-icon" role="img" aria-label={`Type: ${type}`}>
-      <IconComponent size={18} />
+    <span className="notification-icon" role="img" aria-label={t('notifications.aria.type', { type })}>
+      <IconComponent size={24} />
     </span>
   );
 };

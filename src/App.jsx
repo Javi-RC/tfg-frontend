@@ -1,8 +1,10 @@
 import './App.css'
+import './components/SkipLink.css'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { NotificationProvider } from './contexts/NotificationContext'
 import TopNavBar from './components/TopNavBar'
+import SkipLink from './components/SkipLink'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import ConfirmAccount from './pages/ConfirmAccount'
@@ -11,6 +13,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import CompleteProfile from './pages/CompleteProfile'
 import OAuthSuccess from './pages/OAuthSuccess'
 import MyCVPage from './pages/MyCVPage'
+import CVUploadPage from './pages/CVUploadPage'
 import CVStatsPage from './pages/CVStatsPage'
 import AdminCVListPage from './pages/AdminCVListPage'
 import NotificationsPage from './pages/NotificationsPage'
@@ -22,20 +25,22 @@ import ProjectsPage from './pages/ProjectsPage'
 import ProjectFormPage from './pages/ProjectFormPage'
 import ProjectDetailPage from './pages/ProjectDetailPage'
 import TermsPage from './pages/TermsPage'
+import { isNoNavBarRoute } from './constants/routes'
 
 function AppRoutes() {
   const location = useLocation();
   
   // Páginas sin barra de navegación
-  const noNavBarPages = ['/login', '/register', '/auth/confirm', '/auth/callback', '/oauth-success', '/complete-profile'];
-  const showNavBar = !noNavBarPages.includes(location.pathname);
+  const showNavBar = !isNoNavBarRoute(location.pathname);
 
   return (
     <>
+      <SkipLink />
       {showNavBar && <TopNavBar />}
-      <Routes>
-        <Route path="/terms" element={<TermsPage />} />
-        <Route path="/login" element={<Login />} />
+      <main id="main-content">
+        <Routes>
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/auth/confirm" element={<ConfirmAccount />} />
         <Route path="/auth/callback" element={<OAuthSuccess />} />
@@ -45,6 +50,7 @@ function AppRoutes() {
         <Route path="/bfi-44/:testId" element={<ProtectedRoute><BFI44Page /></ProtectedRoute>} />
         <Route path="/" element={<ProtectedRoute><Profile/></ProtectedRoute>} />
         <Route path="/my-cv" element={<ProtectedRoute><MyCVPage/></ProtectedRoute>} />
+        <Route path="/cv/upload" element={<ProtectedRoute><CVUploadPage/></ProtectedRoute>} />
         <Route path="/cv/:cvId" element={<ProtectedRoute><MyCVPage/></ProtectedRoute>} />
         <Route path="/cv-stats" element={<ProtectedRoute><CVStatsPage/></ProtectedRoute>} />
         <Route path="/admin/cvs" element={<ProtectedRoute><AdminCVListPage/></ProtectedRoute>} />
@@ -56,7 +62,8 @@ function AppRoutes() {
         <Route path="/projects/new" element={<ProtectedRoute><ProjectFormPage/></ProtectedRoute>} />
         <Route path="/projects/:id" element={<ProtectedRoute><ProjectDetailPage/></ProtectedRoute>} />
         <Route path="/projects/:id/edit" element={<ProtectedRoute><ProjectFormPage/></ProtectedRoute>} />
-      </Routes>
+        </Routes>
+      </main>
     </>
   );
 }

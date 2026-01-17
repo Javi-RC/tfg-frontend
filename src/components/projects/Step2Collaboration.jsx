@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FormInput, FormTextarea, FormSelect, FormNumber } from './FormComponents';
 import { 
   SYNCHRONOUS_COMMUNICATION, 
@@ -10,7 +11,8 @@ import {
 /**
  * Step 2: Collaboration Requirements
  */
-export default function Step2Collaboration({ formData, onChange, errors = {} }) {
+export default function Step2Collaboration({ formData, onChange }) {
+  const { t } = useTranslation();
   const handleChange = (e) => {
     const { name, value } = e.target;
     onChange({ [name]: value });
@@ -28,44 +30,44 @@ export default function Step2Collaboration({ formData, onChange, errors = {} }) 
   const handleLanguagesChange = (e) => {
     const value = e.target.value;
     const languages = value.split(',').map(l => l.trim()).filter(l => l);
-    onChange({ requiredLanguages: languages });
+    onChange({ requiredLanguagesText: value, requiredLanguages: languages });
   };
 
   return (
     <div>
-      <h2 style={styles.stepTitle}>Collaboration Requirements</h2>
+      <h2 style={styles.stepTitle}>{t('projects.steps.step2.title')}</h2>
       <p style={styles.stepDescription}>
-        Define how team members will collaborate
+        {t('projects.steps.step2.description')}
       </p>
 
       <FormSelect
-        label="Requires Synchronous Communication"
+        label={t('projects.steps.step2.requiresSynchronousCommunication')}
         name="requiresSynchronousCommunication"
         value={formData.requiresSynchronousCommunication || 'yes'}
         onChange={handleChange}
         required
         options={[
-          { value: SYNCHRONOUS_COMMUNICATION.YES, label: 'Yes' },
-          { value: SYNCHRONOUS_COMMUNICATION.NO, label: 'No' },
-          { value: SYNCHRONOUS_COMMUNICATION.ONLY_CRITICAL, label: 'Only Critical Moments' }
+          { value: SYNCHRONOUS_COMMUNICATION.YES, label: t('projects.yesNoPartial.yes') },
+          { value: SYNCHRONOUS_COMMUNICATION.NO, label: t('projects.yesNoPartial.no') },
+          { value: SYNCHRONOUS_COMMUNICATION.ONLY_CRITICAL, label: t('projects.steps.step2.onlyCritical') }
         ]}
       />
 
       <FormSelect
-        label="Real-Time Communication Level"
+        label={t('projects.steps.step2.realTimeCommunicationLevel')}
         name="realTimeCommunicationLevel"
         value={formData.realTimeCommunicationLevel || 'medium'}
         onChange={handleChange}
         required
         options={[
-          { value: COMMUNICATION_LEVELS.LOW, label: 'Low' },
-          { value: COMMUNICATION_LEVELS.MEDIUM, label: 'Medium' },
-          { value: COMMUNICATION_LEVELS.HIGH, label: 'High' }
+          { value: COMMUNICATION_LEVELS.LOW, label: t('projects.levels.low') },
+          { value: COMMUNICATION_LEVELS.MEDIUM, label: t('projects.levels.medium') },
+          { value: COMMUNICATION_LEVELS.HIGH, label: t('projects.levels.high') }
         ]}
       />
 
       <FormNumber
-        label="Weekly Meetings Count"
+        label={t('projects.steps.step2.weeklyMeetingsCount')}
         name="weeklyMeetingsCount"
         value={formData.weeklyMeetingsCount || 0}
         onChange={handleChange}
@@ -74,7 +76,7 @@ export default function Step2Collaboration({ formData, onChange, errors = {} }) 
       />
 
       <div style={styles.section}>
-        <label style={styles.label}>Average Meeting Duration</label>
+        <label style={styles.label}>{t('projects.steps.step2.averageMeetingDuration')}</label>
         <div style={styles.row}>
           <FormNumber
             label=""
@@ -90,45 +92,45 @@ export default function Step2Collaboration({ formData, onChange, errors = {} }) 
             value={formData.averageMeetingDuration?.unit || 'minutes'}
             onChange={(e) => handleMeetingDurationChange('unit', e.target.value)}
             options={[
-              { value: TIME_UNITS.MINUTES, label: 'Minutes' },
-              { value: TIME_UNITS.HOURS, label: 'Hours' }
+              { value: TIME_UNITS.MINUTES, label: t('projects.timeUnits.minutes') },
+              { value: TIME_UNITS.HOURS, label: t('projects.timeUnits.hours') }
             ]}
           />
         </div>
       </div>
 
       <FormInput
-        label="Required Availability Schedule"
+        label={t('projects.steps.step2.requiredAvailabilitySchedule')}
         name="requiredAvailabilitySchedule"
         value={formData.requiredAvailabilitySchedule || ''}
         onChange={handleChange}
-        placeholder="e.g., 9-17 UTC"
+        placeholder={t('projects.steps.step2.availabilityPlaceholder')}
         maxLength={200}
       />
 
       <FormTextarea
-        label="Required Languages"
+        label={t('projects.steps.step2.requiredLanguages')}
         name="requiredLanguages"
-        value={formData.requiredLanguages?.join(', ') || ''}
+        value={formData.requiredLanguagesText ?? formData.requiredLanguages?.join(', ') ?? ''}
         onChange={handleLanguagesChange}
-        placeholder="Enter languages separated by commas (e.g., English, Spanish, French)"
+        placeholder={t('projects.steps.step2.languagesPlaceholder')}
         rows={2}
       />
 
       <FormSelect
-        label="Minimum Language Proficiency"
+        label={t('projects.steps.step2.minimumLanguageProficiency')}
         name="minimumLanguageProficiency"
         value={formData.minimumLanguageProficiency || 'B1'}
         onChange={handleChange}
         options={[
-          { value: LANGUAGE_PROFICIENCY.A1, label: 'A1 - Beginner' },
-          { value: LANGUAGE_PROFICIENCY.A2, label: 'A2 - Elementary' },
-          { value: LANGUAGE_PROFICIENCY.B1, label: 'B1 - Intermediate' },
-          { value: LANGUAGE_PROFICIENCY.B2, label: 'B2 - Upper Intermediate' },
-          { value: LANGUAGE_PROFICIENCY.C1, label: 'C1 - Advanced' },
-          { value: LANGUAGE_PROFICIENCY.C2, label: 'C2 - Proficient' },
-          { value: LANGUAGE_PROFICIENCY.NATIVE, label: 'Native' },
-          { value: LANGUAGE_PROFICIENCY.BILINGUAL, label: 'Bilingual' }
+          { value: LANGUAGE_PROFICIENCY.A1, label: t('projects.languageProficiency.a1') },
+          { value: LANGUAGE_PROFICIENCY.A2, label: t('projects.languageProficiency.a2') },
+          { value: LANGUAGE_PROFICIENCY.B1, label: t('projects.languageProficiency.b1') },
+          { value: LANGUAGE_PROFICIENCY.B2, label: t('projects.languageProficiency.b2') },
+          { value: LANGUAGE_PROFICIENCY.C1, label: t('projects.languageProficiency.c1') },
+          { value: LANGUAGE_PROFICIENCY.C2, label: t('projects.languageProficiency.c2') },
+          { value: LANGUAGE_PROFICIENCY.NATIVE, label: t('projects.languageProficiency.native') },
+          { value: LANGUAGE_PROFICIENCY.BILINGUAL, label: t('projects.languageProficiency.bilingual') }
         ]}
       />
     </div>

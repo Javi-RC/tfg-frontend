@@ -1,6 +1,9 @@
 import axios from 'axios';
+import { isPublicRoute } from '../constants/routes';
 
-const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+// If VITE_API_URL is not set, use relative URLs and rely on Vite dev proxy
+// (and in production, same-origin deployments).
+const baseURL = import.meta.env.VITE_API_URL || '';
 
 const api = axios.create({
   baseURL,
@@ -12,11 +15,6 @@ const api = axios.create({
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
-  // Debug: log outgoing requests to verify Authorization header in dev
-  try {
-    // eslint-disable-next-line no-console
-    console.debug('[api] Request', { url: config.url, method: config.method, authHeader: config.headers?.Authorization });
-  } catch (e) { }
   return config;
 });
 
@@ -39,10 +37,8 @@ api.interceptors.response.use(
         lowerUrl.includes('/auth/')
       );
 
-      // Avoid redirect loops if we're already on a public/auth page
-      const publicPaths = ['/login', '/register', '/auth/confirm', '/auth/callback', '/oauth-success'];
       const currentPath = (typeof window !== 'undefined' && window.location && window.location.pathname) || '';
-      const isOnPublicPage = publicPaths.includes(currentPath);
+      const isOnPublicPage = isPublicRoute(currentPath);
 
       if (!isAuthEndpoint && !isOnPublicPage) {
         localStorage.removeItem('token');

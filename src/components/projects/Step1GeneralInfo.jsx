@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FormInput, FormTextarea, FormSelect, FormNumber } from './FormComponents';
 import { TIME_UNITS } from '../../types/projectTypes';
 
@@ -6,6 +7,7 @@ import { TIME_UNITS } from '../../types/projectTypes';
  * Step 1: General Information
  */
 export default function Step1GeneralInfo({ formData, onChange, errors = {} }) {
+  const { t } = useTranslation();
   const handleChange = (e) => {
     const { name, value } = e.target;
     onChange({ [name]: value });
@@ -22,29 +24,29 @@ export default function Step1GeneralInfo({ formData, onChange, errors = {} }) {
 
   return (
     <div>
-      <h2 style={styles.stepTitle}>General Information</h2>
+      <h2 style={styles.stepTitle}>{t('projects.steps.step1.title')}</h2>
       <p style={styles.stepDescription}>
-        Provide basic information about your project
+        {t('projects.steps.step1.description')}
       </p>
 
       <FormInput
-        label="Project Name"
+        label={t('projects.steps.step1.projectName')}
         name="projectName"
         value={formData.projectName || ''}
         onChange={handleChange}
         required
-        placeholder="Enter project name..."
+        placeholder={t('projects.steps.step1.projectNamePlaceholder')}
         maxLength={200}
         error={errors.projectName}
       />
 
       <FormTextarea
-        label="Brief Description"
+        label={t('projects.steps.step1.briefDescription')}
         name="briefDescription"
         value={formData.briefDescription || ''}
         onChange={handleChange}
         required
-        placeholder="Describe your project..."
+        placeholder={t('projects.steps.step1.briefDescriptionPlaceholder')}
         rows={5}
         maxLength={2000}
         error={errors.briefDescription}
@@ -52,7 +54,7 @@ export default function Step1GeneralInfo({ formData, onChange, errors = {} }) {
 
       <div style={styles.row}>
         <FormInput
-          label="Estimated Start Date"
+          label={t('projects.steps.step1.estimatedStartDate')}
           name="estimatedStartDate"
           type="date"
           value={formData.estimatedStartDate || ''}
@@ -62,7 +64,7 @@ export default function Step1GeneralInfo({ formData, onChange, errors = {} }) {
         />
 
         <FormInput
-          label="Estimated End Date"
+          label={t('projects.steps.step1.estimatedEndDate')}
           name="estimatedEndDate"
           type="date"
           value={formData.estimatedEndDate || ''}
@@ -74,7 +76,7 @@ export default function Step1GeneralInfo({ formData, onChange, errors = {} }) {
 
       <div style={styles.section}>
         <label style={styles.label}>
-          Expected Duration <span style={styles.required}>*</span>
+          {t('projects.steps.step1.expectedDuration')} <span style={styles.required}>*</span>
         </label>
         <div style={styles.row}>
           <FormNumber
@@ -94,12 +96,12 @@ export default function Step1GeneralInfo({ formData, onChange, errors = {} }) {
             onChange={(e) => handleDurationChange('unit', e.target.value)}
             required
             options={[
-              { value: TIME_UNITS.DAYS, label: 'Days' },
-              { value: TIME_UNITS.WEEKS, label: 'Weeks' },
-              { value: TIME_UNITS.MONTHS, label: 'Months' },
-              { value: TIME_UNITS.YEARS, label: 'Years' }
+              { value: TIME_UNITS.DAYS, label: t('projects.timeUnits.days') },
+              { value: TIME_UNITS.WEEKS, label: t('projects.timeUnits.weeks') },
+              { value: TIME_UNITS.MONTHS, label: t('projects.timeUnits.months') },
+              { value: TIME_UNITS.YEARS, label: t('projects.timeUnits.years') }
             ]}
-            placeholder="Select unit"
+            placeholder={t('projects.steps.step1.selectUnit')}
           />
         </div>
       </div>

@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { BarChart3, GraduationCap, ClipboardList, Rocket, Trophy, Globe, RefreshCcw } from 'lucide-react';
-import { getCVStats } from '../api/cv';
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { BarChart3, GraduationCap, ClipboardList, Rocket, Trophy, Globe } from 'lucide-react';
+import { useCVStats } from '../hooks/useCVStats';
 import SecondaryButton from '../components/SecondaryButton';
 
 /**
@@ -8,29 +9,21 @@ import SecondaryButton from '../components/SecondaryButton';
  * Displays statistics about the user's CV
  */
 export default function CVStatsPage() {
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { t } = useTranslation();
+  const { stats, loading, error, loadStats } = useCVStats();
 
-  useEffect(() => {
-    loadStats();
-  }, []);
-
-  const loadStats = async () => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      const response = await getCVStats();
-      // Backend response: { success: true, stats: {...} }
-      const statsData = response.data?.stats || response.data;
-      setStats(statsData);
-    } catch (err) {
-      setError(err.response?.data?.error || 'Error loading statistics');
-    } finally {
-      setLoading(false);
-    }
-  };
+  const totalSkillsTitle = t('cv.stats.totalSkills');
+  const technicalSkillsDesc = t('cv.stats.technicalSkills');
+  const educationTitle = t('cv.stats.education');
+  const academicDegreesDesc = t('cv.stats.academicDegrees');
+  const experienceTitle = t('cv.stats.experience');
+  const workExperiencesDesc = t('cv.stats.workExperiences');
+  const projectsTitle = t('cv.stats.projects');
+  const personalProjectsDesc = t('cv.stats.personalProjects');
+  const certificationsTitle = t('cv.stats.certifications');
+  const professionalCertsDesc = t('cv.stats.professionalCerts');
+  const languagesTitle = t('cv.stats.languages');
+  const spokenLanguagesDesc = t('cv.stats.spokenLanguages');
 
   if (loading) {
     return (
@@ -42,7 +35,7 @@ export default function CVStatsPage() {
         alignItems: 'center',
         justifyContent: 'center'
       }}>
-        <p style={{ fontSize: '16px', color: '#666' }} role="status" aria-live="polite">Loading statistics...</p>
+        <p style={{ fontSize: '16px', color: '#666' }} role="status" aria-live="polite">{t('cv.loadingStatistics')}</p>
       </div>
     );
   }
@@ -69,13 +62,13 @@ export default function CVStatsPage() {
         }} role="alert" aria-live="assertive">
           <div style={{ fontSize: '64px', marginBottom: '16px', opacity: 0.3 }} aria-hidden="true"><BarChart3 size={64} color="#9ca3af" /></div>
           <h2 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
-            Error Loading Statistics
+            {t('cv.errorLoadingStatistics')}
           </h2>
           <p style={{ fontSize: '14px', color: '#666', marginBottom: '24px' }}>
             {error}
           </p>
-          <SecondaryButton onClick={loadStats} aria-label="Try loading statistics again">
-            Try Again
+          <SecondaryButton onClick={loadStats} aria-label={t('common.tryAgain')}>
+            {t('common.tryAgain')}
           </SecondaryButton>
         </div>
       </div>
@@ -92,7 +85,7 @@ export default function CVStatsPage() {
         alignItems: 'center',
         justifyContent: 'center'
       }}>
-        <p style={{ fontSize: '16px', color: '#666' }} role="status">No statistics available</p>
+        <p style={{ fontSize: '16px', color: '#666' }} role="status">{t('cv.noStatisticsAvailable')}</p>
       </div>
     );
   }
@@ -102,7 +95,7 @@ export default function CVStatsPage() {
       minHeight: '100vh',
       background: '#fafbfc',
       padding: '124px 24px 60px'
-    }} role="main" aria-label="CV statistics page">
+    }} role="main" aria-label={t('cv.stats.aria.page')}>
       <div style={{
         maxWidth: '1200px',
         margin: '0 auto'
@@ -118,10 +111,10 @@ export default function CVStatsPage() {
             fontWeight: '600',
             color: '#1a1a1a'
           }}>
-            CV Statistics
+            {t('cv.cvStatistics')}
           </h1>
-          <SecondaryButton onClick={loadStats} aria-label="Refresh statistics data">
-            Refresh
+          <SecondaryButton onClick={loadStats} aria-label={t('cv.stats.aria.refresh')}>
+            {t('common.refresh')}
           </SecondaryButton>
         </div>
 
@@ -130,47 +123,77 @@ export default function CVStatsPage() {
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '32px',
           marginBottom: '48px'
-        }} role="region" aria-label="Statistics summary">
+        }} role="region" aria-label={t('cv.stats.aria.summary')}>
           <StatCard
             icon={<ClipboardList size={32} />}
-            title="Total Skills"
+            title={totalSkillsTitle}
             value={stats.totalSkills || 0}
-            description="Technical skills"
+            description={technicalSkillsDesc}
+            ariaLabel={t('cv.stats.aria.statCard', {
+              title: totalSkillsTitle,
+              value: stats.totalSkills || 0,
+              description: technicalSkillsDesc
+            })}
             color="#0066cc"
           />
           <StatCard
             icon={<GraduationCap size={32} />}
-            title="Education"
+            title={educationTitle}
             value={stats.totalEducation || 0}
-            description="Academic degrees"
+            description={academicDegreesDesc}
+            ariaLabel={t('cv.stats.aria.statCard', {
+              title: educationTitle,
+              value: stats.totalEducation || 0,
+              description: academicDegreesDesc
+            })}
             color="#27ae60"
           />
           <StatCard
             icon={<ClipboardList size={32} />}
-            title="Experience"
+            title={experienceTitle}
             value={stats.totalExperience || 0}
-            description="Work experiences"
+            description={workExperiencesDesc}
+            ariaLabel={t('cv.stats.aria.statCard', {
+              title: experienceTitle,
+              value: stats.totalExperience || 0,
+              description: workExperiencesDesc
+            })}
             color="#f39c12"
           />
           <StatCard
             icon={<Rocket size={32} />}
-            title="Projects"
+            title={projectsTitle}
             value={stats.totalProjects || 0}
-            description="Personal projects"
+            description={personalProjectsDesc}
+            ariaLabel={t('cv.stats.aria.statCard', {
+              title: projectsTitle,
+              value: stats.totalProjects || 0,
+              description: personalProjectsDesc
+            })}
             color="#9b59b6"
           />
           <StatCard
             icon={<Trophy size={32} />}
-            title="Certifications"
+            title={certificationsTitle}
             value={stats.totalCertifications || 0}
-            description="Professional certs"
+            description={professionalCertsDesc}
+            ariaLabel={t('cv.stats.aria.statCard', {
+              title: certificationsTitle,
+              value: stats.totalCertifications || 0,
+              description: professionalCertsDesc
+            })}
             color="#e74c3c"
           />
           <StatCard
             icon={<Globe size={32} />}
-            title="Languages"
+            title={languagesTitle}
             value={stats.totalLanguages || 0}
-            description="Spoken languages"
+            description={spokenLanguagesDesc}
+            ariaLabel={t('cv.stats.aria.statCard', {
+              title: languagesTitle,
+              value: stats.totalLanguages || 0,
+              description: spokenLanguagesDesc
+            })}
             color="#16a085"
           />
         </div>
@@ -183,14 +206,14 @@ export default function CVStatsPage() {
             padding: '40px 32px',
             boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
             marginBottom: '32px'
-          }} role="region" aria-label="Top skills">
+          }} role="region" aria-label={t('cv.stats.aria.topSkillsRegion')}>
             <h2 style={{
               fontSize: '20px',
               fontWeight: '600',
               marginBottom: '24px',
               color: '#1a1a1a'
             }}>
-              Top Skills
+              {t('cv.stats.topSkills')}
             </h2>
             <div style={{
               display: 'flex',
@@ -222,12 +245,12 @@ export default function CVStatsPage() {
             padding: '32px 24px',
             boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
             textAlign: 'center'
-          }} role="contentinfo" aria-label="Last update information">
+          }} role="contentinfo" aria-label={t('cv.stats.aria.lastUpdateInfo')}>
             <p style={{
               fontSize: '14px',
               color: '#666'
             }}>
-              Last updated: <strong>{new Date(stats.lastUpdated).toLocaleString()}</strong>
+              {t('cv.stats.lastUpdatedLabel')}: <strong>{new Date(stats.lastUpdated).toLocaleString()}</strong>
             </p>
           </div>
         )}
@@ -240,7 +263,7 @@ export default function CVStatsPage() {
  * StatCard Component
  * Displays a statistical metric in a card
  */
-function StatCard({ icon, title, value, description, color = '#333' }) {
+function StatCard({ icon, title, value, description, ariaLabel, color = '#333' }) {
   return (
     <div style={{
       background: 'white',
@@ -251,7 +274,7 @@ function StatCard({ icon, title, value, description, color = '#333' }) {
       cursor: 'default'
     }}
     role="article"
-    aria-label={`${title}: ${value} ${description}`}
+    aria-label={ariaLabel ?? `${title}: ${value} ${description}`}
     onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'}
     onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
     >

@@ -30,9 +30,9 @@ export default function PrimaryButton({ children, onClick, disabled = false, sty
         e.target.style.transform = 'translateY(0)';
       }}
     >
-      {leftIcon && <span style={{ display: 'flex', alignItems: 'center' }}>{leftIcon}</span>}
+      {leftIcon && <span style={{ display: 'flex', alignItems: 'center' }} aria-hidden="true">{leftIcon}</span>}
       {children}
-      {rightIcon && <span style={{ display: 'flex', alignItems: 'center' }}>{rightIcon}</span>}
+      {rightIcon && <span style={{ display: 'flex', alignItems: 'center' }} aria-hidden="true">{rightIcon}</span>}
     </button>
   );
 }

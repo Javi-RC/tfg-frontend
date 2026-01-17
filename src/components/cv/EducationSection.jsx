@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import SectionHeader from './SectionHeader';
 import CVCard from './CVCard';
 import EditableField from './EditableField';
@@ -16,6 +17,7 @@ export default function EducationSection({
   onAddEducation,
   onRemoveEducation
 }) {
+  const { t } = useTranslation();
   const education = editMode ? editData?.education : cv?.education;
   if (!education) return null;
 
@@ -23,7 +25,7 @@ export default function EducationSection({
     <section style={{ marginBottom: '56px' }} role="region" aria-labelledby="education-heading">
       <SectionHeader 
         id="education-heading" 
-        title="Education" 
+        title={t('cv.education')} 
       />
       {education.map((edu, index) => (
         <CVCard
@@ -31,24 +33,26 @@ export default function EducationSection({
           editMode={editMode}
           borderColor="#48bb78"
           onRemove={() => onRemoveEducation(index)}
-          removeLabel={`Remove education: ${edu.degree || 'entry'}`}
+          removeLabel={t('cv.editor.education.removeLabel', {
+            degree: edu.degree || t('cv.editor.entry')
+          })}
         >
           <div style={{ display: 'grid', gap: '16px' }}>
             <EditableField
-              label="Degree"
+              label={t('cv.degree')}
               value={edu.degree}
               editMode={editMode}
               onChange={(value) => onEducationChange(index, 'degree', value)}
               required
             />
             <EditableField
-              label="Field of Study"
+              label={t('cv.fieldOfStudy')}
               value={edu.fieldOfStudy}
               editMode={editMode}
               onChange={(value) => onEducationChange(index, 'fieldOfStudy', value)}
             />
             <EditableField
-              label="Institution"
+              label={t('cv.institution')}
               value={edu.institution}
               editMode={editMode}
               onChange={(value) => onEducationChange(index, 'institution', value)}
@@ -56,14 +60,14 @@ export default function EducationSection({
             />
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               <EditableField
-                label="Start Date"
+                label={t('cv.startDate')}
                 value={edu.startDate}
                 editMode={editMode}
                 onChange={(value) => onEducationChange(index, 'startDate', value)}
               />
               <EditableField
-                label="End Date"
-                value={edu.current ? 'Present' : edu.endDate}
+                label={t('cv.endDate')}
+                value={edu.current ? t('cv.present') : edu.endDate}
                 editMode={editMode && !edu.current}
                 onChange={(value) => onEducationChange(index, 'endDate', value)}
               />
@@ -75,7 +79,7 @@ export default function EducationSection({
                   checked={edu.current || false}
                   onChange={(e) => onEducationChange(index, 'current', e.target.checked)}
                 />
-                Currently studying
+                {t('cv.editor.education.currentlyStudying')}
               </label>
             )}
           </div>
@@ -92,10 +96,10 @@ export default function EducationSection({
         <div style={{ marginTop: '20px', textAlign: 'center' }}>
           <PrimaryButton 
             onClick={onAddEducation}
-            aria-label="Add new education entry"
+            aria-label={t('cv.editor.education.actions.addAria')}
             style={{ padding: '12px 24px', fontSize: '14px', fontWeight: '600' }}
           >
-            + Add Education
+            {t('cv.editor.education.actions.addButton')}
           </PrimaryButton>
         </div>
       )}

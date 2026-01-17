@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { getRiskScoreInfo } from '../../types/projectTypes';
 
 /**
@@ -6,6 +7,7 @@ import { getRiskScoreInfo } from '../../types/projectTypes';
  * Displays risk score with visual indicator
  */
 export default function ProjectRiskScore({ score }) {
+  const { t } = useTranslation();
   const riskInfo = getRiskScoreInfo(score);
 
   return (
@@ -18,7 +20,7 @@ export default function ProjectRiskScore({ score }) {
       />
       <div style={styles.content}>
         <div style={styles.score}>{score}</div>
-        <div style={styles.label}>{riskInfo.label}</div>
+        <div style={styles.label}>{t(riskInfo.label)}</div>
       </div>
     </div>
   );

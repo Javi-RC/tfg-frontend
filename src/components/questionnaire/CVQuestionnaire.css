@@ -1,0 +1,85 @@
+/* CVQuestionnaire Styles */
+.cv-questionnaire {
+  padding: 1.5rem 0;
+}
+
+.questionnaire-complete {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.questionnaire-complete .success-icon {
+  width: 80px;
+  height: 80px;
+  color: #48bb78;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+  animation: scaleIn 0.5s ease-out;
+}
+
+.questionnaire-complete .check-icon {
+  stroke-width: 2;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.questionnaire-complete h2 {
+  font-size: 1.75rem;
+  color: #1a202c;
+  margin-bottom: 0.5rem;
+}
+
+.questionnaire-complete p {
+  color: #718096;
+  font-size: 1rem;
+}
+
+.error-banner {
+  background: #fee;
+  color: #c53030;
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #e53e3e;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+}
+
+.questionnaire-actions {
+  margin-top: 2rem;
+}
+
+.btn-next {
+  width: 100%;
+  padding: 1rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-next:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.btn-next:disabled {
+  background: #cbd5e0;
+  cursor: not-allowed;
+  transform: none;
+}

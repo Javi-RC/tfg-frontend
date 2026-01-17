@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import TeamInsightCard from './TeamInsightCard';
 
 /**
@@ -6,6 +7,7 @@ import TeamInsightCard from './TeamInsightCard';
  * Displays comprehensive team analysis with insights
  */
 export default function TeamInsightsPanel({ insights }) {
+  const { t } = useTranslation();
   if (!insights || insights.length === 0) {
     return null;
   }
@@ -50,7 +52,7 @@ export default function TeamInsightsPanel({ insights }) {
     <div style={getPanelStyle()}>
       <div style={styles.header}>
         <h3 style={getTitleStyle()}>
-          👥 Team Analysis
+          👥 {t('teamInsights.title')}
         </h3>
         <div style={styles.summary}>
           {highSeverityInsights.length > 0 && (
@@ -58,7 +60,7 @@ export default function TeamInsightsPanel({ insights }) {
               <span style={{ ...styles.badge, ...styles.highBadge }}>
                 {highSeverityInsights.length}
               </span>
-                <span style={styles.summaryLabel}>Critical</span>
+                <span style={styles.summaryLabel}>{t('teamInsights.critical')}</span>
             </span>
           )}
           {mediumSeverityInsights.length > 0 && (
@@ -66,7 +68,7 @@ export default function TeamInsightsPanel({ insights }) {
               <span style={{ ...styles.badge, ...styles.mediumBadge }}>
                 {mediumSeverityInsights.length}
               </span>
-                <span style={styles.summaryLabel}>Moderate</span>
+                <span style={styles.summaryLabel}>{t('teamInsights.moderate')}</span>
             </span>
           )}
           {lowSeverityInsights.length > 0 && (
@@ -74,7 +76,7 @@ export default function TeamInsightsPanel({ insights }) {
               <span style={{ ...styles.badge, ...styles.lowBadge }}>
                 {lowSeverityInsights.length}
               </span>
-                <span style={styles.summaryLabel}>Low</span>
+                <span style={styles.summaryLabel}>{t('teamInsights.low')}</span>
             </span>
           )}
         </div>

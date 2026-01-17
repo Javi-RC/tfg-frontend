@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { BarChart3, Target, AlertTriangle, Info, CheckCircle } from 'lucide-react';
 
 /**
@@ -6,6 +7,7 @@ import { BarChart3, Target, AlertTriangle, Info, CheckCircle } from 'lucide-reac
  * Displays overall statistics for risk predictions
  */
 export default function RiskStatsCard({ prediction, loading }) {
+  const { t } = useTranslation();
   if (loading || !prediction) {
     return null;
   }
@@ -30,7 +32,7 @@ export default function RiskStatsCard({ prediction, loading }) {
       <div style={styles.header}>
         <h3 style={{ ...styles.title, display: 'flex', alignItems: 'center', gap: '8px' }}>
           <BarChart3 size={20} />
-          Risk Summary
+          {t('riskStats.title')}
         </h3>
         <div style={styles.date}>
           {new Date(metadata?.predictionDate).toLocaleDateString('en-US', {
@@ -47,37 +49,37 @@ export default function RiskStatsCard({ prediction, loading }) {
         <div style={styles.statCard}>
           <div style={styles.statIcon}><Target size={32} color="#667eea" /></div>
           <div style={styles.statValue}>{stats.total}</div>
-          <div style={styles.statLabel}>Detected Risks</div>
+          <div style={styles.statLabel}>{t('riskStats.detectedRisks')}</div>
         </div>
 
         <div style={{ ...styles.statCard, ...styles.highCard }}>
           <div style={styles.statIcon}><AlertTriangle size={32} color="#dc2626" /></div>
           <div style={styles.statValue}>{stats.high}</div>
-          <div style={styles.statLabel}>High Severity</div>
+          <div style={styles.statLabel}>{t('riskStats.highSeverity')}</div>
         </div>
 
         <div style={{ ...styles.statCard, ...styles.mediumCard }}>
           <div style={styles.statIcon}><AlertTriangle size={32} color="#f59e0b" /></div>
           <div style={styles.statValue}>{stats.medium}</div>
-          <div style={styles.statLabel}>Medium Severity</div>
+          <div style={styles.statLabel}>{t('riskStats.mediumSeverity')}</div>
         </div>
 
         <div style={{ ...styles.statCard, ...styles.lowCard }}>
           <div style={styles.statIcon}><Info size={32} color="#10b981" /></div>
           <div style={styles.statValue}>{stats.low}</div>
-          <div style={styles.statLabel}>Low Severity</div>
+          <div style={styles.statLabel}>{t('riskStats.lowSeverity')}</div>
         </div>
 
         <div style={styles.statCard}>
           <div style={styles.statIcon}><Target size={32} color="#8b5cf6" /></div>
           <div style={styles.statValue}>{(avgProbability * 100).toFixed(0)}%</div>
-          <div style={styles.statLabel}>Average Probability</div>
+          <div style={styles.statLabel}>{t('riskStats.averageProbability')}</div>
         </div>
 
         <div style={styles.statCard}>
           <div style={styles.statIcon}><CheckCircle size={32} color="#10b981" /></div>
           <div style={styles.statValue}>{(stats.confidence * 100).toFixed(0)}%</div>
-          <div style={styles.statLabel}>Confidence</div>
+          <div style={styles.statLabel}>{t('riskStats.confidence')}</div>
         </div>
       </div>
 
@@ -85,12 +87,12 @@ export default function RiskStatsCard({ prediction, loading }) {
       {metadata?.systemPhase && (
         <div style={styles.metadata}>
           <div style={styles.metaItem}>
-            <span style={styles.metaLabel}>System Phase:</span>
+            <span style={styles.metaLabel}>{t('riskStats.systemPhase')}</span>
             <span style={styles.metaValue}>{metadata.systemPhase}</span>
           </div>
           {metadata.weights && (
             <div style={styles.metaItem}>
-              <span style={styles.metaLabel}>Weights:</span>
+              <span style={styles.metaLabel}>{t('riskStats.weights')}</span>
               <span style={styles.metaValue}>
                 Tree: {(metadata.weights.treeWeight * 100).toFixed(0)}% | 
                 CBR: {(metadata.weights.cbrWeight * 100).toFixed(0)}%
@@ -99,7 +101,7 @@ export default function RiskStatsCard({ prediction, loading }) {
           )}
           {stats.similarCases > 0 && (
             <div style={styles.metaItem}>
-              <span style={styles.metaLabel}>Similar Cases:</span>
+              <span style={styles.metaLabel}>{t('riskStats.similarCases')}</span>
               <span style={styles.metaValue}>{stats.similarCases}</span>
             </div>
           )}

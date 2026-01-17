@@ -1,17 +1,24 @@
-import React, { useState, useContext } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
+import React, { useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import { AuthContext } from '../contexts/AuthContext';
 
 function CompleteProfile() {
+  const { t } = useTranslation();
   const [role, setRole] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
 
-  // If context is not available (HMR or not wrapped), redirect to login
+  // Redirect if no context available
+  useEffect(() => {
+    if (!auth) {
+      navigate('/login', { replace: true });
+    }
+  }, [auth, navigate]);
+
   if (!auth) {
-    navigate('/login', { replace: true });
     return null;
   }
 
@@ -21,14 +28,14 @@ function CompleteProfile() {
     e.preventDefault();
     
     if (!role) {
-      setError('Please select your user type');
+      setError(t('form.required'));
       return;
     }
 
     setIsLoading(true);
     try {
       await updateProfile({ role });
-      window.location.href = '/';
+      navigate('/', { replace: true });
     } catch (err) {
       // Log full error for debugging
       console.error('Error updating profile:', err);
@@ -63,9 +70,9 @@ function CompleteProfile() {
       <main className="main-content">
         <div className="login-card">
           <div className="welcome-block">
-            <h1 className="welcome-title">Complete your profile</h1>
+            <h1 className="welcome-title">{t('completeProfile.title')}</h1>
               <p style={{ color: '#666', fontSize: '15px', textAlign: 'center' }}>
-                Hi {user?.name}! We need to know how you'll use our platform
+                {t('completeProfile.greeting', { name: user?.name })}
               </p>
           </div>
 
@@ -78,7 +85,7 @@ function CompleteProfile() {
                 fontWeight: 500,
                 color: '#333'
               }}>
-                What type of user are you?
+                {t('completeProfile.userType')}
               </label>
               
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -89,9 +96,9 @@ function CompleteProfile() {
                   disabled={isLoading}
                 >
                   <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontWeight: 600, fontSize: '16px' }}>Employee</div>
+                    <div style={{ fontWeight: 600, fontSize: '16px' }}>{t('completeProfile.employee')}</div>
                     <div style={{ fontSize: '14px', color: '#666', marginTop: '4px' }}>
-                      I'm looking for job opportunities and want to manage my career
+                      {t('completeProfile.employeeDesc')}
                     </div>
                   </div>
                 </button>
@@ -103,9 +110,9 @@ function CompleteProfile() {
                   disabled={isLoading}
                 >
                   <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontWeight: 600, fontSize: '16px' }}>Organization Admin</div>
+                    <div style={{ fontWeight: 600, fontSize: '16px' }}>{t('completeProfile.orgAdmin')}</div>
                     <div style={{ fontSize: '14px', color: '#666', marginTop: '4px' }}>
-                      I represent an organization and want to manage employees
+                      {t('completeProfile.orgAdminDesc')}
                     </div>
                   </div>
                 </button>
@@ -125,7 +132,7 @@ function CompleteProfile() {
               disabled={isLoading || !role}
               style={{ width: '100%', marginTop: '24px' }}
             >
-              {isLoading ? 'Saving...' : 'Continue'}
+              {isLoading ? t('common.saving') : t('common.continue')}
             </button>
           </div>
         </div>

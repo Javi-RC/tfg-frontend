@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Send, X, Building2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Search, Send, X, Building2, CheckCircle } from 'lucide-react';
 import { searchOrganizations } from '../api/organization';
 import { submitCVToOrganization } from '../api/cv';
 import PrimaryButton from './PrimaryButton';
@@ -10,6 +11,7 @@ import SecondaryButton from './SecondaryButton';
  * Modal to search and submit CV to an organization
  */
 export default function SubmitCVToOrganization({ onClose, onSuccess }) {
+  const { t } = useTranslation();
   const [organizations, setOrganizations] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(false);
@@ -19,6 +21,7 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
 
   useEffect(() => {
     searchOrgs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery]);
 
   const searchOrgs = async () => {
@@ -37,7 +40,6 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
         // Fallback: respuesta es array directo
         setOrganizations(res.data);
       } else {
-        console.warn('Unexpected API response format:', res.data);
         setOrganizations([]);
       }
     } catch (err) {
@@ -50,7 +52,7 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
 
   const handleSubmit = async () => {
     if (!selectedOrg) {
-      setError('Please select an organization');
+      setError(t('form.selectOption'));
       return;
     }
 
@@ -64,11 +66,11 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
         if (onSuccess) onSuccess();
         if (onClose) onClose();
       } else {
-        setError('Error submitting CV');
+        setError(t('cv.errorSubmittingCV'));
       }
     } catch (err) {
       // La API devuelve { success: false, error: "mensaje" }
-      setError(err.response?.data?.error || err.message || 'Error submitting CV');
+      setError(err.response?.data?.error || err.message || t('cv.errorSubmittingCV'));
     } finally {
       setSubmitting(false);
     }
@@ -78,7 +80,7 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
     <div style={styles.overlay} onClick={onClose}>
       <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div style={styles.header}>
-          <h2 style={styles.title}>Submit CV to Organization</h2>
+          <h2 style={styles.title}>{t('cv.submitToOrg')}</h2>
           <button style={styles.closeButton} onClick={onClose}>×</button>
         </div>
 
@@ -97,7 +99,7 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
           }} />
           <input
             type="text"
-            placeholder="Search organizations..."
+            placeholder={t('organizations.searchOrganizations')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{...styles.searchInput, paddingLeft: '48px'}}
@@ -106,9 +108,9 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
 
         <div style={styles.listSection}>
           {loading ? (
-            <p style={styles.loadingText}>Loading organizations...</p>
+            <p style={styles.loadingText}>{t('organizations.loadingOrganizations')}</p>
           ) : organizations.length === 0 ? (
-            <p style={styles.emptyText}>No organizations found</p>
+            <p style={styles.emptyText}>{t('organizations.noOrganizations')}</p>
           ) : (
             <div style={styles.orgList}>
               {organizations.map((org) => (
@@ -141,10 +143,10 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
 
         <div style={styles.actions}>
           <SecondaryButton onClick={onClose} leftIcon={<X size={16} />}>
-            Cancel
+            {t('common.cancel')}
           </SecondaryButton>
           <PrimaryButton onClick={handleSubmit} disabled={!selectedOrg || submitting} leftIcon={<Send size={16} />}>
-            {submitting ? 'Submitting...' : 'Submit CV'}
+            {submitting ? t('common.submitting') : t('cv.submitToOrg')}
           </PrimaryButton>
         </div>
       </div>

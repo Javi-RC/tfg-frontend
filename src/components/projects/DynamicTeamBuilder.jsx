@@ -7,6 +7,7 @@ import { previewProjectRisks, suggestTeam } from '../../api/projects';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 import { RISK_SEVERITY_COLORS } from '../../types/projectTypes';
+import { TeamSynergyCard } from '../team';
 
 /**
  * Dynamic Team Builder
@@ -28,12 +29,16 @@ export default function DynamicTeamBuilder({
   const [error, setError] = useState(null);
   const [whatIfScenarios, setWhatIfScenarios] = useState([]);
   const [scenariosLoading, setScenariosLoading] = useState(false);
+  const [enablePersonalityOptimization, setEnablePersonalityOptimization] = useState(true);
+  const [suggestedSynergy, setSuggestedSynergy] = useState(null);
+  const [optimizationInfo, setOptimizationInfo] = useState(null);
 
   const recommendedSize = 5; // Could be calculated from project complexity
 
   useEffect(() => {
     loadRecommendations();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enablePersonalityOptimization]);
 
   useEffect(() => {
     if (selectedEmployees.length > 0) {
@@ -46,6 +51,7 @@ export default function DynamicTeamBuilder({
       setCurrentRisks(null);
       setRiskMetadata(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedEmployees]);
 
   const loadRecommendations = async () => {
@@ -75,15 +81,16 @@ export default function DynamicTeamBuilder({
           weeklyHoursPerMember: project.weeklyHoursPerMember || 20
         },
         organizationId,
-        teamSize: recommendedSize
+        teamSize: recommendedSize,
+        enablePersonalityOptimization
       };
-
-      console.log('Requesting team suggestions with:', requestPayload);
 
       const response = await suggestTeam(requestPayload);
 
       const data = response.data?.data || response.data;
       setRecommendations(data.team || []);
+      setSuggestedSynergy(data.synergy || null);
+      setOptimizationInfo(data.optimization || null);
       
     } catch (err) {
       console.error('Error loading recommendations:', err);
@@ -210,6 +217,7 @@ export default function DynamicTeamBuilder({
     } else {
       setWhatIfScenarios([]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentRisks, selectedEmployees]);
 
   const handleToggleEmployee = (employeeId) => {
@@ -257,6 +265,23 @@ export default function DynamicTeamBuilder({
           <button style={styles.closeButton} onClick={onClose}>×</button>
         </div>
 
+        <div style={styles.personalityRow}>
+          <label style={styles.checkboxLabel}>
+            <input
+              type="checkbox"
+              checked={enablePersonalityOptimization}
+              onChange={(e) => setEnablePersonalityOptimization(e.target.checked)}
+              style={styles.checkboxInput}
+            />
+            Optimize by personality complementarity
+          </label>
+          {optimizationInfo?.profileCoverage && (
+            <span style={styles.optimizationHint}>
+              Candidate profile coverage: {optimizationInfo.profileCoverage}
+            </span>
+          )}
+        </div>
+
         <div style={styles.content}>
           {error && (
             <div style={styles.errorBox}>
@@ -274,6 +299,12 @@ export default function DynamicTeamBuilder({
                   Team Selection ({selectedEmployees.length}/{recommendedSize})
                 </h3>
               </div>
+
+              {suggestedSynergy && !loading && !error && (
+                <div style={styles.synergyBox}>
+                  <TeamSynergyCard synergy={suggestedSynergy} compact />
+                </div>
+              )}
 
               {loading ? (
                 <div style={styles.loadingState}>
@@ -329,11 +360,14 @@ export default function DynamicTeamBuilder({
                             <div style={styles.skillsRow}>
                               <CheckCircle size={16} style={{ color: '#28a745', flexShrink: 0 }} />
                               <strong style={styles.skillsLabel}>Matched:</strong>
-                              {emp.matchedSkills.slice(0, 3).map(skill => (
-                                <span key={skill} style={styles.skillChip}>
-                                  {skill}
-                                </span>
-                              ))}
+                              {emp.matchedSkills.slice(0, 3).map((skill, idx) => {
+                                const skillName = typeof skill === 'string' ? skill : skill.skill;
+                                return (
+                                  <span key={skillName || idx} style={styles.skillChip}>
+                                    {skillName}
+                                  </span>
+                                );
+                              })}
                               {emp.matchedSkills.length > 3 && (
                                 <span style={styles.skillMore}>
                                   +{emp.matchedSkills.length - 3}
@@ -344,11 +378,14 @@ export default function DynamicTeamBuilder({
                               <div style={styles.skillsRow}>
                                 <AlertTriangle size={16} style={{ color: '#ffc107', flexShrink: 0 }} />
                                 <strong style={styles.skillsLabelWarning}>Missing:</strong>
-                                {emp.missingSkills.slice(0, 2).map(skill => (
-                                  <span key={skill} style={styles.skillChipWarning}>
-                                    {skill}
-                                  </span>
-                                ))}
+                                {emp.missingSkills.slice(0, 2).map((skill, idx) => {
+                                  const skillName = typeof skill === 'string' ? skill : skill.skill;
+                                  return (
+                                    <span key={skillName || idx} style={styles.skillChipWarning}>
+                                      {skillName}
+                                    </span>
+                                  );
+                                })}
                                 {emp.missingSkills.length > 2 && (
                                   <span style={styles.skillMore}>
                                     +{emp.missingSkills.length - 2}
@@ -523,7 +560,7 @@ export default function DynamicTeamBuilder({
                         </div>
                       ) : (
                         <div style={styles.scenariosList}>
-                          {whatIfScenarios.map((scenario, idx) => (
+                          {whatIfScenarios.map((scenario) => (
                             <div key={scenario.employee.userId} style={styles.scenarioCard}>
                               <div style={styles.scenarioHeader}>
                                 <strong style={styles.scenarioName}>
@@ -681,6 +718,38 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center'
+  },
+
+  personalityRow: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: '12px',
+    padding: '12px 20px',
+    borderBottom: '1px solid #e1e4e8',
+    backgroundColor: '#f6f8fa',
+  },
+  checkboxLabel: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontSize: '13px',
+    fontWeight: 600,
+    color: '#24292e',
+    cursor: 'pointer',
+    userSelect: 'none',
+  },
+  checkboxInput: {
+    width: '16px',
+    height: '16px',
+  },
+  optimizationHint: {
+    fontSize: '12px',
+    color: '#57606a',
+    whiteSpace: 'nowrap',
+  },
+  synergyBox: {
+    padding: '12px 0',
   },
   title: {
     fontSize: '20px',
@@ -1216,7 +1285,7 @@ if (styleSheet) {
         100% { transform: rotate(360deg); }
       }
     `, styleSheet.cssRules.length);
-  } catch (e) {
+  } catch {
     // Ignore if rule already exists
   }
 }

@@ -1,10 +1,13 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Risk Severity Badge Component
  * Displays severity level with appropriate styling
  */
 export default function RiskSeverityBadge({ severity }) {
+  const { t } = useTranslation();
+
   const getBadgeStyle = () => {
     const baseStyle = {
       padding: '4px 12px',
@@ -51,7 +54,7 @@ export default function RiskSeverityBadge({ severity }) {
 
   return (
     <span style={getBadgeStyle()}>
-      {severity}
+      {t(`riskSeverity.${severity}`) || severity}
     </span>
   );
 }

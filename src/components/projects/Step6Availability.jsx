@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FormNumber, FormSelect, FormInput } from './FormComponents';
 import { AFTER_HOURS_OPTIONS } from '../../types/projectTypes';
 import PrimaryButton from '../PrimaryButton';
@@ -6,7 +7,8 @@ import PrimaryButton from '../PrimaryButton';
 /**
  * Step 6: Availability Requirements
  */
-export default function Step6Availability({ formData, onChange, errors = {} }) {
+export default function Step6Availability({ formData, onChange }) {
+  const { t } = useTranslation();
   const handleChange = (e) => {
     const { name, value } = e.target;
     onChange({ [name]: value });
@@ -30,13 +32,13 @@ export default function Step6Availability({ formData, onChange, errors = {} }) {
 
   return (
     <div>
-      <h2 style={styles.stepTitle}>Availability Requirements</h2>
+      <h2 style={styles.stepTitle}>{t('projects.steps.step6.title')}</h2>
       <p style={styles.stepDescription}>
-        Define time commitment and availability needs
+        {t('projects.steps.step6.description')}
       </p>
 
       <FormNumber
-        label="Weekly Hours per Member"
+        label={t('projects.steps.step6.weeklyHoursPerMember')}
         name="weeklyHoursPerMember"
         value={formData.weeklyHoursPerMember || 40}
         onChange={handleChange}
@@ -46,47 +48,47 @@ export default function Step6Availability({ formData, onChange, errors = {} }) {
       />
 
       <FormSelect
-        label="Requires After-Hours Availability"
+        label={t('projects.steps.step6.requiresAfterHoursAvailability')}
         name="requiresAfterHoursAvailability"
         value={formData.requiresAfterHoursAvailability || 'no'}
         onChange={handleChange}
         options={[
-          { value: AFTER_HOURS_OPTIONS.YES, label: 'Yes' },
-          { value: AFTER_HOURS_OPTIONS.NO, label: 'No' },
-          { value: AFTER_HOURS_OPTIONS.OCCASIONAL, label: 'Occasional' }
+          { value: AFTER_HOURS_OPTIONS.YES, label: t('projects.steps.step6.afterHoursYes') },
+          { value: AFTER_HOURS_OPTIONS.NO, label: t('projects.steps.step6.afterHoursNo') },
+          { value: AFTER_HOURS_OPTIONS.OCCASIONAL, label: t('projects.steps.step6.afterHoursOccasional') }
         ]}
       />
 
       <div style={styles.section}>
         <div style={styles.sectionHeader}>
-          <h3 style={styles.sectionTitle}>High Load Periods</h3>
-          <PrimaryButton onClick={addPeriod}>+ Add Period</PrimaryButton>
+          <h3 style={styles.sectionTitle}>{t('projects.steps.step6.highLoadPeriods')}</h3>
+          <PrimaryButton onClick={addPeriod}>{t('projects.steps.step6.addPeriod')}</PrimaryButton>
         </div>
 
         {formData.highLoadPeriods && formData.highLoadPeriods.length > 0 ? (
           formData.highLoadPeriods.map((period, index) => (
             <div key={index} style={styles.periodCard}>
               <div style={styles.periodHeader}>
-                <span style={styles.periodNumber}>Period {index + 1}</span>
+                <span style={styles.periodNumber}>{t('projects.steps.step6.period')} {index + 1}</span>
                 <button
                   style={styles.removeButton}
                   onClick={() => removePeriod(index)}
                 >
-                  Remove
+                  {t('projects.steps.step5.remove')}
                 </button>
               </div>
 
               <FormInput
-                label="Description"
+                label={t('projects.steps.step6.periodDescription')}
                 name={`periodDescription-${index}`}
                 value={period.description || ''}
                 onChange={(e) => handlePeriodChange(index, 'description', e.target.value)}
-                placeholder="e.g., Product Launch Sprint"
+                placeholder={t('projects.steps.step6.periodDescriptionPlaceholder')}
               />
 
               <div style={styles.row}>
                 <FormInput
-                  label="Start Date"
+                  label={t('projects.steps.step6.startDate')}
                   name={`periodStart-${index}`}
                   type="date"
                   value={period.startDate || ''}
@@ -94,7 +96,7 @@ export default function Step6Availability({ formData, onChange, errors = {} }) {
                 />
 
                 <FormInput
-                  label="End Date"
+                  label={t('projects.steps.step6.endDate')}
                   name={`periodEnd-${index}`}
                   type="date"
                   value={period.endDate || ''}
@@ -104,7 +106,7 @@ export default function Step6Availability({ formData, onChange, errors = {} }) {
             </div>
           ))
         ) : (
-          <p style={styles.emptyText}>No high load periods defined.</p>
+          <p style={styles.emptyText}>{t('projects.steps.step6.noPeriodsMessage')}</p>
         )}
       </div>
     </div>

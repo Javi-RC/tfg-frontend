@@ -1,167 +1,45 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, ClipboardList } from 'lucide-react';
-import { AuthContext } from '../contexts/AuthContext';
-import { 
-  getMyProjects, 
-  getAssignedProjects,
-  deleteProject,
-  getProjectById
-} from '../api/projects';
-import { getMyOrganizations } from '../api/organization';
+import { useTranslation } from 'react-i18next';
+import { useProjects } from '../hooks/useProjects';
 import PrimaryButton from '../components/PrimaryButton';
-import SecondaryButton from '../components/SecondaryButton';
 import ProjectCard from '../components/projects/ProjectCard';
+import PageHeader from '../components/layout/PageHeader';
+import TabNavigation from '../components/navigation/TabNavigation';
+import FilterGroup from '../components/common/FilterGroup';
+import EmptyState from '../components/common/EmptyState';
+import LoadingState from '../components/common/LoadingState';
 import { PROJECT_STATUS } from '../types/projectTypes';
 
 /**
  * Projects List Page
- * Main page for viewing and managing projects
+ * Pure presentation component - all business logic in useProjects hook
  */
 export default function ProjectsPage() {
-  const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { t } = useTranslation();
+  const {
+    myProjects,
+    assignedProjects,
+    organizations,
+    loading,
+    activeTab,
+    filterStatus,
+    filterOrg,
+    isProjectManager,
+    filteredProjects,
+    setActiveTab,
+    setFilterStatus,
+    setFilterOrg,
+    handleDeleteProject,
+    reloadProjects
+  } = useProjects();
   
-  const [myProjects, setMyProjects] = useState([]);
-  const [assignedProjects, setAssignedProjects] = useState([]);
-  const [organizations, setOrganizations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('my-projects'); // 'my-projects' | 'assigned'
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [filterOrg, setFilterOrg] = useState('all');
-  const [isProjectManager, setIsProjectManager] = useState(false);
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
+  const handleDelete = async (project) => {
     try {
-      setLoading(true);
-      
-      // Load organizations to check if user is project manager
-      const orgsRes = await getMyOrganizations();
-      const orgsData = orgsRes.data?.success ? orgsRes.data.data : orgsRes.data;
-      setOrganizations(orgsData || []);
-      
-      // Check if user is project manager in any organization
-  
-      const userId = user?.userId || user?._id || user?.id;
-      console.log('🔍 User Info:', { 
-        userId, 
-        userObject: user,
-        orgsCount: orgsData?.length 
-      });
-      
-      const isPM = orgsData.some(org => {
-        console.log('📋 Checking org:', { 
-          orgId: org._id, 
-          orgName: org.name,
-          employeesCount: org.employees?.length 
-        });
-        
-        const employee = org.employees?.find(emp => {
-          const empUserId = emp.user?._id || emp.user;
-          console.log('👤 Checking employee:', { 
-            empUserId, 
-            userId,
-            match: empUserId === userId,
-            isProjectManager: emp.isProjectManager 
-          });
-          return empUserId === userId;
-        });
-        
-        const isOrgPM = employee?.isProjectManager === true;
-        console.log('✅ Org PM Status:', { orgName: org.name, isOrgPM });
-        return isOrgPM;
-      });
-      
-      setIsProjectManager(isPM);
-      console.log('🎯 Final PM Detection:', { userId, isPM, orgsCount: orgsData.length });
-      
-      // Load projects
-      await Promise.all([
-        loadMyProjects(),
-        loadAssignedProjects()
-      ]);
-    } catch (error) {
-      console.error('Error loading data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadMyProjects = async () => {
-    try {
-      const params = {};
-      if (filterStatus !== 'all') params.status = filterStatus;
-      if (filterOrg !== 'all') params.organizationId = filterOrg;
-      
-      const res = await getMyProjects(params);
-      const data = res.data?.success ? res.data.data : res.data;
-      
-      // Populate projectManager manually if it's just an ID
-      const projectsWithPM = await Promise.all(
-        (data || []).map(async (project) => {
-          if (typeof project.projectManager === 'string') {
-            // ProjectManager is just an ID, fetch the full project with populated data
-            try {
-              const fullProject = await getProjectById(project._id, false);
-              const fullData = fullProject.data?.success ? fullProject.data.data : fullProject.data;
-              return fullData;
-            } catch (err) {
-              console.error('Error fetching project details:', err);
-              return project;
-            }
-          }
-          return project;
-        })
-      );
-      
-      setMyProjects(projectsWithPM);
-    } catch (error) {
-      console.error('Error loading my projects:', error);
-      setMyProjects([]);
-    }
-  };
-
-  const loadAssignedProjects = async () => {
-    try {
-      const res = await getAssignedProjects();
-      const data = res.data?.success ? res.data.data : res.data;
-      
-      // Populate projectManager manually if it's just an ID
-      const projectsWithPM = await Promise.all(
-        (data || []).map(async (project) => {
-          if (typeof project.projectManager === 'string') {
-            try {
-              const fullProject = await getProjectById(project._id, false);
-              const fullData = fullProject.data?.success ? fullProject.data.data : fullProject.data;
-              return fullData;
-            } catch (err) {
-              console.error('Error fetching project details:', err);
-              return project;
-            }
-          }
-          return project;
-        })
-      );
-      
-      setAssignedProjects(projectsWithPM);
-    } catch (error) {
-      console.error('Error loading assigned projects:', error);
-      setAssignedProjects([]);
-    }
-  };
-
-  const handleDeleteProject = async (project) => {
-    if (!window.confirm(`Are you sure you want to delete "${project.projectName}"?`)) {
-      return;
-    }
-
-    try {
-      await deleteProject(project._id);
-      loadData();
+      await handleDeleteProject(project._id);
+      await reloadProjects();
     } catch (error) {
       alert(error.response?.data?.error || 'Error deleting project');
     }
@@ -171,17 +49,10 @@ export default function ProjectsPage() {
     navigate(`/projects/${project._id}/edit`);
   };
 
-  const currentProjects = activeTab === 'my-projects' ? myProjects : assignedProjects;
-  const filteredProjects = currentProjects.filter(p => {
-    if (filterStatus !== 'all' && p.status !== filterStatus) return false;
-    if (filterOrg !== 'all' && p.organization !== filterOrg) return false;
-    return true;
-  });
-
   if (loading) {
     return (
       <div style={styles.container}>
-        <p style={styles.loadingText}>Loading projects...</p>
+        <LoadingState message={t('projects.loadingProjects')} />
       </div>
     );
   }
@@ -189,95 +60,70 @@ export default function ProjectsPage() {
   return (
     <div style={styles.container}>
       {/* Header */}
-      <div style={styles.header}>
-        <div>
-          <h1 style={styles.title}>Projects</h1>
-          <p style={styles.subtitle}>
-            Manage and track your projects
-          </p>
-        </div>
-        {isProjectManager && (
+      <PageHeader
+        title={t('projects.title')}
+        subtitle={t('projects.manageTrackProjects')}
+        action={isProjectManager && (
           <PrimaryButton onClick={() => navigate('/projects/new')} leftIcon={<Plus size={18} />}>
-            Create Project
+            {t('projects.createProject')}
           </PrimaryButton>
         )}
-      </div>
+      />
 
       {/* Tabs */}
-      <div style={styles.tabs}>
-        <button
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'my-projects' && styles.tabActive)
-          }}
-          onClick={() => setActiveTab('my-projects')}
-        >
-          My Projects ({myProjects.length})
-        </button>
-        <button
-          style={{
-            ...styles.tab,
-            ...(activeTab === 'assigned' && styles.tabActive)
-          }}
-          onClick={() => setActiveTab('assigned')}
-        >
-          Assigned to Me ({assignedProjects.length})
-        </button>
-      </div>
+      <TabNavigation
+        tabs={[
+          { id: 'my-projects', label: `${t('projects.myProjects')} (${myProjects.length})` },
+          { id: 'assigned', label: `${t('projects.assignedToMe')} (${assignedProjects.length})` }
+        ]}
+        activeTab={activeTab}
+        onChange={setActiveTab}
+        ariaLabel="Projects navigation"
+      />
 
       {/* Filters */}
       <div style={styles.filters}>
-        <div style={styles.filterGroup}>
-          <label style={styles.filterLabel}>Status:</label>
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            style={styles.select}
-          >
-            <option value="all">All</option>
-            <option value={PROJECT_STATUS.DRAFT}>Draft</option>
-            <option value={PROJECT_STATUS.ACTIVE}>Active</option>
-            <option value={PROJECT_STATUS.PAUSED}>Paused</option>
-            <option value={PROJECT_STATUS.COMPLETED}>Completed</option>
-            <option value={PROJECT_STATUS.CANCELLED}>Cancelled</option>
-          </select>
-        </div>
+        <FilterGroup
+          label={t('projects.status')}
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+          options={[
+            { value: 'all', label: t('projects.allStatuses') },
+            { value: PROJECT_STATUS.DRAFT, label: t('projects.planning') },
+            { value: PROJECT_STATUS.ACTIVE, label: t('projects.active') },
+            { value: PROJECT_STATUS.PAUSED, label: t('projects.onHold') },
+            { value: PROJECT_STATUS.COMPLETED, label: t('projects.completed') },
+            { value: PROJECT_STATUS.CANCELLED, label: t('projects.cancelled') }
+          ]}
+        />
 
-        <div style={styles.filterGroup}>
-          <label style={styles.filterLabel}>Organization:</label>
-          <select
-            value={filterOrg}
-            onChange={(e) => setFilterOrg(e.target.value)}
-            style={styles.select}
-          >
-            <option value="all">All Organizations</option>
-            {organizations.map(org => (
-              <option key={org._id} value={org._id}>{org.name}</option>
-            ))}
-          </select>
-        </div>
+        <FilterGroup
+          label={t('projects.organization')}
+          value={filterOrg}
+          onChange={(e) => setFilterOrg(e.target.value)}
+          options={[
+            { value: 'all', label: t('projects.allOrganizations') },
+            ...organizations.map(org => ({ value: org._id, label: org.name }))
+          ]}
+        />
       </div>
 
       {/* Projects Grid */}
       {filteredProjects.length === 0 ? (
-        <div style={styles.emptyState}>
-          <div style={styles.emptyIcon}>
-            <ClipboardList size={64} color="#6c757d" style={{ opacity: 0.3 }} />
-          </div>
-          <h3 style={styles.emptyTitle}>
-            {activeTab === 'my-projects' ? 'No projects created yet' : 'No projects assigned'}
-          </h3>
-          <p style={styles.emptyText}>
-            {activeTab === 'my-projects' && isProjectManager
-              ? 'Create your first project to get started'
-              : 'You will see projects here when assigned by a project manager'}
-          </p>
-          {activeTab === 'my-projects' && isProjectManager && (
+        <EmptyState
+          icon={ClipboardList}
+          title={activeTab === 'my-projects' ? t('projects.noProjects') : t('projects.noProjects')}
+          description={
+            activeTab === 'my-projects' && isProjectManager
+              ? t('projects.createFirstProject')
+              : t('projects.noProjectsDesc')
+          }
+          action={activeTab === 'my-projects' && isProjectManager && (
             <PrimaryButton onClick={() => navigate('/projects/new')} leftIcon={<Plus size={18} />}>
-              Create First Project
+              {t('projects.createProject')}
             </PrimaryButton>
           )}
-        </div>
+        />
       ) : (
         <div style={styles.grid}>
           {filteredProjects.map(project => (
@@ -285,7 +131,7 @@ export default function ProjectsPage() {
               key={project._id}
               project={project}
               onEdit={activeTab === 'my-projects' ? handleEditProject : null}
-              onDelete={user?.role === 'org_admin' && activeTab === 'my-projects' ? handleDeleteProject : null}
+              onDelete={activeTab === 'my-projects' ? handleDelete : null}
               showActions={activeTab === 'my-projects'}
             />
           ))}
@@ -326,79 +172,15 @@ const styles = {
     fontSize: '16px',
     padding: '60px'
   },
-  tabs: {
-    display: 'flex',
-    gap: '8px',
-    marginBottom: '24px',
-    borderBottom: '2px solid #E5E7EB'
-  },
-  tab: {
-    padding: '12px 24px',
-    background: 'none',
-    border: 'none',
-    fontSize: '15px',
-    fontWeight: '600',
-    color: '#6B7280',
-    cursor: 'pointer',
-    transition: 'all 0.2s',
-    borderBottom: '2px solid transparent',
-    marginBottom: '-2px'
-  },
-  tabActive: {
-    color: '#111',
-    borderBottomColor: '#111'
-  },
   filters: {
     display: 'flex',
     gap: '20px',
     marginBottom: '32px',
     flexWrap: 'wrap'
   },
-  filterGroup: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px'
-  },
-  filterLabel: {
-    fontSize: '14px',
-    fontWeight: '600',
-    color: '#111'
-  },
-  select: {
-    padding: '10px 16px',
-    border: '2px solid #E5E7EB',
-    borderRadius: '10px',
-    fontSize: '14px',
-    outline: 'none',
-    cursor: 'pointer',
-    background: 'white',
-    minWidth: '180px'
-  },
   grid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))',
     gap: '24px'
-  },
-  emptyState: {
-    textAlign: 'center',
-    padding: '80px 20px',
-    background: '#F9FAFB',
-    borderRadius: '16px',
-    border: '2px dashed #E5E7EB'
-  },
-  emptyIcon: {
-    fontSize: '64px',
-    marginBottom: '16px'
-  },
-  emptyTitle: {
-    fontSize: '20px',
-    fontWeight: '700',
-    color: '#111',
-    marginBottom: '8px'
-  },
-  emptyText: {
-    fontSize: '15px',
-    color: '#6B7280',
-    marginBottom: '24px'
   }
 };

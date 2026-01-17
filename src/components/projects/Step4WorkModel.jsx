@@ -66,7 +66,7 @@ export default function Step4WorkModel({ formData, onChange, errors }) {
           Work Model Type <span style={styles.required}>*</span>
         </label>
         <div style={styles.radioGroup}>
-          {Object.entries(WORK_MODEL_TYPES).map(([key, value]) => (
+          {Object.values(WORK_MODEL_TYPES).map((value) => (
             <label key={value} style={styles.radioLabel}>
               <input
                 type="radio"

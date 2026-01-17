@@ -1,11 +1,14 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { CheckCircle } from 'lucide-react';
 import { FormSelect } from './FormComponents';
 import { YES_NO_PARTIAL, COMPLEXITY_LEVELS } from '../../types/projectTypes';
 
 /**
  * Step 9: Organizational Maturity
  */
-export default function Step9Maturity({ formData, onChange, errors = {} }) {
+export default function Step9Maturity({ formData, onChange }) {
+  const { t } = useTranslation();
   const handleChange = (e) => {
     const { name, value } = e.target;
     onChange({ [name]: value });
@@ -13,53 +16,52 @@ export default function Step9Maturity({ formData, onChange, errors = {} }) {
 
   return (
     <div>
-      <h2 style={styles.stepTitle}>Organizational Maturity</h2>
+      <h2 style={styles.stepTitle}>{t('projects.steps.step9.title')}</h2>
       <p style={styles.stepDescription}>
-        Assess your organization's development maturity
+        {t('projects.steps.step9.description')}
       </p>
 
       <FormSelect
-        label="Has Onboarding Processes"
+        label={t('projects.steps.step9.hasOnboardingProcesses')}
         name="hasOnboardingProcesses"
         value={formData.hasOnboardingProcesses || 'partial'}
         onChange={handleChange}
         options={[
-          { value: YES_NO_PARTIAL.YES, label: 'Yes' },
-          { value: YES_NO_PARTIAL.NO, label: 'No' },
-          { value: YES_NO_PARTIAL.PARTIAL, label: 'Partial' }
+          { value: YES_NO_PARTIAL.YES, label: t('projects.yesNoPartial.yes') },
+          { value: YES_NO_PARTIAL.NO, label: t('projects.yesNoPartial.no') },
+          { value: YES_NO_PARTIAL.PARTIAL, label: t('projects.yesNoPartial.partial') }
         ]}
       />
 
       <FormSelect
-        label="Has Version Control and CI/CD"
+        label={t('projects.steps.step9.hasVersionControlAndCICD')}
         name="hasVersionControlAndCICD"
         value={formData.hasVersionControlAndCICD || 'yes'}
         onChange={handleChange}
         options={[
-          { value: YES_NO_PARTIAL.YES, label: 'Yes' },
-          { value: YES_NO_PARTIAL.NO, label: 'No' },
-          { value: YES_NO_PARTIAL.PARTIAL, label: 'Partial' }
+          { value: YES_NO_PARTIAL.YES, label: t('projects.yesNoPartial.yes') },
+          { value: YES_NO_PARTIAL.NO, label: t('projects.yesNoPartial.no') },
+          { value: YES_NO_PARTIAL.PARTIAL, label: t('projects.yesNoPartial.partial') }
         ]}
       />
 
       <FormSelect
-        label="Internal Tools Fragmentation"
+        label={t('projects.steps.step9.internalToolsFragmentation')}
         name="internalToolsFragmentation"
         value={formData.internalToolsFragmentation || 'medium'}
         onChange={handleChange}
         options={[
-          { value: COMPLEXITY_LEVELS.LOW, label: 'Low - Well integrated tools' },
-          { value: COMPLEXITY_LEVELS.MEDIUM, label: 'Medium - Some fragmentation' },
-          { value: COMPLEXITY_LEVELS.HIGH, label: 'High - Many disparate tools' }
+          { value: COMPLEXITY_LEVELS.LOW, label: t('projects.steps.step9.wellIntegrated') },
+          { value: COMPLEXITY_LEVELS.MEDIUM, label: t('projects.steps.step9.someFragmentation') },
+          { value: COMPLEXITY_LEVELS.HIGH, label: t('projects.steps.step9.highlyFragmented') }
         ]}
       />
 
       <div style={styles.completionCard}>
         <div style={styles.completionIcon}><CheckCircle size={48} color="#10b981" /></div>
-        <h3 style={styles.completionTitle}>Form Complete!</h3>
+        <h3 style={styles.completionTitle}>{t('projects.steps.step9.formComplete')}</h3>
         <p style={styles.completionText}>
-          You've filled in all the sections. Review your information and save the project 
-          as a draft, or submit it to activate immediately.
+          {t('projects.steps.step9.formCompleteDesc')}
         </p>
       </div>
     </div>

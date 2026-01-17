@@ -1,20 +1,22 @@
 import { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Bell } from 'lucide-react';
-import { useNotifications } from '../../contexts/NotificationContext';
+import { useNotifications } from '../../contexts/useNotifications';
 import NotificationDropdown from './NotificationDropdown';
 import './NotificationBell.css';
 
 /**
  * NotificationBell Component
- * Componente de campanita de notificaciones con badge de conteo
- * Muestra un dropdown con la lista de notificaciones al hacer click
+ * Notification bell with unread count badge.
+ * Shows a dropdown with the list of notifications on click.
  */
 const NotificationBell = () => {
+  const { t } = useTranslation();
   const { unreadCount, fetchNotifications } = useNotifications();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Cerrar dropdown al hacer click fuera
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -43,10 +45,10 @@ const NotificationBell = () => {
       <button 
         className="notification-bell-button"
         onClick={handleToggle}
-        aria-label="Notifications"
+        aria-label={t('notifications.aria.bell')}
         aria-expanded={isOpen}
       >
-        <Bell size={24} />
+        <Bell size={24} aria-hidden="true" />
         {unreadCount > 0 && (
           <span className="notification-badge">
             {unreadCount > 99 ? '99+' : unreadCount}

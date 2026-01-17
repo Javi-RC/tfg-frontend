@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
-import { AlertTriangle, CheckCircle, X } from 'lucide-react';
-import { AlertTriangle, Search, CheckCircle, XCircle, X } from 'lucide-react';
+import { AlertTriangle, CheckCircle, X, Search, XCircle } from 'lucide-react';
 
 /**
  * RisksSection Component

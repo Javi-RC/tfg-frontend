@@ -8,11 +8,13 @@ import api from './axios';
 /**
  * Upload and process a CV file
  * @param {File} file - The CV file to upload
- * @returns {Promise} API response with processed CV data
+ * @param {string} language - Language preference ('en' or 'es')
+ * @returns {Promise} API response with processed CV data and questionnaire if needed
  */
-export const uploadCV = (file) => {
+export const uploadCV = (file, language = 'en') => {
   const formData = new FormData();
   formData.append('cv', file);
+  formData.append('language', language);
   
   return api.post('/api/cv/upload', formData, {
     headers: {
@@ -69,6 +71,21 @@ export const searchCVs = (searchParams) => api.post('/api/cv/admin/search', sear
 export const submitCVToOrganization = (organizationId) => 
   api.post('/api/cv/submit-to-organization', { organizationId });
 
+/**
+ * Submit phase responses and get next phase
+ * Backend accumulates responses internally and returns next phase or completion status
+ * @param {string} sessionId - Questionnaire session ID
+ * @param {string} currentPhase - Current phase ID
+ * @param {Object} responses - User responses for CURRENT PHASE ONLY
+ * @returns {Promise} API response with next phase or isComplete flag
+ */
+export const submitPhaseResponses = (sessionId, currentPhase, responses) =>
+  api.post('/api/cv/questionnaire/next', {
+    sessionId,
+    currentPhase,
+    responses
+  });
+
 export default {
   uploadCV,
   getMyCV,
@@ -77,5 +94,6 @@ export default {
   deleteCV,
   getAllCVs,
   searchCVs,
-  submitCVToOrganization
+  submitCVToOrganization,
+  submitPhaseResponses
 };

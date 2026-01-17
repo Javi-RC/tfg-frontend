@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import SectionHeader from './SectionHeader';
 import CVCard from './CVCard';
 import Field from './Field';
@@ -16,6 +17,9 @@ export default function CertificationsSection({
   onAddCertification,
   onRemoveCertification
 }) {
+  const { t } = useTranslation();
+  const entryLabel = t('cv.editor.entry');
+
   const certifications = editMode ? editData?.certifications : cv?.certifications;
   if (!certifications) return null;
 
@@ -23,7 +27,7 @@ export default function CertificationsSection({
     <section style={{ marginBottom: '56px' }} role="region" aria-labelledby="certifications-heading">
       <SectionHeader 
         id="certifications-heading" 
-        title="Certifications" 
+        title={t('cv.certifications')} 
       />
       {certifications.map((cert, index) => (
         <CVCard
@@ -31,39 +35,39 @@ export default function CertificationsSection({
           editMode={editMode}
           borderColor="#f6ad55"
           onRemove={() => onRemoveCertification(index)}
-          removeLabel={`Remove certification: ${cert.name || 'entry'}`}
+          removeLabel={t('cv.editor.certifications.removeLabel', { name: cert.name || entryLabel })}
           style={{ marginBottom: '32px' }}
         >
           {editMode ? (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', rowGap: '16px' }}>
               <Field
                 editable={true}
-                label="Certification Name"
+                label={t('cv.editor.certifications.fields.name.label')}
                 value={cert.name}
                 onChange={(value) => onCertificationChange(index, 'name', value)}
-                placeholder="e.g. AWS Certified Developer"
+                placeholder={t('cv.editor.certifications.fields.name.placeholder')}
                 required
               />
               <Field
                 editable={true}
-                label="Issuer"
+                label={t('cv.editor.certifications.fields.issuer.label')}
                 value={cert.issuer}
                 onChange={(value) => onCertificationChange(index, 'issuer', value)}
-                placeholder="e.g. Amazon Web Services"
+                placeholder={t('cv.editor.certifications.fields.issuer.placeholder')}
               />
               <Field
                 editable={true}
-                label="Date Obtained"
+                label={t('cv.editor.certifications.fields.dateObtained.label')}
                 value={cert.dateObtained}
                 onChange={(value) => onCertificationChange(index, 'dateObtained', value)}
-                placeholder="e.g. Jan 2024"
+                placeholder={t('cv.editor.certifications.fields.dateObtained.placeholder')}
               />
               <Field
                 editable={true}
-                label="Credential ID"
+                label={t('cv.editor.certifications.fields.credentialId.label')}
                 value={cert.credentialId}
                 onChange={(value) => onCertificationChange(index, 'credentialId', value)}
-                placeholder="Optional credential ID"
+                placeholder={t('cv.editor.certifications.fields.credentialId.placeholder')}
               />
             </div>
           ) : (
@@ -76,7 +80,7 @@ export default function CertificationsSection({
               </p>
               {cert.credentialId && (
                 <p style={{ fontSize: '12px', color: '#999', marginTop: '4px' }}>
-                  ID: {cert.credentialId}
+                  {t('cv.editor.certifications.fields.credentialId.displayPrefix')}: {cert.credentialId}
                 </p>
               )}
             </>
@@ -87,10 +91,10 @@ export default function CertificationsSection({
         <div style={{ marginTop: '20px', textAlign: 'center' }}>
           <PrimaryButton 
             onClick={onAddCertification}
-            aria-label="Add new certification"
+            aria-label={t('cv.editor.certifications.actions.addAria')}
             style={{ padding: '12px 24px', fontSize: '14px', fontWeight: '600' }}
           >
-            + Add Certification
+            {t('cv.editor.certifications.actions.addButton')}
           </PrimaryButton>
         </div>
       )}

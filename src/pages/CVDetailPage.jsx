@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FileText, Edit } from 'lucide-react';
 import { getOrganizationCV } from '../api/organization';
 import SecondaryButton from '../components/SecondaryButton';
@@ -20,6 +21,7 @@ import CVErrorBanner from '../components/cv/CVErrorBanner';
  * Displays a CV submitted to an organization (read-only view)
  */
 export default function CVDetailPage() {
+  const { t, i18n } = useTranslation();
   const { orgId, cvId } = useParams();
   const navigate = useNavigate();
 
@@ -29,6 +31,7 @@ export default function CVDetailPage() {
 
   useEffect(() => {
     loadCV();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [orgId, cvId]);
 
   const loadCV = async () => {
@@ -37,15 +40,8 @@ export default function CVDetailPage() {
       setError('');
       const res = await getOrganizationCV(orgId, cvId);
       
-      console.log('=== CV DETAIL PAGE - BACKEND RESPONSE ===');
-      console.log('Full response:', res);
-      console.log('Response data:', res.data);
-      console.log('Response status:', res.status);
-      console.log('=========================================');
-      
       // API format: { success: true, cv: {...} }
       const cvData = res.data?.cv || res.data?.data || res.data;
-      console.log('CV Data to display:', cvData);
       setCv(cvData);
     } catch (err) {
       console.error('=== CV DETAIL PAGE - ERROR ===');
@@ -53,7 +49,7 @@ export default function CVDetailPage() {
       console.error('Error response:', err.response);
       console.error('Error message:', err.message);
       console.error('==============================');
-      setError(err.response?.data?.error || err.message || 'Error loading CV');
+      setError(err.response?.data?.error || err.message || t('cv.detailPage.errors.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -84,13 +80,13 @@ export default function CVDetailPage() {
         }}>
           <div style={{ fontSize: '64px', marginBottom: '16px', opacity: 0.3 }}><FileText size={64} color="#9ca3af" /></div>
           <h2 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
-            CV Not Found
+            {t('cv.cvNotFound')}
           </h2>
           <p style={{ fontSize: '14px', color: '#666', marginBottom: '24px' }}>
-            {error || 'The CV you are looking for does not exist or you do not have permission to view it.'}
+            {error || t('cv.detailPage.notFoundDescription')}
           </p>
           <SecondaryButton onClick={() => navigate(-1)}>
-            Go Back
+            {t('cv.detailPage.goBack')}
           </SecondaryButton>
         </div>
       </div>
@@ -102,7 +98,7 @@ export default function CVDetailPage() {
       minHeight: '100vh',
       background: '#f5f7fa',
       paddingTop: '104px'
-    }} role="main" aria-label="CV Detail page">
+    }} role="main" aria-label={t('cv.detailPage.aria.page')}>
       <div style={{
         maxWidth: '1400px',
         margin: '0 auto',
@@ -125,7 +121,7 @@ export default function CVDetailPage() {
               margin: 0,
               marginBottom: '8px'
             }}>
-              {cv.userId?.name || 'Candidate CV'}
+              {cv.userId?.name || t('cv.detailPage.candidateCv')}
             </h1>
             <p style={{ 
               fontSize: '16px', 
@@ -133,7 +129,7 @@ export default function CVDetailPage() {
               margin: 0,
               marginBottom: '8px' 
             }}>
-              {cv.userId?.email || cv.contact?.email || 'No email provided'}
+              {cv.userId?.email || cv.contact?.email || t('cv.detailPage.noEmailProvided')}
             </p>
             {cv.submittedToOrganizationAt && (
               <p style={{ 
@@ -141,10 +137,12 @@ export default function CVDetailPage() {
                 color: '#718096', 
                 margin: 0 
               }}>
-                Submitted on {new Date(cv.submittedToOrganizationAt).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
+                {t('cv.detailPage.submittedOn', {
+                  date: new Intl.DateTimeFormat(i18n.language, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                  }).format(new Date(cv.submittedToOrganizationAt))
                 })}
               </p>
             )}
@@ -168,10 +166,10 @@ export default function CVDetailPage() {
               </span>
             )}
             <SecondaryButton onClick={() => navigate(-1)}>
-              Back to List
+              {t('cv.detailPage.backToList')}
             </SecondaryButton>
             <PrimaryButton onClick={loadCV}>
-              Refresh
+              {t('cv.detailPage.refresh')}
             </PrimaryButton>
           </div>
         </div>
@@ -240,7 +238,7 @@ export default function CVDetailPage() {
                   alignItems: 'center',
                   gap: '8px'
                 }}>
-                  <Edit size={20} /> Organization Notes
+                  <Edit size={20} /> {t('cv.detailPage.organizationNotes')}
                 </h2>
                 <p style={{
                   fontSize: '15px',

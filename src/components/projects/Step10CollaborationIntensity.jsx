@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { Handshake, AlertCircle, AlertTriangle } from 'lucide-react';
 import { FormInput, FormTextarea, FormSelect } from './FormComponents';
 import { DEPENDENCY_LEVELS } from '../../types/projectTypes';
 import PrimaryButton from '../PrimaryButton';
@@ -7,7 +9,8 @@ import PrimaryButton from '../PrimaryButton';
  * Step 10: Team Collaboration Intensity
  * Define inter-team collaboration and critical information exchanges
  */
-export default function Step10CollaborationIntensity({ formData, onChange, errors = {} }) {
+export default function Step10CollaborationIntensity({ formData, onChange }) {
+  const { t } = useTranslation();
   const handleTeamChange = (index, field, value) => {
     const newTeams = [...(formData.involvedTeams || [])];
     newTeams[index] = { ...newTeams[index], [field]: value };
@@ -37,58 +40,58 @@ export default function Step10CollaborationIntensity({ formData, onChange, error
     <div>
       <h2 style={{...styles.stepTitle, display: 'flex', alignItems: 'center', gap: '8px'}}>
         <Handshake size={24} />
-        Team Collaboration Intensity
+        {t('projects.steps.step10.title')}
       </h2>
       <p style={styles.stepDescription}>
-        Define how teams will collaborate and exchange information (Optional)
+        {t('projects.steps.step10.description')}
       </p>
 
       <div style={styles.infoBox}>
         <AlertCircle size={20} color="#004085" style={{ flexShrink: 0 }} />
         <div>
-          <strong>Optional Step</strong>
-          <p>This step is optional but recommended for multi-team projects</p>
+          <strong>{t('projects.steps.step10.optionalStep')}</strong>
+          <p>{t('projects.steps.step10.optionalDescription')}</p>
         </div>
       </div>
 
       <div style={styles.section}>
         <div style={styles.sectionHeader}>
-          <h3 style={styles.sectionTitle}>Involved Teams</h3>
-          <PrimaryButton onClick={addTeam}>+ Add Team</PrimaryButton>
+          <h3 style={styles.sectionTitle}>{t('projects.steps.step10.involvedTeams')}</h3>
+          <PrimaryButton onClick={addTeam}>{t('projects.steps.step10.addTeam')}</PrimaryButton>
         </div>
 
         {formData.involvedTeams && formData.involvedTeams.length > 0 ? (
           formData.involvedTeams.map((team, index) => (
             <div key={index} style={styles.teamCard}>
               <div style={styles.teamHeader}>
-                <span style={styles.teamNumber}>Team {index + 1}</span>
+                <span style={styles.teamNumber}>{t('projects.steps.step10.team')} {index + 1}</span>
                 <button
                   style={styles.removeButton}
                   onClick={() => removeTeam(index)}
                 >
-                  Remove
+                  {t('projects.steps.step5.remove')}
                 </button>
               </div>
 
               <div style={styles.row}>
                 <FormInput
-                  label="Team Name"
+                  label={t('projects.steps.step10.teamName')}
                   name={`teamName-${index}`}
                   value={team.teamName || ''}
                   onChange={(e) => handleTeamChange(index, 'teamName', e.target.value)}
                   required
-                  placeholder="e.g., Backend Team, Frontend Team"
+                  placeholder={t('projects.steps.step10.teamNamePlaceholder')}
                 />
 
                 <FormSelect
-                  label="Dependency Level"
+                  label={t('projects.steps.step10.dependencyLevel')}
                   name={`teamDependency-${index}`}
                   value={team.dependencyLevel || 'medium'}
                   onChange={(e) => handleTeamChange(index, 'dependencyLevel', e.target.value)}
                   options={[
-                    { value: DEPENDENCY_LEVELS.LOW, label: 'Low - Independent work' },
-                    { value: DEPENDENCY_LEVELS.MEDIUM, label: 'Medium - Some coordination' },
-                    { value: DEPENDENCY_LEVELS.HIGH, label: 'High - Tight integration' }
+                    { value: DEPENDENCY_LEVELS.LOW, label: t('projects.steps.step10.dependencyLowDesc') },
+                    { value: DEPENDENCY_LEVELS.MEDIUM, label: t('projects.steps.step10.dependencyMediumDesc') },
+                    { value: DEPENDENCY_LEVELS.HIGH, label: t('projects.steps.step10.dependencyHighDesc') }
                   ]}
                 />
               </div>
@@ -97,30 +100,29 @@ export default function Step10CollaborationIntensity({ formData, onChange, error
         ) : (
           <div style={styles.emptyState}>
             <span style={styles.emptyIcon}>👥</span>
-            <p style={styles.emptyText}>No teams added yet</p>
-            <p style={styles.emptySubtext}>Click "Add Team" to define inter-team dependencies</p>
+            <p style={styles.emptyText}>{t('projects.steps.step10.noTeamsMessage')}</p>
+            <p style={styles.emptySubtext}>{t('projects.steps.step10.clickToStart')}</p>
           </div>
         )}
       </div>
 
       <FormTextarea
-        label="Critical Information Exchanges"
+        label={t('projects.steps.step10.criticalExchanges')}
         name="criticalExchanges"
         value={(formData.criticalExchanges || []).join('\n')}
         onChange={handleExchangesChange}
-        placeholder="List critical information exchanges between teams (one per line)&#10;Example:&#10;- API specs from Backend to Frontend&#10;- Design assets from Design to Frontend&#10;- Database schema changes to all teams"
+        placeholder={t('projects.steps.step10.criticalExchangesPlaceholder')}
         rows={6}
-        helperText="One exchange per line. Be specific about what information is exchanged and between which teams."
+        helperText={t('projects.steps.step10.criticalExchangesHelp')}
       />
 
       {formData.involvedTeams && formData.involvedTeams.length > 2 && (
         <div style={styles.warningBox}>
           <AlertTriangle size={20} color="#856404" style={{ flexShrink: 0 }} />
           <div>
-            <strong>Complex Coordination</strong>
+            <strong>{t('common.warning')}</strong>
             <p>
-              With {formData.involvedTeams.length} teams involved, ensure clear communication 
-              channels and regular sync meetings to avoid coordination issues.
+              {t('projects.steps.step10.complexCoordination', { count: formData.involvedTeams.length })}
             </p>
           </div>
         </div>

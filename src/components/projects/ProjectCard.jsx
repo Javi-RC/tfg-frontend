@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { User, Users, Calendar, Clock, Eye, Edit, Trash2 } from 'lucide-react';
 import ProjectStatusBadge from './ProjectStatusBadge';
 
@@ -9,6 +10,7 @@ import ProjectStatusBadge from './ProjectStatusBadge';
  */
 export default function ProjectCard({ project, onEdit, onDelete, showActions = true }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleCardClick = () => {
     navigate(`/projects/${project._id}`);
@@ -44,7 +46,7 @@ export default function ProjectCard({ project, onEdit, onDelete, showActions = t
         <div style={styles.metaItem}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
             <User size={16} color="#666" style={{ flexShrink: 0 }} />
-            <span style={styles.metaLabel}>Project Manager:</span>
+            <span style={styles.metaLabel}>{t('projects.card.projectManager')}:</span>
           </div>
           <span style={styles.metaValue}>
             {project.projectManager?.name || 'N/A'}
@@ -54,17 +56,17 @@ export default function ProjectCard({ project, onEdit, onDelete, showActions = t
         <div style={styles.metaItem}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
             <Users size={16} color="#666" style={{ flexShrink: 0 }} />
-            <span style={styles.metaLabel}>Team Size:</span>
+            <span style={styles.metaLabel}>{t('projects.card.teamSize')}:</span>
           </div>
           <span style={styles.metaValue}>
-            {project.assignedEmployeesCount || 0} members
+            {project.assignedEmployeesCount || 0} {t('projects.card.members')}
           </span>
         </div>
 
         <div style={styles.metaItem}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
             <Calendar size={16} color="#666" style={{ flexShrink: 0 }} />
-            <span style={styles.metaLabel}>Timeline:</span>
+            <span style={styles.metaLabel}>{t('projects.card.timeline')}:</span>
           </div>
           <span style={styles.metaValue}>
             {formatDate(project.estimatedStartDate)} - {formatDate(project.estimatedEndDate)}
@@ -74,7 +76,7 @@ export default function ProjectCard({ project, onEdit, onDelete, showActions = t
         <div style={styles.metaItem}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
             <Clock size={16} color="#666" style={{ flexShrink: 0 }} />
-            <span style={styles.metaLabel}>Duration:</span>
+            <span style={styles.metaLabel}>{t('projects.card.duration')}:</span>
           </div>
           <span style={styles.metaValue}>
             {project.expectedDuration?.value} {project.expectedDuration?.unit}
@@ -94,7 +96,7 @@ export default function ProjectCard({ project, onEdit, onDelete, showActions = t
             >
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                 <Eye size={16} />
-                View Details
+                {t('projects.card.viewDetails')}
               </span>
             </button>
             {onEdit && (
@@ -107,7 +109,7 @@ export default function ProjectCard({ project, onEdit, onDelete, showActions = t
               >
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                   <Edit size={16} />
-                  Edit
+                  {t('projects.card.edit')}
                 </span>
               </button>
             )}
@@ -119,7 +121,10 @@ export default function ProjectCard({ project, onEdit, onDelete, showActions = t
                   onDelete(project);
                 }}
               >
-                Delete
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <Trash2 size={16} />
+                  {t('projects.card.delete')}
+                </span>
               </button>
             )}
           </div>

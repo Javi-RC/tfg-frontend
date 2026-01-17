@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FormInput, FormTextarea, FormNumber } from './FormComponents';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
@@ -6,11 +7,8 @@ import SecondaryButton from '../SecondaryButton';
 /**
  * Step 5: Roles and Responsibilities
  */
-export default function Step5Roles({ formData, onChange, errors = {} }) {
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    onChange({ [name]: value });
-  };
+export default function Step5Roles({ formData, onChange }) {
+  const { t } = useTranslation();
 
   const handleRoleChange = (index, field, value) => {
     const newRoles = [...(formData.keyRoles || [])];
@@ -36,45 +34,45 @@ export default function Step5Roles({ formData, onChange, errors = {} }) {
 
   return (
     <div>
-      <h2 style={styles.stepTitle}>Roles and Responsibilities</h2>
+      <h2 style={styles.stepTitle}>{t('projects.steps.step5.title')}</h2>
       <p style={styles.stepDescription}>
-        Define key roles and critical dependencies
+        {t('projects.steps.step5.description')}
       </p>
 
       <div style={styles.section}>
         <div style={styles.sectionHeader}>
-          <h3 style={styles.sectionTitle}>Key Roles</h3>
-          <PrimaryButton onClick={addRole}>+ Add Role</PrimaryButton>
+          <h3 style={styles.sectionTitle}>{t('projects.steps.step5.keyRoles')}</h3>
+          <PrimaryButton onClick={addRole}>{t('projects.steps.step5.addRole')}</PrimaryButton>
         </div>
 
         {formData.keyRoles && formData.keyRoles.length > 0 ? (
           formData.keyRoles.map((role, index) => (
             <div key={index} style={styles.roleCard}>
               <div style={styles.roleHeader}>
-                <span style={styles.roleNumber}>Role {index + 1}</span>
+                <span style={styles.roleNumber}>{t('projects.steps.step5.role')} {index + 1}</span>
                 <button
                   style={styles.removeButton}
                   onClick={() => removeRole(index)}
                 >
-                  Remove
+                  {t('projects.steps.step5.remove')}
                 </button>
               </div>
 
               <FormInput
-                label="Role Name"
+                label={t('projects.steps.step5.roleName')}
                 name={`roleName-${index}`}
                 value={role.roleName || ''}
                 onChange={(e) => handleRoleChange(index, 'roleName', e.target.value)}
                 required
-                placeholder="e.g., Frontend Developer"
+                placeholder={t('projects.steps.step5.roleNamePlaceholder')}
               />
 
               <FormTextarea
-                label="Responsibilities"
+                label={t('projects.steps.step5.responsibilities')}
                 name={`responsibilities-${index}`}
                 value={role.responsibilities || ''}
                 onChange={(e) => handleRoleChange(index, 'responsibilities', e.target.value)}
-                placeholder="Describe the responsibilities..."
+                placeholder={t('projects.steps.step5.responsibilitiesPlaceholder')}
                 rows={3}
                 maxLength={1000}
               />

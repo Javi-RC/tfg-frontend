@@ -1,6 +1,5 @@
 import React from 'react';
-import { Lightbulb, BarChart3, CheckCircle, GraduationCap, Target } from 'lucide-react';
-import { CheckCircle, Trophy, Lightbulb, BarChart3, Target, Award } from 'lucide-react';
+import { Lightbulb, BarChart3, CheckCircle, GraduationCap, Target, Trophy, Award } from 'lucide-react';
 
 /**
  * ResultsModal Component
@@ -9,7 +8,7 @@ import { CheckCircle, Trophy, Lightbulb, BarChart3, Target, Award } from 'lucide
 export default function ResultsModal({ show, results, onClose, onViewFullReport }) {
   if (!show || !results) return null;
 
-  const { predictionAccuracy, learningReport, case: caseInfo } = results.data || {};
+  const { predictionAccuracy, learningReport } = results.data || {};
   
   if (!predictionAccuracy || !learningReport) return null;
 

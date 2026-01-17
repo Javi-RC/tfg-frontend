@@ -1,8 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Shield, X, ExternalLink } from 'lucide-react';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 import { updateCVConsent } from '../../api/cvConsent';
+import { trapFocus, createFocusManager } from '../../utils/focusManagement';
 
 export default function CVConsentModal({
   show,
@@ -10,11 +12,34 @@ export default function CVConsentModal({
   onAccepted,
   version = '1.0'
 }) {
+  const { t } = useTranslation();
   const [aiProcessing, setAiProcessing] = useState(false);
   const [thirdPartySharing, setThirdPartySharing] = useState(false);
   const [dataRetention, setDataRetention] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const modalRef = useRef(null);
+  const focusManagerRef = useRef(createFocusManager());
+
+  useEffect(() => {
+    if (!show) return;
+    
+    // Save current focus and trap focus in modal
+    focusManagerRef.current.save();
+    const savedFocusManager = focusManagerRef.current;
+    
+    const cleanup = trapFocus(modalRef.current);
+    
+    // Prevent body scroll
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      cleanup();
+      document.body.style.overflow = originalOverflow;
+      savedFocusManager.restore();
+    };
+  }, [show]);
 
   useEffect(() => {
     if (!show) return;
@@ -36,7 +61,7 @@ export default function CVConsentModal({
     setError(null);
 
     if (!canAccept) {
-      setError('You must accept all specific terms to continue.');
+      setError(t('cv.consent.mustAcceptAll'));
       return;
     }
 
@@ -55,7 +80,7 @@ export default function CVConsentModal({
         err?.response?.data?.error ||
           err?.response?.data?.message ||
           err?.message ||
-          'Error saving consent. Please try again.'
+          t('cv.consent.errorSaving')
       );
     } finally {
       setSubmitting(false);
@@ -63,16 +88,16 @@ export default function CVConsentModal({
   };
 
   return (
-    <div style={styles.overlay} onClick={onClose} role="dialog" aria-modal="true">
-      <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
+    <div style={styles.overlay} onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="consent-modal-title">
+      <div ref={modalRef} style={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div style={styles.header}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <div style={styles.iconWrap} aria-hidden="true">
               <Shield size={18} color="#111" />
             </div>
             <div>
-              <h2 style={styles.title}>Consent for AI CV Processing</h2>
-              <p style={styles.subtitle}>Terms version: {version}</p>
+              <h2 id="consent-modal-title" style={styles.title}>{t('cv.consent.title')}</h2>
+              <p style={styles.subtitle}>{t('cv.consent.version')}: {version}</p>
             </div>
           </div>
 
@@ -80,7 +105,7 @@ export default function CVConsentModal({
             type="button"
             style={styles.closeButton}
             onClick={onClose}
-            aria-label="Close consent modal"
+            aria-label={t('cv.consent.aria.closeModal')}
           >
             <X size={20} />
           </button>
@@ -88,22 +113,21 @@ export default function CVConsentModal({
 
         <div style={styles.body}>
           <p style={styles.paragraph}>
-            To process your CV and extract relevant information, we use a third-party AI service
-            (Google Gemini API). This means the text in your CV will be sent to Google for analysis.
+            {t('cv.consent.description')}
           </p>
 
           <div style={styles.section}>
-            <h3 style={styles.sectionTitle}>What does this imply?</h3>
+            <h3 style={styles.sectionTitle}>{t('cv.consent.implications')}</h3>
             <ul style={styles.list}>
-              <li>Your CV text will be sent to Google for analysis</li>
-              <li>Google will process the information under their terms of service</li>
-              <li>Extracted data will be stored in our database</li>
-              <li>You can revoke this consent anytime from your profile</li>
+              <li>{t('cv.consent.implication1')}</li>
+              <li>{t('cv.consent.implication2')}</li>
+              <li>{t('cv.consent.implication3')}</li>
+              <li>{t('cv.consent.implication4')}</li>
             </ul>
           </div>
 
           <div style={styles.section}>
-            <h3 style={styles.sectionTitle}>Specific consent</h3>
+            <h3 style={styles.sectionTitle}>{t('cv.consent.specificConsent')}</h3>
 
             <label style={styles.checkboxRow}>
               <input
@@ -111,7 +135,7 @@ export default function CVConsentModal({
                 checked={aiProcessing}
                 onChange={(e) => setAiProcessing(e.target.checked)}
               />
-              <span>I accept AI processing of my CV</span>
+              <span>{t('cv.consent.acceptAI')}</span>
             </label>
 
             <label style={styles.checkboxRow}>
@@ -120,7 +144,7 @@ export default function CVConsentModal({
                 checked={thirdPartySharing}
                 onChange={(e) => setThirdPartySharing(e.target.checked)}
               />
-              <span>I accept sharing my information with Google Gemini API</span>
+              <span>{t('cv.consent.acceptSharing')}</span>
             </label>
 
             <label style={styles.checkboxRow}>
@@ -129,13 +153,13 @@ export default function CVConsentModal({
                 checked={dataRetention}
                 onChange={(e) => setDataRetention(e.target.checked)}
               />
-              <span>I accept retention of processed data in the database</span>
+              <span>{t('cv.consent.acceptRetention')}</span>
             </label>
           </div>
 
           <div style={styles.links}>
             <a href="/terms" target="_blank" rel="noreferrer" style={styles.link}>
-              Terms <ExternalLink size={14} />
+              {t('cv.consent.terms')} <ExternalLink size={14} />
             </a>
             <a
               href="https://ai.google.dev/terms"
@@ -143,7 +167,7 @@ export default function CVConsentModal({
               rel="noreferrer"
               style={styles.link}
             >
-              Google AI Terms <ExternalLink size={14} />
+              {t('cv.consent.googleTerms')} <ExternalLink size={14} />
             </a>
           </div>
 
@@ -152,10 +176,10 @@ export default function CVConsentModal({
 
         <div style={styles.actions}>
           <SecondaryButton onClick={onClose} disabled={submitting}>
-            Cancel
+            {t('common.cancel')}
           </SecondaryButton>
           <PrimaryButton onClick={handleAccept} disabled={!canAccept || submitting}>
-            {submitting ? 'Saving...' : 'Accept and Continue'}
+            {submitting ? t('common.saving') : t('cv.consent.acceptContinue')}
           </PrimaryButton>
         </div>
       </div>

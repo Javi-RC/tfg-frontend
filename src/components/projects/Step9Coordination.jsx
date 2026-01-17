@@ -7,7 +7,7 @@ import { MANAGEMENT_METHODS, FREQUENCY_OPTIONS, COMPLEXITY_LEVELS } from '../../
  * Step 9: Coordination and Management
  * Define project management methodology and coordination frequency
  */
-export default function Step9Coordination({ formData, onChange, errors = {} }) {
+export default function Step9Coordination({ formData, onChange }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     onChange({ [name]: value });

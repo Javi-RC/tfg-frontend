@@ -5,7 +5,7 @@ import { predictProjectRisks } from '../api/projects';
  * Custom hook for managing project risk predictions
  * Handles API calls and state management with flexible validation
  */
-export default function useRiskPrediction() {
+export function useRiskPrediction() {
   const [loading, setLoading] = useState(false);
   const [prediction, setPrediction] = useState(null);
   const [error, setError] = useState(null);
@@ -140,13 +140,13 @@ export default function useRiskPrediction() {
         return null;
       }
 
-      // Get completeness info for logging/monitoring
-      const readiness = checkProjectReadiness(project);
-      console.log('Risk prediction with', readiness.completeness + '% data completeness');
-
       // Call prediction API (backend handles partial data)
       const response = await predictProjectRisks(projectId);
       const data = response.data?.data || response.data;
+      console.log('🔴 [RISK PREDICTION HOOK] Response from backend:', data);
+
+      // Calculate readiness for completeness metadata
+      const readiness = checkProjectReadiness(project);
 
       // Add completeness metadata to prediction
       const enrichedData = {

@@ -1,7 +1,7 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useState, useEffect, useCallback } from 'react';
 import notificationService from '../api/notificationService';
 
-const NotificationContext = createContext();
+export const NotificationContext = createContext(null);
 
 // Intervalo de polling en milisegundos (30 segundos)
 const POLLING_INTERVAL = 30000;
@@ -232,18 +232,6 @@ export const NotificationProvider = ({ children }) => {
     return () => clearInterval(interval);
   }, [isAuthenticated, fetchUnreadCount]);
 
-  // Actualizar estado de autenticación cuando cambie el token
-  useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem('token');
-      setIsAuthenticated(!!token);
-    };
-    
-    // Verificar periódicamente por si el token cambió
-    const authInterval = setInterval(checkAuth, 1000);
-    return () => clearInterval(authInterval);
-  }, []);
-
   const value = {
     notifications,
     unreadCount,
@@ -265,15 +253,4 @@ export const NotificationProvider = ({ children }) => {
   );
 };
 
-/**
- * Hook personalizado para usar el contexto de notificaciones
- * @throws {Error} Si se usa fuera del NotificationProvider
- * @returns {Object} Contexto de notificaciones
- */
-export const useNotifications = () => {
-  const context = useContext(NotificationContext);
-  if (!context) {
-    throw new Error('useNotifications debe usarse dentro de NotificationProvider');
-  }
-  return context;
-};
+export default NotificationProvider;

@@ -1,6 +1,5 @@
 import React from 'react';
-import { BarChart3, CheckCircle, X } from 'lucide-react';
-import { BarChart3, CheckCircle, Calendar, DollarSign, Star } from 'lucide-react';
+import { BarChart3, CheckCircle, X, Calendar, DollarSign, Star } from 'lucide-react';
 
 /**
  * GeneralOutcomeSection Component

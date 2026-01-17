@@ -1,5 +1,6 @@
 import React, { useEffect, useContext } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // Minimal JWT payload decoder (base64url) to avoid runtime import issues
 function decodeJwt(token) {
@@ -16,13 +17,14 @@ function decodeJwt(token) {
     // Decode percent-encoding
     const json = decodeURIComponent(decoded.split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
     return JSON.parse(json);
-  } catch (e) {
+  } catch {
     return null;
   }
 }
 import { AuthContext } from '../contexts/AuthContext';
 
 export default function OAuthSuccess() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { setSession } = useContext(AuthContext);
@@ -51,5 +53,5 @@ export default function OAuthSuccess() {
     }
   }, [searchParams, setSession, navigate]);
 
-  return <div style={{ maxWidth: 720, margin: '40px auto' }}>Processing sign-in...</div>;
+  return <div style={{ maxWidth: 720, margin: '40px auto' }}>{t('auth.processingSignIn')}</div>;
 }

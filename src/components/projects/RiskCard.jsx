@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Circle, AlertTriangle, Calendar, DollarSign, Sparkles, Users } from 'lucide-react';
 import RiskSeverityBadge from './RiskSeverityBadge';
 
@@ -7,25 +8,13 @@ import RiskSeverityBadge from './RiskSeverityBadge';
  * Displays detailed information about a specific risk with confidence indicators
  */
 export default function RiskCard({ risk, dataCompleteness }) {
+  const { t } = useTranslation();
   const [expanded, setExpanded] = React.useState(false);
 
   const getRiskTypeLabel = (type) => {
-    const labels = {
-      skill_gap: 'Skill Gap',
-      communication_breakdown: 'Communication Breakdown',
-      team_overload: 'Team Overload',
-      coordination_issues: 'Coordination Issues',
-      technical_debt: 'Technical Debt',
-      resource_constraints: 'Resource Constraints',
-      schedule_pressure: 'Schedule Pressure',
-      quality_issues: 'Quality Issues',
-      km_knowledge_gap: 'Knowledge Management Gap',
-      remote_work_gap: 'Remote Work Challenges',
-      role_clarity_issue: 'Role Clarity Issue',
-      compliance_risk: 'Compliance Risk',
-      timezone_coordination: 'Timezone Coordination Issue'
-    };
-    return labels[type] || type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    return t(`riskTypes.${type}`, {
+      defaultValue: type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+    });
   };
 
   const getSeverityColor = (severity) => {
@@ -40,9 +29,13 @@ export default function RiskCard({ risk, dataCompleteness }) {
 
   // Get confidence level indicator
   const getConfidenceIndicator = (confidence) => {
-    if (confidence >= 0.75) return { emoji: '🟢', label: 'High Confidence', color: '#10B981' };
-    if (confidence >= 0.50) return { emoji: '🟡', label: 'Medium Confidence', color: '#F59E0B' };
-    return { emoji: '🔴', label: 'Low Confidence', color: '#EF4444' };
+    if (confidence >= 0.75) {
+      return { emoji: '🟢', label: t('riskCard.confidence.high'), color: '#10B981' };
+    }
+    if (confidence >= 0.50) {
+      return { emoji: '🟡', label: t('riskCard.confidence.medium'), color: '#F59E0B' };
+    }
+    return { emoji: '🔴', label: t('riskCard.confidence.low'), color: '#EF4444' };
   };
 
   const confidenceInfo = getConfidenceIndicator(risk.confidence);
@@ -55,7 +48,7 @@ export default function RiskCard({ risk, dataCompleteness }) {
         <div style={styles.dataWarning}>
           <span style={styles.warningIcon}><AlertTriangle size={16} color="#f59e0b" /></span>
           <span style={styles.warningText}>
-            Limited data available ({dataCompleteness}% complete). Add more project details for improved accuracy.
+            {t('riskCard.limitedData', { percent: dataCompleteness })}
           </span>
         </div>
       )}
@@ -68,7 +61,7 @@ export default function RiskCard({ risk, dataCompleteness }) {
         </div>
         <div style={styles.headerRight}>
           <div style={styles.probability}>
-            <span style={styles.probabilityLabel}>Probability</span>
+            <span style={styles.probabilityLabel}>{t('riskCard.probability')}</span>
             <span style={{
               ...styles.probabilityValue,
               color: getSeverityColor(risk.severity)
@@ -93,7 +86,7 @@ export default function RiskCard({ risk, dataCompleteness }) {
 
       {/* Reasoning */}
       <div style={styles.section}>
-        <h5 style={styles.sectionTitle}>Why does this risk exist?</h5>
+        <h5 style={styles.sectionTitle}>{t('riskCard.whyExists')}</h5>
         <ul style={styles.list}>
           {risk.reasoning.map((reason, idx) => (
             <li 
@@ -112,7 +105,7 @@ export default function RiskCard({ risk, dataCompleteness }) {
       {/* Indicators */}
       {risk.indicators && risk.indicators.length > 0 && (
         <div style={styles.section}>
-          <h5 style={styles.sectionTitle}>Indicators</h5>
+          <h5 style={styles.sectionTitle}>{t('riskCard.indicators')}</h5>
           <div style={styles.indicatorsGrid}>
             {risk.indicators.map((indicator, idx) => (
               <div key={idx} style={styles.indicator}>
@@ -126,13 +119,13 @@ export default function RiskCard({ risk, dataCompleteness }) {
       {/* Impact */}
       {risk.predictedImpact && (
         <div style={styles.section}>
-          <h5 style={styles.sectionTitle}>Expected Impact</h5>
+          <h5 style={styles.sectionTitle}>{t('riskCard.expectedImpact')}</h5>
           <div style={styles.impactGrid}>
             {risk.predictedImpact.scheduleDelay && (
               <div style={styles.impactItem}>
-                <div style={styles.impactLabel}>📅 Schedule Delay</div>
+                <div style={styles.impactLabel}>📅 {t('riskCard.scheduleDelay')}</div>
                 <div style={styles.impactValue}>
-                  {risk.predictedImpact.scheduleDelay.min}-{risk.predictedImpact.scheduleDelay.max} days
+                  {risk.predictedImpact.scheduleDelay.min}-{risk.predictedImpact.scheduleDelay.max} {t('riskCard.days')}
                 </div>
                 {risk.predictedImpact.scheduleDelay.description && (
                   <div style={styles.impactDescription}>
@@ -143,7 +136,7 @@ export default function RiskCard({ risk, dataCompleteness }) {
             )}
             {risk.predictedImpact.budgetOverrun && (
               <div style={styles.impactItem}>
-                <div style={styles.impactLabel}>💰 Budget Overrun</div>
+                <div style={styles.impactLabel}>💰 {t('riskCard.budgetOverrun')}</div>
                 <div style={styles.impactValue}>
                   {risk.predictedImpact.budgetOverrun.min}-{risk.predictedImpact.budgetOverrun.max}%
                 </div>
@@ -156,7 +149,7 @@ export default function RiskCard({ risk, dataCompleteness }) {
             )}
             {risk.predictedImpact.qualityImpact && (
               <div style={styles.impactItem}>
-                <div style={styles.impactLabel}>✨ Quality Impact</div>
+                <div style={styles.impactLabel}>✨ {t('riskCard.qualityImpact')}</div>
                 <div style={styles.impactValue}>
                   {risk.predictedImpact.qualityImpact.toUpperCase()}
                 </div>
@@ -164,7 +157,7 @@ export default function RiskCard({ risk, dataCompleteness }) {
             )}
             {risk.predictedImpact.teamMoraleImpact && (
               <div style={styles.impactItem}>
-                <div style={styles.impactLabel}>👥 Team Morale Impact</div>
+                <div style={styles.impactLabel}>👥 {t('riskCard.teamMoraleImpact')}</div>
                 <div style={styles.impactValue}>
                   {risk.predictedImpact.teamMoraleImpact.toUpperCase()}
                 </div>
@@ -177,15 +170,15 @@ export default function RiskCard({ risk, dataCompleteness }) {
       {/* Recommendations */}
       {risk.recommendations && risk.recommendations.length > 0 && (
         <div style={styles.section}>
-          <h5 style={styles.sectionTitle}>Recommendations</h5>
+          <h5 style={styles.sectionTitle}>{t('riskCard.recommendations')}</h5>
           <div style={styles.recommendationsList}>
             {risk.recommendations.map((rec, idx) => (
               <div 
                 key={idx} 
                 style={{
                   ...styles.recommendation,
-                  background: rec.startsWith('URGENTE') ? '#FEE2E2' : '#F9FAFB',
-                  borderLeft: rec.startsWith('URGENTE') 
+                  background: (rec.startsWith('URGENTE') || rec.startsWith('URGENT')) ? '#FEE2E2' : '#F9FAFB',
+                  borderLeft: (rec.startsWith('URGENTE') || rec.startsWith('URGENT')) 
                     ? '3px solid #DC2626' 
                     : '3px solid #3B82F6'
                 }}
@@ -205,7 +198,7 @@ export default function RiskCard({ risk, dataCompleteness }) {
             onClick={() => setExpanded(!expanded)}
           >
             <span style={styles.expandIcon}>{expanded ? '▼' : '▶'}</span>
-            <span>Early Warning Signals ({risk.earlyWarningSignals.length})</span>
+            <span>{t('riskCard.earlyWarningSignals', { count: risk.earlyWarningSignals.length })}</span>
           </button>
           {expanded && (
             <div style={styles.signalsList}>
@@ -217,7 +210,7 @@ export default function RiskCard({ risk, dataCompleteness }) {
                   </div>
                   {signal.threshold && (
                     <div style={styles.signalThreshold}>
-                      Threshold: {signal.threshold}
+                      {t('riskCard.threshold')} {signal.threshold}
                     </div>
                   )}
                 </div>
@@ -229,7 +222,7 @@ export default function RiskCard({ risk, dataCompleteness }) {
 
       {/* Source */}
       <div style={styles.footer}>
-        <span style={styles.source}>Source: {risk.source}</span>
+        <span style={styles.source}>{t('riskCard.source', { source: risk.source })}</span>
       </div>
     </div>
   );

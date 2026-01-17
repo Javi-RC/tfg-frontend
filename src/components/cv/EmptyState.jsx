@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FileText, Upload } from 'lucide-react';
 import PrimaryButton from '../PrimaryButton';
 
@@ -7,6 +8,7 @@ import PrimaryButton from '../PrimaryButton';
  * Displays when no CV is found
  */
 export default function EmptyState({ error, onUpload }) {
+  const { t } = useTranslation();
   return (
     <div style={{
       minHeight: '100vh',
@@ -30,13 +32,13 @@ export default function EmptyState({ error, onUpload }) {
           <FileText size={64} color="#666" />
         </div>
         <h2 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
-          No CV Found
+          {t('cv.noCVFound')}
         </h2>
         <p style={{ fontSize: '14px', color: '#666', marginBottom: '24px' }}>
-          {error || 'Upload your CV to get started'}
+          {error || t('cv.uploadToGetStarted')}
         </p>
-        <PrimaryButton onClick={onUpload} aria-label="Open CV upload dialog" leftIcon={<Upload size={18} />}>
-          Upload CV
+        <PrimaryButton onClick={onUpload} aria-label={t('cv.aria.openUploadDialog')} leftIcon={<Upload size={18} />}>
+          {t('cv.uploadCV')}
         </PrimaryButton>
       </div>
     </div>

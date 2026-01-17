@@ -1,39 +1,128 @@
-import React from 'react';
-import { Users, CheckCircle, AlertTriangle, Lightbulb, Shield, Circle } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Users, CheckCircle, AlertTriangle, Lightbulb, Shield, Circle, List, Network, Download } from 'lucide-react';
+import RiskFlowMap from '../../outcome/RiskFlowMap';
+import Tooltip from '../../common/Tooltip';
+import RiskErrorMessage from '../../risk/RiskErrorMessage';
+import CompletenessIndicator from '../../risk/CompletenessIndicator';
+import RiskFilters from '../../risk/RiskFilters';
 
 /**
  * RiskAnalysisTab - Risk analysis and predictions interface
  * 
  * Features:
- * - Overall risk assessment
- * - Categorized risk display
+ * - Overall risk assessment with accessibility
+ * - Categorized risk display with filters
  * - Risk severity indicators
  * - Mitigation recommendations
+ * - Data completeness tracking
+ * - Export functionality
+ * - Responsive design
  */
 export default function RiskAnalysisTab({
   project,
   riskAnalysis,
   riskLoading,
-  teamCount
+  teamCount,
+  onRetryAnalysis,
+  onEditProject
 }) {
-  // Show loading state
+  const { t } = useTranslation();
+  
+  // View mode toggle: 'list' or 'flow'
+  const [viewMode, setViewMode] = useState('list');
+  
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedSeverities, setSelectedSeverities] = useState([]);
+  const [selectedTypes, setSelectedTypes] = useState([]);
+
+  const normalizeSeverity = (severity) => {
+    const value = String(severity ?? '').trim().toLowerCase();
+    if (!value) return 'medium';
+
+    if (value === 'critical' || value === 'crit' || value === 'severe') return 'critical';
+    if (value === 'high' || value === 'alto' || value === 'alta') return 'high';
+    if (value === 'medium' || value === 'med' || value === 'moderate' || value === 'medio' || value === 'media') {
+      return 'medium';
+    }
+    if (value === 'low' || value === 'bajo' || value === 'baja' || value === 'minor') return 'low';
+
+    // Fail-safe: keep UI stable by treating unknown severities as medium.
+    return 'medium';
+  };
+
+  // Calculate risk summary - Always call hooks, even if we return early later
+  const risks = useMemo(() => {
+    const rawRisks = riskAnalysis?.risks || [];
+    return rawRisks.map(risk => ({
+      ...risk,
+      severity: normalizeSeverity(risk.severity),
+    }));
+  }, [riskAnalysis]);
+
+  // Get available risk types for filters
+  const availableTypes = useMemo(() => {
+    const types = new Set(risks.map(r => r.type).filter(Boolean));
+    return Array.from(types);
+  }, [risks]);
+
+  // Filter risks based on search and filters
+  const filteredRisks = useMemo(() => {
+    return risks.filter(risk => {
+      // Search filter
+      if (searchTerm) {
+        const searchLower = searchTerm.toLowerCase();
+        const nameMatch = (risk.name || '').toLowerCase().includes(searchLower);
+        const descMatch = (risk.description || '').toLowerCase().includes(searchLower);
+        const typeMatch = (risk.type || '').toLowerCase().includes(searchLower);
+        if (!nameMatch && !descMatch && !typeMatch) return false;
+      }
+
+      // Severity filter
+      if (selectedSeverities.length > 0 && !selectedSeverities.includes(risk.severity)) {
+        return false;
+      }
+
+      // Type filter
+      if (selectedTypes.length > 0 && !selectedTypes.includes(risk.type)) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [risks, searchTerm, selectedSeverities, selectedTypes]);
+
+  // Show loading state with accessibility
   if (riskLoading) {
     return (
-      <div style={styles.loadingContainer}>
-        <div style={styles.spinner}></div>
-        <p style={styles.loadingText}>Analyzing project risks...</p>
+      <div style={styles.loadingContainer} role="status" aria-live="polite">
+        <div style={styles.spinner} aria-hidden="true"></div>
+        <p style={styles.loadingText}>{t('projects.analyzingRisks')}</p>
+        <span className="sr-only">{t('projects.riskAnalysisTab.loading.srPleaseWait')}</span>
       </div>
+    );
+  }
+
+  // Show error state
+  if (riskAnalysis?.error) {
+    return (
+      <RiskErrorMessage
+        error={riskAnalysis.error}
+        onRetry={onRetryAnalysis}
+        onEditProject={onEditProject}
+      />
     );
   }
 
   // Show empty state if no team
   if (teamCount === 0) {
     return (
-      <div style={styles.emptyState}>
-        <Users size={48} color="#6c757d" style={{ opacity: 0.3, marginBottom: '16px' }} />
-        <h3 style={styles.emptyTitle}>No Team Assigned Yet</h3>
+      <div style={styles.emptyState} role="status">
+        <Users size={48} color="#6c757d" style={{ opacity: 0.3, marginBottom: '16px' }} aria-hidden="true" />
+        <h3 style={styles.emptyTitle}>{t('projects.riskAnalysisTab.empty.noTeamTitle')}</h3>
         <p style={styles.emptyText}>
-          Assign team members first to analyze potential project risks
+          {t('projects.assignTeamForRisk')}
         </p>
       </div>
     );
@@ -42,22 +131,24 @@ export default function RiskAnalysisTab({
   // Show no risks found
   if (!riskAnalysis || !riskAnalysis.risks || riskAnalysis.risks.length === 0) {
     return (
-      <div style={styles.emptyState}>
-        <CheckCircle size={48} color="#28a745" style={{ opacity: 0.5, marginBottom: '16px' }} />
-        <h3 style={styles.emptyTitle}>No Significant Risks Detected</h3>
-        <p style={styles.emptyText}>
-          The current team composition shows low risk indicators. Continue monitoring as the project progresses.
-        </p>
+      <div style={styles.emptyState} role="status">
+        <CheckCircle size={48} color="#28a745" style={{ opacity: 0.5, marginBottom: '16px' }} aria-hidden="true" />
+        <h3 style={styles.emptyTitle}>{t('projects.riskAnalysisTab.empty.noRisksTitle')}</h3>
+        <p style={styles.emptyText}>{t('projects.riskAnalysisTab.empty.noRisksText')}</p>
       </div>
     );
   }
 
-  // Calculate risk summary
-  const risks = riskAnalysis.risks || [];
   const criticalRisks = risks.filter(r => r.severity === 'critical');
   const highRisks = risks.filter(r => r.severity === 'high');
   const mediumRisks = risks.filter(r => r.severity === 'medium');
   const lowRisks = risks.filter(r => r.severity === 'low');
+
+  // Categorize filtered risks
+  const filteredCritical = filteredRisks.filter(r => r.severity === 'critical');
+  const filteredHigh = filteredRisks.filter(r => r.severity === 'high');
+  const filteredMedium = filteredRisks.filter(r => r.severity === 'medium');
+  const filteredLow = filteredRisks.filter(r => r.severity === 'low');
 
   // Determine overall risk level
   let overallRisk = 'LOW';
@@ -73,133 +164,350 @@ export default function RiskAnalysisTab({
     overallColor = '#ffc107';
   }
 
+  // Export functionality
+  const handleExport = (format) => {
+    if (format === 'csv') {
+      exportToCSV(risks);
+    } else if (format === 'json') {
+      exportToJSON(riskAnalysis);
+    }
+  };
+
+  const exportToCSV = (risks) => {
+    const headers = ['Name', 'Severity', 'Type', 'Description', 'Impact', 'Mitigation'];
+    const rows = risks.map(risk => [
+      risk.name || risk.title || 'Unnamed',
+      risk.severity || 'N/A',
+      risk.type || 'N/A',
+      (risk.description || '').replace(/,/g, ';'),
+      (risk.impact || '').replace(/,/g, ';'),
+      (risk.mitigation || '').replace(/,/g, ';')
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(row => row.map(cell => `"${cell}"`).join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `risk-analysis-${project.projectName || 'project'}-${new Date().toISOString().split('T')[0]}.csv`;
+    link.click();
+  };
+
+  const exportToJSON = (data) => {
+    const jsonContent = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonContent], { type: 'application/json' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `risk-analysis-${project.projectName || 'project'}-${new Date().toISOString().split('T')[0]}.json`;
+    link.click();
+  };
+
   return (
-    <div style={styles.container}>
+    <div style={styles.container} className="risk-analysis-tab">
+      {/* Data Completeness Indicator */}
+      {riskAnalysis.dataCompleteness !== undefined && (
+        <CompletenessIndicator
+          completeness={riskAnalysis.dataCompleteness}
+          completedFields={riskAnalysis.completedFields}
+          totalFields={riskAnalysis.totalFields}
+          suggestions={riskAnalysis.suggestions || []}
+          message={
+            riskAnalysis.dataCompleteness < 30
+              ? t('projects.riskAnalysisTab.completenessMessages.limited')
+              : riskAnalysis.dataCompleteness < 60
+              ? t('projects.riskAnalysisTab.completenessMessages.goodStart')
+              : riskAnalysis.dataCompleteness < 90
+              ? t('projects.riskAnalysisTab.completenessMessages.great')
+              : t('projects.riskAnalysisTab.completenessMessages.excellent')
+          }
+        />
+      )}
+
       {/* Overall Risk Summary */}
-      <div style={{...styles.summaryCard, borderLeft: `4px solid ${overallColor}`}}>
-        <div style={styles.summaryHeader}>
+      <div 
+        style={{...styles.summaryCard, borderLeft: `4px solid ${overallColor}`}}
+        role="region"
+        aria-label={t('projects.riskAnalysisTab.summary.aria')}
+        className="risk-analysis-tab"
+      >
+        <div style={styles.summaryHeader} className="summaryHeader">
           <div style={styles.summaryLeft}>
-            <h3 style={styles.summaryTitle}>Overall Risk Assessment</h3>
+            <h3 style={styles.summaryTitle}>{t('projects.riskAnalysisTab.summary.title')}</h3>
             <p style={styles.summarySubtext}>
-              Based on {teamCount} team members • {risks.length} risks identified
+              {t('projects.riskAnalysisTab.summary.basedOn')}{' '}
+              {t('projects.riskAnalysisTab.summary.teamMembers', { count: teamCount })}{' '}
+              • {t('projects.riskAnalysisTab.summary.risksIdentified', { count: risks.length })}
             </p>
           </div>
-          <div style={{...styles.riskBadge, backgroundColor: overallColor}}>
-            {overallRisk}
+          <div style={styles.summaryRight} className="summaryRight">
+            {/* Export Button */}
+            <Tooltip content={t('projects.riskAnalysisTab.export.tooltip')}>
+              <button
+                onClick={() => handleExport('csv')}
+                style={styles.exportButton}
+                aria-label={t('projects.riskAnalysisTab.export.ariaCsv')}
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#F3F4F6'}
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
+                <Download size={18} />
+              </button>
+            </Tooltip>
+
+            {/* View Toggle */}
+            <div style={styles.viewToggle} role="group" aria-label={t('projects.riskAnalysisTab.viewToggle.aria')} className="viewToggle">
+              <Tooltip content={t('projects.riskAnalysisTab.viewToggle.listTooltip')}>
+                <button
+                  onClick={() => setViewMode('list')}
+                  style={{
+                    ...styles.viewButton,
+                    ...(viewMode === 'list' ? styles.viewButtonActive : {})
+                  }}
+                  aria-label={t('projects.riskAnalysisTab.viewToggle.switchToListAria')}
+                  aria-pressed={viewMode === 'list'}
+                  onMouseEnter={(e) => !e.currentTarget.getAttribute('aria-pressed') === 'true' && (e.currentTarget.style.backgroundColor = '#E5E7EB')}
+                  onMouseLeave={(e) => viewMode !== 'list' && (e.currentTarget.style.backgroundColor = 'transparent')}
+                >
+                  <List size={18} aria-hidden="true" />
+                  <span className="sr-only">{t('projects.riskAnalysisTab.viewToggle.listLabel')}</span>
+                </button>
+              </Tooltip>
+              <Tooltip content={t('projects.riskAnalysisTab.viewToggle.flowTooltip')}>
+                <button
+                  onClick={() => setViewMode('flow')}
+                  style={{
+                    ...styles.viewButton,
+                    ...(viewMode === 'flow' ? styles.viewButtonActive : {})
+                  }}
+                  aria-label={t('projects.riskAnalysisTab.viewToggle.switchToFlowAria')}
+                  aria-pressed={viewMode === 'flow'}
+                  onMouseEnter={(e) => viewMode !== 'flow' && (e.currentTarget.style.backgroundColor = '#E5E7EB')}
+                  onMouseLeave={(e) => viewMode !== 'flow' && (e.currentTarget.style.backgroundColor = 'transparent')}
+                >
+                  <Network size={18} aria-hidden="true" />
+                  <span className="sr-only">{t('projects.riskAnalysisTab.viewToggle.flowLabel')}</span>
+                </button>
+              </Tooltip>
+            </div>
+            
+            <Tooltip content={t('projects.riskAnalysisTab.summary.overallRiskLevel', { level: overallRisk })}>
+              <div 
+                style={{...styles.riskBadge, backgroundColor: overallColor}}
+                role="status"
+                aria-label={t('projects.riskAnalysisTab.summary.overallRiskLevel', { level: overallRisk })}
+              >
+                {overallRisk}
+              </div>
+            </Tooltip>
           </div>
         </div>
 
         {/* Risk Counts */}
-        <div style={styles.riskCounts}>
+        <div style={styles.riskCounts} role="list" aria-label={t('projects.riskAnalysisTab.severityCounts.aria')} className="riskCounts">
           {criticalRisks.length > 0 && (
-            <div style={styles.riskCount}>
-              <span style={{...styles.countBadge, backgroundColor: '#dc3545'}}>
-                {criticalRisks.length}
-              </span>
-              <span style={styles.countLabel}>Critical</span>
+            <div style={styles.riskCount} role="listitem">
+              <Tooltip content={t('projects.riskAnalysisTab.severityHelp.critical')}>
+                <span style={{...styles.countBadge, backgroundColor: '#dc3545'}} aria-label={t('projects.riskAnalysisTab.severityCount.critical', { count: criticalRisks.length })}>
+                  {criticalRisks.length}
+                </span>
+              </Tooltip>
+              <span style={styles.countLabel}>{t('risk.severity.critical')}</span>
             </div>
           )}
           {highRisks.length > 0 && (
-            <div style={styles.riskCount}>
-              <span style={{...styles.countBadge, backgroundColor: '#fd7e14'}}>
-                {highRisks.length}
-              </span>
-              <span style={styles.countLabel}>High</span>
+            <div style={styles.riskCount} role="listitem">
+              <Tooltip content={t('projects.riskAnalysisTab.severityHelp.high')}>
+                <span style={{...styles.countBadge, backgroundColor: '#fd7e14'}} aria-label={t('projects.riskAnalysisTab.severityCount.high', { count: highRisks.length })}>
+                  {highRisks.length}
+                </span>
+              </Tooltip>
+              <span style={styles.countLabel}>{t('risk.severity.high')}</span>
             </div>
           )}
           {mediumRisks.length > 0 && (
-            <div style={styles.riskCount}>
-              <span style={{...styles.countBadge, backgroundColor: '#ffc107'}}>
-                {mediumRisks.length}
-              </span>
-              <span style={styles.countLabel}>Medium</span>
+            <div style={styles.riskCount} role="listitem">
+              <Tooltip content={t('projects.riskAnalysisTab.severityHelp.medium')}>
+                <span style={{...styles.countBadge, backgroundColor: '#ffc107'}} aria-label={t('projects.riskAnalysisTab.severityCount.medium', { count: mediumRisks.length })}>
+                  {mediumRisks.length}
+                </span>
+              </Tooltip>
+              <span style={styles.countLabel}>{t('risk.severity.medium')}</span>
             </div>
           )}
           {lowRisks.length > 0 && (
-            <div style={styles.riskCount}>
-              <span style={{...styles.countBadge, backgroundColor: '#28a745'}}>
-                {lowRisks.length}
-              </span>
-              <span style={styles.countLabel}>Low</span>
+            <div style={styles.riskCount} role="listitem">
+              <Tooltip content={t('projects.riskAnalysisTab.severityHelp.low')}>
+                <span style={{...styles.countBadge, backgroundColor: '#28a745'}} aria-label={t('projects.riskAnalysisTab.severityCount.low', { count: lowRisks.length })}>
+                  {lowRisks.length}
+                </span>
+              </Tooltip>
+              <span style={styles.countLabel}>{t('risk.severity.low')}</span>
             </div>
           )}
         </div>
       </div>
 
-      {/* Risk Details */}
-      <div style={styles.risksSection}>
-        <h3 style={{ ...styles.sectionTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <AlertTriangle size={20} />
-          Identified Risks
-        </h3>
-
-        <div style={styles.risksList}>
-          {/* Critical Risks First */}
-          {criticalRisks.map((risk, idx) => (
-            <RiskCard key={`critical-${idx}`} risk={risk} />
-          ))}
-          
-          {/* High Risks */}
-          {highRisks.map((risk, idx) => (
-            <RiskCard key={`high-${idx}`} risk={risk} />
-          ))}
-          
-          {/* Medium Risks */}
-          {mediumRisks.map((risk, idx) => (
-            <RiskCard key={`medium-${idx}`} risk={risk} />
-          ))}
-          
-          {/* Low Risks */}
-          {lowRisks.map((risk, idx) => (
-            <RiskCard key={`low-${idx}`} risk={risk} />
-          ))}
-        </div>
-      </div>
-
-      {/* Recommendations Section */}
-      {riskAnalysis.recommendations && riskAnalysis.recommendations.length > 0 && (
-        <div style={styles.recommendationsSection}>
-          <h3 style={{ ...styles.sectionTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Lightbulb size={20} />
-            Recommendations
-          </h3>
-          <div style={styles.recommendationsList}>
-            {riskAnalysis.recommendations.map((rec, idx) => (
-              <div key={idx} style={styles.recommendationCard}>
-                <CheckCircle size={16} color="#28a745" style={{ flexShrink: 0 }} />
-                <p style={styles.recommendationText}>{rec}</p>
-              </div>
-            ))}
+      {/* Conditional Rendering: Flow Map or List */}
+      {viewMode === 'flow' ? (
+        <div style={styles.flowMapSection}>
+          <div style={styles.flowMapDescription} role="note">
+            <AlertTriangle size={18} color="#F59E0B" aria-hidden="true" />
+            <span>
+              Interactive risk visualization - Explore relationships between risks and their severity. 
+              {risks.length} risk{risks.length !== 1 ? 's' : ''} visualized. Use mouse wheel to zoom, click and drag to pan.
+            </span>
+          </div>
+          <div style={styles.flowMapContainer} className="flowMapContainer">
+            <RiskFlowMap
+              predictedRisks={risks.map(risk => ({
+                ...risk,
+                id: risk.id || risk.type || `risk-${Math.random()}`,
+                type: risk.type || risk.name || 'Unknown Risk',
+              }))}
+              actualizedRisks={[]}
+              projectName={project.projectName || 'Project'}
+            />
           </div>
         </div>
+      ) : (
+        <>
+          {/* Filters */}
+          <RiskFilters
+            onSearchChange={setSearchTerm}
+            onSeverityFilter={setSelectedSeverities}
+            onTypeFilter={setSelectedTypes}
+            searchValue={searchTerm}
+            selectedSeverities={selectedSeverities}
+            selectedTypes={selectedTypes}
+            availableTypes={availableTypes}
+          />
+
+          {/* Results Count */}
+          {(searchTerm || selectedSeverities.length > 0 || selectedTypes.length > 0) && (
+            <div style={styles.resultsCount} role="status" aria-live="polite">
+              Showing {filteredRisks.length} of {risks.length} risk{risks.length !== 1 ? 's' : ''}
+            </div>
+          )}
+
+          {/* Risk Details */}
+          {filteredRisks.length > 0 ? (
+            <div style={styles.risksSection}>
+              <h3 style={{ ...styles.sectionTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <AlertTriangle size={20} aria-hidden="true" />
+                Identified Risks
+              </h3>
+
+              <div style={styles.risksList} role="list">
+                {/* Critical Risks First */}
+                {filteredCritical.map((risk, idx) => (
+                  <RiskCard key={`critical-${idx}`} risk={risk} />
+                ))}
+                
+                {/* High Risks */}
+                {filteredHigh.map((risk, idx) => (
+                  <RiskCard key={`high-${idx}`} risk={risk} />
+                ))}
+                
+                {/* Medium Risks */}
+                {filteredMedium.map((risk, idx) => (
+                  <RiskCard key={`medium-${idx}`} risk={risk} />
+                ))}
+                
+                {/* Low Risks */}
+                {filteredLow.map((risk, idx) => (
+                  <RiskCard key={`low-${idx}`} risk={risk} />
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div style={styles.noResults} role="status" className="riskHeader">
+              <p>No risks match your current filters. Try adjusting your search or filters.</p>
+            </div>
+          )}
+
+          {/* Recommendations Section */}
+          {riskAnalysis.recommendations && riskAnalysis.recommendations.length > 0 && (
+            <div style={styles.recommendationsSection}>
+              <h3 style={{ ...styles.sectionTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Lightbulb size={20} aria-hidden="true" />
+                Recommendations
+              </h3>
+              <div style={styles.recommendationsList} role="list">
+                {riskAnalysis.recommendations.map((rec, idx) => (
+                  <div key={idx} style={styles.recommendationCard} role="listitem">
+                    <CheckCircle size={16} color="#28a745" style={{ flexShrink: 0 }} aria-hidden="true" />
+                    <p style={styles.recommendationText}>{rec}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
 }
 
 /**
- * RiskCard - Individual risk display component
+ * RiskCard - Individual risk display component with improved accessibility
  */
 function RiskCard({ risk }) {
+
   const severityConfig = {
-    critical: { color: '#dc3545', icon: <Circle size={12} fill="#dc3545" color="#dc3545" />, label: 'Critical' },
-    high: { color: '#fd7e14', icon: <Circle size={12} fill="#fd7e14" color="#fd7e14" />, label: 'High' },
-    medium: { color: '#ffc107', icon: <Circle size={12} fill="#ffc107" color="#ffc107" />, label: 'Medium' },
-    low: { color: '#28a745', icon: <Circle size={12} fill="#28a745" color="#28a745" />, label: 'Low' },
+    critical: { 
+      color: '#dc3545', 
+      icon: <Circle size={12} fill="#dc3545" color="#dc3545" aria-hidden="true" />, 
+      label: 'Critical',
+      description: 'Critical severity - Requires immediate attention'
+    },
+    high: { 
+      color: '#fd7e14', 
+      icon: <Circle size={12} fill="#fd7e14" color="#fd7e14" aria-hidden="true" />, 
+      label: 'High',
+      description: 'High severity - Needs urgent attention'
+    },
+    medium: { 
+      color: '#ffc107', 
+      icon: <Circle size={12} fill="#ffc107" color="#ffc107" aria-hidden="true" />, 
+      label: 'Medium',
+      description: 'Medium severity - Should be monitored'
+    },
+    low: { 
+      color: '#28a745', 
+      icon: <Circle size={12} fill="#28a745" color="#28a745" aria-hidden="true" />, 
+      label: 'Low',
+      description: 'Low severity - Informational'
+    },
   };
 
   const config = severityConfig[risk.severity] || severityConfig.medium;
 
   return (
-    <div style={{...styles.riskCard, borderLeftColor: config.color}}>
+    <article 
+      style={{
+        ...styles.riskCard, 
+        borderLeftColor: config.color
+      }}
+      role="listitem"
+      aria-label={`${config.label} severity risk: ${risk.name || risk.title || 'Unnamed Risk'}`}
+      onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.12)'}
+      onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'none'}
+    >
       <div style={styles.riskHeader}>
         <div style={styles.riskTitle}>
           <span style={styles.riskIcon}>{config.icon}</span>
           {risk.name || risk.title || 'Unnamed Risk'}
         </div>
-        <span style={{...styles.severityBadge, backgroundColor: config.color}}>
-          {config.label}
-        </span>
+        <Tooltip content={config.description}>
+          <span 
+            style={{...styles.severityBadge, backgroundColor: config.color}}
+            role="status"
+          >
+            {config.label}
+          </span>
+        </Tooltip>
       </div>
 
       <p style={styles.riskDescription}>
@@ -219,7 +527,7 @@ function RiskCard({ risk }) {
         <div style={styles.mitigationBox}>
           <div style={styles.mitigationLabel}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-              <Shield size={16} />
+              <Shield size={16} aria-hidden="true" />
               Mitigation Strategy
             </span>
           </div>
@@ -231,16 +539,16 @@ function RiskCard({ risk }) {
       {risk.factors && risk.factors.length > 0 && (
         <div style={styles.factorsSection}>
           <span style={styles.factorsLabel}>Related Factors:</span>
-          <div style={styles.factorsList}>
+          <div style={styles.factorsList} role="list">
             {risk.factors.map((factor, idx) => (
-              <span key={idx} style={styles.factorChip}>
+              <span key={idx} style={styles.factorChip} role="listitem">
                 {factor}
               </span>
             ))}
           </div>
         </div>
       )}
-    </div>
+    </article>
   );
 }
 
@@ -317,6 +625,11 @@ const styles = {
   },
   summaryLeft: {
     flex: 1,
+  },
+  summaryRight: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
   },
   summaryTitle: {
     margin: '0 0 8px 0',
@@ -538,4 +851,175 @@ const styles = {
     lineHeight: '1.6',
     flex: 1,
   },
+
+  // View Toggle
+  viewToggle: {
+    display: 'flex',
+    gap: '4px',
+    backgroundColor: '#f6f8fa',
+    borderRadius: '8px',
+    padding: '4px',
+  },
+  viewButton: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '8px 12px',
+    border: 'none',
+    backgroundColor: 'transparent',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    color: '#586069',
+    transition: 'all 0.2s ease',
+    fontSize: '14px',
+    fontWeight: '500',
+  },
+  viewButtonActive: {
+    backgroundColor: '#fff',
+    color: '#0366d6',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+  },
+
+  // Flow Map Section
+  flowMapSection: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '16px',
+  },
+  flowMapDescription: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '12px 16px',
+    backgroundColor: '#FFF8E6',
+    border: '1px solid #FFE8A3',
+    borderRadius: '8px',
+    fontSize: '14px',
+    color: '#856404',
+  },
+  flowMapContainer: {
+    backgroundColor: '#fff',
+    border: '1px solid #e1e4e8',
+    borderRadius: '12px',
+    overflow: 'hidden',
+    height: 'clamp(500px, 70vh, 850px)',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.05)',
+  },
+
+  // Export Button
+  exportButton: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '8px 12px',
+    border: '1px solid #D1D5DB',
+    backgroundColor: 'transparent',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    color: '#374151',
+    transition: 'all 0.2s ease',
+    outline: 'none'
+  },
+
+  // Results Count
+  resultsCount: {
+    padding: '12px 16px',
+    backgroundColor: '#F0F9FF',
+    border: '1px solid #BAE6FD',
+    borderRadius: '6px',
+    fontSize: '14px',
+    color: '#075985',
+    fontWeight: '500'
+  },
+
+  // No Results
+  noResults: {
+    padding: '48px 24px',
+    textAlign: 'center',
+    color: '#6B7280',
+    backgroundColor: '#F9FAFB',
+    borderRadius: '8px',
+    border: '1px solid #E5E7EB'
+  }
 };
+
+// Add keyframes for spinner animation
+if (typeof document !== 'undefined') {
+  const styleSheet = document.createElement('style');
+  styleSheet.textContent = `
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .risk-analysis-tab .summaryHeader {
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .risk-analysis-tab .summaryRight {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .risk-analysis-tab .riskCounts {
+        justify-content: space-between;
+      }
+
+      .risk-analysis-tab .flowMapContainer {
+        height: clamp(400px, 60vh, 600px) !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .risk-analysis-tab .summaryRight {
+        flex-wrap: wrap;
+      }
+
+      .risk-analysis-tab .riskHeader {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .risk-analysis-tab .viewToggle {
+        order: -1;
+        width: 100%;
+      }
+    }
+
+    /* Focus styles for accessibility */
+    button:focus-visible,
+    input:focus-visible {
+      outline: 2px solid #3B82F6;
+      outline-offset: 2px;
+    }
+
+    /* Hover effects */
+    button:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    button:active:not(:disabled) {
+      transform: translateY(0);
+    }
+  `;
+  
+  if (!document.head.querySelector('#risk-analysis-styles')) {
+    styleSheet.id = 'risk-analysis-styles';
+    document.head.appendChild(styleSheet);
+  }
+}

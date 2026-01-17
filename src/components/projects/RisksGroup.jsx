@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle, Info, ClipboardList } from 'lucide-react';
 import RiskCard from './RiskCard';
 
@@ -7,6 +8,7 @@ import RiskCard from './RiskCard';
  * Groups and displays risks by severity
  */
 export default function RisksGroup({ title, severity, risks, dataCompleteness }) {
+  const { t } = useTranslation();
   if (!risks || risks.length === 0) {
     return null;
   }
@@ -82,7 +84,7 @@ export default function RisksGroup({ title, severity, risks, dataCompleteness })
       <h3 style={getTitleStyle()}>
         <span>{getIcon()}</span>
         <span>{title}</span>
-        <span style={styles.count}>({risks.length})</span>
+        <span style={styles.count}>{t('risksGroup.count', { count: risks.length })}</span>
       </h3>
       <div style={styles.risksList}>
         {risks.map((risk, idx) => (

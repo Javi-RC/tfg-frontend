@@ -1,11 +1,13 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FormTextarea, FormSelect, FormNumber } from './FormComponents';
 import { COMMUNICATION_LEVELS, TIME_UNITS } from '../../types/projectTypes';
 
 /**
  * Step 4: Geographic Distribution
  */
-export default function Step4Geographic({ formData, onChange, errors = {} }) {
+export default function Step4Geographic({ formData, onChange }) {
+  const { t } = useTranslation();
   const handleChange = (e) => {
     const { name, value } = e.target;
     onChange({ [name]: value });
@@ -14,7 +16,7 @@ export default function Step4Geographic({ formData, onChange, errors = {} }) {
   const handleRegionsChange = (e) => {
     const value = e.target.value;
     const regions = value.split(',').map(r => r.trim()).filter(r => r);
-    onChange({ teamRegions: regions });
+    onChange({ teamRegionsText: value, teamRegions: regions });
   };
 
   const handleTimeOverlapChange = (field, value) => {
@@ -28,34 +30,34 @@ export default function Step4Geographic({ formData, onChange, errors = {} }) {
 
   return (
     <div>
-      <h2 style={styles.stepTitle}>Geographic Distribution</h2>
+      <h2 style={styles.stepTitle}>{t('projects.steps.step4.title')}</h2>
       <p style={styles.stepDescription}>
-        Define the geographic aspects of your distributed team
+        {t('projects.steps.step4.description')}
       </p>
 
       <FormTextarea
-        label="Team Regions"
+        label={t('projects.steps.step4.teamRegions')}
         name="teamRegions"
-        value={formData.teamRegions?.join(', ') || ''}
+        value={formData.teamRegionsText ?? formData.teamRegions?.join(', ') ?? ''}
         onChange={handleRegionsChange}
-        placeholder="Enter regions/countries separated by commas (e.g., USA, Spain, Germany)"
+        placeholder={t('projects.steps.step4.regionsPlaceholder')}
         rows={2}
       />
 
       <FormSelect
-        label="Distributed Work Experience Level"
+        label={t('projects.steps.step4.distributedWorkExperienceLevel')}
         name="distributedWorkExperienceLevel"
         value={formData.distributedWorkExperienceLevel || 'medium'}
         onChange={handleChange}
         options={[
-          { value: COMMUNICATION_LEVELS.LOW, label: 'Low' },
-          { value: COMMUNICATION_LEVELS.MEDIUM, label: 'Medium' },
-          { value: COMMUNICATION_LEVELS.HIGH, label: 'High' }
+          { value: COMMUNICATION_LEVELS.LOW, label: t('projects.levels.low') },
+          { value: COMMUNICATION_LEVELS.MEDIUM, label: t('projects.levels.medium') },
+          { value: COMMUNICATION_LEVELS.HIGH, label: t('projects.levels.high') }
         ]}
       />
 
       <div style={styles.section}>
-        <label style={styles.label}>Expected Time Overlap</label>
+        <label style={styles.label}>{t('projects.steps.step4.expectedTimeOverlap')}</label>
         <div style={styles.row}>
           <FormNumber
             label=""
@@ -71,21 +73,21 @@ export default function Step4Geographic({ formData, onChange, errors = {} }) {
             value={formData.expectedTimeOverlap?.unit || 'hours'}
             onChange={(e) => handleTimeOverlapChange('unit', e.target.value)}
             options={[
-              { value: TIME_UNITS.HOURS, label: 'Hours' }
+              { value: TIME_UNITS.HOURS, label: t('projects.timeUnits.hours') }
             ]}
           />
         </div>
       </div>
 
       <FormSelect
-        label="Cultural Diversity Level"
+        label={t('projects.steps.step4.culturalDiversityLevel')}
         name="culturalDiversityLevel"
         value={formData.culturalDiversityLevel || 'medium'}
         onChange={handleChange}
         options={[
-          { value: COMMUNICATION_LEVELS.LOW, label: 'Low' },
-          { value: COMMUNICATION_LEVELS.MEDIUM, label: 'Medium' },
-          { value: COMMUNICATION_LEVELS.HIGH, label: 'High' }
+          { value: COMMUNICATION_LEVELS.LOW, label: t('projects.levels.low') },
+          { value: COMMUNICATION_LEVELS.MEDIUM, label: t('projects.levels.medium') },
+          { value: COMMUNICATION_LEVELS.HIGH, label: t('projects.levels.high') }
         ]}
       />
     </div>

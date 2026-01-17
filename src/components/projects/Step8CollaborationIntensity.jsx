@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FormInput, FormTextarea, FormSelect } from './FormComponents';
 import { INFORMATION_FLOW, DEPENDENCY_LEVELS } from '../../types/projectTypes';
 import PrimaryButton from '../PrimaryButton';
@@ -6,7 +7,8 @@ import PrimaryButton from '../PrimaryButton';
 /**
  * Step 8: Team Collaboration Intensity
  */
-export default function Step8CollaborationIntensity({ formData, onChange, errors = {} }) {
+export default function Step8CollaborationIntensity({ formData, onChange }) {
+  const { t } = useTranslation();
   const handleChange = (e) => {
     const { name, value } = e.target;
     onChange({ [name]: value });
@@ -39,77 +41,77 @@ export default function Step8CollaborationIntensity({ formData, onChange, errors
 
   return (
     <div>
-      <h2 style={styles.stepTitle}>Team Collaboration Intensity</h2>
+      <h2 style={styles.stepTitle}>{t('projects.steps.step8.title')}</h2>
       <p style={styles.stepDescription}>
-        Define how teams will collaborate and exchange information
+        {t('projects.steps.step8.description')}
       </p>
 
       <div style={styles.section}>
         <div style={styles.sectionHeader}>
-          <h3 style={styles.sectionTitle}>Involved Teams</h3>
-          <PrimaryButton onClick={addTeam}>+ Add Team</PrimaryButton>
+          <h3 style={styles.sectionTitle}>{t('projects.steps.step8.involvedTeams')}</h3>
+          <PrimaryButton onClick={addTeam}>{t('projects.steps.step8.addTeam')}</PrimaryButton>
         </div>
 
         {formData.involvedTeams && formData.involvedTeams.length > 0 ? (
           formData.involvedTeams.map((team, index) => (
             <div key={index} style={styles.teamCard}>
               <div style={styles.teamHeader}>
-                <span style={styles.teamNumber}>Team {index + 1}</span>
+                <span style={styles.teamNumber}>{t('projects.steps.step8.team')} {index + 1}</span>
                 <button
                   style={styles.removeButton}
                   onClick={() => removeTeam(index)}
                 >
-                  Remove
+                  {t('projects.steps.step5.remove')}
                 </button>
               </div>
 
               <div style={styles.row}>
                 <FormInput
-                  label="Team Name"
+                  label={t('projects.steps.step8.teamName')}
                   name={`teamName-${index}`}
                   value={team.teamName || ''}
                   onChange={(e) => handleTeamChange(index, 'teamName', e.target.value)}
                   required
-                  placeholder="e.g., Backend Team"
+                  placeholder={t('projects.steps.step8.teamNamePlaceholder')}
                 />
 
                 <FormSelect
-                  label="Dependency Level"
+                  label={t('projects.steps.step8.dependencyLevel')}
                   name={`teamDependency-${index}`}
                   value={team.dependencyLevel || 'medium'}
                   onChange={(e) => handleTeamChange(index, 'dependencyLevel', e.target.value)}
                   options={[
-                    { value: DEPENDENCY_LEVELS.LOW, label: 'Low' },
-                    { value: DEPENDENCY_LEVELS.MEDIUM, label: 'Medium' },
-                    { value: DEPENDENCY_LEVELS.HIGH, label: 'High' }
+                    { value: DEPENDENCY_LEVELS.LOW, label: t('projects.steps.step8.dependencyLow') },
+                    { value: DEPENDENCY_LEVELS.MEDIUM, label: t('projects.steps.step8.dependencyMedium') },
+                    { value: DEPENDENCY_LEVELS.HIGH, label: t('projects.steps.step8.dependencyHigh') }
                   ]}
                 />
               </div>
             </div>
           ))
         ) : (
-          <p style={styles.emptyText}>No teams added yet. Click "Add Team" to start.</p>
+          <p style={styles.emptyText}>{t('projects.steps.step8.noTeamsMessage')}</p>
         )}
       </div>
 
       <FormSelect
-        label="Information Flow"
+        label={t('projects.steps.step8.informationFlow')}
         name="informationFlow"
         value={formData.informationFlow || 'bidirectional'}
         onChange={handleChange}
         options={[
-          { value: INFORMATION_FLOW.UNIDIRECTIONAL, label: 'Unidirectional' },
-          { value: INFORMATION_FLOW.BIDIRECTIONAL, label: 'Bidirectional' },
-          { value: INFORMATION_FLOW.MULTIPLE, label: 'Multiple Directions' }
+          { value: INFORMATION_FLOW.UNIDIRECTIONAL, label: t('projects.steps.step8.flowUnidirectional') },
+          { value: INFORMATION_FLOW.BIDIRECTIONAL, label: t('projects.steps.step8.flowBidirectional') },
+          { value: INFORMATION_FLOW.MULTIPLE, label: t('projects.steps.step8.flowMultiple') }
         ]}
       />
 
       <FormTextarea
-        label="Critical Exchanges"
+        label={t('projects.steps.step8.criticalExchanges')}
         name="criticalExchanges"
         value={formData.criticalExchanges?.join('\n') || ''}
         onChange={handleExchangesChange}
-        placeholder="Enter each critical exchange on a new line..."
+        placeholder={t('projects.steps.step8.criticalExchangesPlaceholder')}
         rows={4}
       />
     </div>

@@ -7,7 +7,7 @@ import PrimaryButton from '../PrimaryButton';
  * Step 8: Availability Requirements
  * Define time commitment and team availability needs
  */
-export default function Step8Availability({ formData, onChange, errors = {} }) {
+export default function Step8Availability({ formData, onChange }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     onChange({ [name]: value });

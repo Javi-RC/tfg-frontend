@@ -192,10 +192,10 @@ export const FORM_STEPS = [
 // ==================== Risk Score Ranges ====================
 
 export const RISK_SCORE_RANGES = {
-  LOW: { min: 0, max: 5, label: 'Low Risk', color: '#10B981' },
-  MEDIUM: { min: 6, max: 15, label: 'Medium Risk', color: '#F59E0B' },
-  HIGH: { min: 16, max: 30, label: 'High Risk', color: '#F97316' },
-  CRITICAL: { min: 31, max: Infinity, label: 'Critical Risk', color: '#EF4444' }
+  LOW: { min: 0, max: 5, label: 'riskScore.low', color: '#10B981' },
+  MEDIUM: { min: 6, max: 15, label: 'riskScore.medium', color: '#F59E0B' },
+  HIGH: { min: 16, max: 30, label: 'riskScore.high', color: '#F97316' },
+  CRITICAL: { min: 31, max: Infinity, label: 'riskScore.critical', color: '#EF4444' }
 };
 
 export const getRiskLevel = (score) => {

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Target, BarChart3, Globe, AlertTriangle, RefreshCw, MessageCircle, ClipboardList } from 'lucide-react';
 
 /**
@@ -6,6 +7,7 @@ import { Target, BarChart3, Globe, AlertTriangle, RefreshCw, MessageCircle, Clip
  * Displays insights about team capabilities and gaps
  */
 export default function TeamInsightCard({ insight }) {
+  const { t } = useTranslation();
   const getSeverityStyle = (severity) => {
     const baseStyle = {
       padding: '16px',
@@ -58,12 +60,12 @@ export default function TeamInsightCard({ insight }) {
 
   const getTypeLabel = (type) => {
     const labels = {
-      skill_gap: 'Skill gap',
-      experience_gap: 'Experience gap',
-      language_barrier: 'Language barrier',
-      team_overload: 'Team overload',
-      coordination_issues: 'Coordination issues',
-      communication_breakdown: 'Communication breakdown'
+      skill_gap: t('teamInsightCard.skillGap'),
+      experience_gap: t('teamInsightCard.experienceGap'),
+      language_barrier: t('teamInsightCard.languageBarrier'),
+      team_overload: t('teamInsightCard.teamOverload'),
+      coordination_issues: t('teamInsightCard.coordinationIssues'),
+      communication_breakdown: t('teamInsightCard.communicationBreakdown')
     };
     return labels[type] || type.replace(/_/g, ' ');
   };
@@ -79,7 +81,7 @@ export default function TeamInsightCard({ insight }) {
         </div>
         <p style={styles.message}>{insight.message}</p>
         <div style={styles.recommendation}>
-          <strong style={styles.recommendationLabel}>Recommendation:</strong>
+          <strong style={styles.recommendationLabel}>{t('teamInsightCard.recommendationLabel')}</strong>
           <span style={styles.recommendationText}>{insight.recommendation}</span>
         </div>
       </div>

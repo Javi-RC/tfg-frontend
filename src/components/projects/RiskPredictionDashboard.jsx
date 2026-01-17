@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Target, RefreshCw, Wand2, BarChart3, Lightbulb, XCircle, CheckCircle } from 'lucide-react';
 
 /**
@@ -6,13 +7,14 @@ import { Target, RefreshCw, Wand2, BarChart3, Lightbulb, XCircle, CheckCircle } 
  * Main container for risk prediction functionality with flexible data model
  */
 export default function RiskPredictionDashboard({ 
-  project,
   loading, 
   prediction, 
   error, 
   onPredict,
   readinessInfo // Changed from validationInfo to reflect new model
 }) {
+  const { t } = useTranslation();
+  
   const handlePredictClick = () => {
     onPredict();
   };
@@ -29,10 +31,10 @@ export default function RiskPredictionDashboard({
         <div style={styles.headerLeft}>
           <h3 style={{...styles.title, display: 'flex', alignItems: 'center', gap: '8px'}}>
             <Target size={24} />
-            Risk Prediction
+            {t('riskPrediction.title')}
           </h3>
           <p style={styles.subtitle}>
-            AI-powered risk analysis - Works with any data, improves with completeness
+            {t('riskPrediction.subtitle')}
           </p>
         </div>
         <button
@@ -47,17 +49,17 @@ export default function RiskPredictionDashboard({
           {loading ? (
             <>
               <span style={styles.spinner}></span>
-              Analyzing...
+              {t('riskPrediction.analyzing')}
             </>
           ) : prediction ? (
             <>
               <RefreshCw size={16} />
-              Re-Analyze
+              {t('riskPrediction.reAnalyze')}
             </>
           ) : (
             <>
               <Wand2 size={16} />
-              Analyze Risks
+              {t('riskPrediction.analyzeRisks')}
             </>
           )}
         </button>
@@ -69,10 +71,10 @@ export default function RiskPredictionDashboard({
           <div style={styles.completenessHeader}>
             <span style={{...styles.completenessTitle, display: 'flex', alignItems: 'center', gap: '6px'}}>
               <BarChart3 size={16} />
-              Data Completeness: {dataCompleteness}%
+              {t('riskPrediction.dataCompleteness')}: {dataCompleteness}%
             </span>
             <span style={styles.completenessFields}>
-              {completedFields}/{totalFields} fields
+              {completedFields}/{totalFields} {t('riskPrediction.fields')}
             </span>
           </div>
           <div style={styles.progressBarContainer}>
@@ -88,7 +90,7 @@ export default function RiskPredictionDashboard({
             <div style={styles.suggestions}>
               <p style={{...styles.suggestionsTitle, display: 'flex', alignItems: 'center', gap: '6px'}}>
                 <Lightbulb size={16} />
-                Improve accuracy by adding:
+                {t('riskPrediction.improveAccuracy')}
               </p>
               <ul style={styles.suggestionsList}>
                 {suggestions.map((suggestion, idx) => (
@@ -110,7 +112,7 @@ export default function RiskPredictionDashboard({
         <div style={styles.errorBox}>
           <div style={styles.errorIcon}><XCircle size={48} color="#dc2626" /></div>
           <div style={styles.errorContent}>
-            <h4 style={styles.errorTitle}>Error Predicting Risks</h4>
+            <h4 style={styles.errorTitle}>{t('riskPrediction.errorTitle')}</h4>
             <p style={styles.errorMessage}>{error.message}</p>
           </div>
         </div>
@@ -120,33 +122,32 @@ export default function RiskPredictionDashboard({
       {!loading && !prediction && !error && (
         <div style={styles.emptyState}>
           <div style={styles.emptyIcon}><Wand2 size={64} color="#667eea" /></div>
-          <h4 style={styles.emptyTitle}>Ready for Risk Analysis</h4>
+          <h4 style={styles.emptyTitle}>{t('riskPrediction.emptyTitle')}</h4>
           <p style={styles.emptyText}>
-            Our AI-powered system can analyze risks at any stage.
-            More data = Higher confidence predictions.
+            {t('riskPrediction.emptyText')}
           </p>
           <div style={styles.features}>
             <div style={styles.feature}>
               <span style={styles.featureIcon}><CheckCircle size={20} color="#10b981" /></span>
-              <span style={styles.featureText}>13 Risk Detectors (Skill Gap, Communication, etc.)</span>
+              <span style={styles.featureText}>{t('riskPrediction.feature1')}</span>
             </div>
             <div style={styles.feature}>
               <span style={styles.featureIcon}><CheckCircle size={20} color="#10b981" /></span>
-              <span style={styles.featureText}>Progressive Analysis (works with partial data)</span>
+              <span style={styles.featureText}>{t('riskPrediction.feature2')}</span>
             </div>
             <div style={styles.feature}>
               <span style={styles.featureIcon}><CheckCircle size={20} color="#10b981" /></span>
-              <span style={styles.featureText}>Dynamic Confidence Scores</span>
+              <span style={styles.featureText}>{t('riskPrediction.feature3')}</span>
             </div>
             <div style={styles.feature}>
               <span style={styles.featureIcon}><CheckCircle size={20} color="#10b981" /></span>
-              <span style={styles.featureText}>Actionable Recommendations</span>
+              <span style={styles.featureText}>{t('riskPrediction.feature4')}</span>
             </div>
           </div>
           <p style={{ ...styles.emptyHint, display: 'flex', gap: '6px', alignItems: 'flex-start' }}>
             <Lightbulb size={16} />
             <span>
-              <strong>Start Now:</strong> You can analyze risks with current data and re-analyze after adding more details.
+              <strong>{t('riskPrediction.startNowHint')}</strong> {t('riskPrediction.startNowText')}
             </span>
           </p>
         </div>

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Upload, FileText, X } from 'lucide-react';
 import PrimaryButton from './PrimaryButton';
 import SecondaryButton from './SecondaryButton';
 import CVConsentModal from './cv/CVConsentModal';
+import QuestionnaireModal from '../pages/CVUpload/QuestionnaireModal';
 import { getCVConsent } from '../api/cvConsent';
 
 /**
@@ -12,10 +14,15 @@ import { getCVConsent } from '../api/cvConsent';
  * @param {Function} onCancel - Optional callback to cancel upload
  */
 export default function CVUpload({ onUploadSuccess, onCancel }) {
+  const { t, i18n } = useTranslation();
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
+
+  const [showQuestionnaire, setShowQuestionnaire] = useState(false);
+  const [questionnaireData, setQuestionnaireData] = useState(null);
+  const [uploadedCv, setUploadedCv] = useState(null);
 
   const [checkingConsent, setCheckingConsent] = useState(true);
   const [hasConsent, setHasConsent] = useState(false);
@@ -46,7 +53,7 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
         setShowConsentModal(false);
         setError(
           err?.response?.data?.error ||
-            'Could not verify consent status. Please try again.'
+            t('cv.couldNotVerifyConsent')
         );
       } finally {
         if (mounted) setCheckingConsent(false);
@@ -57,21 +64,22 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
     return () => {
       mounted = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const validateFile = (selectedFile) => {
     if (!selectedFile) {
-      setError('Please select a file');
+      setError(t('cv.upload.errors.noFileSelected'));
       return false;
     }
 
     if (!ALLOWED_TYPES.includes(selectedFile.type)) {
-      setError('Only PDF and Word documents are allowed');
+      setError(t('cv.upload.errors.invalidFileType'));
       return false;
     }
 
     if (selectedFile.size > MAX_SIZE) {
-      setError('File size must be less than 5MB');
+      setError(t('cv.upload.errors.fileTooLarge'));
       return false;
     }
 
@@ -110,13 +118,13 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
 
   const handleUpload = async () => {
     if (!file) {
-      setError('Please select a file first');
+      setError(t('cv.upload.errors.noFileSelected'));
       return;
     }
 
     if (!hasConsent) {
       setShowConsentModal(true);
-      setError('You must accept the AI CV processing consent before uploading.');
+      setError(t('cv.upload.errors.consentRequired'));
       return;
     }
 
@@ -125,16 +133,36 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
 
     try {
       const { uploadCV } = await import('../api/cv');
-      const response = await uploadCV(file);
-      
-      // Backend response: { success: true, message: "...", cv: {...} }
-      if (response.data?.success && response.data?.cv) {
-        if (onUploadSuccess) {
-          onUploadSuccess(response.data.cv);
+      const preferredLanguage = (i18n?.language || 'en').toLowerCase().startsWith('es') ? 'es' : 'en';
+      const response = await uploadCV(file, preferredLanguage);
+      const data = response?.data;
+
+      console.log('========== CV UPLOAD BACKEND RESPONSE ==========');
+      console.log('Full Response:', response);
+      console.log('Response Data:', data);
+      console.log('Questionnaire:', data?.questionnaire);
+      console.log('Needs Completion:', data?.questionnaire?.needsCompletion);
+      console.log('Completeness:', data?.completeness);
+      console.log('Completeness Score:', data?.completeness?.score);
+      console.log('================================================');
+
+      // New backend response supports questionnaire flow
+      if (data?.success && data?.cv) {
+        setUploadedCv(data.cv);
+
+        if (data?.questionnaire?.needsCompletion) {
+          setQuestionnaireData(data.questionnaire);
+          setShowQuestionnaire(true);
+          return;
         }
-      } else {
-        throw new Error('Invalid response format');
+
+        if (onUploadSuccess) {
+          onUploadSuccess(data.cv);
+        }
+        return;
       }
+
+      throw new Error('Invalid response format');
     } catch (err) {
       if (err?.response?.status === 403) {
         setHasConsent(false);
@@ -143,10 +171,38 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
       setError(
         err.response?.data?.error || 
         err.message ||
-        'Error uploading CV. Please try again.'
+        t('cv.upload.errors.uploadFailed')
       );
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleQuestionnaireComplete = () => {
+    setShowQuestionnaire(false);
+    setQuestionnaireData(null);
+
+    if (onUploadSuccess) {
+      onUploadSuccess(uploadedCv);
+    }
+  };
+
+  const handleQuestionnaireSkip = () => {
+    setShowQuestionnaire(false);
+    setQuestionnaireData(null);
+
+    if (questionnaireData?.sessionId) {
+      localStorage.setItem(
+        'pendingQuestionnaire',
+        JSON.stringify({
+          sessionId: questionnaireData.sessionId,
+          timestamp: new Date().toISOString()
+        })
+      );
+    }
+
+    if (onUploadSuccess) {
+      onUploadSuccess(uploadedCv);
     }
   };
 
@@ -172,6 +228,14 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
       }}
     />
 
+    {showQuestionnaire && questionnaireData && (
+      <QuestionnaireModal
+        initialData={questionnaireData}
+        onComplete={handleQuestionnaireComplete}
+        onSkip={handleQuestionnaireSkip}
+      />
+    )}
+
     <div style={{
       maxWidth: '600px',
       margin: '0 auto',
@@ -179,14 +243,14 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
       background: 'white',
       borderRadius: '16px',
       boxShadow: '0 2px 12px rgba(0,0,0,0.08)'
-    }} role="region" aria-label="CV upload form">
+}} role="region" aria-label={t('cv.upload.aria.form')}>
       <h2 style={{
         fontSize: '24px',
         fontWeight: '600',
         marginBottom: '12px',
         color: '#1a1a1a'
       }}>
-        Upload Your CV
+        {t('cv.upload.title')}
       </h2>
       
       <p style={{
@@ -194,7 +258,7 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
         color: '#666',
         marginBottom: '32px'
       }}>
-        Upload your CV in PDF or Word format (max 5MB)
+        {t('cv.upload.description')}
       </p>
 
       {checkingConsent && (
@@ -207,7 +271,7 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
           fontSize: '14px',
           marginBottom: '20px'
         }}>
-          Checking consent status...
+          {t('cv.upload.checkingConsent')}
         </div>
       )}
 
@@ -226,10 +290,10 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
           alignItems: 'center'
         }}>
           <span>
-            You must accept the AI CV processing consent before uploading.
+            {t('cv.upload.consentWarning')}
           </span>
           <SecondaryButton onClick={() => setShowConsentModal(true)}>
-            Review consent
+            {t('cv.upload.reviewConsent')}
           </SecondaryButton>
         </div>
       )}
@@ -240,7 +304,7 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
         onDrop={handleDrop}
         role="button"
         tabIndex={0}
-        aria-label="Click to select file or drag and drop CV file here"
+        aria-label={t('cv.upload.aria.dragDrop')}
         onKeyPress={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
@@ -274,13 +338,13 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
               fontWeight: '500',
               marginBottom: '8px'
             }}>
-              Drag and drop your CV here
+              {t('cv.upload.dragDrop')}
             </p>
             <p style={{
               fontSize: '13px',
               color: '#999'
             }}>
-              or click to browse
+              {t('cv.upload.orClickToBrowse')}
             </p>
             <input
               id="cv-file-input"
@@ -288,7 +352,7 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
               accept=".pdf,.doc,.docx"
               onChange={handleFileChange}
               style={{ display: 'none' }}
-              aria-label="Select CV file to upload"
+              aria-label={t('cv.upload.aria.selectFile')}
             />
           </>
         ) : (
@@ -331,8 +395,8 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
                 display: 'flex',
                 alignItems: 'center'
               }}
-              title="Remove file"
-              aria-label={`Remove selected file: ${file.name}`}
+              title={t('cv.upload.removeFile')}
+              aria-label={t('cv.upload.aria.removeFile', { fileName: file.name })}
             >
               <X size={20} />
             </button>
@@ -363,19 +427,19 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
           <SecondaryButton
             onClick={onCancel}
             disabled={uploading}
-            aria-label="Cancel CV upload"
+            aria-label={t('cv.upload.aria.cancel')}
             leftIcon={<X size={16} />}
           >
-            Cancel
+            {t('cv.upload.cancel')}
           </SecondaryButton>
         )}
         <PrimaryButton
           onClick={handleUpload}
           disabled={!file || uploading || checkingConsent || !hasConsent}
-          aria-label={uploading ? 'Uploading CV file' : 'Upload selected CV file'}
+          aria-label={uploading ? t('cv.upload.aria.uploading') : t('cv.upload.aria.upload')}
           leftIcon={<Upload size={16} />}
         >
-          {uploading ? 'Uploading...' : 'Upload CV'}
+          {uploading ? t('cv.upload.uploading') : t('cv.upload.button')}
         </PrimaryButton>
       </div>
     </div>

@@ -1,14 +1,15 @@
 import React from 'react';
-import { PROJECT_STATUS_COLORS, PROJECT_STATUS_LABELS } from '../../types/projectTypes';
+import { useTranslation } from 'react-i18next';
+import { PROJECT_STATUS_COLORS } from '../../types/projectTypes';
 
 /**
  * Project Status Badge Component
  * Displays a styled badge for project status
  */
 export default function ProjectStatusBadge({ status }) {
+  const { t } = useTranslation();
   const colors = PROJECT_STATUS_COLORS[status] || PROJECT_STATUS_COLORS.draft;
-  const label = PROJECT_STATUS_LABELS[status] || status;
-
+  const label = t(`projectStatus.${status}`) || status;
   return (
     <span
       style={{

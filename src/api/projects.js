@@ -147,9 +147,17 @@ export const getTeamAnalysis = (id) =>
   api.get(`/api/projects/${id}/team-analysis`);
 
 /**
+ * Get detailed team synergy analysis (personality complementarity)
+ * @param {string} id - Project ID
+ * @returns {Promise} API response with synergy analysis
+ */
+export const getTeamSynergy = (id) =>
+  api.get(`/api/projects/${id}/team-synergy`);
+
+/**
  * Suggest optimal team for project requirements (without creating project)
  * Useful for testing different team configurations before assignment
- * @param {Object} data - { projectRequirements, organizationId, teamSize }
+ * @param {Object} data - { projectRequirements, organizationId, teamSize, enablePersonalityOptimization }
  * @returns {Promise} API response with team suggestions
  */
 export const suggestTeam = (data) => 
@@ -173,3 +181,83 @@ export const predictProjectRisks = (id) =>
  */
 export const previewProjectRisks = (id, data) => 
   api.post(`/api/projects/${id}/risks/preview`, data);
+
+// ==================== Team Configuration Management ====================
+
+/**
+ * Get team configuration for a project
+ * @param {string} projectId - Project ID
+ * @returns {Promise} API response with team configuration
+ */
+export const getTeamConfig = (projectId) => 
+  api.get(`/api/projects/${projectId}/team-config`);
+
+/**
+ * Update complete team configuration
+ * @param {string} projectId - Project ID
+ * @param {Object} config - Complete configuration object
+ * @returns {Promise} API response
+ */
+export const updateTeamConfig = (projectId, config) => 
+  api.put(`/api/projects/${projectId}/team-config`, config);
+
+/**
+ * Update Phase 1 configuration only
+ * @param {string} projectId - Project ID
+ * @param {Object} phase1Config - Phase 1 configuration
+ * @returns {Promise} API response
+ */
+export const updatePhase1Config = (projectId, phase1Config) => 
+  api.patch(`/api/projects/${projectId}/team-config/phase1`, phase1Config);
+
+/**
+ * Update Phase 2 configuration only
+ * @param {string} projectId - Project ID
+ * @param {Object} phase2Config - Phase 2 configuration
+ * @returns {Promise} API response
+ */
+export const updatePhase2Config = (projectId, phase2Config) => 
+  api.patch(`/api/projects/${projectId}/team-config/phase2`, phase2Config);
+
+/**
+ * Update CBR configuration only
+ * @param {string} projectId - Project ID
+ * @param {Object} cbrConfig - CBR configuration
+ * @returns {Promise} API response
+ */
+export const updateCBRConfig = (projectId, cbrConfig) => 
+  api.patch(`/api/projects/${projectId}/team-config/cbr`, cbrConfig);
+
+/**
+ * Update Decision Tree configuration only
+ * @param {string} projectId - Project ID
+ * @param {Object} decisionTreeConfig - Decision Tree configuration
+ * @returns {Promise} API response
+ */
+export const updateDecisionTreeConfig = (projectId, decisionTreeConfig) => 
+  api.patch(`/api/projects/${projectId}/team-config/decision-tree`, decisionTreeConfig);
+
+/**
+ * Reset team configuration to default values
+ * @param {string} projectId - Project ID
+ * @returns {Promise} API response
+ */
+export const resetTeamConfig = (projectId) => 
+  api.post(`/api/projects/${projectId}/team-config/reset`);
+
+/**
+ * Get human-readable configuration summary
+ * @param {string} projectId - Project ID
+ * @returns {Promise} API response with formatted summary
+ */
+export const getTeamConfigSummary = (projectId) => 
+  api.get(`/api/projects/${projectId}/team-config/summary`);
+
+/**
+ * Validate team configuration
+ * @param {string} projectId - Project ID
+ * @param {Object} config - Configuration to validate
+ * @returns {Promise} API response with validation result
+ */
+export const validateTeamConfig = (projectId, config) => 
+  api.post(`/api/projects/${projectId}/team-config/validate`, config);

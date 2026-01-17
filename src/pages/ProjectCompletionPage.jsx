@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { AlertTriangle, CheckCircle, Save, ArrowLeft, Send, ArrowRight, BarChart3, Lightbulb, TrendingUp, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { AlertTriangle, CheckCircle, Save, ArrowLeft, Send, ArrowRight, BarChart3, Lightbulb, TrendingUp, X, Network, List, Info } from 'lucide-react';
 import { getOutcomeForm, submitOutcome } from '../api/projects';
 import GeneralOutcomeSection from '../components/outcome/GeneralOutcomeSection';
 import RisksSection from '../components/outcome/RisksSection';
 import LessonsLearnedSection from '../components/outcome/LessonsLearnedSection';
 import MetricsSection from '../components/outcome/MetricsSection';
 import ResultsModal from '../components/outcome/ResultsModal';
+import RiskFlowMap from '../components/outcome/RiskFlowMap';
 import PrimaryButton from '../components/PrimaryButton';
 import SecondaryButton from '../components/SecondaryButton';
 
@@ -17,6 +19,7 @@ import SecondaryButton from '../components/SecondaryButton';
 export default function ProjectCompletionPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -43,9 +46,11 @@ export default function ProjectCompletionPage() {
   const [errors, setErrors] = useState({});
   const [results, setResults] = useState(null);
   const [showResults, setShowResults] = useState(false);
+  const [riskViewMode, setRiskViewMode] = useState('list'); // 'list' or 'flow'
 
   useEffect(() => {
     loadFormData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const loadFormData = async () => {
@@ -60,7 +65,6 @@ export default function ProjectCompletionPage() {
       let projectInfo = data.projectInfo || data.project;
       
       if (!projectInfo?.status) {
-        console.log('⚠️ Backend did not return status, fetching complete project...');
         const { getProjectById } = await import('../api/projects');
         const projectResponse = await getProjectById(id);
         const projectData = projectResponse.data?.success ? projectResponse.data.data : projectResponse.data;
@@ -72,19 +76,23 @@ export default function ProjectCompletionPage() {
       
       // Verify project is in completed status
       if (projectInfo?.status !== 'completed') {
-        setError(`⚠️ The project must be in "Completed" status to capture the outcome.\n\nCurrent status: ${projectInfo?.status || 'unknown'}\n\nPlease go to the project page and click "✓ Complete Project" first.`);
+        setError(
+          t('projects.completionPage.errors.statusNotCompleted', {
+            status: projectInfo?.status || t('common.notAvailable')
+          })
+        );
         return;
       }
       
       // Check if outcome already captured
       if (projectInfo?.hasOutcome || projectInfo?.projectOutcome?.completed) {
-        setError('✓ This project already has a captured outcome.\n\nIt is not possible to capture the outcome twice.');
+        setError(t('projects.completionPage.errors.outcomeAlreadyCaptured'));
         return;
       }
       
       // Pre-fill actualizedRisks with predicted risks structure
-      const initialRisks = (data.predictedRisks || []).map(risk => ({
-        riskId: risk.id,
+      const initialRisks = (data.predictedRisks || []).map((risk, index) => ({
+        riskId: String(risk?.id ?? risk?._id ?? (risk?.type ? `${risk.type}-${index}` : index)),
         type: risk.type,
         occurred: false,
         severity: risk.severity
@@ -97,7 +105,7 @@ export default function ProjectCompletionPage() {
       
     } catch (error) {
       console.error('Error loading form data:', error);
-      setError(error.response?.data?.error || 'Error loading project data');
+      setError(error.response?.data?.error || t('projects.completionPage.errors.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -109,16 +117,16 @@ export default function ProjectCompletionPage() {
     // Step 1 validation
     if (currentStep === 1) {
       if (formData.completed === undefined || formData.completed === null) {
-        newErrors.completed = 'You must indicate if the project was completed';
+        newErrors.completed = t('projects.completionPage.validation.mustIndicateCompleted');
       }
       if (!formData.qualityScore || formData.qualityScore < 1 || formData.qualityScore > 5) {
-        newErrors.qualityScore = 'Quality rating required (1-5)';
+        newErrors.qualityScore = t('projects.completionPage.validation.qualityRequired');
       }
       if (!formData.clientSatisfaction || formData.clientSatisfaction < 1 || formData.clientSatisfaction > 5) {
-        newErrors.clientSatisfaction = 'Client satisfaction required (1-5)';
+        newErrors.clientSatisfaction = t('projects.completionPage.validation.clientSatisfactionRequired');
       }
       if (!formData.teamMorale || formData.teamMorale < 1 || formData.teamMorale > 5) {
-        newErrors.teamMorale = 'Team morale required (1-5)';
+        newErrors.teamMorale = t('projects.completionPage.validation.teamMoraleRequired');
       }
     }
     
@@ -128,11 +136,11 @@ export default function ProjectCompletionPage() {
       
       for (const risk of occurredRisks) {
         if (!risk.description) {
-          newErrors.risks = 'Risks that occurred require description';
+          newErrors.risks = t('projects.completionPage.validation.riskNeedsDescription');
           break;
         }
         if (!risk.rootCause) {
-          newErrors.risks = 'Risks that occurred require root cause';
+          newErrors.risks = t('projects.completionPage.validation.riskNeedsRootCause');
           break;
         }
       }
@@ -237,7 +245,7 @@ export default function ProjectCompletionPage() {
       
     } catch (error) {
       console.error('Error submitting outcome:', error);
-      alert(error.response?.data?.error || 'Error capturing project outcome');
+      alert(error.response?.data?.error || t('projects.completionPage.errors.captureFailed'));
     } finally {
       setSubmitting(false);
     }
@@ -251,22 +259,22 @@ export default function ProjectCompletionPage() {
   const steps = [
     {
       number: 1,
-      title: 'General Outcome',
+      title: t('projects.completionPage.steps.generalOutcome'),
       icon: <BarChart3 size={20} />
     },
     {
       number: 2,
-      title: 'Risks',
+      title: t('projects.completionPage.steps.risks'),
       icon: <AlertTriangle size={20} />
     },
     {
       number: 3,
-      title: 'Lessons',
+      title: t('projects.completionPage.steps.lessons'),
       icon: <Lightbulb size={20} />
     },
     {
       number: 4,
-      title: 'Results',
+      title: t('projects.completionPage.steps.results'),
       icon: <TrendingUp size={20} />
     }
   ];
@@ -276,7 +284,7 @@ export default function ProjectCompletionPage() {
       <div style={styles.container}>
         <div style={styles.loadingContainer}>
           <div style={styles.spinner} />
-          <p style={styles.loadingText}>Loading project data...</p>
+          <p style={styles.loadingText}>{t('projects.completionPage.loadingProjectData')}</p>
         </div>
       </div>
     );
@@ -287,10 +295,10 @@ export default function ProjectCompletionPage() {
       <div style={styles.container}>
         <div style={styles.errorContainer}>
           <div style={styles.errorIcon}><AlertTriangle size={64} color="#dc2626" /></div>
-          <h2 style={styles.errorTitle}>Error</h2>
+          <h2 style={styles.errorTitle}>{t('common.error')}</h2>
           <p style={styles.errorMessage}>{error}</p>
           <SecondaryButton onClick={() => navigate('/projects')} leftIcon={<ArrowLeft size={16} />}>
-            Back to Projects
+            {t('projects.backToProjects')}
           </SecondaryButton>
         </div>
       </div>
@@ -302,10 +310,12 @@ export default function ProjectCompletionPage() {
       {/* Header */}
       <div style={styles.header}>
         <div>
-          <h1 style={styles.title}>Finalize Project: {projectData?.name}</h1>
-          <p style={styles.subtitle}>
-            Capture the real outcome so the system can learn and improve future predictions
-          </p>
+          <h1 style={styles.title}>
+            {t('projects.completionPage.title', {
+              name: projectData?.projectName || projectData?.name || t('projects.completionPage.projectFallbackName')
+            })}
+          </h1>
+          <p style={styles.subtitle}>{t('projects.completionPage.subtitle')}</p>
         </div>
       </div>
 
@@ -313,10 +323,9 @@ export default function ProjectCompletionPage() {
       <div style={styles.infoBanner}>
         <Info size={20} color="#004085" style={{ flexShrink: 0 }} />
         <div>
-          <strong>Why is this important?</strong>
+          <strong>{t('projects.completionPage.whyImportantTitle')}</strong>
           <p style={styles.infoText}>
-            By capturing the real outcome of this project, the CBR system will learn from this experience
-            and improve risk predictions for similar future projects in your organization.
+            {t('projects.completionPage.whyImportantText')}
           </p>
         </div>
       </div>
@@ -334,7 +343,9 @@ export default function ProjectCompletionPage() {
                 {currentStep > step.number ? '✓' : step.icon}
               </div>
               <div style={styles.stepText}>
-                <div style={styles.stepNumber}>Step {step.number}</div>
+                <div style={styles.stepNumber}>
+                  {t('projects.completionPage.stepLabel', { number: step.number })}
+                </div>
                 <div style={styles.stepTitle}>{step.title}</div>
               </div>
             </div>
@@ -359,11 +370,52 @@ export default function ProjectCompletionPage() {
         )}
         
         {currentStep === 2 && (
-          <RisksSection
-            formData={formData}
-            setFormData={setFormData}
-            predictedRisks={predictedRisks}
-          />
+          <>
+            {/* View Toggle */}
+            <div style={styles.viewToggle}>
+              <button
+                onClick={() => setRiskViewMode('list')}
+                style={{
+                  ...styles.viewButton,
+                  ...(riskViewMode === 'list' ? styles.viewButtonActive : {})
+                }}
+              >
+                <List size={18} />
+                <span>{t('projects.completionPage.riskView.listView')}</span>
+              </button>
+              <button
+                onClick={() => setRiskViewMode('flow')}
+                style={{
+                  ...styles.viewButton,
+                  ...(riskViewMode === 'flow' ? styles.viewButtonActive : {})
+                }}
+              >
+                <Network size={18} />
+                <span>{t('projects.completionPage.riskView.visualMap')}</span>
+              </button>
+            </div>
+
+            {/* Conditional Rendering based on view mode */}
+            {riskViewMode === 'list' ? (
+              <RisksSection
+                formData={formData}
+                setFormData={setFormData}
+                predictedRisks={predictedRisks}
+              />
+            ) : (
+              <div style={styles.flowContainer}>
+                <div style={styles.flowDescription}>
+                  <AlertTriangle size={20} color="#F59E0B" />
+                  <span>{t('projects.completionPage.flowHint')}</span>
+                </div>
+                <RiskFlowMap
+                  predictedRisks={predictedRisks}
+                  actualizedRisks={formData.actualizedRisks}
+                  projectName={projectData?.projectName || t('projects.completionPage.projectFallbackName')}
+                />
+              </div>
+            )}
+          </>
         )}
         
         {currentStep === 3 && (
@@ -386,19 +438,19 @@ export default function ProjectCompletionPage() {
         <div style={styles.navLeft}>
           {currentStep > 1 && (
             <SecondaryButton onClick={handlePrevStep} leftIcon={<ArrowLeft size={16} />}>
-              Previous
+              {t('common.previous')}
             </SecondaryButton>
           )}
         </div>
         
         <div style={styles.navRight}>
           <SecondaryButton onClick={() => navigate('/projects')} leftIcon={<X size={16} />}>
-            Cancel
+            {t('common.cancel')}
           </SecondaryButton>
           
           {currentStep < steps.length ? (
             <PrimaryButton onClick={handleNextStep} rightIcon={<ArrowRight size={16} />}>
-              Next
+              {t('common.next')}
             </PrimaryButton>
           ) : (
             <PrimaryButton 
@@ -406,7 +458,7 @@ export default function ProjectCompletionPage() {
               disabled={submitting}
               leftIcon={<Save size={16} />}
             >
-              {submitting ? 'Saving...' : 'Save and Learn'}
+              {submitting ? t('common.saving') : t('projects.completionPage.saveAndLearn')}
             </PrimaryButton>
           )}
         </div>
@@ -555,6 +607,49 @@ const styles = {
   content: {
     marginBottom: '32px'
   },
+  viewToggle: {
+    display: 'flex',
+    gap: '8px',
+    marginBottom: '24px',
+    padding: '4px',
+    background: '#F3F4F6',
+    borderRadius: '8px',
+    width: 'fit-content'
+  },
+  viewButton: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    padding: '10px 20px',
+    border: 'none',
+    background: 'transparent',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontSize: '14px',
+    fontWeight: '500',
+    color: '#6B7280',
+    transition: 'all 0.2s ease'
+  },
+  viewButtonActive: {
+    background: 'white',
+    color: '#2563EB',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
+  },
+  flowContainer: {
+    marginTop: '16px'
+  },
+  flowDescription: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '12px 16px',
+    background: '#FFFBEB',
+    border: '1px solid #FCD34D',
+    borderRadius: '8px',
+    marginBottom: '16px',
+    fontSize: '14px',
+    color: '#92400E'
+  },
   navigation: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -587,6 +682,6 @@ const keyframes = `
 `;
 try {
   styleSheet.insertRule(keyframes, styleSheet.cssRules.length);
-} catch (e) {
+} catch {
   // Ignore if animation already exists
 }

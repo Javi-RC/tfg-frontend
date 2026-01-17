@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Search, X, Filter } from 'lucide-react';
 import { searchCVs } from '../api/cv';
 import PrimaryButton from './PrimaryButton';
@@ -10,6 +11,7 @@ import SecondaryButton from './SecondaryButton';
  * Admin-only component
  */
 export default function CVSearchPanel({ onSearchResults, totalCVs }) {
+  const { t } = useTranslation();
   const [skills, setSkills] = useState('');
   const [languages, setLanguages] = useState('');
   const [searching, setSearching] = useState(false);
@@ -31,7 +33,7 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
       .filter(l => l.length > 0);
 
     if (skillsArray.length === 0 && languagesArray.length === 0) {
-      setError('Please enter at least one skill or language to search');
+      setError(t('cv.search.errors.emptySearch'));
       setSearching(false);
       return;
     }
@@ -56,7 +58,7 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
         onSearchResults(results);
       }
     } catch (err) {
-      setError(err.response?.data?.error || 'Error searching CVs');
+      setError(err.response?.data?.error || t('cv.search.errors.searchFailed'));
     } finally {
       setSearching(false);
     }
@@ -81,7 +83,7 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
       borderRadius: '16px',
       padding: '32px 28px',
       boxShadow: '0 2px 12px rgba(0,0,0,0.08)'
-    }} role="region" aria-label="CV search panel">
+    }} role="region" aria-label={t('cv.search.aria.panel')}>
       <h3 style={{
         fontSize: '18px',
         fontWeight: '600',
@@ -92,7 +94,7 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
         gap: '8px'
       }}>
         <Search size={20} />
-        Search CVs
+        {t('cv.search.title')}
       </h3>
 
       <div style={{
@@ -112,7 +114,7 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
               marginBottom: '8px'
             }}
           >
-            Skills (comma-separated)
+            {t('cv.search.skillsLabel')}
           </label>
           <input
             id="skills-input"
@@ -120,7 +122,7 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
             value={skills}
             onChange={(e) => setSkills(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="e.g., React, Node.js, Python"
+            placeholder={t('cv.search.skillsPlaceholder')}
             style={{
               width: '100%',
               padding: '12px 16px',
@@ -138,7 +140,7 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
             color: '#999',
             marginTop: '6px'
           }}>
-            Enter skills separated by commas
+            {t('cv.search.skillsHint')}
           </p>
         </div>
 
@@ -153,7 +155,7 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
               marginBottom: '8px'
             }}
           >
-            Languages (comma-separated)
+            {t('cv.search.languagesLabel')}
           </label>
           <input
             id="languages-input"
@@ -161,7 +163,7 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
             value={languages}
             onChange={(e) => setLanguages(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="e.g., English, Spanish, French"
+            placeholder={t('cv.search.languagesPlaceholder')}
             style={{
               width: '100%',
               padding: '12px 16px',
@@ -179,7 +181,7 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
             color: '#999',
             marginTop: '6px'
           }}>
-            Enter languages separated by commas
+            {t('cv.search.languagesHint')}
           </p>
         </div>
       </div>
@@ -208,15 +210,15 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
           marginBottom: '16px',
           color: '#0066cc'
         }} role="status" aria-live="polite">
-          <strong>Search Results:</strong> Found {lastSearchResults.count} of {totalCVs} CVs
+          <strong>{t('cv.search.results.title')}</strong> {t('cv.search.results.found', { count: lastSearchResults.count, total: totalCVs })}
           {lastSearchResults.skills.length > 0 && (
             <div style={{ marginTop: '4px' }}>
-              Skills: {lastSearchResults.skills.join(', ')}
+              {t('cv.search.results.skills')} {lastSearchResults.skills.join(', ')}
             </div>
           )}
           {lastSearchResults.languages.length > 0 && (
             <div style={{ marginTop: '4px' }}>
-              Languages: {lastSearchResults.languages.join(', ')}
+              {t('cv.search.results.languages')} {lastSearchResults.languages.join(', ')}
             </div>
           )}
         </div>
@@ -230,16 +232,16 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
         <SecondaryButton
           onClick={handleClear}
           disabled={searching}
-          aria-label="Clear search fields"
+          aria-label={t('cv.search.aria.clear')}
         >
-          Clear
+          {t('cv.search.clear')}
         </SecondaryButton>
         <PrimaryButton
           onClick={handleSearch}
           disabled={searching || (!skills && !languages)}
-          aria-label={searching ? 'Searching CVs' : 'Search CVs by skills and languages'}
+          aria-label={searching ? t('cv.search.aria.searching') : t('cv.search.aria.search')}
         >
-          {searching ? 'Searching...' : 'Search'}
+          {searching ? t('cv.search.searching') : t('cv.search.button')}
         </PrimaryButton>
       </div>
 
@@ -247,14 +249,14 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
         marginTop: '24px',
         paddingTop: '24px',
         borderTop: '1px solid #f0f0f0'
-      }} role="complementary" aria-label="Search tips">
+      }} role="complementary" aria-label={t('cv.search.tips.aria')}>
         <h4 style={{
           fontSize: '14px',
           fontWeight: '600',
           marginBottom: '8px',
           color: '#666'
         }}>
-          Search Tips
+          {t('cv.search.tips.title')}
         </h4>
         <ul style={{
           fontSize: '13px',
@@ -263,16 +265,16 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
           margin: 0
         }}>
           <li style={{ marginBottom: '4px' }}>
-            Search is case-insensitive
+            {t('cv.search.tips.tip1')}
           </li>
           <li style={{ marginBottom: '4px' }}>
-            Use commas to separate multiple search terms
+            {t('cv.search.tips.tip2')}
           </li>
           <li style={{ marginBottom: '4px' }}>
-            Results will include CVs matching ANY of the specified skills or languages
+            {t('cv.search.tips.tip3')}
           </li>
           <li>
-            Leave a field empty to search only by the other field
+            {t('cv.search.tips.tip4')}
           </li>
         </ul>
       </div>

@@ -27,9 +27,9 @@ export default function SecondaryButton({ children, onClick, disabled = false, s
       }}
       onMouseLeave={(e) => { e.target.style.background = 'transparent'; }}
     >
-      {leftIcon && <span style={{ display: 'flex', alignItems: 'center' }}>{leftIcon}</span>}
+      {leftIcon && <span style={{ display: 'flex', alignItems: 'center' }} aria-hidden="true">{leftIcon}</span>}
       {children}
-      {rightIcon && <span style={{ display: 'flex', alignItems: 'center' }}>{rightIcon}</span>}
+      {rightIcon && <span style={{ display: 'flex', alignItems: 'center' }} aria-hidden="true">{rightIcon}</span>}
     </button>
   );
 }
