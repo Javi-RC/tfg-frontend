@@ -1,0 +1,54 @@
+/* Employee Detail Panel Animations */
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Hover effects for buttons */
+.employee-detail-panel button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.employee-detail-panel a:hover {
+  background-color: #f6f8fa;
+  transform: translateY(-1px);
+}
+
+/* Smooth transitions */
+.employee-detail-panel * {
+  transition: all 0.2s ease;
+}
+
+/* Close button hover */
+.close-button:hover {
+  background-color: #e1e4e8 !important;
+  color: #24292e !important;
+}
+
+/* View details button hover */
+.view-details-button:hover {
+  background-color: #007bff !important;
+  color: #fff !important;
+  border-color: #007bff !important;
+}
+
+/* Assign button hover */
+.assign-button:hover {
+  background-color: #218838 !important;
+}

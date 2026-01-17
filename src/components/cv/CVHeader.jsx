@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { Edit, Upload, Send, Trash2, Save, X } from 'lucide-react';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 
@@ -16,6 +18,8 @@ export default function CVHeader({
   onDelete,
   onSubmitToOrg
 }) {
+  const { t } = useTranslation();
+
   return (
     <div style={{
       position: 'fixed',
@@ -41,7 +45,7 @@ export default function CVHeader({
         paddingBottom: '24px',
         borderBottom: '2px solid #e2e8f0'
       }}>
-        My CV
+        {t('cv.myCV')}
       </h1>
       
       <div style={{ 
@@ -54,25 +58,28 @@ export default function CVHeader({
           <>
             <SecondaryButton 
               onClick={onEdit} 
-              aria-label="Edit CV information"
+              aria-label={t('cv.editor.header.aria.edit')}
               style={{ width: '100%', justifyContent: 'center' }}
+              leftIcon={<Edit size={16} />}
             >
-              Edit
+              {t('cv.editCV')}
             </SecondaryButton>
             <SecondaryButton 
               onClick={onUpload} 
-              aria-label="Upload a new CV"
+              aria-label={t('cv.editor.header.aria.upload')}
               style={{ width: '100%', justifyContent: 'center' }}
+              leftIcon={<Upload size={16} />}
             >
-              Upload New
+              {t('cv.editor.header.uploadNew')}
             </SecondaryButton>
             {onSubmitToOrg && (
               <PrimaryButton 
                 onClick={onSubmitToOrg} 
-                aria-label="Submit CV to organization"
+                aria-label={t('cv.editor.header.aria.submitToOrg')}
                 style={{ width: '100%', justifyContent: 'center' }}
+                leftIcon={<Send size={16} />}
               >
-                Submit to Organization
+                {t('cv.submitToOrg')}
               </PrimaryButton>
             )}
             <SecondaryButton 
@@ -83,9 +90,10 @@ export default function CVHeader({
                 color: '#c0392b', 
                 borderColor: '#c0392b' 
               }}
-              aria-label="Delete current CV"
+              aria-label={t('cv.editor.header.aria.delete')}
+              leftIcon={<Trash2 size={16} />}
             >
-              Delete
+              {t('cv.deleteCV')}
             </SecondaryButton>
           </>
         ) : (
@@ -93,18 +101,20 @@ export default function CVHeader({
             <SecondaryButton 
               onClick={onCancelEdit} 
               disabled={saving} 
-              aria-label="Cancel editing"
+              aria-label={t('cv.editor.header.aria.cancelEdit')}
               style={{ width: '100%', justifyContent: 'center' }}
+              leftIcon={<X size={16} />}
             >
-              Cancel
+              {t('common.cancel')}
             </SecondaryButton>
             <PrimaryButton 
               onClick={onSave} 
               disabled={saving} 
-              aria-label="Save CV changes"
+              aria-label={t('cv.editor.header.aria.save')}
               style={{ width: '100%', justifyContent: 'center' }}
+              leftIcon={<Save size={16} />}
             >
-              {saving ? 'Saving...' : 'Save Changes'}
+              {saving ? t('common.saving') : t('profile.saveChanges')}
             </PrimaryButton>
           </>
         )}

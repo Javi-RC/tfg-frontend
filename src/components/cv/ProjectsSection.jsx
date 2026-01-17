@@ -1,7 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import SectionHeader from './SectionHeader';
 import CVCard from './CVCard';
-import Field from './Field';
+import EditableField from './EditableField';
+import EditableTextarea from './EditableTextarea';
 import PrimaryButton from '../PrimaryButton';
 
 /**
@@ -16,6 +18,7 @@ export default function ProjectsSection({
   onAddProject,
   onRemoveProject
 }) {
+  const { t } = useTranslation();
   const projects = editMode ? editData?.projects : cv?.projects;
   if (!projects) return null;
 
@@ -23,7 +26,7 @@ export default function ProjectsSection({
     <section style={{ marginBottom: '56px' }} role="region" aria-labelledby="projects-heading">
       <SectionHeader 
         id="projects-heading" 
-        title="Projects" 
+        title={t('cv.editor.projects.sectionTitle')} 
       />
       {projects.map((project, index) => (
         <CVCard
@@ -31,26 +34,28 @@ export default function ProjectsSection({
           editMode={editMode}
           borderColor="#9f7aea"
           onRemove={() => onRemoveProject(index)}
-          removeLabel={`Remove project: ${project.name || 'entry'}`}
+          removeLabel={t('cv.editor.projects.removeLabel', {
+            name: project.name || t('cv.editor.entry')
+          })}
         >
           {editMode ? (
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
               <EditableField
-                label="Project Name"
+                label={t('cv.editor.projects.fields.name.label')}
                 value={project.name}
                 editMode={true}
                 onChange={(value) => onProjectChange(index, 'name', value)}
                 required
               />
               <EditableField
-                label="URL"
+                label={t('cv.editor.projects.fields.url.label')}
                 value={project.url}
                 editMode={true}
                 onChange={(value) => onProjectChange(index, 'url', value)}
               />
               <div style={{ gridColumn: '1 / -1' }}>
                 <EditableTextarea
-                  label="Description"
+                  label={t('cv.editor.projects.fields.description.label')}
                   value={project.description}
                   editMode={true}
                   onChange={(value) => onProjectChange(index, 'description', value)}
@@ -58,7 +63,7 @@ export default function ProjectsSection({
               </div>
               <div style={{ gridColumn: '1 / -1' }}>
                 <EditableField
-                  label="Technologies (comma-separated)"
+                  label={t('cv.editor.projects.fields.technologies.label')}
                   value={Array.isArray(project.technologies) ? project.technologies.join(', ') : project.technologies}
                   editMode={true}
                   onChange={(value) => onProjectChange(index, 'technologies', value)}
@@ -100,10 +105,10 @@ export default function ProjectsSection({
         <div style={{ marginTop: '20px', textAlign: 'center' }}>
           <PrimaryButton 
             onClick={onAddProject}
-            aria-label="Add new project"
+            aria-label={t('cv.editor.projects.actions.addAria')}
             style={{ padding: '12px 24px', fontSize: '14px', fontWeight: '600' }}
           >
-            + Add Project
+            {t('cv.editor.projects.actions.addButton')}
           </PrimaryButton>
         </div>
       )}

@@ -1,0 +1,136 @@
+import { useState, useEffect } from 'react';
+import { getMyCV, deleteCV, updateCV } from '../api/cv';
+import { validateCV } from '../services/cvService';
+
+/**
+ * Custom hook for MyCVPage business logic
+ * Manages CV loading, editing, deletion, and upload
+ */
+export function useMyCVPage() {
+  const [cv, setCV] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showUpload, setShowUpload] = useState(false);
+  const [showSubmitToOrg, setShowSubmitToOrg] = useState(false);
+
+  useEffect(() => {
+    loadCV();
+  }, []);
+
+  /**
+   * Load user's CV
+   */
+  const loadCV = async () => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const response = await getMyCV();
+      const cvData = response.data?.cv || response.data;
+      setCV(cvData);
+    } catch (err) {
+      if (err.response?.status === 404) {
+        setError('No CV found. Please upload one.');
+      } else {
+        setError(err.response?.data?.error || 'Error loading CV');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Delete CV
+   */
+  const handleDelete = async () => {
+    if (!cv?._id) return;
+    
+    if (!window.confirm('Are you sure you want to delete your CV? This action cannot be undone.')) {
+      return;
+    }
+
+    try {
+      await deleteCV(cv._id);
+      setCV(null);
+      setError(null);
+    } catch (err) {
+      setError(err.response?.data?.error || 'Error deleting CV');
+    }
+  };
+
+  /**
+   * Handle successful CV upload
+   */
+  const handleUploadSuccess = async () => {
+    setShowUpload(false);
+    setError(null);
+    await loadCV();
+  };
+
+  /**
+   * Save CV changes
+   */
+  const handleSaveCV = async (editData) => {
+    if (!cv?._id) return { success: false, errors: ['No CV found'] };
+    
+    // Validate CV data
+    const validationErrors = validateCV(editData);
+    
+    if (validationErrors.length > 0) {
+      setError(validationErrors.join('\n'));
+      return { success: false, errors: validationErrors };
+    }
+    
+    try {
+      await updateCV(cv._id, editData);
+      setError(null);
+      await loadCV();
+      return { success: true, errors: [] };
+    } catch (err) {
+      const errorMsg = err.response?.data?.error || 'Error updating CV';
+      setError(errorMsg);
+      return { success: false, errors: [errorMsg] };
+    }
+  };
+
+  /**
+   * Toggle upload modal
+   */
+  const toggleUploadModal = () => {
+    setShowUpload(prev => !prev);
+  };
+
+  /**
+   * Toggle submit to organization modal
+   */
+  const toggleSubmitToOrgModal = () => {
+    setShowSubmitToOrg(prev => !prev);
+  };
+
+  /**
+   * Clear error
+   */
+  const clearError = () => {
+    setError(null);
+  };
+
+  return {
+    // State
+    cv,
+    loading,
+    error,
+    showUpload,
+    showSubmitToOrg,
+    
+    // Actions
+    loadCV,
+    handleDelete,
+    handleUploadSuccess,
+    handleSaveCV,
+    toggleUploadModal,
+    toggleSubmitToOrgModal,
+    clearError,
+    setShowUpload,
+    setShowSubmitToOrg
+  };
+}

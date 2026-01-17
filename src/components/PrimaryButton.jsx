@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function PrimaryButton({ children, onClick, disabled = false, style = {}, type = 'button' }) {
+export default function PrimaryButton({ children, onClick, disabled = false, style = {}, type = 'button', leftIcon = null, rightIcon = null }) {
   return (
     <button
       type={type}
@@ -17,6 +17,10 @@ export default function PrimaryButton({ children, onClick, disabled = false, sty
         cursor: disabled ? 'not-allowed' : 'pointer',
         transition: 'all 0.2s',
         boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '8px',
         ...style
       }}
       onMouseEnter={(e) => {
@@ -26,7 +30,9 @@ export default function PrimaryButton({ children, onClick, disabled = false, sty
         e.target.style.transform = 'translateY(0)';
       }}
     >
+      {leftIcon && <span style={{ display: 'flex', alignItems: 'center' }} aria-hidden="true">{leftIcon}</span>}
       {children}
+      {rightIcon && <span style={{ display: 'flex', alignItems: 'center' }} aria-hidden="true">{rightIcon}</span>}
     </button>
   );
 }

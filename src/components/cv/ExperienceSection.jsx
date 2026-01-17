@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import SectionHeader from './SectionHeader';
 import CVCard from './CVCard';
 import Field from './Field';
@@ -16,6 +17,7 @@ export default function ExperienceSection({
   onAddExperience,
   onRemoveExperience
 }) {
+  const { t } = useTranslation();
   const experiences = editMode ? editData?.experience : cv?.experience;
   if (!experiences) return null;
 
@@ -23,7 +25,7 @@ export default function ExperienceSection({
     <section style={{ marginBottom: '56px' }} role="region" aria-labelledby="experience-heading">
       <SectionHeader 
         id="experience-heading" 
-        title="Experience" 
+        title={t('cv.experience')} 
       />
       {experiences.map((exp, index) => (
         <CVCard
@@ -31,41 +33,43 @@ export default function ExperienceSection({
           editMode={editMode}
           borderColor="#4299e1"
           onRemove={() => onRemoveExperience(index)}
-          removeLabel={`Remove experience: ${exp.position || 'entry'}`}
+          removeLabel={t('cv.editor.experience.removeLabel', {
+            position: exp.position || t('cv.editor.entry')
+          })}
         >
           <div style={{ display: 'grid', gap: '16px', marginBottom: '16px' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               <Field
                 editable={editMode}
-                label="Position"
+                label={t('cv.editor.experience.fields.position.label')}
                 value={exp.position}
                 onChange={(value) => onExperienceChange(index, 'position', value)}
-                placeholder="e.g. Senior Developer"
+                placeholder={t('cv.editor.experience.fields.position.placeholder')}
                 required
               />
               <Field
                 editable={editMode}
-                label="Company"
+                label={t('cv.editor.experience.fields.company.label')}
                 value={exp.company}
                 onChange={(value) => onExperienceChange(index, 'company', value)}
-                placeholder="e.g. TechCorp"
+                placeholder={t('cv.editor.experience.fields.company.placeholder')}
                 required
               />
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
               <Field
                 editable={editMode}
-                label="Start Date"
+                label={t('cv.startDate')}
                 value={exp.startDate}
                 onChange={(value) => onExperienceChange(index, 'startDate', value)}
-                placeholder="e.g. Jan 2020"
+                placeholder={t('cv.editor.experience.fields.startDate.placeholder')}
               />
               <Field
                 editable={editMode && !exp.current}
-                label="End Date"
-                value={exp.current ? 'Present' : exp.endDate}
+                label={t('cv.endDate')}
+                value={exp.current ? t('cv.present') : exp.endDate}
                 onChange={(value) => onExperienceChange(index, 'endDate', value)}
-                placeholder="e.g. Present"
+                placeholder={t('cv.present')}
               />
             </div>
             {editMode && (
@@ -75,17 +79,17 @@ export default function ExperienceSection({
                   checked={exp.current || false}
                   onChange={(e) => onExperienceChange(index, 'current', e.target.checked)}
                 />
-                Currently working here
+                {t('cv.editor.experience.currentlyWorking')}
               </label>
             )}
             <Field
               editable={editMode}
-              label="Description"
+              label={t('cv.editor.experience.fields.description.label')}
               value={exp.description}
               onChange={(value) => onExperienceChange(index, 'description', value)}
               multiline
               rows={4}
-              placeholder="Describe your role and achievements..."
+              placeholder={t('cv.editor.experience.fields.description.placeholder')}
             />
           </div>
           {!editMode && exp.responsibilities && exp.responsibilities.length > 0 && (
@@ -116,10 +120,10 @@ export default function ExperienceSection({
         <div style={{ marginTop: '20px', textAlign: 'center' }}>
           <PrimaryButton 
             onClick={onAddExperience}
-            aria-label="Add new experience entry"
+            aria-label={t('cv.editor.experience.actions.addAria')}
             style={{ padding: '12px 24px', fontSize: '14px', fontWeight: '600' }}
           >
-            + Add Experience
+            {t('cv.editor.experience.actions.addButton')}
           </PrimaryButton>
         </div>
       )}

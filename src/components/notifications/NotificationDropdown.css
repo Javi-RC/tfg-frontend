@@ -40,6 +40,9 @@
   border-radius: 6px;
   font-weight: 500;
   transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .mark-all-read-btn:hover:not(:disabled) {
@@ -164,7 +167,7 @@
   font-weight: 600;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   transition: color 0.2s ease;
 }
 

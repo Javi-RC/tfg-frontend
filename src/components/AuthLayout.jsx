@@ -37,41 +37,6 @@ export default function AuthLayout({ children, onLoginClick, onSignupClick }) {
           zIndex: 0
         }} />
 
-        {/* Decorative colored blocks - Left side */}
-        <div aria-hidden="true" style={{
-          position: 'absolute',
-          top: '20%',
-          left: '8%',
-          width: '90px',
-          height: '90px',
-          background: '#dbeafe',
-          borderRadius: '14px',
-          transform: 'rotate(-12deg)',
-          zIndex: 0
-        }} />
-        <div aria-hidden="true" style={{
-          position: 'absolute',
-          top: '50%',
-          left: '6%',
-          width: '90px',
-          height: '90px',
-          background: '#fce7f3',
-          borderRadius: '14px',
-          transform: 'rotate(15deg)',
-          zIndex: 0
-        }} />
-        <div aria-hidden="true" style={{
-          position: 'absolute',
-          bottom: '18%',
-          left: '10%',
-          width: '90px',
-          height: '90px',
-          background: '#fef3c7',
-          borderRadius: '14px',
-          transform: 'rotate(8deg)',
-          zIndex: 0
-        }} />
-
         <div style={{
           width: '100%',
           maxWidth: '1400px',

@@ -1,7 +1,11 @@
 import React, { useContext } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { Building2, FolderKanban } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../contexts/AuthContext';
 import NotificationBell from './notifications/NotificationBell';
+import UserMenu from './navigation/UserMenu';
+import LanguageSwitcher from './LanguageSwitcher';
 
 /**
  * TopNavBar Component
@@ -11,6 +15,7 @@ export default function TopNavBar() {
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const isAdmin = user?.role === 'org_admin';
 
@@ -19,13 +24,9 @@ export default function TopNavBar() {
     navigate('/login', { replace: true });
   };
 
-  const navItems = [
-    { path: '/', label: 'Profile' },
-    { path: '/my-cv', label: 'My CV' },
-    { path: '/cv-stats', label: 'CV Stats' },
-    { path: '/bfi-44', label: 'Personality' },
-    { path: '/organizations', label: 'Organizations' },
-    ...(isAdmin ? [{ path: '/admin/cvs', label: 'All CVs', adminOnly: true }] : [])
+  const mainNavItems = [
+    { path: '/projects', label: t('navigation.projects'), icon: FolderKanban },
+    { path: '/organizations', label: t('navigation.organizations'), icon: Building2 }
   ];
 
   const isActive = (path) => location.pathname === path;
@@ -40,12 +41,12 @@ export default function TopNavBar() {
       background: 'white',
       boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
       zIndex: 1000,
-      display: 'flex',
+      display: 'grid',
+      gridTemplateColumns: '1fr auto 1fr',
       alignItems: 'center',
-      justifyContent: 'space-between',
       padding: '0 32px',
       fontFamily: 'Poppins, Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial'
-    }} role="navigation" aria-label="Main navigation">
+    }} id="main-navigation" role="navigation" aria-label={t('navigation.aria.main')}>
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -57,16 +58,17 @@ export default function TopNavBar() {
           color: '#1a202c',
           letterSpacing: '-0.5px'
         }}>
-          CV Manager
+          Sara
         </div>
       </div>
 
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '8px'
+        gap: '8px',
+        justifyContent: 'center'
       }}>
-        {navItems.map((item) => (
+        {mainNavItems.map((item) => (
           <button
             key={item.path}
             onClick={() => navigate(item.path)}
@@ -94,22 +96,11 @@ export default function TopNavBar() {
                 e.target.style.background = 'transparent';
               }
             }}
-            aria-label={`Navigate to ${item.label}`}
+            aria-label={t('navigation.aria.navigateTo', { label: item.label })}
             aria-current={isActive(item.path) ? 'page' : undefined}
           >
+            {item.icon && <item.icon size={18} aria-hidden="true" />}
             <span>{item.label}</span>
-            {item.adminOnly && (
-              <span style={{
-                fontSize: '10px',
-                padding: '2px 6px',
-                background: '#e8f4f8',
-                color: '#0066cc',
-                borderRadius: '4px',
-                fontWeight: '600'
-              }}>
-                ADMIN
-              </span>
-            )}
           </button>
         ))}
       </div>
@@ -117,43 +108,12 @@ export default function TopNavBar() {
       <div style={{
         display: 'flex',
         alignItems: 'center',
-        gap: '16px'
+        gap: '16px',
+        justifyContent: 'flex-end'
       }}>
-        {/* Campanita de Notificaciones */}
+        <LanguageSwitcher />
         <NotificationBell />
-        
-        <div style={{
-          fontSize: '14px',
-          color: '#4a5568',
-          fontWeight: '500'
-        }}>
-          {user?.username || user?.name || user?.email}
-        </div>
-        <button
-          onClick={handleLogout}
-          style={{
-            background: 'transparent',
-            color: '#c0392b',
-            border: '1px solid #c0392b',
-            borderRadius: '8px',
-            padding: '8px 20px',
-            fontSize: '14px',
-            fontWeight: '600',
-            cursor: 'pointer',
-            transition: 'all 0.2s'
-          }}
-          onMouseEnter={(e) => {
-            e.target.style.background = '#c0392b';
-            e.target.style.color = 'white';
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.background = 'transparent';
-            e.target.style.color = '#c0392b';
-          }}
-          aria-label="Logout from application"
-        >
-          Logout
-        </button>
+        <UserMenu user={user} onLogout={handleLogout} isAdmin={isAdmin} />
       </div>
     </nav>
   );

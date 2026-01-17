@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Field Component
@@ -18,6 +19,7 @@ export default function Field({
   options = [],
   required = false
 }) {
+  const { t } = useTranslation();
   // Verificar si el campo está vacío y es requerido
   const isEmpty = !value || (typeof value === 'string' && value.trim() === '');
   const hasError = required && editable && isEmpty;
@@ -53,7 +55,7 @@ export default function Field({
   };
 
   const requiredIndicator = required && editable ? (
-    <span style={{ color: '#e53e3e', marginLeft: '4px' }} aria-label="required">*</span>
+    <span style={{ color: '#e53e3e', marginLeft: '4px' }} aria-label={t('form.required')}>*</span>
   ) : null;
 
   const readOnlyStyle = {
@@ -68,7 +70,7 @@ export default function Field({
       <div>
         {label && <div style={labelStyle}>{label}</div>}
         <div style={readOnlyStyle}>
-          {value || <span style={{ color: '#a0aec0', fontStyle: 'italic' }}>Not provided</span>}
+          {value || <span style={{ color: '#a0aec0', fontStyle: 'italic' }}>{t('common.notProvided')}</span>}
         </div>
       </div>
     );
@@ -98,7 +100,7 @@ export default function Field({
           marginBottom: '6px',
           fontWeight: '500'
         }}>
-          This field is required
+          {t('form.requiredField')}
         </div>
       )}
       {multiline ? (
@@ -132,12 +134,21 @@ export default function Field({
             appearance: 'none'
           }}
         >
-          <option value="">{placeholder || 'Select an option'}</option>
-          {options.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
+          <option value="">{placeholder || t('form.selectOption')}</option>
+          {options.map((option) => {
+            const optionValue = typeof option === 'string' ? option : option?.value;
+            const optionLabel = typeof option === 'string' ? option : (option?.label ?? option?.value);
+
+            if (!optionValue) {
+              return null;
+            }
+
+            return (
+              <option key={optionValue} value={optionValue}>
+                {optionLabel}
+              </option>
+            );
+          })}
         </select>
       ) : (
         <input

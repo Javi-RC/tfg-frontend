@@ -1,57 +1,35 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { AuthContext } from '../contexts/AuthContext';
-import { 
-  getMyOrganizations, 
-  createOrganization,
-  getOrganizationStats 
-} from '../api/organization';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { Building2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { useMyOrganizations } from '../hooks/useMyOrganizations';
 import PrimaryButton from '../components/PrimaryButton';
-import SecondaryButton from '../components/SecondaryButton';
+import OrganizationCard from '../components/organizations/OrganizationCard';
+import CreateOrganizationModal from '../components/organizations/CreateOrganizationModal';
 
 /**
  * MyOrganizationsPage
  * Displays user's organizations (as admin or employee)
  */
 export default function MyOrganizationsPage() {
-  const { user } = useContext(AuthContext);
-  const navigate = useNavigate();
-  const [organizations, setOrganizations] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-
-  const isOrgAdmin = user?.role === 'org_admin';
-
-  useEffect(() => {
-    loadOrganizations();
-  }, []);
-
-  const loadOrganizations = async () => {
-    try {
-      setLoading(true);
-      const res = await getMyOrganizations();
-      // La API devuelve { success: true, data: [...] }
-      if (res.data?.success && Array.isArray(res.data.data)) {
-        setOrganizations(res.data.data);
-      } else if (Array.isArray(res.data)) {
-        // Fallback por si axios ya extrajo el data
-        setOrganizations(res.data);
-      } else {
-        console.warn('Unexpected API response format:', res.data);
-        setOrganizations([]);
-      }
-    } catch (error) {
-      console.error('Error loading organizations:', error);
-      setOrganizations([]);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { t } = useTranslation();
+  const {
+    organizations,
+    loading,
+    showCreateModal,
+    createForm,
+    createError,
+    creating,
+    isOrgAdmin,
+    toggleCreateModal,
+    navigateToOrganization,
+    updateCreateForm,
+    handleCreateOrganization
+  } = useMyOrganizations();
 
   if (loading) {
     return (
       <div style={styles.container}>
-        <p style={styles.loadingText}>Loading organizations...</p>
+        <p style={styles.loadingText}>{t('organizations.loadingOrganizations')}</p>
       </div>
     );
   }
@@ -61,14 +39,14 @@ export default function MyOrganizationsPage() {
       {/* Header */}
       <div style={styles.header}>
         <div>
-          <h1 style={styles.title}>My Organizations</h1>
+          <h1 style={styles.title}>{t('organizations.myOrganizations')}</h1>
           <p style={styles.subtitle}>
-            {isOrgAdmin ? 'Organizations you manage' : 'Organizations you belong to'}
+            {isOrgAdmin ? t('organizations.owner') : t('organizations.member')}
           </p>
         </div>
         {isOrgAdmin && (
-          <PrimaryButton onClick={() => setShowCreateModal(true)}>
-            + Create Organization
+          <PrimaryButton onClick={toggleCreateModal} leftIcon={<Building2 size={18} />}>
+            {t('organizations.createOrganization')}
           </PrimaryButton>
         )}
       </div>
@@ -76,16 +54,18 @@ export default function MyOrganizationsPage() {
       {/* Organizations List */}
       {organizations.length === 0 ? (
         <div style={styles.emptyState}>
-          <div style={styles.emptyIcon}>🏢</div>
-          <h3 style={styles.emptyTitle}>No organizations yet</h3>
+          <div style={styles.emptyIcon}>
+            <Building2 size={64} color="#6c757d" style={{ opacity: 0.3 }} />
+          </div>
+          <h3 style={styles.emptyTitle}>{t('organizations.noOrganizations')}</h3>
           <p style={styles.emptyText}>
             {isOrgAdmin 
-              ? 'Create your first organization to get started' 
-              : 'You are not part of any organization yet'}
+              ? t('organizations.createFirstOrganization')
+              : t('organizations.noOrganizationsDesc')}
           </p>
           {isOrgAdmin && (
-            <PrimaryButton onClick={() => setShowCreateModal(true)}>
-              Create Organization
+            <PrimaryButton onClick={toggleCreateModal} leftIcon={<Building2 size={18} />}>
+              {t('organizations.createOrganization')}
             </PrimaryButton>
           )}
         </div>
@@ -96,7 +76,8 @@ export default function MyOrganizationsPage() {
               key={org._id} 
               organization={org} 
               isAdmin={isOrgAdmin}
-              onClick={() => navigate(`/organizations/${org._id}`)}
+              onClick={() => navigateToOrganization(org._id)}
+              styles={styles}
             />
           ))}
         </div>
@@ -105,361 +86,15 @@ export default function MyOrganizationsPage() {
       {/* Create Modal */}
       {showCreateModal && (
         <CreateOrganizationModal
-          onClose={() => setShowCreateModal(false)}
-          onSuccess={() => {
-            setShowCreateModal(false);
-            loadOrganizations();
-          }}
+          onClose={toggleCreateModal}
+          createForm={createForm}
+          createError={createError}
+          creating={creating}
+          updateCreateForm={updateCreateForm}
+          handleCreateOrganization={handleCreateOrganization}
+          styles={styles}
         />
       )}
-    </div>
-  );
-}
-
-/**
- * OrganizationCard Component
- */
-function OrganizationCard({ organization, isAdmin, onClick }) {
-  const [stats, setStats] = useState(null);
-
-  useEffect(() => {
-    if (isAdmin) {
-      getOrganizationStats(organization._id)
-        .then(res => {
-          // La API devuelve { success: true, data: {...stats} }
-          if (res.data?.success && res.data?.data) {
-            setStats(res.data.data);
-          } else if (res.data && !res.data.success) {
-            // Axios ya extrajo el data
-            setStats(res.data);
-          }
-        })
-        .catch(err => console.error('Error loading stats:', err));
-    }
-  }, [organization._id, isAdmin]);
-
-  return (
-    <div style={styles.card} onClick={onClick}>
-      <div style={styles.cardHeader}>
-        <h3 style={styles.cardTitle}>{organization.name}</h3>
-        <span style={{
-          ...styles.badge,
-          background: organization.status === 'active' ? '#e8f5e9' : '#ffebee',
-          color: organization.status === 'active' ? '#2e7d32' : '#c62828'
-        }}>
-          {organization.status === 'active' ? 'Active' : 'Inactive'}
-        </span>
-      </div>
-      
-      {organization.description && (
-        <p style={styles.cardDescription}>{organization.description}</p>
-      )}
-
-      <div style={styles.cardInfo}>
-        <div style={styles.infoItem}>
-          <span style={styles.infoLabel}>Industry:</span>
-          <span style={styles.infoValue}>{organization.industry || 'N/A'}</span>
-        </div>
-        <div style={styles.infoItem}>
-          <span style={styles.infoLabel}>Size:</span>
-          <span style={styles.infoValue}>{organization.size || 'N/A'}</span>
-        </div>
-      </div>
-
-      {isAdmin && stats && (
-        <div style={styles.statsContainer}>
-          <div style={styles.statItem}>
-            <span style={styles.statValue}>{stats.totalEmployees}</span>
-            <span style={styles.statLabel}>Employees</span>
-          </div>
-          <div style={styles.statItem}>
-            <span style={styles.statValue}>{stats.activeEmployees}</span>
-            <span style={styles.statLabel}>Active</span>
-          </div>
-          <div style={styles.statItem}>
-            <span style={styles.statValue}>{stats.pendingEmployees}</span>
-            <span style={styles.statLabel}>Pending</span>
-          </div>
-        </div>
-      )}
-
-      <div style={styles.cardFooter}>
-        <span style={styles.footerText}>
-          {isAdmin ? '👤 Administrator' : '👥 Employee'}
-        </span>
-      </div>
-    </div>
-  );
-}
-
-/**
- * CreateOrganizationModal Component
- */
-function CreateOrganizationModal({ onClose, onSuccess }) {
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    taxId: '',
-    email: '',
-    phone: '',
-    website: '',
-    address: {
-      street: '',
-      city: '',
-      state: '',
-      postalCode: '',
-      country: ''
-    },
-    industry: '',
-    size: ''
-  });
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    
-    // Validar campos obligatorios
-    if (!formData.name || !formData.email) {
-      setError('Name and Email are required fields');
-      return;
-    }
-    
-    setLoading(true);
-
-    try {
-      // Construir objeto según la API oficial
-      const organizationData = {
-        name: formData.name,
-        contact: {
-          email: formData.email
-        }
-      };
-      
-      // Agregar campos opcionales solo si tienen valor
-      if (formData.description) organizationData.description = formData.description;
-      if (formData.taxId) organizationData.taxId = formData.taxId;
-      if (formData.phone) organizationData.contact.phone = formData.phone;
-      if (formData.website) organizationData.contact.website = formData.website;
-      if (formData.industry) organizationData.industry = formData.industry;
-      if (formData.size) organizationData.size = formData.size;
-      
-      // Agregar address solo si algún campo tiene valor
-      const hasAddress = Object.values(formData.address).some(val => val.trim() !== '');
-      if (hasAddress) {
-        organizationData.address = {};
-        if (formData.address.street) organizationData.address.street = formData.address.street;
-        if (formData.address.city) organizationData.address.city = formData.address.city;
-        if (formData.address.state) organizationData.address.state = formData.address.state;
-        if (formData.address.postalCode) organizationData.address.postalCode = formData.address.postalCode;
-        if (formData.address.country) organizationData.address.country = formData.address.country;
-      }
-      
-      const response = await createOrganization(organizationData);
-      
-      // Verificar respuesta según formato de la API
-      if (response.data?.success) {
-        onSuccess();
-      } else {
-        setError(response.data?.message || 'Error creating organization');
-      }
-    } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Error creating organization');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div style={styles.modalOverlay} onClick={onClose}>
-      <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <div style={styles.modalHeader}>
-          <h2 style={styles.modalTitle}>Create Organization</h2>
-          <button style={styles.closeButton} onClick={onClose}>×</button>
-        </div>
-
-        {error && (
-          <div style={styles.errorBanner}>{error}</div>
-        )}
-
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Organization Name *</label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              style={styles.input}
-              required
-            />
-          </div>
-
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Description</label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              style={{ ...styles.input, minHeight: '80px', resize: 'vertical' }}
-              rows={3}
-            />
-          </div>
-
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Tax ID</label>
-            <input
-              type="text"
-              value={formData.taxId}
-              onChange={(e) => setFormData({ ...formData, taxId: e.target.value })}
-              style={styles.input}
-              placeholder="e.g., B87654321"
-            />
-          </div>
-
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Street Address</label>
-            <input
-              type="text"
-              value={formData.address.street}
-              onChange={(e) => setFormData({ ...formData, address: { ...formData.address, street: e.target.value }})}
-              style={styles.input}
-              placeholder="Street address"
-            />
-          </div>
-
-          <div style={styles.formRow}>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>City</label>
-              <input
-                type="text"
-                value={formData.address.city}
-                onChange={(e) => setFormData({ ...formData, address: { ...formData.address, city: e.target.value }})}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>State/Province</label>
-              <input
-                type="text"
-                value={formData.address.state}
-                onChange={(e) => setFormData({ ...formData, address: { ...formData.address, state: e.target.value }})}
-                style={styles.input}
-              />
-            </div>
-          </div>
-
-          <div style={styles.formRow}>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Postal Code</label>
-              <input
-                type="text"
-                value={formData.address.postalCode}
-                onChange={(e) => setFormData({ ...formData, address: { ...formData.address, postalCode: e.target.value }})}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Country</label>
-              <input
-                type="text"
-                value={formData.address.country}
-                onChange={(e) => setFormData({ ...formData, address: { ...formData.address, country: e.target.value }})}
-                style={styles.input}
-              />
-            </div>
-          </div>
-
-          <div style={styles.formRow}>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Email *</label>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                style={styles.input}
-                required
-              />
-            </div>
-
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Phone</label>
-              <input
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                style={styles.input}
-              />
-            </div>
-          </div>
-
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Website</label>
-            <input
-              type="url"
-              value={formData.website}
-              onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-              style={styles.input}
-              placeholder="https://example.com"
-            />
-          </div>
-
-          <div style={styles.formRow}>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Industry</label>
-              <select
-                value={formData.industry}
-                onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                style={styles.input}
-              >
-                <option value="">Select industry</option>
-                <option value="software_development">Desarrollo de software</option>
-                <option value="web_development">Desarrollo web</option>
-                <option value="mobile_development">Desarrollo móvil</option>
-                <option value="devops_cloud">DevOps y Cloud</option>
-                <option value="data_science">Ciencia de datos</option>
-                <option value="cybersecurity">Ciberseguridad</option>
-                <option value="ai_machine_learning">IA y Machine Learning</option>
-                <option value="blockchain">Blockchain</option>
-                <option value="game_development">Desarrollo de videojuegos</option>
-                <option value="qa_testing">QA y Testing</option>
-                <option value="consulting">Consultoría tecnológica</option>
-                <option value="fintech">Tecnología financiera</option>
-                <option value="healthtech">Tecnología de salud</option>
-                <option value="edtech">Tecnología educativa</option>
-                <option value="ecommerce">Comercio electrónico</option>
-                <option value="saas">Software as a Service</option>
-                <option value="other">Otro</option>
-              </select>
-            </div>
-
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Company Size</label>
-              <select
-                value={formData.size}
-                onChange={(e) => setFormData({ ...formData, size: e.target.value })}
-                style={styles.input}
-              >
-                <option value="">Select size</option>
-                <option value="1-10">1-10</option>
-                <option value="11-50">11-50</option>
-                <option value="51-200">51-200</option>
-                <option value="201-500">201-500</option>
-                <option value="501-1000">501-1000</option>
-                <option value="1000+">1000+</option>
-              </select>
-            </div>
-          </div>
-
-          <div style={styles.modalActions}>
-            <SecondaryButton type="button" onClick={onClose}>
-              Cancel
-            </SecondaryButton>
-            <PrimaryButton type="submit" disabled={loading}>
-              {loading ? 'Creating...' : 'Create Organization'}
-            </PrimaryButton>
-          </div>
-        </form>
-      </div>
     </div>
   );
 }

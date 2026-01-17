@@ -1,6 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from './LanguageSwitcher';
 
 export default function AuthHeader({ onLoginClick, onSignupClick, disableLogin = false, disableSignup = false }) {
+  const { t } = useTranslation();
   return (
     <header role="banner" style={{
       position: 'sticky',
@@ -14,21 +17,22 @@ export default function AuthHeader({ onLoginClick, onSignupClick, disableLogin =
       background: 'white',
       borderBottom: '1px solid rgba(102,102,102,0.12)'
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }} role="img" aria-label="Application logo">
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }} role="img" aria-label={t('auth.header.aria.logo')}>
         <div aria-hidden="true" style={{
           width: '40px',
           height: '40px',
           background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           borderRadius: '50%'
         }} />
-        <span style={{ fontSize: '18px', color: '#000', fontWeight: '600' }}>Home</span>
+        <span style={{ fontSize: '18px', color: '#000', fontWeight: '600' }}>{t('auth.header.home')}</span>
       </div>
 
-      <nav aria-label="Authentication navigation" style={{ display: 'flex', gap: '12px' }}>
+      <nav aria-label={t('auth.header.aria.nav')} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        <LanguageSwitcher />
         <button
           onClick={onLoginClick}
           disabled={disableLogin}
-          aria-label="Navigate to login page"
+          aria-label={t('auth.header.aria.navigateToLogin')}
           style={{
             height: '40px',
             padding: '0 20px',
@@ -42,12 +46,12 @@ export default function AuthHeader({ onLoginClick, onSignupClick, disableLogin =
             transition: 'all 0.2s'
           }}
         >
-          Log in
+          {t('auth.login')}
         </button>
         <button
           onClick={onSignupClick}
           disabled={disableSignup}
-          aria-label="Navigate to sign up page"
+          aria-label={t('auth.header.aria.navigateToSignup')}
           style={{
             height: '40px',
             padding: '0 20px',
@@ -61,7 +65,7 @@ export default function AuthHeader({ onLoginClick, onSignupClick, disableLogin =
             transition: 'all 0.2s'
           }}
         >
-          Sign up
+          {t('auth.signup')}
         </button>
       </nav>
     </header>

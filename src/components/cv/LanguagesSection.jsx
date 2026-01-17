@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import SectionHeader from './SectionHeader';
 import Field from './Field';
 import PrimaryButton from '../PrimaryButton';
@@ -15,14 +16,29 @@ export default function LanguagesSection({
   onAddLanguage,
   onRemoveLanguage
 }) {
+  const { t } = useTranslation();
   const languages = editMode ? editData?.languages : cv?.languages;
   if (!languages) return null;
+
+  const formatLanguageLevel = (level) => {
+    const mapping = {
+      nativo: t('cv.native'),
+      'bilingüe': t('cv.bilingual'),
+      'bilingüé': t('cv.bilingual'),
+      fluido: t('cv.fluent'),
+      avanzado: t('cv.advanced'),
+      intermedio: t('cv.intermediate'),
+      básico: t('cv.beginner')
+    };
+
+    return mapping[level] || level;
+  };
 
   return (
     <section style={{ marginBottom: '56px' }} role="region" aria-labelledby="languages-heading">
       <SectionHeader 
         id="languages-heading" 
-        title="Languages" 
+        title={t('cv.languages')} 
       />
       {editMode ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -40,20 +56,33 @@ export default function LanguagesSection({
               }}>
                 <Field
                   editable={true}
-                  label="Language"
+                  label={t('cv.language')}
                   value={langObj.language}
                   onChange={(value) => onLanguageChange(index, 'language', value)}
-                  placeholder="e.g. English"
+                  placeholder={t('cv.editor.languages.fields.language.placeholder')}
                   required
                 />
                 <Field
                   editable={true}
-                  label="Level"
+                  label={t('cv.level')}
                   type="select"
                   value={langObj.level}
                   onChange={(value) => onLanguageChange(index, 'level', value)}
-                  placeholder="Select level"
-                  options={['nativo', 'bilingüe', 'fluido', 'avanzado', 'intermedio', 'básico', 'A1', 'A2', 'B1', 'B2', 'C1', 'C2']}
+                  placeholder={t('cv.editor.languages.fields.level.placeholder')}
+                  options={[
+                    { value: 'nativo', label: t('cv.native') },
+                    { value: 'bilingüé', label: t('cv.bilingual') },
+                    { value: 'fluido', label: t('cv.fluent') },
+                    { value: 'avanzado', label: t('cv.advanced') },
+                    { value: 'intermedio', label: t('cv.intermediate') },
+                    { value: 'básico', label: t('cv.beginner') },
+                    'A1',
+                    'A2',
+                    'B1',
+                    'B2',
+                    'C1',
+                    'C2'
+                  ]}
                   required
                 />
                 <button
@@ -68,9 +97,11 @@ export default function LanguagesSection({
                     fontSize: '13px',
                     marginBottom: '2px'
                   }}
-                  aria-label={`Remove language: ${langObj.language || 'entry'}`}
+                  aria-label={t('cv.editor.languages.removeLabel', {
+                    language: langObj.language || t('cv.editor.entry')
+                  })}
                 >
-                  Remove
+                  {t('common.remove')}
                 </button>
               </div>
             );
@@ -92,7 +123,7 @@ export default function LanguagesSection({
               color: '#975a16',
               border: '1px solid #f9e3b8'
             }}>
-              {typeof lang === 'string' ? lang : `${lang.language} (${lang.level})`}
+              {typeof lang === 'string' ? lang : `${lang.language} (${formatLanguageLevel(lang.level)})`}
             </span>
           ))}
         </div>
@@ -101,10 +132,10 @@ export default function LanguagesSection({
         <div style={{ marginTop: '20px', textAlign: 'center' }}>
           <PrimaryButton 
             onClick={onAddLanguage}
-            aria-label="Add new language"
+            aria-label={t('cv.editor.languages.actions.addAria')}
             style={{ padding: '12px 24px', fontSize: '14px', fontWeight: '600' }}
           >
-            + Add Language
+            + {t('cv.addLanguage')}
           </PrimaryButton>
         </div>
       )}

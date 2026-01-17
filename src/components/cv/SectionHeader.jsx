@@ -1,4 +1,6 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { Plus } from 'lucide-react';
 import SecondaryButton from '../SecondaryButton';
 
 /**
@@ -6,6 +8,8 @@ import SecondaryButton from '../SecondaryButton';
  * Consistent header for CV sections with optional add button
  */
 export default function SectionHeader({ id, title, editMode, onAdd, addLabel }) {
+  const { t } = useTranslation();
+
   return (
     <div style={{ 
       display: 'flex', 
@@ -36,9 +40,10 @@ export default function SectionHeader({ id, title, editMode, onAdd, addLabel }) 
             minWidth: '100px',
             flexShrink: 0
           }}
-          aria-label={addLabel || `Add new ${title.toLowerCase()} entry`}
+          aria-label={addLabel || t('cv.editor.sectionHeader.addEntryAria', { section: title })}
+          leftIcon={<Plus size={16} />}
         >
-          + Add
+          {t('common.add')}
         </SecondaryButton>
       )}
     </div>

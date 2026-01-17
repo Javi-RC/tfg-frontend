@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import SectionHeader from './SectionHeader';
 import Field from './Field';
 import PrimaryButton from '../PrimaryButton';
@@ -15,14 +16,26 @@ export default function SkillsSection({
   onAddSkill,
   onRemoveSkill
 }) {
+  const { t } = useTranslation();
   const skills = editMode ? editData?.skills?.technical : cv?.skills?.technical;
   if (!skills) return null;
+
+  const formatSkillLevel = (level) => {
+    const mapping = {
+      básico: t('cv.beginner'),
+      intermedio: t('cv.intermediate'),
+      avanzado: t('cv.advanced'),
+      experto: t('cv.expert')
+    };
+
+    return mapping[level] || level;
+  };
 
   return (
     <section style={{ marginBottom: '56px' }} role="region" aria-labelledby="skills-heading">
       <SectionHeader 
         id="skills-heading" 
-        title="Technical Skills" 
+        title={t('cv.editor.skills.sectionTitle')} 
       />
       {editMode ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -38,29 +51,41 @@ export default function SkillsSection({
             }}>
               <Field
                 editable={true}
-                label="Skill Name"
+                label={t('cv.skillName')}
                 value={skill.name}
                 onChange={(value) => onSkillChange(index, 'name', value)}
-                placeholder="e.g. React"
+                placeholder={t('cv.editor.skills.fields.name.placeholder')}
                 required
               />
               <Field
                 editable={true}
-                label="Level"
+                label={t('cv.editor.skills.fields.level.label')}
                 type="select"
                 value={skill.level}
                 onChange={(value) => onSkillChange(index, 'level', value)}
-                placeholder="Select level"
-                options={['básico', 'intermedio', 'avanzado', 'experto']}
+                placeholder={t('cv.editor.skills.fields.level.placeholder')}
+                options={[
+                  { value: 'básico', label: t('cv.beginner') },
+                  { value: 'intermedio', label: t('cv.intermediate') },
+                  { value: 'avanzado', label: t('cv.advanced') },
+                  { value: 'experto', label: t('cv.expert') }
+                ]}
               />
               <Field
                 editable={true}
-                label="Category"
+                label={t('cv.editor.skills.fields.category.label')}
                 type="select"
                 value={skill.category}
                 onChange={(value) => onSkillChange(index, 'category', value)}
-                placeholder="Select category"
-                options={['lenguaje', 'framework', 'herramienta', 'base_datos', 'cloud', 'otro']}
+                placeholder={t('cv.editor.skills.fields.category.placeholder')}
+                options={[
+                  { value: 'lenguaje', label: t('cv.editor.skills.categories.language') },
+                  { value: 'framework', label: t('cv.editor.skills.categories.framework') },
+                  { value: 'herramienta', label: t('cv.editor.skills.categories.tool') },
+                  { value: 'base_datos', label: t('cv.editor.skills.categories.database') },
+                  { value: 'cloud', label: t('cv.editor.skills.categories.cloud') },
+                  { value: 'otro', label: t('cv.editor.skills.categories.other') }
+                ]}
               />
               <button
                 onClick={() => onRemoveSkill(index)}
@@ -74,9 +99,11 @@ export default function SkillsSection({
                   fontSize: '13px',
                   marginBottom: '2px'
                 }}
-                aria-label={`Remove skill: ${skill.name || 'entry'}`}
+                aria-label={t('cv.editor.skills.removeLabel', {
+                  name: skill.name || t('cv.editor.entry')
+                })}
               >
-                Remove
+                {t('common.remove')}
               </button>
             </div>
           ))}
@@ -100,7 +127,7 @@ export default function SkillsSection({
               {skill.name}
               {skill.level && skill.level !== 'básico' && (
                 <span style={{ fontSize: '11px', opacity: 0.7, marginLeft: '4px' }}>
-                  ({skill.level})
+                  ({formatSkillLevel(skill.level)})
                 </span>
               )}
             </span>
@@ -111,10 +138,10 @@ export default function SkillsSection({
         <div style={{ marginTop: '20px', textAlign: 'center' }}>
           <PrimaryButton 
             onClick={onAddSkill}
-            aria-label="Add new skill"
+            aria-label={t('cv.editor.skills.actions.addAria')}
             style={{ padding: '12px 24px', fontSize: '14px', fontWeight: '600' }}
           >
-            + Add Skill
+            {t('cv.editor.skills.actions.addButton')}
           </PrimaryButton>
         </div>
       )}

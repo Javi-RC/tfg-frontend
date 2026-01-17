@@ -7,7 +7,7 @@ import React from 'react';
 export default function CVErrorBanner({ error }) {
   if (!error) return null;
 
-  // Si el error contiene saltos de línea, dividirlo en múltiples líneas
+  // If the error contains line breaks, split it into multiple lines
   const errorLines = error.split('\n').filter(line => line.trim() !== '');
   const isMultiLine = errorLines.length > 1;
 

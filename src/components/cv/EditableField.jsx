@@ -1,15 +1,17 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * EditableField Component
  * Simplified editable field for forms with professional styling
  */
 export default function EditableField({ label, value, editMode, onChange, required = false }) {
+  const { t } = useTranslation();
   const isEmpty = !value || (typeof value === 'string' && value.trim() === '');
   const hasError = required && editMode && isEmpty;
 
   const requiredIndicator = required && editMode ? (
-    <span style={{ color: '#e53e3e', marginLeft: '4px' }} aria-label="required">*</span>
+    <span style={{ color: '#e53e3e', marginLeft: '4px' }} aria-label={t('form.required')}>*</span>
   ) : null;
 
   return (
@@ -32,7 +34,7 @@ export default function EditableField({ label, value, editMode, onChange, requir
           marginBottom: '6px',
           fontWeight: '500'
         }}>
-          This field is required
+          {t('form.requiredField')}
         </div>
       )}
       {editMode ? (

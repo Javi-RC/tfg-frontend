@@ -1,9 +1,9 @@
 import React, { createContext, useState, useEffect, useCallback, useRef } from 'react';
-import * as jwtDecodeModule from 'jwt-decode';
-const jwtDecode = jwtDecodeModule && (jwtDecodeModule.default || jwtDecodeModule);
-import { login as apiLogin, getProfile, updateProfile as apiUpdateProfile } from '../api/auth';
+import { jwtDecode } from 'jwt-decode';
+import { login as apiLogin, getProfile, patchProfile as apiPatchProfile } from '../api/auth';
+import { isPublicRoute } from '../constants/routes';
 
-export const AuthContext = createContext();
+export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
@@ -15,8 +15,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     // No intentar cargar perfil si estamos en páginas públicas
-    const publicPages = ['/login', '/register', '/auth/confirm', '/auth/callback', '/oauth-success'];
-    if (publicPages.includes(window.location.pathname)) {
+    if (isPublicRoute(window.location.pathname)) {
       return;
     }
     
@@ -42,7 +41,8 @@ export const AuthProvider = ({ children }) => {
         const normalizeRole = (r) => (ALLOWED_ROLES.includes(r) ? r : 'unassigned');
 
         getProfile().then(res => {
-          const normalized = { ...res.data, role: normalizeRole(res.data.role) };
+          const rawUser = (res && res.data && (res.data.user || res.data)) || null;
+          const normalized = rawUser ? { ...rawUser, role: normalizeRole(rawUser.role) } : null;
           setUser(normalized);
           localStorage.setItem('user', JSON.stringify(normalized));
           isLoadingProfile.current = false;
@@ -95,14 +95,9 @@ export const AuthProvider = ({ children }) => {
     const payload = { ...profileData };
     if (payload.role) payload.role = normalizeRole(payload.role);
 
-    // Debug: ensure payload contains expected values before sending
-    try {
-      // eslint-disable-next-line no-console
-      console.debug('[Auth] updateProfile payload', payload);
-    } catch (e) { }
-
-    const res = await apiUpdateProfile(payload);
-    const updatedUser = { ...res.data.user, role: normalizeRole(res.data.user?.role) };
+    const res = await apiPatchProfile(payload);
+    const rawUser = (res && res.data && (res.data.user || res.data)) || {};
+    const updatedUser = { ...rawUser, role: normalizeRole(rawUser?.role) };
     setUser(updatedUser);
     localStorage.setItem('user', JSON.stringify(updatedUser));
     return res.data;

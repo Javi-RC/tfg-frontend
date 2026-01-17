@@ -1,0 +1,33 @@
+/* PhaseForm Styles */
+.phase-form {
+  margin: 1.5rem 0;
+}
+
+.phase-header {
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.phase-header h2 {
+  font-size: 1.5rem;
+  color: #1a202c;
+  margin-bottom: 0.5rem;
+}
+
+.phase-description {
+  color: #718096;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (max-width: 640px) {
+  .phase-header h2 {
+    font-size: 1.25rem;
+  }
+}

@@ -1,0 +1,132 @@
+import React, { useRef, useState } from 'react';
+import { Upload } from 'lucide-react';
+import './FileUploader.css';
+
+/**
+ * FileUploader - Drag and drop file uploader
+ */
+const FileUploader = ({ onFileSelect, isUploading }) => {
+  const fileInputRef = useRef(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [dragActive, setDragActive] = useState(false);
+
+  const ALLOWED_TYPES = ['application/pdf', 'text/plain'];
+  const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileChange(e.dataTransfer.files[0]);
+    }
+  };
+
+  const handleFileChange = (file) => {
+    console.log('FileUploader - handleFileChange called with file:', file);
+    if (!file) return;
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      console.log('FileUploader - Invalid file type:', file.type);
+      alert('Only PDF or TXT files are accepted');
+      return;
+    }
+
+    if (file.size > MAX_SIZE) {
+      console.log('FileUploader - File too large:', file.size);
+      alert('File is too large. Maximum size is 10MB');
+      return;
+    }
+
+    console.log('FileUploader - File validated successfully:', file.name);
+    setSelectedFile(file);
+  };
+
+  const handleUpload = () => {
+    console.log('FileUploader - handleUpload called, selectedFile:', selectedFile);
+    if (selectedFile) {
+      console.log('FileUploader - Calling onFileSelect with file:', selectedFile.name);
+      onFileSelect(selectedFile);
+    }
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  };
+
+  return (
+    <div className="file-uploader">
+      <div 
+        className={`drop-zone ${dragActive ? 'active' : ''} ${selectedFile ? 'has-file' : ''}`}
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
+        onClick={() => !selectedFile && fileInputRef.current?.click()}
+      >
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".pdf,.txt"
+          onChange={(e) => handleFileChange(e.target.files[0])}
+          style={{ display: 'none' }}
+        />
+        
+        {!selectedFile ? (
+          <>
+            <Upload className="upload-icon" size={48} />
+            <p className="drop-zone-text">Drag your CV here or click to select</p>
+            <span className="file-types">PDF or TXT (max. 10MB)</span>
+          </>
+        ) : (
+          <>
+            <div className="file-selected">
+              <div className="file-info">
+                <span className="file-icon">📄</span>
+                <div className="file-details">
+                  <span className="file-name">{selectedFile.name}</span>
+                  <span className="file-size">{formatFileSize(selectedFile.size)}</span>
+                </div>
+              </div>
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedFile(null);
+                }}
+                className="btn-remove"
+                type="button"
+              >
+                ✕
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+
+      {selectedFile && (
+        <button 
+          onClick={handleUpload}
+          disabled={isUploading}
+          className="btn-upload"
+        >
+          {isUploading ? 'Processing...' : 'Upload CV'}
+        </button>
+      )}
+    </div>
+  );
+};
+
+export default FileUploader;
