@@ -9,8 +9,6 @@ import { Activity } from 'lucide-react';
 export default function Phase1ConfigForm({ config, onChange, errors = {} }) {
   const { t } = useTranslation();
 
-  const clamp01 = (num) => Math.max(0, Math.min(1, num));
-
   const getTotal = (cfg) => (cfg.skillsWeight || 0) +
     (cfg.experienceWeight || 0) +
     (cfg.availabilityWeight || 0);
@@ -33,14 +31,6 @@ export default function Phase1ConfigForm({ config, onChange, errors = {} }) {
       ...config,
       [field]: clamped
     });
-  };
-  
-  // Helper to calculate max allowed for each field
-  const getMaxAllowed = (field) => {
-    const otherWeightsSum = Object.keys(config)
-      .filter(key => ['skillsWeight', 'experienceWeight', 'availabilityWeight'].includes(key) && key !== field)
-      .reduce((sum, key) => sum + (config[key] || 0), 0);
-    return 1.0 - otherWeightsSum;
   };
 
   const total = getTotal(config);

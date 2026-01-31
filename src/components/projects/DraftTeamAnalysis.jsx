@@ -60,7 +60,6 @@ export default function DraftTeamAnalysis({ project, onProjectUpdate }) {
   // Loading States
   const [loading, setLoading] = useState(true);
   const [riskLoading, setRiskLoading] = useState(false);
-  const [riskError, setRiskError] = useState(null);
   const [assignLoading, setAssignLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   
@@ -322,7 +321,6 @@ export default function DraftTeamAnalysis({ project, onProjectUpdate }) {
     
     try {
       setRiskLoading(true);
-      setRiskError(null);
       
       console.log('🔍 [RISK ANALYSIS] Calling API: POST /projects/:id/risks/predict');
       const riskResponse = await predictProjectRisks(project._id);
@@ -353,7 +351,7 @@ export default function DraftTeamAnalysis({ project, onProjectUpdate }) {
       const errorMessage = err.response?.data?.message 
         || err.response?.data?.error 
         || t('projects.riskAnalysis.loadError', 'Error loading risk analysis. Please try again.');
-      setRiskError(errorMessage);
+      setError(errorMessage);
     } finally {
       setRiskLoading(false);
       console.log('🏁 [RISK ANALYSIS] Risk loading finished');

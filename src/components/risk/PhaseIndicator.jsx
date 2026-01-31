@@ -13,7 +13,7 @@ import Tooltip from '../common/Tooltip';
  * @param {number} props.caseCount - Number of cases in the case base
  * @param {string} props.description - Phase description from backend
  */
-export default function PhaseIndicator({ phase, strategy, caseCount, description }) {
+export default function PhaseIndicator({ phase, caseCount, description }) {
   const { t } = useTranslation();
   
   const phaseConfig = {

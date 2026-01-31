@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import RiskEvaluationModal from './RiskEvaluationModal';
@@ -13,7 +13,7 @@ export default function RisksSection({ formData, setFormData, predictedRisks = [
   const [selectedRiskMeta, setSelectedRiskMeta] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const getRiskTypeLabel = (type) => {
+  const getRiskTypeLabel = useCallback((type) => {
     const labels = {
       communication_issues: t('outcome.risks.types.communicationIssues'),
       communication_breakdown: t('outcome.risks.types.communicationBreakdown'),
@@ -29,7 +29,7 @@ export default function RisksSection({ formData, setFormData, predictedRisks = [
       other: t('outcome.risks.types.other')
     };
     return labels[type] || type;
-  };
+  }, [t]);
 
   const getSeverityColor = (severity) => {
     const colors = {
@@ -71,7 +71,7 @@ export default function RisksSection({ formData, setFormData, predictedRisks = [
         sourceLabel
       };
     });
-  }, [predictedRisks]);
+  }, [predictedRisks, t, getRiskTypeLabel]);
 
   const manualItems = useMemo(() => {
     return (manualRisks || []).map((risk, index) => {
@@ -91,7 +91,7 @@ export default function RisksSection({ formData, setFormData, predictedRisks = [
         indicators: risk?.indicators
       };
     });
-  }, [manualRisks]);
+  }, [manualRisks, t, getRiskTypeLabel]);
 
   const allItems = useMemo(() => [...predictedItems, ...manualItems], [predictedItems, manualItems]);
 

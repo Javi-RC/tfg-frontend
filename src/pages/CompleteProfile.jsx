@@ -68,7 +68,7 @@ function CompleteProfile() {
     return null;
   }
 
-  const { user, updateProfile, completeOAuthProfile } = auth;
+  const { user, completeOAuthProfile } = auth;
 
   const handleSubmit = async (e) => {
     e.preventDefault();

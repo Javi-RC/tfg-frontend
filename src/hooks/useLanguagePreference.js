@@ -43,7 +43,7 @@ export const useLanguagePreference = () => {
     };
 
     loadLanguagePreference();
-  }, []); // Run only once on mount
+  }, [i18n]); // Run only once per i18n instance
 
   return null;
 };

@@ -50,14 +50,6 @@ export default function Phase2ConfigForm({ config, onChange, errors = {} }) {
       }
     });
   };
-  
-  // Helper to calculate max allowed for each field
-  const getMaxAllowed = (field) => {
-    const otherWeightsSum = Object.keys(synergyWeights)
-      .filter(key => key !== field)
-      .reduce((sum, key) => sum + (synergyWeights[key] || 0), 0);
-    return 1.0 - otherWeightsSum;
-  };
 
   return (
     <div style={styles.container}>

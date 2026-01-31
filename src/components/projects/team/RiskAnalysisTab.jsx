@@ -161,12 +161,6 @@ export default function RiskAnalysisTab({
   const mediumRisks = risks.filter(r => r.severity === 'medium');
   const lowRisks = risks.filter(r => r.severity === 'low');
 
-  // Categorize filtered risks
-  const filteredCritical = filteredRisks.filter(r => r.severity === 'critical');
-  const filteredHigh = filteredRisks.filter(r => r.severity === 'high');
-  const filteredMedium = filteredRisks.filter(r => r.severity === 'medium');
-  const filteredLow = filteredRisks.filter(r => r.severity === 'low');
-
   // Determine overall risk level
   let overallRisk = 'LOW';
   let overallColor = '#28a745';

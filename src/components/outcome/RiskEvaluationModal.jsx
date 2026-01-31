@@ -52,7 +52,7 @@ export default function RiskEvaluationModal({
 
     setDraftRecommendation('');
     setDraftIndicator('');
-  }, [isOpen, value]);
+  }, [isOpen, value, riskMeta]);
 
   if (!isOpen || !riskMeta) return null;
 

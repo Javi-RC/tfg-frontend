@@ -6,7 +6,7 @@ import { KNOWLEDGE_MANAGEMENT_SYSTEMS } from '../../types/projectTypes';
  * Step 6: Knowledge Management
  * NEW CRITICAL STEP - Manages knowledge sharing and documentation
  */
-export default function Step6KnowledgeManagement({ formData, onChange, errors }) {
+export default function Step6KnowledgeManagement({ formData, onChange }) {
   const hasTools = formData.knowledgeManagementSystem || (formData.knowledgeManagementTools?.length > 0);
   const showWarning = !hasTools;
 

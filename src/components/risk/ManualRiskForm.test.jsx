@@ -5,7 +5,7 @@ import ManualRiskForm from './ManualRiskForm';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key, params) => {
+    t: (key) => {
       const translations = {
         'risk.form.addTitle': 'Add Manual Risk',
         'risk.form.editTitle': 'Edit Manual Risk',

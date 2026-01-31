@@ -195,7 +195,7 @@ export function getRiskState(risk) {
  * @param {Risk} risk - Risk object
  * @returns {boolean} Always returns false during active project
  */
-export function canMarkAsOccurred(risk) {
+export function canMarkAsOccurred() {
   // Risks are marked as occurred/not_occurred only in retrospective (outcome form)
   // Not during active project execution
   return false;

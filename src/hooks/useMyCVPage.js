@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getMyCV, deleteCV, updateCV } from '../api/cv';
 import { validateCV } from '../services/cvService';
@@ -15,14 +15,10 @@ export function useMyCVPage() {
   const [showUpload, setShowUpload] = useState(false);
   const [showSubmitToOrg, setShowSubmitToOrg] = useState(false);
 
-  useEffect(() => {
-    loadCV();
-  }, []);
-
   /**
    * Load user's CV
    */
-  const loadCV = async () => {
+  const loadCV = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -39,7 +35,11 @@ export function useMyCVPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
+
+  useEffect(() => {
+    loadCV();
+  }, [loadCV]);
 
   /**
    * Delete CV

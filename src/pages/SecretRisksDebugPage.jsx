@@ -11,7 +11,7 @@ import SecondaryButton from '../components/SecondaryButton';
  * Direct access via: /secret-risks-debug-panel-2026
  */
 export default function SecretRisksDebugPage() {
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
   const previousLanguage = useRef(i18n.language);
   
   const [activeView, setActiveView] = useState('metadata'); // 'metadata', 'all', 'by-type', 'summary'

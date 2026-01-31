@@ -32,16 +32,6 @@ export default function RiskCard({ risk, dataCompleteness, metadata }) {
     });
   };
 
-  const getSeverityColor = (severity) => {
-    switch (severity) {
-      case 'high': return '#DC2626';
-      case 'medium-high': return '#EA580C';
-      case 'medium': return '#D97706';
-      case 'low': return '#059669';
-      default: return '#6B7280';
-    }
-  };
-
   const showDataWarning = dataCompleteness && dataCompleteness < 60;
 
   return (

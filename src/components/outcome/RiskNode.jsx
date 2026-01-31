@@ -13,7 +13,6 @@ const RiskNode = memo(({ data }) => {
     occurred, 
     isCategory,
     isRoot,
-    probability,
     onClick 
   } = data;
 

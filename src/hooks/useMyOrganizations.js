@@ -60,10 +60,9 @@ export function useMyOrganizations() {
       return true;
     }
     try {
-      // eslint-disable-next-line no-new
-      new URL(normalized);
-      return true;
-    } catch (error) {
+      const url = new URL(normalized);
+      return Boolean(url);
+    } catch {
       return false;
     }
   };

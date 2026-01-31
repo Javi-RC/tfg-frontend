@@ -1,8 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import {
   predictProjectRisks,
-  getDTIndicators,
-  getCBRRisks,
   acceptRisksForMonitoring
 } from '../api/riskService';
 import { useNotifications } from '../contexts/useNotifications';

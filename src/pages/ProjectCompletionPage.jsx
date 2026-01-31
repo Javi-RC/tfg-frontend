@@ -41,8 +41,8 @@ export default function ProjectCompletionPage() {
     metrics: {}
   });
   
-  const [errors, setErrors] = useState({});
-  const [results, setResults] = useState(null);
+  const [, setErrors] = useState({});
+  const [results] = useState(null);
   const [showResults, setShowResults] = useState(false);
   const [riskViewMode, setRiskViewMode] = useState('list'); // 'list' or 'flow'
 

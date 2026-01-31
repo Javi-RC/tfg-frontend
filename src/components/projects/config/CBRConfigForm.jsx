@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Database, Info } from 'lucide-react';
-import { getDefaultCBRConfig, normalizeCBRConfig, CBR_PARAMETER_RANGES } from '../../../utils/cbrConfigDefaults';
+import { normalizeCBRConfig, CBR_PARAMETER_RANGES } from '../../../utils/cbrConfigDefaults';
 
 /**
  * CBR Configuration Form
@@ -38,14 +38,6 @@ export default function CBRConfigForm({ config, onChange, errors = {} }) {
         [dimension]: clamped
       }
     });
-  };
-  
-  // Helper to calculate max allowed for each dimension
-  const getMaxAllowed = (dimension) => {
-    const otherWeightsSum = Object.keys(dimensionWeights)
-      .filter(key => key !== dimension)
-      .reduce((sum, key) => sum + (dimensionWeights[key] || 0), 0);
-    return 1.0 - otherWeightsSum;
   };
 
   const handleKChange = (value) => {

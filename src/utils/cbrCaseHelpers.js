@@ -105,11 +105,15 @@ export function extractOutcome(caseItem) {
   // Try to extract from result object
   if (caseItem.result) {
     const outcome = {};
+
+    const completedFromStatus = caseItem.result.status
+      ? caseItem.result.status === 'completed'
+      : undefined;
     
     // Project completion status
     outcome.completed = caseItem.result.completed ?? 
                        caseItem.result.success ?? 
-                       caseItem.result.status === 'completed' ??
+                       completedFromStatus ??
                        true;
     
     // Schedule delay

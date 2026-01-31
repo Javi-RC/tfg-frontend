@@ -120,11 +120,9 @@ export default function Step9Coordination({ formData, onChange }) {
       </div>
 
       <FormSelect
-        label="Documentation Standardization"
+        label={t('projects.steps.step7.documentationStandardization')}
         name="documentationStandardization"
-        value={t('projects.steps.step7.documentationStandardization')}
-        name="documentationStandardization"
-        value={formData.documentationStandardization || 'medium'}
+        value={formData.documentationStandardization || COMPLEXITY_LEVELS.MEDIUM}
         onChange={handleChange}
         required
         options={[
@@ -141,9 +139,11 @@ export default function Step9Coordination({ formData, onChange }) {
         onChange={handleChange}
         required
         options={[
-          { value: 'top-down', label: 'Top-Down (Manager → Team)' },
-          { value: 'bottom-up', label: 'Bottom-Up (Team → Manager)' },
-          { value: 'bidirectional', label: t('projects.steps.step10.flowBidirectional')
+          { value: 'top-down', label: t('projects.steps.step8.flowTopDown', { defaultValue: 'Top-Down (Manager → Team)' }) },
+          { value: 'bottom-up', label: t('projects.steps.step8.flowBottomUp', { defaultValue: 'Bottom-Up (Team → Manager)' }) },
+          { value: 'bidirectional', label: t('projects.steps.step10.flowBidirectional', { defaultValue: 'Bidirectional (Manager ↔ Team)' }) }
+        ]}
+      />
     </div>
   );
 }

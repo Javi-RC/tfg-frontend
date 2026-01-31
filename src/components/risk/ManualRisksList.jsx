@@ -183,6 +183,16 @@ export default function ManualRisksList({
                     >
                       {translateSeverity(risk.severity, risk.severityLabel)}
                     </Badge>
+                    {risk.type && (
+                      <Badge
+                        style={{
+                          backgroundColor: '#F3F4F6',
+                          color: '#374151'
+                        }}
+                      >
+                        {translateRiskType(risk.type, risk.typeLabel)}
+                      </Badge>
+                    )}
                     <Badge
                       style={{
                         backgroundColor: '#F0F9FF',

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ManualRisksList from './ManualRisksList';
 
@@ -110,7 +110,7 @@ describe('ManualRisksList Component', () => {
       expect(screen.getByText('Vendor Lock-in Risk')).toBeInTheDocument();
       expect(screen.getByText('Schedule Overrun Risk')).toBeInTheDocument();
       // Risk type/title text can include punctuation (e.g. hyphen in "Lock-in")
-      expect(screen.getByText(/vendor lock-?in/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/vendor lock-?in/i).length).toBeGreaterThan(0);
       // Severity/status labels are title-cased in UI
       expect(screen.getAllByText(/high/i).length).toBeGreaterThan(0);
       expect(screen.getAllByText(/predicted/i).length).toBeGreaterThan(0);
@@ -172,7 +172,7 @@ describe('ManualRisksList Component', () => {
 
     it('should collapse risk details on second click', async () => {
       const user = userEvent.setup();
-      const { rerender } = render(<ManualRisksList {...defaultProps} />);
+      render(<ManualRisksList {...defaultProps} />);
 
       const riskTitle = screen.getByText('Vendor Lock-in Risk');
       const header = riskTitle.closest('div[style*="padding"]');
@@ -307,7 +307,7 @@ describe('ManualRisksList Component', () => {
         { ...mockRisks[1], severity: 'low' }
       ];
 
-      const { container } = render(
+      render(
         <ManualRisksList
           {...defaultProps}
           risks={risksWithVariousSeverities}
