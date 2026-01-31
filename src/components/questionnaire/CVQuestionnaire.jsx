@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { CheckCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useQuestionnaire } from './useQuestionnaire';
 import PhaseProgress from './PhaseProgress';
 import PhaseForm from './PhaseForm';
@@ -10,6 +11,7 @@ import './CVQuestionnaire.css';
  * Manages multi-phase questionnaire flow
  */
 const CVQuestionnaire = ({ onComplete }) => {
+  const { t } = useTranslation();
   const { state, updateResponse, submitPhase } = useQuestionnaire();
 
   // If backend sends no questions, it means this phase is already complete
@@ -56,8 +58,8 @@ const CVQuestionnaire = ({ onComplete }) => {
         <div className="success-icon">
           <CheckCircle size={64} className="check-icon" />
         </div>
-        <h2>Profile Completed!</h2>
-        <p>Your CV is now 100% complete</p>
+        <h2>{t('questionnaire.completed')}</h2>
+        <p>{t('questionnaire.completedDesc')}</p>
       </div>
     );
   }
@@ -72,7 +74,7 @@ const CVQuestionnaire = ({ onComplete }) => {
           completenessScore={state.completenessScore}
         />
         <div style={{ textAlign: 'center', padding: '2rem' }}>
-          <p>Loading next phase...</p>
+          <p>{t('questionnaire.loadingNext')}</p>
         </div>
       </div>
     );
@@ -105,8 +107,8 @@ const CVQuestionnaire = ({ onComplete }) => {
           disabled={state.isLoading}
           className="btn-next"
         >
-          {state.isLoading ? 'Submitting...' : 
-           state.currentPhase?.index === state.currentPhase?.total ? 'Finish' : 'Next'}
+          {state.isLoading ? t('questionnaire.submitting') : 
+           state.currentPhase?.index === state.currentPhase?.total ? t('questionnaire.finish') : t('questionnaire.next')}
         </button>
       </div>
     </div>

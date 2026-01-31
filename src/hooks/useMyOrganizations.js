@@ -39,6 +39,35 @@ export function useMyOrganizations() {
 
   const isOrgAdmin = user?.role === 'org_admin';
 
+  const normalizeTrimmed = (rawValue) => {
+    const value = rawValue?.trim();
+    return value ?? '';
+  };
+
+  const normalizeWebsite = (rawValue) => {
+    const value = rawValue?.trim();
+    if (!value) {
+      return undefined;
+    }
+    return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+  };
+
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  const isValidWebsite = (rawValue) => {
+    const normalized = normalizeWebsite(rawValue);
+    if (!normalized) {
+      return true;
+    }
+    try {
+      // eslint-disable-next-line no-new
+      new URL(normalized);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  };
+
   useEffect(() => {
     loadOrganizations();
   }, []);
@@ -115,16 +144,27 @@ export function useMyOrganizations() {
    * Validate create form
    */
   const validateCreateForm = () => {
-    if (!createForm.name.trim()) {
+    const name = normalizeTrimmed(createForm.name);
+    const email = normalizeTrimmed(createForm.email);
+
+    if (!name) {
       setCreateError('Organization name is required');
       return false;
     }
-    if (createForm.name.trim().length < 2) {
+    if (name.length < 2) {
       setCreateError('Organization name must be at least 2 characters');
       return false;
     }
-    if (!createForm.email.trim()) {
+    if (!email) {
       setCreateError('Email is required');
+      return false;
+    }
+    if (!isValidEmail(email)) {
+      setCreateError('Email format is not valid');
+      return false;
+    }
+    if (!isValidWebsite(createForm.website)) {
+      setCreateError('Website URL is not valid');
       return false;
     }
     setCreateError(null);
@@ -158,13 +198,17 @@ export function useMyOrganizations() {
 
       const hasAddress = Object.values(address).some(Boolean);
 
+      const contact = {
+        email: normalizeTrimmed(createForm.email),
+        phone: toOptionalTrimmed(createForm.phone),
+        website: normalizeWebsite(createForm.website)
+      };
+
       const organizationData = {
-        name: createForm.name.trim(),
+        name: normalizeTrimmed(createForm.name),
         description: toOptionalTrimmed(createForm.description),
         taxId: toOptionalTrimmed(createForm.taxId),
-        email: createForm.email.trim(),
-        phone: toOptionalTrimmed(createForm.phone),
-        website: toOptionalTrimmed(createForm.website),
+        contact,
         industry: createForm.industry || undefined,
         size: createForm.size || undefined,
         ...(hasAddress ? { address } : {})
@@ -225,5 +269,3 @@ export function useMyOrganizations() {
     toggleCreateModal
   };
 }
-
-export default useMyOrganizations;

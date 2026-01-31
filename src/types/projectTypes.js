@@ -87,6 +87,32 @@ export const DOCUMENTATION_LEVELS = {
   NONE: 'none'
 };
 
+export const DOCUMENTATION_STANDARDIZATION = {
+  HIGH: 'high',
+  MEDIUM: 'medium',
+  LOW: 'low'
+};
+
+// ==================== Work Mode ====================
+
+export const WORK_MODE = {
+  INHERIT: 'inherit_from_organization',
+  OFFICE_MODE: 'office_mode',
+  OFFICE_FIRST: 'office_first',
+  OFFICE_REMOTE_MIX: 'office_remote_mix',
+  REMOTE_FIRST: 'remote_first',
+  REMOTE_MODE: 'remote_mode'
+};
+
+export const WORK_MODE_LABELS = {
+  inherit_from_organization: 'Inherit from Organization',
+  office_mode: 'Office Mode',
+  office_first: 'Office First',
+  office_remote_mix: 'Office/Remote Mix',
+  remote_first: 'Remote First',
+  remote_mode: 'Remote Mode'
+};
+
 // ==================== Management Methods ====================
 
 export const MANAGEMENT_METHODS = {

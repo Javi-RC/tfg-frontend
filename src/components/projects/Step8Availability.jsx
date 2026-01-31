@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { FormNumber, FormSelect, FormInput } from './FormComponents';
 import { AFTER_HOURS_OPTIONS } from '../../types/projectTypes';
 import PrimaryButton from '../PrimaryButton';
@@ -8,6 +9,8 @@ import PrimaryButton from '../PrimaryButton';
  * Define time commitment and team availability needs
  */
 export default function Step8Availability({ formData, onChange }) {
+  const { t } = useTranslation();
+  
   const handleChange = (e) => {
     const { name, value } = e.target;
     onChange({ [name]: value });
@@ -81,16 +84,16 @@ export default function Step8Availability({ formData, onChange }) {
       )}
 
       <FormSelect
-        label="Requires After-Hours Availability"
+        label={t('projects.steps.step8.afterHoursLabel')}
         name="requiresAfterHoursAvailability"
         value={formData.requiresAfterHoursAvailability || 'no'}
         onChange={handleChange}
         options={[
-          { value: AFTER_HOURS_OPTIONS.NO, label: 'No - Standard hours only' },
-          { value: AFTER_HOURS_OPTIONS.OCCASIONAL, label: 'Occasional - For emergencies' },
-          { value: AFTER_HOURS_OPTIONS.YES, label: 'Yes - Regular after-hours work' }
+          { value: AFTER_HOURS_OPTIONS.NO, label: t('projects.steps.step8.afterHours.no') },
+          { value: AFTER_HOURS_OPTIONS.OCCASIONAL, label: t('projects.steps.step8.afterHours.occasional') },
+          { value: AFTER_HOURS_OPTIONS.YES, label: t('projects.steps.step8.afterHours.yes') }
         ]}
-        helperText="After-hours availability can increase stress and reduce work-life balance"
+        helperText={t('projects.steps.step8.afterHoursHelper')}
       />
 
       {formData.requiresAfterHoursAvailability === 'yes' && (

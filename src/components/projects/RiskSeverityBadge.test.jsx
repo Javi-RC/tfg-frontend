@@ -4,7 +4,11 @@ import { useTranslation } from 'react-i18next';
 import RiskSeverityBadge from './RiskSeverityBadge';
 
 jest.mock('react-i18next', () => ({
-  useTranslation: jest.fn()
+  useTranslation: jest.fn(),
+  initReactI18next: {
+    type: '3rdParty',
+    init: () => {}
+  }
 }));
 
 describe('RiskSeverityBadge', () => {

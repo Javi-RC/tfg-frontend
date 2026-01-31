@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 
@@ -11,6 +12,7 @@ export default function CreateOrganizationModal({
   handleCreateOrganization,
   styles
 }) {
+  const { t } = useTranslation();
   const handleSubmit = async (e) => {
     e.preventDefault();
     await handleCreateOrganization();
@@ -20,7 +22,7 @@ export default function CreateOrganizationModal({
     <div style={styles.modalOverlay} onClick={onClose}>
       <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div style={styles.modalHeader}>
-          <h2 style={styles.modalTitle}>Create Organization</h2>
+          <h2 style={styles.modalTitle}>{t('organization.create.title')}</h2>
           <button style={styles.closeButton} onClick={onClose}>
             ×
           </button>
@@ -28,9 +30,9 @@ export default function CreateOrganizationModal({
 
         {createError && <div style={styles.errorBanner}>{createError}</div>}
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Organization Name *</label>
+        <form onSubmit={handleSubmit} style={styles.form} noValidate>
+          <div style={{ ...styles.formGroup, ...styles.fullWidth }}>
+            <label style={styles.label}>{t('organization.create.name')} *</label>
             <input
               type="text"
               value={createForm.name}
@@ -40,167 +42,160 @@ export default function CreateOrganizationModal({
             />
           </div>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Description</label>
+          <div style={{ ...styles.formGroup, ...styles.fullWidth }}>
+            <label style={styles.label}>{t('organization.create.description')}</label>
             <textarea
               value={createForm.description}
               onChange={(e) => updateCreateForm('description', e.target.value)}
-              style={{ ...styles.input, minHeight: '80px', resize: 'vertical' }}
-              rows={3}
+              style={{ ...styles.input, minHeight: '52px', resize: 'vertical' }}
+              rows={2}
             />
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.label}>Tax ID</label>
+            <label style={styles.label}>{t('organization.create.taxId')}</label>
             <input
               type="text"
               value={createForm.taxId}
               onChange={(e) => updateCreateForm('taxId', e.target.value)}
               style={styles.input}
-              placeholder="e.g., B87654321"
+              placeholder={t('organization.create.taxIdPlaceholder')}
             />
           </div>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Street Address</label>
+          <div style={{ ...styles.formGroup, ...styles.fullWidth }}>
+            <label style={styles.label}>{t('organization.create.street')}</label>
             <input
               type="text"
               value={createForm.address.street}
               onChange={(e) => updateCreateForm('address.street', e.target.value)}
               style={styles.input}
-              placeholder="Street address"
+              placeholder={t('organization.create.streetPlaceholder')}
             />
-          </div>
-
-          <div style={styles.formRow}>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>City</label>
-              <input
-                type="text"
-                value={createForm.address.city}
-                onChange={(e) => updateCreateForm('address.city', e.target.value)}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>State/Province</label>
-              <input
-                type="text"
-                value={createForm.address.state}
-                onChange={(e) => updateCreateForm('address.state', e.target.value)}
-                style={styles.input}
-              />
-            </div>
-          </div>
-
-          <div style={styles.formRow}>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Postal Code</label>
-              <input
-                type="text"
-                value={createForm.address.postalCode}
-                onChange={(e) => updateCreateForm('address.postalCode', e.target.value)}
-                style={styles.input}
-              />
-            </div>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Country</label>
-              <input
-                type="text"
-                value={createForm.address.country}
-                onChange={(e) => updateCreateForm('address.country', e.target.value)}
-                style={styles.input}
-              />
-            </div>
-          </div>
-
-          <div style={styles.formRow}>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Email *</label>
-              <input
-                type="email"
-                value={createForm.email}
-                onChange={(e) => updateCreateForm('email', e.target.value)}
-                style={styles.input}
-                required
-              />
-            </div>
-
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Phone</label>
-              <input
-                type="tel"
-                value={createForm.phone}
-                onChange={(e) => updateCreateForm('phone', e.target.value)}
-                style={styles.input}
-              />
-            </div>
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.label}>Website</label>
+            <label style={styles.label}>{t('organization.create.city')}</label>
             <input
-              type="url"
-              value={createForm.website}
-              onChange={(e) => updateCreateForm('website', e.target.value)}
+              type="text"
+              value={createForm.address.city}
+              onChange={(e) => updateCreateForm('address.city', e.target.value)}
               style={styles.input}
-              placeholder="https://example.com"
+            />
+          </div>
+          <div style={styles.formGroup}>
+            <label style={styles.label}>{t('organization.create.state')}</label>
+            <input
+              type="text"
+              value={createForm.address.state}
+              onChange={(e) => updateCreateForm('address.state', e.target.value)}
+              style={styles.input}
             />
           </div>
 
-          <div style={styles.formRow}>
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Industry</label>
-              <select
-                value={createForm.industry}
-                onChange={(e) => updateCreateForm('industry', e.target.value)}
-                style={styles.input}
-              >
-                <option value="">Select industry</option>
-                <option value="software_development">Software development</option>
-                <option value="web_development">Web development</option>
-                <option value="mobile_development">Mobile development</option>
-                <option value="devops_cloud">DevOps y Cloud</option>
-                <option value="data_science">Data science</option>
-                <option value="cybersecurity">Cybersecurity</option>
-                <option value="ai_machine_learning">AI & Machine Learning</option>
-                <option value="blockchain">Blockchain</option>
-                <option value="game_development">Game development</option>
-                <option value="qa_testing">QA & Testing</option>
-                <option value="consulting">Technology consulting</option>
-                <option value="fintech">Financial technology</option>
-                <option value="healthtech">Health technology</option>
-                <option value="edtech">Education technology</option>
-                <option value="ecommerce">E-commerce</option>
-                <option value="saas">Software as a Service</option>
-                <option value="other">Other</option>
-              </select>
-            </div>
-
-            <div style={styles.formGroup}>
-              <label style={styles.label}>Company Size</label>
-              <select
-                value={createForm.size}
-                onChange={(e) => updateCreateForm('size', e.target.value)}
-                style={styles.input}
-              >
-                <option value="">Select size</option>
-                <option value="1-10">1-10</option>
-                <option value="11-50">11-50</option>
-                <option value="51-200">51-200</option>
-                <option value="201-500">201-500</option>
-                <option value="501-1000">501-1000</option>
-                <option value="1000+">1000+</option>
-              </select>
-            </div>
+          <div style={styles.formGroup}>
+            <label style={styles.label}>{t('organization.create.postalCode')}</label>
+            <input
+              type="text"
+              value={createForm.address.postalCode}
+              onChange={(e) => updateCreateForm('address.postalCode', e.target.value)}
+              style={styles.input}
+            />
+          </div>
+          <div style={styles.formGroup}>
+            <label style={styles.label}>{t('organization.create.country')}</label>
+            <input
+              type="text"
+              value={createForm.address.country}
+              onChange={(e) => updateCreateForm('address.country', e.target.value)}
+              style={styles.input}
+            />
           </div>
 
-          <div style={styles.modalActions}>
+          <div style={styles.formGroup}>
+            <label style={styles.label}>{t('organization.create.email')} *</label>
+            <input
+              type="email"
+              value={createForm.email}
+              onChange={(e) => updateCreateForm('email', e.target.value)}
+              style={styles.input}
+              required
+            />
+          </div>
+
+          <div style={styles.formGroup}>
+            <label style={styles.label}>{t('organization.create.phone')}</label>
+            <input
+              type="tel"
+              value={createForm.phone}
+              onChange={(e) => updateCreateForm('phone', e.target.value)}
+              style={styles.input}
+            />
+          </div>
+
+          <div style={{ ...styles.formGroup, ...styles.fullWidth }}>
+            <label style={styles.label}>{t('organization.create.website')}</label>
+            <input
+              type="text"
+              inputMode="url"
+              value={createForm.website}
+              onChange={(e) => updateCreateForm('website', e.target.value)}
+              style={styles.input}
+              placeholder={t('organization.create.websitePlaceholder')}
+            />
+          </div>
+
+          <div style={styles.formGroup}>
+            <label style={styles.label}>{t('organization.create.industry')}</label>
+            <select
+              value={createForm.industry}
+              onChange={(e) => updateCreateForm('industry', e.target.value)}
+              style={styles.input}
+            >
+              <option value="">{t('organization.create.selectIndustry')}</option>
+              <option value="software_development">Software development</option>
+              <option value="web_development">Web development</option>
+              <option value="mobile_development">Mobile development</option>
+              <option value="devops_cloud">DevOps y Cloud</option>
+              <option value="data_science">Data science</option>
+              <option value="cybersecurity">Cybersecurity</option>
+              <option value="ai_machine_learning">AI & Machine Learning</option>
+              <option value="blockchain">Blockchain</option>
+              <option value="game_development">Game development</option>
+              <option value="qa_testing">QA & Testing</option>
+              <option value="consulting">Technology consulting</option>
+              <option value="fintech">Financial technology</option>
+              <option value="healthtech">Health technology</option>
+              <option value="edtech">Education technology</option>
+              <option value="ecommerce">E-commerce</option>
+              <option value="saas">Software as a Service</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+
+          <div style={styles.formGroup}>
+            <label style={styles.label}>{t('organization.create.size')}</label>
+            <select
+              value={createForm.size}
+              onChange={(e) => updateCreateForm('size', e.target.value)}
+              style={styles.input}
+            >
+              <option value="">{t('organization.create.selectSize')}</option>
+              <option value="1-10">1-10</option>
+              <option value="11-50">11-50</option>
+              <option value="51-200">51-200</option>
+              <option value="201-500">201-500</option>
+              <option value="501-1000">501-1000</option>
+              <option value="1000+">1000+</option>
+            </select>
+          </div>
+
+          <div style={{ ...styles.modalActions, ...styles.fullWidth }}>
             <SecondaryButton type="button" onClick={onClose}>
-              Cancel
+              {t('common.cancel')}
             </SecondaryButton>
             <PrimaryButton type="submit" disabled={creating}>
-              {creating ? 'Creating...' : 'Create Organization'}
+              {creating ? t('organization.create.creating') : t('organization.create.createButton')}
             </PrimaryButton>
           </div>
         </form>

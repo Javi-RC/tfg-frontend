@@ -1,22 +1,22 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FormTextarea, FormSelect, FormNumber } from './FormComponents';
-import { COMMUNICATION_LEVELS, TIME_UNITS } from '../../types/projectTypes';
+import { COMMUNICATION_LEVELS, TIME_UNITS, WORK_MODE } from '../../types/projectTypes';
 
 /**
  * Step 4: Geographic Distribution
  */
-export default function Step4Geographic({ formData, onChange }) {
+export default function Step4Geographic({ formData, onChange, errors = {} }) {
   const { t } = useTranslation();
   const handleChange = (e) => {
     const { name, value } = e.target;
     onChange({ [name]: value });
   };
 
-  const handleRegionsChange = (e) => {
+  const handleCountriesChange = (e) => {
     const value = e.target.value;
-    const regions = value.split(',').map(r => r.trim()).filter(r => r);
-    onChange({ teamRegionsText: value, teamRegions: regions });
+    const countries = value.split(',').map(r => r.trim()).filter(r => r);
+    onChange({ involvedCountriesText: value, involvedCountries: countries });
   };
 
   const handleTimeOverlapChange = (field, value) => {
@@ -36,12 +36,28 @@ export default function Step4Geographic({ formData, onChange }) {
       </p>
 
       <FormTextarea
-        label={t('projects.steps.step4.teamRegions')}
-        name="teamRegions"
-        value={formData.teamRegionsText ?? formData.teamRegions?.join(', ') ?? ''}
-        onChange={handleRegionsChange}
-        placeholder={t('projects.steps.step4.regionsPlaceholder')}
+        label={t('projects.steps.step4.involvedCountries')}
+        name="involvedCountries"
+        value={formData.involvedCountriesText ?? formData.involvedCountries?.join(', ') ?? ''}
+        onChange={handleCountriesChange}
+        placeholder={t('projects.steps.step4.countriesPlaceholder')}
         rows={2}
+      />
+
+      <FormSelect
+        label={t('projects.steps.step4.workMode')}
+        name="workMode"
+        value={formData.workMode || WORK_MODE.OFFICE_MODE}
+        onChange={handleChange}
+        required
+        error={errors.workMode}
+        options={[
+          { value: WORK_MODE.OFFICE_MODE, label: t('projects.workMode.officeMode') },
+          { value: WORK_MODE.OFFICE_FIRST, label: t('projects.workMode.officeFirst') },
+          { value: WORK_MODE.OFFICE_REMOTE_MIX, label: t('projects.workMode.officeMix') },
+          { value: WORK_MODE.REMOTE_FIRST, label: t('projects.workMode.remoteFirst') },
+          { value: WORK_MODE.REMOTE_MODE, label: t('projects.workMode.remoteMode') }
+        ]}
       />
 
       <FormSelect

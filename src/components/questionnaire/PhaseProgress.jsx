@@ -1,18 +1,20 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import './PhaseProgress.css';
 
 /**
  * PhaseProgress - Visual progress indicator for questionnaire phases
  */
 const PhaseProgress = ({ currentPhase, totalPhases, completenessScore }) => {
+  const { t } = useTranslation();
   const progressPercentage = (currentPhase / totalPhases) * 100;
 
   return (
     <div className="phase-progress">
       <div className="progress-header">
         <div className="phase-info">
-          <span className="phase-label">Phase {currentPhase} of {totalPhases}</span>
-          <span className="completeness-badge">{completenessScore}% Complete</span>
+          <span className="phase-label">{t('questionnaire.phase', { current: currentPhase, total: totalPhases })}</span>
+          <span className="completeness-badge">{t('questionnaire.percentComplete', { percent: completenessScore })}</span>
         </div>
       </div>
       

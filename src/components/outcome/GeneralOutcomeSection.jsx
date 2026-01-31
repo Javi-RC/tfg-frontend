@@ -1,11 +1,13 @@
 import React from 'react';
 import { BarChart3, CheckCircle, X, Calendar, DollarSign, Star } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * GeneralOutcomeSection Component
  * Captures overall project outcome (completion status, dates, scores)
  */
 export default function GeneralOutcomeSection({ formData, setFormData, errors }) {
+  const { t } = useTranslation();
   
   const handleChange = (field, value) => {
     setFormData(prev => ({
@@ -47,15 +49,15 @@ export default function GeneralOutcomeSection({ formData, setFormData, errors })
     <div style={styles.section}>
       <h3 style={{...styles.sectionTitle, display: 'flex', alignItems: 'center', gap: '8px'}}>
         <BarChart3 size={24} />
-        General Outcome
+        {t('outcome.general.title')}
       </h3>
       <p style={styles.sectionDescription}>
-        Provide basic information about how the project ended
+        {t('outcome.general.description')}
       </p>
 
       <div style={styles.formGroup}>
         <label style={styles.label}>
-          Was the project completed successfully? <span style={styles.required}>*</span>
+          {t('outcome.general.completed')} <span style={styles.required}>*</span>
         </label>
         <div style={styles.radioGroup}>
           <label style={styles.radioLabel}>
@@ -69,7 +71,7 @@ export default function GeneralOutcomeSection({ formData, setFormData, errors })
             />
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <CheckCircle size={16} />
-              Yes
+              {t('common.yes')}
             </span>
           </label>
           <label style={styles.radioLabel}>
@@ -83,7 +85,7 @@ export default function GeneralOutcomeSection({ formData, setFormData, errors })
             />
             <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <X size={16} />
-              No
+              {t('common.no')}
             </span>
           </label>
         </div>
@@ -92,7 +94,7 @@ export default function GeneralOutcomeSection({ formData, setFormData, errors })
 
       <div style={styles.formGroup}>
         <label style={styles.label}>
-          📅 Actual completion date
+          📅 {t('outcome.general.actualCompletedDate')}
         </label>
         <input
           type="date"
@@ -104,7 +106,7 @@ export default function GeneralOutcomeSection({ formData, setFormData, errors })
 
       <div style={styles.formGroup}>
         <label style={styles.label}>
-          💰 Budget overrun (%)
+          💰 {t('outcome.general.budgetOverrun')}
         </label>
         <input
           type="number"
@@ -115,26 +117,26 @@ export default function GeneralOutcomeSection({ formData, setFormData, errors })
           placeholder="0"
         />
         <small style={styles.hint}>
-          If the project stayed within budget, leave at 0
+          {t('outcome.general.budgetHint')}
         </small>
       </div>
 
       <div style={styles.divider} />
 
-      <h4 style={styles.subsectionTitle}>⭐ Scores (1-5)</h4>
+      <h4 style={styles.subsectionTitle}>⭐ {t('outcome.general.scoresTitle')}</h4>
 
-      {renderStarRating('qualityScore', 'Product/Service Quality')}
-      {renderStarRating('clientSatisfaction', 'Client Satisfaction')}
-      {renderStarRating('teamMorale', 'Team Morale')}
+      {renderStarRating('qualityScore', t('outcome.general.qualityScore'))}
+      {renderStarRating('clientSatisfaction', t('outcome.general.clientSatisfaction'))}
+      {renderStarRating('teamMorale', t('outcome.general.teamMorale'))}
     </div>
   );
 }
 
 const styles = {
   section: {
-    padding: '24px',
+    padding: '28px',
     background: '#FFFFFF',
-    borderRadius: '8px',
+    borderRadius: '12px',
     border: '1px solid #E5E7EB'
   },
   sectionTitle: {
@@ -146,16 +148,16 @@ const styles = {
   sectionDescription: {
     fontSize: '14px',
     color: '#6B7280',
-    marginBottom: '24px'
+    marginBottom: '28px'
   },
   subsectionTitle: {
     fontSize: '16px',
     fontWeight: '600',
     color: '#374151',
-    marginBottom: '16px'
+    marginBottom: '20px'
   },
   formGroup: {
-    marginBottom: '20px'
+    marginBottom: '24px'
   },
   label: {
     display: 'block',

@@ -1,7 +1,8 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
-import QuestionCard, { SCALE_LABELS } from './QuestionCard';
+import QuestionCard from './QuestionCard';
 
 /**
  * BFI44QuestionnaireView Component
@@ -30,6 +31,7 @@ export default function BFI44QuestionnaireView({
   error,
   questionsPerPage = 11
 }) {
+  const { t } = useTranslation();
   const totalPages = Math.ceil(questions.length / questionsPerPage);
   
   const getCurrentPageQuestions = () => {
@@ -53,12 +55,12 @@ export default function BFI44QuestionnaireView({
 
       {/* Scale legend */}
       <div style={styles.scaleLegend}>
-        <p style={styles.legendTitle}>Rating Scale:</p>
+        <p style={styles.legendTitle}>{t('bfi44.ratingScale')}:</p>
         <div style={styles.legendItems}>
-          {Object.entries(SCALE_LABELS).map(([value, label]) => (
+          {[1, 2, 3, 4, 5].map((value) => (
             <div key={value} style={styles.legendItem}>
               <span style={styles.legendNumber}>{value}</span>
-              <span style={styles.legendLabel}>{label}</span>
+              <span style={styles.legendLabel}>{t(`bfi44.scale.${value}`)}</span>
             </div>
           ))}
         </div>
@@ -67,7 +69,7 @@ export default function BFI44QuestionnaireView({
       {/* Questions */}
       <div style={styles.questionsContainer}>
         <div style={styles.pageIndicator} aria-live="polite">
-          Page {currentPage + 1} of {totalPages}
+          {t('bfi44.pageIndicator', { current: currentPage + 1, total: totalPages })}
         </div>
 
         {getCurrentPageQuestions().map((question) => (
@@ -86,26 +88,26 @@ export default function BFI44QuestionnaireView({
           onClick={onPrevPage}
           disabled={currentPage === 0}
           style={{ opacity: currentPage === 0 ? 0.5 : 1 }}
-          aria-label="Previous page"
+          aria-label={t('bfi44.previousPage')}
         >
-          Previous
+          {t('bfi44.previous')}
         </SecondaryButton>
 
         {currentPage === totalPages - 1 ? (
           <PrimaryButton
             onClick={onSubmit}
             disabled={submitting || Object.keys(responses).length < questions.length}
-            aria-label={submitting ? 'Submitting questionnaire' : 'Submit questionnaire'}
+            aria-label={submitting ? t('bfi44.submittingQuestionnaire') : t('bfi44.submitQuestionnaire')}
           >
-            {submitting ? 'Submitting...' : 'Submit Questionnaire'}
+            {submitting ? t('bfi44.submitting') : t('bfi44.submitQuestionnaire')}
           </PrimaryButton>
         ) : (
           <PrimaryButton
             onClick={onNextPage}
             disabled={!canGoNext()}
-            aria-label="Next page"
+            aria-label={t('bfi44.nextPage')}
           >
-            Next
+            {t('bfi44.next')}
           </PrimaryButton>
         )}
       </div>

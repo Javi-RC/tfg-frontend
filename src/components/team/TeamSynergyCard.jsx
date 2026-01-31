@@ -74,10 +74,8 @@ export default function TeamSynergyCard({ synergy, compact = false }) {
       {!compact && synergy.metrics && (
         <div style={styles.metrics}>
           <MetricBar label={t('team.synergy.metrics.roleDiversity')} score={synergy.metrics.roleDiversity?.score ?? 0} />
-          <MetricBar label={t('team.synergy.metrics.complementarity')} score={synergy.metrics.complementarity?.score ?? 0} />
           <MetricBar label={t('team.synergy.metrics.projectFit')} score={synergy.metrics.projectFit?.score ?? 0} />
-          <MetricBar label={t('team.synergy.metrics.conflictRisk')} score={synergy.metrics.conflictRisk?.score ?? 0} inverted />
-          <MetricBar label={t('team.synergy.metrics.balance')} score={synergy.metrics.balance?.score ?? 0} />
+          <MetricBar label={t('team.synergy.metrics.previousCollaborations')} score={synergy.metrics.previousCollaborations?.score ?? 0} />
         </div>
       )}
 

@@ -13,30 +13,34 @@ export default function Phase1ConfigForm({ config, onChange, errors = {} }) {
 
   const getTotal = (cfg) => (cfg.skillsWeight || 0) +
     (cfg.experienceWeight || 0) +
-    (cfg.complexityWeight || 0) +
     (cfg.availabilityWeight || 0);
 
   const handleChange = (field, value) => {
-    const parsed = clamp01(parseFloat(value) || 0);
-    const currentValue = clamp01(config[field] || 0);
-    const currentTotal = getTotal(config);
-
-    // If increasing this field would push total above 1.0, clamp the increase.
-    const delta = parsed - currentValue;
-    if (delta > 0) {
-      const remaining = Math.max(0, 1 - currentTotal);
-      const allowed = Math.min(delta, remaining);
-      onChange({
-        ...config,
-        [field]: clamp01(currentValue + allowed)
-      });
-      return;
-    }
+    const parsed = parseFloat(value) || 0;
+    
+    // Calculate the sum of other weights (excluding the current field)
+    const otherWeightsSum = Object.keys(config)
+      .filter(key => ['skillsWeight', 'experienceWeight', 'availabilityWeight'].includes(key) && key !== field)
+      .reduce((sum, key) => sum + (config[key] || 0), 0);
+    
+    // Maximum allowed for this field is what remains to reach 1.0 (100%)
+    const maxAllowed = 1.0 - otherWeightsSum;
+    
+    // Clamp the value between 0 and maxAllowed
+    const clamped = Math.max(0, Math.min(maxAllowed, parsed));
 
     onChange({
       ...config,
-      [field]: parsed
+      [field]: clamped
     });
+  };
+  
+  // Helper to calculate max allowed for each field
+  const getMaxAllowed = (field) => {
+    const otherWeightsSum = Object.keys(config)
+      .filter(key => ['skillsWeight', 'experienceWeight', 'availabilityWeight'].includes(key) && key !== field)
+      .reduce((sum, key) => sum + (config[key] || 0), 0);
+    return 1.0 - otherWeightsSum;
   };
 
   const total = getTotal(config);
@@ -81,13 +85,6 @@ export default function Phase1ConfigForm({ config, onChange, errors = {} }) {
         />
         
         <WeightSlider
-          label={t('teamConfig.phase1.complexityWeight')}
-          value={config.complexityWeight || 0}
-          onChange={(val) => handleChange('complexityWeight', val)}
-          error={errors.complexityWeight}
-        />
-        
-        <WeightSlider
           label={t('teamConfig.phase1.availabilityWeight')}
           value={config.availabilityWeight || 0}
           onChange={(val) => handleChange('availabilityWeight', val)}
@@ -112,7 +109,7 @@ function WeightSlider({ label, value, onChange, error }) {
         max="1"
         step="0.05"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
         style={styles.slider}
       />
       

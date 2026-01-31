@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import PrimaryButton from '../../PrimaryButton';
 import { updateOrganizationSettings } from '../../../api/organization';
 
@@ -6,6 +7,7 @@ import { updateOrganizationSettings } from '../../../api/organization';
  * SettingsTab (Admin only)
  */
 export default function SettingsTab({ organization, onUpdate, styles }) {
+  const { t } = useTranslation();
   const [settings, setSettings] = useState({
     allowPublicSubmission: organization.settings?.allowPublicSubmission || false,
     requireApproval: organization.settings?.requireApproval || false,
@@ -18,10 +20,10 @@ export default function SettingsTab({ organization, onUpdate, styles }) {
     try {
       setSaving(true);
       await updateOrganizationSettings(organization._id, settings);
-      alert('Settings updated successfully');
+      alert(t('organization.settings.updateSuccess'));
       if (onUpdate) onUpdate();
     } catch (err) {
-      alert(err.response?.data?.message || 'Error updating settings');
+      alert(err.response?.data?.message || t('organization.settings.updateError'));
     } finally {
       setSaving(false);
     }
@@ -29,7 +31,7 @@ export default function SettingsTab({ organization, onUpdate, styles }) {
 
   return (
     <div style={styles.card}>
-      <h2 style={styles.cardTitle}>Organization Settings</h2>
+      <h2 style={styles.cardTitle}>{t('organization.settings.title')}</h2>
 
       <div style={styles.settingsGroup}>
         <label style={styles.settingItem}>
@@ -40,8 +42,8 @@ export default function SettingsTab({ organization, onUpdate, styles }) {
             style={styles.checkbox}
           />
           <div>
-            <div style={styles.settingLabel}>Allow Public CV Submission</div>
-            <div style={styles.settingDescription}>Allow anyone to submit their CV to this organization</div>
+            <div style={styles.settingLabel}>{t('organization.settings.allowPublicSubmission')}</div>
+            <div style={styles.settingDescription}>{t('organization.settings.allowPublicSubmissionDesc')}</div>
           </div>
         </label>
 
@@ -53,9 +55,9 @@ export default function SettingsTab({ organization, onUpdate, styles }) {
             style={styles.checkbox}
           />
           <div>
-            <div style={styles.settingLabel}>Require Employee Approval</div>
+            <div style={styles.settingLabel}>{t('organization.settings.requireApproval')}</div>
             <div style={styles.settingDescription}>
-              New employees need admin approval before becoming active
+              {t('organization.settings.requireApprovalDesc')}
             </div>
           </div>
         </label>
@@ -68,8 +70,8 @@ export default function SettingsTab({ organization, onUpdate, styles }) {
             style={styles.checkbox}
           />
           <div>
-            <div style={styles.settingLabel}>Notify on CV Submission</div>
-            <div style={styles.settingDescription}>Receive notifications when a new CV is submitted</div>
+            <div style={styles.settingLabel}>{t('organization.settings.notifyOnCVSubmission')}</div>
+            <div style={styles.settingDescription}>{t('organization.settings.notifyOnCVSubmissionDesc')}</div>
           </div>
         </label>
 
@@ -81,15 +83,15 @@ export default function SettingsTab({ organization, onUpdate, styles }) {
             style={styles.checkbox}
           />
           <div>
-            <div style={styles.settingLabel}>Auto-process CVs with AI</div>
-            <div style={styles.settingDescription}>Automatically analyze and categorize submitted CVs</div>
+            <div style={styles.settingLabel}>{t('organization.settings.autoProcessCVs')}</div>
+            <div style={styles.settingDescription}>{t('organization.settings.autoProcessCVsDesc')}</div>
           </div>
         </label>
       </div>
 
       <div style={{ marginTop: '24px' }}>
         <PrimaryButton onClick={handleSave} disabled={saving}>
-          {saving ? 'Saving...' : 'Save Settings'}
+          {saving ? t('organization.settings.saving') : t('organization.settings.saveSettings')}
         </PrimaryButton>
       </div>
     </div>

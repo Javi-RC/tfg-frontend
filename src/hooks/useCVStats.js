@@ -42,5 +42,3 @@ export function useCVStats() {
     loadStats
   };
 }
-
-export default useCVStats;

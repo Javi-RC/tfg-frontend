@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { useTranslation } from 'react-i18next';
 
 /**
  * EmployeeListItem Component
@@ -11,6 +12,8 @@ export default function EmployeeListItem({
   onStatusChange, 
   onRemove 
 }) {
+  const { t } = useTranslation();
+  
   const handleStatusChange = (newStatus) => {
     if (onStatusChange) {
       onStatusChange(employee.userId._id, newStatus);
@@ -18,7 +21,7 @@ export default function EmployeeListItem({
   };
 
   const handleRemove = () => {
-    if (onRemove && confirm('Are you sure you want to remove this employee?')) {
+    if (onRemove && confirm(t('organization.employee.confirmRemove'))) {
       onRemove(employee.userId._id);
     }
   };
@@ -33,7 +36,7 @@ export default function EmployeeListItem({
           {employee.position && <span style={styles.detail}>{employee.position}</span>}
           {employee.department && <span style={styles.detail}>{employee.department}</span>}
           <span style={styles.detail}>
-            Joined: {new Date(employee.joinedAt).toLocaleDateString()}
+            {t('organization.employee.joined')}: {new Date(employee.joinedAt).toLocaleDateString()}
           </span>
         </div>
       </div>
@@ -48,7 +51,7 @@ export default function EmployeeListItem({
             employee.status === 'active' ? '#2e7d32' :
             employee.status === 'pending' ? '#f57c00' : '#c62828'
         }}>
-          {employee.status}
+          {t(`organization.status.${employee.status}`)}
         </span>
 
         {isAdmin && (
@@ -58,7 +61,7 @@ export default function EmployeeListItem({
                 style={styles.actionButton}
                 onClick={() => handleStatusChange('active')}
               >
-                Approve
+                {t('organization.employee.approve')}
               </button>
             )}
             {employee.status === 'active' && (
@@ -66,14 +69,14 @@ export default function EmployeeListItem({
                 style={styles.actionButton}
                 onClick={() => handleStatusChange('inactive')}
               >
-                Deactivate
+                {t('organization.employee.deactivate')}
               </button>
             )}
             <button
               style={{ ...styles.actionButton, background: '#f44336' }}
               onClick={handleRemove}
             >
-              Remove
+              {t('organization.employee.remove')}
             </button>
           </div>
         )}

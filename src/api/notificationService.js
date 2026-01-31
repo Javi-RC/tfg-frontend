@@ -1,4 +1,5 @@
 import api from './axios';
+import i18n from '../i18n';
 
 /**
  * NotificationService
@@ -12,8 +13,34 @@ import api from './axios';
  * - PATCH /api/notifications/read-all - Marcar todas como leídas
  * - PATCH /api/notifications/:id/archive - Archivar notificación
  * - DELETE /api/notifications/:id - Eliminar notificación
+ * 
+ * Soporte de idioma:
+ * El backend acepta el idioma mediante (en orden de prioridad):
+ * 1. Query param: ?lang=en
+ * 2. Usuario: req.user.preferredLanguage
+ * 3. Organización: req.user.organization.defaultLanguage
+ * 4. Header: Accept-Language
+ * 
+ * Este servicio envía tanto el query param como el header para máxima compatibilidad.
  */
 class NotificationService {
+  /**
+   * Obtiene el código de idioma actual del sistema i18n
+   * @returns {string} Código de idioma (en, es, etc.)
+   * @private
+   */
+  _getCurrentLanguage() {
+    const storedLanguage = localStorage.getItem('i18nextLng');
+    const rawLanguage = storedLanguage || i18n.language || 'en';
+    const lang = rawLanguage.split('-')[0]; // Extract base language (en, es)
+    console.log('[NotificationService] Getting language:', {
+      storedLanguage,
+      rawLanguage,
+      finalLang: lang
+    });
+    return lang;
+  }
+
   /**
    * Obtener notificaciones del usuario con paginación y filtros
    * @param {Object} params - Parámetros de filtrado
@@ -31,9 +58,11 @@ class NotificationService {
       limit: params.limit || 20,
       unreadOnly: params.unreadOnly || false,
       includeArchived: params.includeArchived || false,
+      lang: this._getCurrentLanguage(),
       ...(params.type && { type: params.type }),
       ...(params.priority && { priority: params.priority })
     };
+    console.log('[NotificationService] getNotifications with params:', queryParams);
     const response = await api.get('/api/notifications', { params: queryParams });
     return response.data;
   }
@@ -43,7 +72,10 @@ class NotificationService {
    * @returns {Promise} - Respuesta con { count: number }
    */
   async getUnreadCount() {
-    const response = await api.get('/api/notifications/unread-count');
+    const queryParams = {
+      lang: this._getCurrentLanguage()
+    };
+    const response = await api.get('/api/notifications/unread-count', { params: queryParams });
     return response.data;
   }
 
@@ -53,7 +85,10 @@ class NotificationService {
    * @returns {Promise} - Respuesta de la operación
    */
   async markAsRead(notificationId) {
-    const response = await api.patch(`/api/notifications/${notificationId}/read`);
+    const queryParams = {
+      lang: this._getCurrentLanguage()
+    };
+    const response = await api.patch(`/api/notifications/${notificationId}/read`, null, { params: queryParams });
     return response.data;
   }
 
@@ -62,7 +97,10 @@ class NotificationService {
    * @returns {Promise} - Respuesta de la operación
    */
   async markAllAsRead() {
-    const response = await api.patch('/api/notifications/read-all');
+    const queryParams = {
+      lang: this._getCurrentLanguage()
+    };
+    const response = await api.patch('/api/notifications/read-all', null, { params: queryParams });
     return response.data;
   }
 
@@ -72,7 +110,10 @@ class NotificationService {
    * @returns {Promise} - Respuesta de la operación
    */
   async archiveNotification(notificationId) {
-    const response = await api.patch(`/api/notifications/${notificationId}/archive`);
+    const queryParams = {
+      lang: this._getCurrentLanguage()
+    };
+    const response = await api.patch(`/api/notifications/${notificationId}/archive`, null, { params: queryParams });
     return response.data;
   }
 
@@ -82,7 +123,10 @@ class NotificationService {
    * @returns {Promise} - Respuesta de la operación
    */
   async deleteNotification(notificationId) {
-    const response = await api.delete(`/api/notifications/${notificationId}`);
+    const queryParams = {
+      lang: this._getCurrentLanguage()
+    };
+    const response = await api.delete(`/api/notifications/${notificationId}`, { params: queryParams });
     return response.data;
   }
 }

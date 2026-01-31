@@ -14,10 +14,13 @@ import {
 import {
   getTeamConfig,
   updateTeamConfig,
+  updatePhase1Config,
   updatePhase2Config,
-  resetTeamConfig,
-  validateTeamConfig
+  updateCBRConfig,
+  updateDecisionTreeConfig,
+  resetTeamConfig
 } from '../../api/projects';
+import { predictProjectRisks } from '../../api/riskService';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 import Phase1ConfigForm from './config/Phase1ConfigForm';
@@ -37,37 +40,7 @@ export default function TeamConfigModal({ projectId, onClose, onSave }) {
   const [errors, setErrors] = useState({});
   const [validationMessage, setValidationMessage] = useState(null);
   
-  const phase2DefaultsPercent = {
-    roleDiversityWeight: 25,
-    complementarityWeight: 25,
-    projectFitWeight: 30,
-    conflictRiskWeight: 10,
-    balanceWeight: 10
-  };
-
-  const [config, setConfig] = useState({
-    phase1: {
-      skillsWeight: 0.4,
-      experienceWeight: 0.3,
-      complexityWeight: 0.2,
-      availabilityWeight: 0.1
-    },
-    phase2: {
-      enabled: true,
-      synergyWeights: { ...phase2DefaultsPercent }
-    },
-    cbr: {
-      k: 3,
-      similarityThreshold: 0.7,
-      successWeight: 0.8
-    },
-    decisionTree: {
-      minConfidence: 0.6,
-      maxDepth: 5,
-      useExpertRules: true,
-      considerRiskFactors: true
-    }
-  });
+  const [config, setConfig] = useState(null);
 
   useEffect(() => {
     loadConfig();
@@ -81,11 +54,8 @@ export default function TeamConfigModal({ projectId, onClose, onSave }) {
       const data = response.data?.data || response.data;
       
       if (data.config) {
-        setConfig(prev => ({
-          ...prev,
-          ...data.config,
-          phase2: mapPhase2FromApiToUi(data.config.phase2, phase2DefaultsPercent)
-        }));
+        // Store the complete backend config as-is
+        setConfig(data.config);
       }
     } catch (error) {
       console.error('Error loading team config:', error);
@@ -93,70 +63,6 @@ export default function TeamConfigModal({ projectId, onClose, onSave }) {
       setLoading(false);
     }
   };
-
-  const mapPhase2FromApiToUi = (phase2FromApi, defaultsPercent) => {
-    const enabled = phase2FromApi?.enabled ?? true;
-    const apiWeights = phase2FromApi?.synergyWeights || {};
-
-    const toPercent = (decimal, fallback) => {
-      if (typeof decimal === 'number' && Number.isFinite(decimal)) {
-        return Math.round(decimal * 100);
-      }
-      return fallback;
-    };
-
-    return {
-      enabled,
-      synergyWeights: {
-        roleDiversityWeight: toPercent(apiWeights.roleDiversityWeight, defaultsPercent.roleDiversityWeight),
-        complementarityWeight: toPercent(apiWeights.complementarityWeight, defaultsPercent.complementarityWeight),
-        projectFitWeight: toPercent(apiWeights.projectFitWeight, defaultsPercent.projectFitWeight),
-        conflictRiskWeight: toPercent(apiWeights.conflictRiskWeight, defaultsPercent.conflictRiskWeight),
-        balanceWeight: toPercent(apiWeights.balanceWeight, defaultsPercent.balanceWeight)
-      }
-    };
-  };
-
-  const mapPhase2FromUiToApi = (phase2FromUi) => {
-    const enabled = phase2FromUi?.enabled ?? true;
-    const uiWeights = phase2FromUi?.synergyWeights || {};
-
-    const toDecimal = (percent) => {
-      const n = typeof percent === 'number' ? percent : parseFloat(percent);
-      if (!Number.isFinite(n)) return 0;
-      const clamped = Math.max(0, Math.min(100, n));
-      return clamped / 100;
-    };
-
-    return {
-      enabled,
-      synergyWeights: {
-        roleDiversityWeight: toDecimal(uiWeights.roleDiversityWeight),
-        complementarityWeight: toDecimal(uiWeights.complementarityWeight),
-        projectFitWeight: toDecimal(uiWeights.projectFitWeight),
-        conflictRiskWeight: toDecimal(uiWeights.conflictRiskWeight),
-        balanceWeight: toDecimal(uiWeights.balanceWeight)
-      }
-    };
-  };
-
-  const buildBackendConfigFromUiConfig = (uiConfig) => ({
-    ...uiConfig,
-    phase2: mapPhase2FromUiToApi(uiConfig.phase2)
-  });
-
-  const getPhase2TotalPercent = (phase2Ui) => {
-    const w = phase2Ui?.synergyWeights || {};
-    return (w.roleDiversityWeight || 0) +
-      (w.complementarityWeight || 0) +
-      (w.projectFitWeight || 0) +
-      (w.conflictRiskWeight || 0) +
-      (w.balanceWeight || 0);
-  };
-
-  const phase2Enabled = config.phase2?.enabled ?? true;
-  const phase2Total = getPhase2TotalPercent(config.phase2);
-  const isPhase2TotalOk = !phase2Enabled || Math.abs(phase2Total - 100) <= 1;
 
   const handlePhase1Change = (newPhase1) => {
     setConfig(prev => ({ ...prev, phase1: newPhase1 }));
@@ -178,29 +84,75 @@ export default function TeamConfigModal({ projectId, onClose, onSave }) {
     setValidationMessage(null);
   };
 
-  const validateConfig = async () => {
-    try {
-      const backendConfig = buildBackendConfigFromUiConfig(config);
-      const response = await validateTeamConfig(projectId, backendConfig);
-      const data = response.data?.data || response.data;
-      
-      if (data.valid) {
-        setValidationMessage({ type: 'success', text: t('teamConfig.validation.success') });
-        setErrors({});
-        return true;
-      } else {
-        setValidationMessage({ 
-          type: 'error', 
-          text: data.errors?.join(', ') || t('teamConfig.validation.failed') 
-        });
-        return false;
+  // Clean config functions to send only valid fields to backend
+  const cleanPhase1Config = (phase1) => {
+    return {
+      skillsWeight: parseFloat(phase1.skillsWeight) || 0,
+      experienceWeight: parseFloat(phase1.experienceWeight) || 0,
+      availabilityWeight: parseFloat(phase1.availabilityWeight) || 0,
+      availabilityComponents: phase1.availabilityComponents,
+      skillMatchPenalty: parseFloat(phase1.skillMatchPenalty) || 0,
+      experienceNormalizationFactor: parseFloat(phase1.experienceNormalizationFactor) || 1,
+      candidatePoolMultiplier: parseFloat(phase1.candidatePoolMultiplier) || 1
+    };
+  };
+
+  const cleanPhase2Config = (phase2) => {
+    // Backend validates the entire phase2 structure even on PATCH
+    console.log('DEBUG cleanPhase2Config input:', phase2);
+    console.log('DEBUG synergyWeights:', phase2.synergyWeights);
+    console.log('DEBUG previousCollaborationsWeight:', phase2.synergyWeights?.previousCollaborationsWeight);
+    
+    const cleaned = {
+      enabled: phase2.enabled ?? true,
+      projectProfiles: phase2.projectProfiles || {},
+      synergyWeights: {
+        roleDiversityWeight: parseFloat(phase2.synergyWeights?.roleDiversityWeight) || 0,
+        projectFitWeight: parseFloat(phase2.synergyWeights?.projectFitWeight) || 0,
+        previousCollaborationsWeight: parseFloat(phase2.synergyWeights?.previousCollaborationsWeight) || 0
       }
-    } catch (error) {
-      console.error('Validation error:', error);
-      const errorMsg = error.response?.data?.error || t('teamConfig.validation.error');
-      setValidationMessage({ type: 'error', text: errorMsg });
-      return false;
+    };
+    
+    console.log('DEBUG cleaned synergyWeights:', cleaned.synergyWeights);
+    return cleaned;
+  };
+
+  const cleanCBRConfig = (cbr) => {
+    // Ensure all values are properly typed as numbers
+    const dimensionWeights = {};
+    if (cbr.dimensionWeights) {
+      for (const [key, value] of Object.entries(cbr.dimensionWeights)) {
+        dimensionWeights[key] = parseFloat(value) || 0;
+      }
     }
+    
+    return {
+      dimensionWeights,
+      kSimilarCases: parseInt(cbr.kSimilarCases) || 5,
+      minSimilarityThreshold: parseFloat(cbr.minSimilarityThreshold) || 0.3
+    };
+  };
+
+  const cleanDecisionTreeConfig = (decisionTree) => {
+    // Ensure all threshold values are properly typed as numbers
+    const riskThresholds = {};
+    if (decisionTree.riskThresholds) {
+      for (const [key, value] of Object.entries(decisionTree.riskThresholds)) {
+        riskThresholds[key] = parseFloat(value) || 0;
+      }
+    }
+    
+    const personalityRiskThresholds = {};
+    if (decisionTree.personalityRiskThresholds) {
+      for (const [key, value] of Object.entries(decisionTree.personalityRiskThresholds)) {
+        personalityRiskThresholds[key] = parseFloat(value) || 0;
+      }
+    }
+    
+    return {
+      riskThresholds,
+      personalityRiskThresholds
+    };
   };
 
   const handleSave = async () => {
@@ -208,25 +160,52 @@ export default function TeamConfigModal({ projectId, onClose, onSave }) {
       setSaving(true);
       setErrors({});
 
-      if (activeTab === 'phase2' && !isPhase2TotalOk) {
-        setValidationMessage({ type: 'error', text: t('teamConfig.mustEqual100') });
-        setSaving(false);
-        return;
-      }
-      
-      // Validate first
-      const isValid = await validateConfig();
-      if (!isValid) {
+      if (!config) {
+        setValidationMessage({ type: 'error', text: 'Configuration not loaded' });
         setSaving(false);
         return;
       }
 
-      // Save configuration
-      const backendConfig = buildBackendConfigFromUiConfig(config);
-      if (activeTab === 'phase2') {
-        await updatePhase2Config(projectId, backendConfig.phase2);
-      } else {
-        await updateTeamConfig(projectId, backendConfig);
+      console.log('=== Saving Team Config ===');
+      console.log('Active Tab:', activeTab);
+      console.log('Original Config:', JSON.stringify(config, null, 2));
+      
+      // Clean and send only valid fields for each section
+      let cleanedData;
+      switch (activeTab) {
+        case 'phase1':
+          cleanedData = cleanPhase1Config(config.phase1);
+          console.log('Cleaned Phase1:', JSON.stringify(cleanedData, null, 2));
+          await updatePhase1Config(projectId, cleanedData);
+          break;
+        case 'phase2':
+          cleanedData = cleanPhase2Config(config.phase2);
+          console.log('Cleaned Phase2:', JSON.stringify(cleanedData, null, 2));
+          await updatePhase2Config(projectId, cleanedData);
+          break;
+        case 'cbr':
+          cleanedData = cleanCBRConfig(config.cbr);
+          console.log('Cleaned CBR:', JSON.stringify(cleanedData, null, 2));
+          await updateCBRConfig(projectId, cleanedData);
+          break;
+        case 'decisionTree':
+          cleanedData = cleanDecisionTreeConfig(config.decisionTree);
+          console.log('Cleaned Expert Rules Config:', JSON.stringify(cleanedData, null, 2));
+          await updateDecisionTreeConfig(projectId, cleanedData);
+          break;
+        default:
+          // Fallback to full update
+          await updateTeamConfig(projectId, config);
+      }
+      
+      // Trigger risk prediction with the new configuration
+      console.log('🔄 Triggering risk prediction with updated configuration...');
+      try {
+        await predictProjectRisks(projectId);
+        console.log('✅ Risk prediction completed successfully');
+      } catch (riskError) {
+        console.warn('⚠️ Risk prediction failed, but config was saved:', riskError);
+        // Don't block the save flow if risk prediction fails
       }
       
       if (onSave) {
@@ -236,7 +215,21 @@ export default function TeamConfigModal({ projectId, onClose, onSave }) {
       onClose();
     } catch (error) {
       console.error('Error saving team config:', error);
-      const errorMsg = error.response?.data?.error || t('teamConfig.saveError');
+      console.error('Response data:', error.response?.data);
+      
+      // Extract error message from backend
+      const backendError = error.response?.data;
+      let errorMsg = t('teamConfig.saveError');
+      
+      if (backendError) {
+        if (backendError.error) {
+          errorMsg = backendError.error;
+        }
+        if (backendError.validationErrors && Array.isArray(backendError.validationErrors)) {
+          errorMsg = backendError.validationErrors.join(', ');
+        }
+      }
+      
       setValidationMessage({ type: 'error', text: errorMsg });
     } finally {
       setSaving(false);
@@ -254,11 +247,7 @@ export default function TeamConfigModal({ projectId, onClose, onSave }) {
       const data = response.data?.data || response.data;
       
       if (data.config) {
-        setConfig(prev => ({
-          ...prev,
-          ...data.config,
-          phase2: mapPhase2FromApiToUi(data.config.phase2, phase2DefaultsPercent)
-        }));
+        setConfig(data.config);
         setValidationMessage({ type: 'success', text: t('teamConfig.reset.success') });
       }
     } catch (error) {
@@ -276,7 +265,7 @@ export default function TeamConfigModal({ projectId, onClose, onSave }) {
     { id: 'decisionTree', label: t('teamConfig.tabs.decisionTree'), icon: <GitBranch size={16} /> }
   ];
 
-  if (loading) {
+  if (loading || !config) {
     return (
       <div style={styles.overlay}>
         <div style={styles.modal}>
@@ -387,7 +376,7 @@ export default function TeamConfigModal({ projectId, onClose, onSave }) {
             
             <PrimaryButton 
               onClick={handleSave} 
-              disabled={saving || (activeTab === 'phase2' && !isPhase2TotalOk)}
+              disabled={saving}
               leftIcon={<Save size={16} />}
             >
               {saving ? t('teamConfig.saving') : t('teamConfig.saveButton')}
@@ -487,7 +476,9 @@ const styles = {
     fontSize: '14px',
     fontWeight: '500',
     color: '#6B7280',
-    borderBottom: '2px solid transparent',
+    borderBottomWidth: '2px',
+    borderBottomStyle: 'solid',
+    borderBottomColor: 'transparent',
     transition: 'all 0.2s'
   },
   activeTab: {

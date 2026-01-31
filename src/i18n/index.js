@@ -23,7 +23,12 @@ i18n
     },
     detection: {
       order: ['localStorage', 'navigator'],
-      caches: ['localStorage']
+      caches: ['localStorage'],
+      lookupLocalStorage: 'i18nextLng'
+    },
+    // Ensure language changes are reflected immediately
+    react: {
+      useSuspense: false
     }
   });
 

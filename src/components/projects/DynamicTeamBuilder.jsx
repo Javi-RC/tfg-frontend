@@ -3,10 +3,12 @@ import {
   X, Users, AlertTriangle, CheckCircle, Lightbulb, 
   TrendingUp, TrendingDown, ArrowRight, ThumbsUp 
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { previewProjectRisks, suggestTeam } from '../../api/projects';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 import { RISK_SEVERITY_COLORS } from '../../types/projectTypes';
+import { getRiskSourceLabel } from '../../types/riskTypes';
 import { TeamSynergyCard } from '../team';
 
 /**
@@ -20,6 +22,7 @@ export default function DynamicTeamBuilder({
   onAssignTeam,
   onClose 
 }) {
+  const { t } = useTranslation();
   const [recommendations, setRecommendations] = useState([]);
   const [selectedEmployees, setSelectedEmployees] = useState([]);
   const [currentRisks, setCurrentRisks] = useState(null);
@@ -77,7 +80,6 @@ export default function DynamicTeamBuilder({
         projectRequirements: {
           mainTechnologies,
           requiredExperienceLevel: project.requiredExperienceLevel || 'intermediate',
-          systemComplexity: project.systemComplexity || 'medium',
           weeklyHoursPerMember: project.weeklyHoursPerMember || 20
         },
         organizationId,
@@ -97,11 +99,11 @@ export default function DynamicTeamBuilder({
       console.error('Error details:', err.response?.data);
       
       // Provide more user-friendly error messages
-      let errorMessage = 'Error loading team recommendations';
+      let errorMessage = t('dynamicTeamBuilder.cannotLoadRecommendations');
       if (err.response?.data?.error) {
         const backendError = err.response.data.error;
         if (backendError.includes('filter')) {
-          errorMessage = 'No employees found in the organization. Please add employees before building a team.';
+          errorMessage = t('dynamicTeamBuilder.addEmployees');
         } else {
           errorMessage = backendError;
         }
@@ -230,24 +232,26 @@ export default function DynamicTeamBuilder({
 
   const handleAssignSelected = () => {
     if (selectedEmployees.length === 0) {
-      alert('Please select at least one employee');
+      alert(t('dynamicTeamBuilder.pleaseSelectEmployee'));
       return;
     }
     onAssignTeam(selectedEmployees);
   };
 
   const calculateRiskLevel = (risks) => {
-    if (!risks || risks.length === 0) return 'Low';
+    if (!risks || risks.length === 0) return t('dynamicTeamBuilder.low');
     const highSeverity = risks.filter(r => r.severity === 'high' || r.severity === 'critical').length;
-    if (highSeverity > 2) return 'High';
-    if (highSeverity > 0) return 'Medium';
-    return 'Low';
+    if (highSeverity > 2) return t('dynamicTeamBuilder.high');
+    if (highSeverity > 0) return t('dynamicTeamBuilder.medium');
+    return t('dynamicTeamBuilder.low');
   };
 
   const getOverallSeverity = (risks) => {
     const level = calculateRiskLevel(risks);
-    if (level === 'High') return 'error';
-    if (level === 'Medium') return 'warning';
+    const highTranslated = t('dynamicTeamBuilder.high');
+    const mediumTranslated = t('dynamicTeamBuilder.medium');
+    if (level === highTranslated) return 'error';
+    if (level === mediumTranslated) return 'warning';
     return 'success';
   };
 
@@ -257,11 +261,26 @@ export default function DynamicTeamBuilder({
     ).join(' ');
   };
 
+  const normalizeRiskSource = (source) => {
+    if (!source) return null;
+    const normalized = String(source).toLowerCase();
+    if (normalized === 'expert_rules' || normalized === 'decision_tree' || normalized === 'dt') {
+      return 'dt';
+    }
+    if (normalized === 'cbr') {
+      return 'cbr';
+    }
+    if (normalized === 'manual') {
+      return 'manual';
+    }
+    return source;
+  };
+
   return (
     <div style={styles.overlay} onClick={onClose}>
       <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div style={styles.header}>
-          <h2 style={styles.title}>Dynamic Team Builder</h2>
+          <h2 style={styles.title}>{t('dynamicTeamBuilder.title')}</h2>
           <button style={styles.closeButton} onClick={onClose}>×</button>
         </div>
 
@@ -273,11 +292,11 @@ export default function DynamicTeamBuilder({
               onChange={(e) => setEnablePersonalityOptimization(e.target.checked)}
               style={styles.checkboxInput}
             />
-            Optimize by personality complementarity
+            {t('dynamicTeamBuilder.optimizeBySynergy')}
           </label>
           {optimizationInfo?.profileCoverage && (
             <span style={styles.optimizationHint}>
-              Candidate profile coverage: {optimizationInfo.profileCoverage}
+              {t('dynamicTeamBuilder.candidateProfileCoverage', { coverage: optimizationInfo.profileCoverage })}
             </span>
           )}
         </div>
@@ -296,7 +315,7 @@ export default function DynamicTeamBuilder({
               <div style={styles.panelHeader}>
                 <h3 style={styles.panelTitle}>
                   <Users size={20} />
-                  Team Selection ({selectedEmployees.length}/{recommendedSize})
+                  {t('dynamicTeamBuilder.teamSelection')} ({t('dynamicTeamBuilder.teamProgress', { current: selectedEmployees.length, recommended: recommendedSize })})
                 </h3>
               </div>
 
@@ -309,28 +328,28 @@ export default function DynamicTeamBuilder({
               {loading ? (
                 <div style={styles.loadingState}>
                   <div style={styles.spinner}></div>
-                  <p>Loading recommendations...</p>
+                  <p>{t('dynamicTeamBuilder.loadingRecommendations')}</p>
                 </div>
               ) : error ? (
                 <div style={styles.emptyStateError}>
                   <Users size={64} color="#6c757d" style={{ opacity: 0.3, marginBottom: '16px' }} />
-                  <h4 style={styles.emptyStateTitle}>Cannot Load Team Recommendations</h4>
+                  <h4 style={styles.emptyStateTitle}>{t('dynamicTeamBuilder.cannotLoadRecommendations')}</h4>
                   <p style={styles.emptyStateMessage}>{error}</p>
                   {error.includes('employees') && (
                     <div style={styles.emptyStateHelp}>
-                      <p style={styles.helpText}>To use the team builder:</p>
+                      <p style={styles.helpText}>{t('dynamicTeamBuilder.toUseTeamBuilder')}</p>
                       <ul style={styles.helpList}>
-                        <li>Add employees to your organization</li>
-                        <li>Ensure employees have uploaded their CVs</li>
-                        <li>Make sure employee profiles are complete</li>
+                        <li>{t('dynamicTeamBuilder.addEmployees')}</li>
+                        <li>{t('dynamicTeamBuilder.ensureCVs')}</li>
+                        <li>{t('dynamicTeamBuilder.completeProfiles')}</li>
                       </ul>
                     </div>
                   )}
                 </div>
               ) : recommendations.length === 0 ? (
                 <div style={styles.emptyState}>
-                  <p>No recommendations available</p>
-                  <small>Try adjusting project requirements</small>
+                  <p>{t('dynamicTeamBuilder.noRecommendations')}</p>
+                  <small>{t('dynamicTeamBuilder.tryAdjusting')}</small>
                 </div>
               ) : (
                 <div style={styles.employeeList}>
@@ -359,7 +378,7 @@ export default function DynamicTeamBuilder({
                           <div style={styles.employeeSkills}>
                             <div style={styles.skillsRow}>
                               <CheckCircle size={16} style={{ color: '#28a745', flexShrink: 0 }} />
-                              <strong style={styles.skillsLabel}>Matched:</strong>
+                              <strong style={styles.skillsLabel}>{t('dynamicTeamBuilder.matched')}:</strong>
                               {emp.matchedSkills.slice(0, 3).map((skill, idx) => {
                                 const skillName = typeof skill === 'string' ? skill : skill.skill;
                                 return (
@@ -377,7 +396,7 @@ export default function DynamicTeamBuilder({
                             {emp.missingSkills.length > 0 && (
                               <div style={styles.skillsRow}>
                                 <AlertTriangle size={16} style={{ color: '#ffc107', flexShrink: 0 }} />
-                                <strong style={styles.skillsLabelWarning}>Missing:</strong>
+                                <strong style={styles.skillsLabelWarning}>{t('dynamicTeamBuilder.missing')}:</strong>
                                 {emp.missingSkills.slice(0, 2).map((skill, idx) => {
                                   const skillName = typeof skill === 'string' ? skill : skill.skill;
                                   return (
@@ -420,7 +439,7 @@ export default function DynamicTeamBuilder({
               <div style={styles.panelHeader}>
                 <h3 style={{ ...styles.panelTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <AlertTriangle size={20} />
-                  Risk Analysis ({currentRisks?.length || 0} risks)
+                  {t('dynamicTeamBuilder.riskAnalysisTitle')} ({t('dynamicTeamBuilder.riskCount', { count: currentRisks?.length || 0 })})
                 </h3>
                 {riskLoading && <div style={styles.miniSpinner}></div>}
               </div>
@@ -428,12 +447,12 @@ export default function DynamicTeamBuilder({
               {selectedEmployees.length === 0 ? (
                 <div style={styles.emptyState}>
                   <ThumbsUp size={48} color="#6c757d" style={{ opacity: 0.3, marginBottom: '8px' }} />
-                  <p>Select team members to see predicted risks</p>
+                  <p>{t('dynamicTeamBuilder.selectMembers')}</p>
                 </div>
               ) : riskLoading ? (
                 <div style={styles.loadingState}>
                   <div style={styles.spinner}></div>
-                  <p>Analyzing risks...</p>
+                  <p>{t('dynamicTeamBuilder.analyzingRisks')}</p>
                 </div>
               ) : currentRisks ? (
                 <div style={styles.riskContent}>
@@ -441,10 +460,7 @@ export default function DynamicTeamBuilder({
                   {riskMetadata && (
                     <div style={styles.metricsRow}>
                       <div style={styles.metricBadge}>
-                        Confidence: {((riskMetadata.confidence || 0) * 100).toFixed(0)}%
-                      </div>
-                      <div style={styles.metricBadge}>
-                        Team: {selectedEmployees.length}/{recommendedSize}
+                        {t('dynamicTeamBuilder.team')}: {selectedEmployees.length}/{recommendedSize}
                       </div>
                       <div style={{
                         ...styles.metricBadge,
@@ -456,13 +472,13 @@ export default function DynamicTeamBuilder({
                           ? (
                               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                 <AlertTriangle size={14} />
-                                Incomplete
+                                {t('dynamicTeamBuilder.incomplete')}
                               </span>
                             )
                           : (
                               <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                 <CheckCircle size={14} />
-                                Complete
+                                {t('dynamicTeamBuilder.complete')}
                               </span>
                             )}
                       </div>
@@ -478,11 +494,11 @@ export default function DynamicTeamBuilder({
                       ? styles.overallRiskMedium
                       : styles.overallRiskLow)
                   }}>
-                    <strong>Overall Risk Level: {calculateRiskLevel(currentRisks)}</strong>
+                    <strong>{t('dynamicTeamBuilder.overallRiskLevel', { level: calculateRiskLevel(currentRisks) })}</strong>
                     <p>
                       {currentRisks.length === 0 
-                        ? 'No significant risks detected with current team' 
-                        : `${currentRisks.filter(r => r.severity === 'high' || r.severity === 'critical').length} high severity risks detected`}
+                        ? t('dynamicTeamBuilder.noRisksDetected')
+                        : t('dynamicTeamBuilder.highSeverityRisks', { count: currentRisks.filter(r => r.severity === 'high' || r.severity === 'critical').length })}
                     </p>
                   </div>
 
@@ -492,50 +508,65 @@ export default function DynamicTeamBuilder({
                       <div style={styles.successBox}>
                         <CheckCircle size={24} color="#28a745" style={{ flexShrink: 0 }} />
                         <div>
-                          <strong>Great team composition!</strong>
-                          <p>No significant risks detected with the current selection.</p>
+                          <strong>{t('dynamicTeamBuilder.greatTeam')}</strong>
+                          <p>{t('dynamicTeamBuilder.noSignificantRisks')}</p>
                         </div>
                       </div>
                     ) : (
                       currentRisks.map((risk, index) => {
-                        const severityColor = RISK_SEVERITY_COLORS[risk.severity] || 
+                        const severityLevel = risk.severity || 'medium';
+                        const severityColor = RISK_SEVERITY_COLORS[severityLevel] || 
                                              RISK_SEVERITY_COLORS.medium;
+                        const riskTitle = risk.title || risk.name || formatRiskType(risk.type);
+                        const riskDescription = risk.description || risk.reasoning?.[0] || t('dynamicTeamBuilder.noDescriptionAvailable');
+                        const normalizedSource = normalizeRiskSource(
+                          risk.source || risk.originalSource || risk.predictionSource
+                        );
+                        const sourceLabel = getRiskSourceLabel(normalizedSource);
+                        const severityLabel = String(severityLevel).toUpperCase();
                         
                         return (
-                          <div key={risk.type || index} style={styles.riskCard}>
+                          <div
+                            key={risk.type || index}
+                            style={{
+                              ...styles.riskCard,
+                              borderLeftColor: severityColor.text
+                            }}
+                            onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.12)'}
+                            onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'none'}
+                          >
                             <div style={styles.riskHeader}>
-                              <div style={{
-                                ...styles.severityBadge,
-                                backgroundColor: severityColor.bg,
-                                color: severityColor.text
-                              }}>
-                                {risk.severity.toUpperCase()}
+                              <div style={styles.riskTitle}>
+                                {riskTitle}
                               </div>
-                              <div style={styles.riskTitle}>{formatRiskType(risk.type)}</div>
+                              <span style={{ ...styles.severityBadge, backgroundColor: severityColor.text }}>
+                                {severityLabel}
+                              </span>
                             </div>
 
-                            <div style={styles.riskBody}>
-                              <div style={styles.riskMeta}>
-                                <span>{risk.category}</span>
-                                <span>•</span>
-                                <span>Probability: {((risk.probability || 0) * 100).toFixed(0)}%</span>
+                            <p style={styles.riskDescription}>{riskDescription}</p>
+
+                            {risk.category && (
+                              <div style={styles.riskDetail}>
+                                <span style={styles.detailLabel}>Category:</span>
+                                <span style={styles.detailValue}>{risk.category}</span>
                               </div>
+                            )}
 
-                              {risk.reasoning && risk.reasoning.length > 0 && (
-                                <div style={styles.riskReason}>
-                                  {risk.reasoning[0]}
-                                </div>
-                              )}
-
-                              {risk.recommendations && risk.recommendations.length > 0 && (
-                                <div style={{ ...styles.riskRecommendation, display: 'flex', alignItems: 'flex-start', gap: '6px' }}>
-                                  <Lightbulb size={16} style={{ color: '#ffc107', flexShrink: 0 }} />
-                                  <div>
-                                    <strong>Mitigation:</strong> {risk.recommendations[0]}
-                                  </div>
-                                </div>
-                              )}
+                            <div style={styles.riskDetail}>
+                              <span style={styles.detailLabel}>Source:</span>
+                              <span style={styles.detailValue}>{sourceLabel}</span>
                             </div>
+
+                            {risk.recommendations && risk.recommendations.length > 0 && (
+                              <div style={styles.mitigationBox}>
+                                <div style={styles.mitigationLabel}>
+                                  <Lightbulb size={16} aria-hidden="true" />
+                                  Mitigation Strategy
+                                </div>
+                                <p style={styles.mitigationText}>{risk.recommendations[0]}</p>
+                              </div>
+                            )}
                           </div>
                         );
                       })
@@ -962,54 +993,78 @@ const styles = {
     gap: '12px'
   },
   riskCard: {
-    backgroundColor: 'white',
-    border: '1px solid #E5E7EB',
+    backgroundColor: '#fff',
+    border: '1px solid #e1e4e8',
+    borderLeft: '4px solid',
     borderRadius: '8px',
-    overflow: 'hidden'
+    padding: '20px',
+    transition: 'all 0.2s ease'
   },
   riskHeader: {
-    padding: '12px 16px',
-    backgroundColor: '#F9FAFB',
-    borderBottom: '1px solid #E5E7EB',
     display: 'flex',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    gap: '12px'
+    marginBottom: '12px',
+    gap: '16px'
   },
   severityBadge: {
-    padding: '4px 8px',
-    borderRadius: '4px',
-    fontSize: '11px',
-    fontWeight: 700,
+    padding: '4px 12px',
+    borderRadius: '12px',
+    color: '#fff',
+    fontSize: '12px',
+    fontWeight: '600',
+    textTransform: 'uppercase',
     letterSpacing: '0.5px'
   },
   riskTitle: {
+    fontSize: '16px',
+    fontWeight: '600',
+    color: '#24292e',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    flex: 1
+  },
+  riskDescription: {
+    margin: '0 0 12px 0',
     fontSize: '14px',
-    fontWeight: 600,
-    color: '#111827'
+    color: '#586069',
+    lineHeight: '1.6'
   },
-  riskBody: {
-    padding: '12px 16px'
-  },
-  riskMeta: {
+  riskDetail: {
     display: 'flex',
     gap: '8px',
-    fontSize: '12px',
-    color: '#6B7280',
-    marginBottom: '8px'
+    marginBottom: '8px',
+    fontSize: '14px'
   },
-  riskReason: {
-    fontSize: '13px',
-    color: '#374151',
-    lineHeight: '1.5',
-    marginBottom: '8px'
+  detailLabel: {
+    fontWeight: '600',
+    color: '#24292e'
   },
-  riskRecommendation: {
-    fontSize: '12px',
-    color: '#065F46',
-    backgroundColor: '#D1FAE5',
-    padding: '8px 12px',
+  detailValue: {
+    color: '#586069'
+  },
+  mitigationBox: {
+    backgroundColor: '#f6f8fa',
+    border: '1px solid #e1e4e8',
     borderRadius: '6px',
-    lineHeight: '1.4'
+    padding: '12px',
+    marginTop: '12px'
+  },
+  mitigationLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    fontSize: '13px',
+    fontWeight: '600',
+    color: '#24292e',
+    marginBottom: '6px'
+  },
+  mitigationText: {
+    margin: 0,
+    fontSize: '13px',
+    color: '#586069',
+    lineHeight: '1.5'
   },
   whatIfSection: {
     marginTop: '24px',

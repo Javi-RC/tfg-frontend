@@ -13,13 +13,16 @@ const styles = {
     marginBottom: '16px'
   },
   backButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
     background: 'none',
     border: 'none',
     color: '#2563eb',
     fontSize: '14px',
-    fontWeight: '500',
+    fontWeight: '600',
     cursor: 'pointer',
-    padding: '8px 0'
+    padding: '8px 12px 8px 0',
+    transition: 'color 0.2s, transform 0.2s'
   },
   headerContent: {
     background: 'white',
@@ -152,6 +155,68 @@ const styles = {
     color: '#333',
     fontWeight: '500'
   },
+  formGrid: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+    gap: '16px'
+  },
+  formGroup: {
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  fullWidth: {
+    gridColumn: '1 / -1'
+  },
+  formLabel: {
+    fontSize: '12px',
+    fontWeight: '600',
+    color: '#6b7280',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    marginBottom: '6px'
+  },
+  formInput: {
+    width: '100%',
+    padding: '10px 12px',
+    border: '1px solid #ddd',
+    borderRadius: '10px',
+    fontSize: '14px',
+    fontFamily: 'inherit'
+  },
+  formTextarea: {
+    width: '100%',
+    padding: '10px 12px',
+    border: '1px solid #ddd',
+    borderRadius: '10px',
+    fontSize: '14px',
+    fontFamily: 'inherit',
+    minHeight: '72px',
+    resize: 'vertical'
+  },
+  formSelect: {
+    width: '100%',
+    padding: '10px 12px',
+    border: '1px solid #ddd',
+    borderRadius: '10px',
+    fontSize: '14px',
+    fontFamily: 'inherit',
+    background: 'white'
+  },
+  formActions: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    gap: '12px',
+    paddingTop: '8px',
+    borderTop: '1px solid #eee'
+  },
+  formError: {
+    gridColumn: '1 / -1',
+    padding: '12px 16px',
+    background: '#ffebee',
+    borderRadius: '10px',
+    color: '#c62828',
+    fontSize: '14px'
+  },
   link: {
     color: '#2563eb',
     textDecoration: 'none'
@@ -193,48 +258,67 @@ const styles = {
   },
   tableHeader: {
     display: 'grid',
-    gridTemplateColumns: '2fr 1.5fr 1.5fr 1fr 2fr',
-    padding: '12px',
-    background: '#f8f9fa',
-    borderRadius: '8px',
+    gridTemplateColumns: '2fr 1.5fr 1.5fr 1fr 1.5fr 2fr',
+    padding: '16px 20px',
+    background: 'linear-gradient(135deg, #f8f9fa 0%, #f0f2f5 100%)',
+    borderRadius: '12px',
     fontWeight: '600',
-    fontSize: '14px',
-    color: '#666',
-    marginBottom: '8px'
+    fontSize: '13px',
+    color: '#475569',
+    marginBottom: '12px',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
   },
   tableRow: {
     display: 'grid',
-    gridTemplateColumns: '2fr 1.5fr 1.5fr 1fr 2fr',
-    padding: '16px 12px',
-    borderBottom: '1px solid #eee',
-    alignItems: 'center'
+    gridTemplateColumns: '2fr 1.5fr 1.5fr 1fr 1.5fr 2fr',
+    padding: '20px',
+    borderRadius: '10px',
+    marginBottom: '8px',
+    alignItems: 'center',
+    background: 'white',
+    border: '1px solid #e5e7eb',
+    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+    cursor: 'default'
   },
   tableCell: {
     fontSize: '14px',
-    color: '#333'
+    color: '#1f2937',
+    fontWeight: '400',
+    padding: '0 8px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis'
   },
   statusBadge: {
-    display: 'inline-block',
-    padding: '4px 12px',
-    borderRadius: '12px',
+    display: 'inline-flex',
+    alignItems: 'center',
+    padding: '6px 14px',
+    borderRadius: '20px',
     fontSize: '12px',
-    fontWeight: '500'
+    fontWeight: '600',
+    textTransform: 'capitalize',
+    letterSpacing: '0.3px',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.08)'
   },
   actionButtons: {
     display: 'flex',
-    gap: '8px',
-    flexWrap: 'wrap'
+    gap: '6px',
+    flexWrap: 'wrap',
+    alignItems: 'center'
   },
   actionButton: {
     background: '#2563eb',
     color: 'white',
-    border: 'none',
-    padding: '6px 12px',
-    borderRadius: '6px',
+    border: '1px solid transparent',
+    padding: '6px 10px',
+    borderRadius: '8px',
     fontSize: '12px',
-    fontWeight: '500',
+    fontWeight: '600',
     cursor: 'pointer',
-    transition: 'all 0.2s'
+    transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
+    whiteSpace: 'nowrap',
+    boxShadow: 'none'
   },
   cvList: {
     display: 'flex',
@@ -373,6 +457,29 @@ const styles = {
     fontSize: '14px',
     color: '#666',
     padding: '40px'
+  },
+  tableRowHover: {
+    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+    transform: 'translateY(-2px)',
+    borderColor: '#2563eb'
+  },
+  tableCellName: {
+    fontSize: '15px',
+    color: '#111827',
+    fontWeight: '600'
+  },
+  actionButtonHover: {
+    background: '#1d4ed8',
+    transform: 'translateY(-1px)',
+    boxShadow: '0 4px 8px rgba(37, 99, 235, 0.3)'
+  },
+  actionButtonRemove: {
+    background: '#ef4444',
+    boxShadow: '0 1px 3px rgba(239, 68, 68, 0.2)'
+  },
+  actionButtonRemoveHover: {
+    background: '#dc2626',
+    boxShadow: '0 4px 8px rgba(239, 68, 68, 0.3)'
   }
 };
 

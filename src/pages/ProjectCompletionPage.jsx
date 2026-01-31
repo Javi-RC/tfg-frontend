@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { AlertTriangle, CheckCircle, Save, ArrowLeft, Send, ArrowRight, BarChart3, Lightbulb, TrendingUp, X, Network, List, Info } from 'lucide-react';
-import { getOutcomeForm, submitOutcome } from '../api/projects';
-import GeneralOutcomeSection from '../components/outcome/GeneralOutcomeSection';
+import { AlertTriangle, Save, X, Network, List, Info } from 'lucide-react';
+import { getOutcomeFormData } from '../api/riskService';
+import { markRiskOccurred, markRiskAvoided } from '../api/manualRisks';
 import RisksSection from '../components/outcome/RisksSection';
-import LessonsLearnedSection from '../components/outcome/LessonsLearnedSection';
-import MetricsSection from '../components/outcome/MetricsSection';
 import ResultsModal from '../components/outcome/ResultsModal';
 import RiskFlowMap from '../components/outcome/RiskFlowMap';
 import PrimaryButton from '../components/PrimaryButton';
@@ -27,7 +25,7 @@ export default function ProjectCompletionPage() {
   
   const [projectData, setProjectData] = useState(null);
   const [predictedRisks, setPredictedRisks] = useState([]);
-  const [currentStep, setCurrentStep] = useState(1);
+  const [manualRisks, setManualRisks] = useState([]);
   
   const [formData, setFormData] = useState({
     completed: true,
@@ -58,7 +56,7 @@ export default function ProjectCompletionPage() {
       setLoading(true);
       setError(null);
       
-      const response = await getOutcomeForm(id);
+      const response = await getOutcomeFormData(id);
       const data = response.data?.success ? response.data.data : response.data;
       
       // If projectInfo doesn't have status, get the full project
@@ -73,6 +71,7 @@ export default function ProjectCompletionPage() {
       
       setProjectData(projectInfo);
       setPredictedRisks(data.predictedRisks || []);
+      setManualRisks(data.manualRisks || []);
       
       // Verify project is in completed status
       if (projectInfo?.status !== 'completed') {
@@ -92,15 +91,30 @@ export default function ProjectCompletionPage() {
       
       // Pre-fill actualizedRisks with predicted risks structure
       const initialRisks = (data.predictedRisks || []).map((risk, index) => ({
-        riskId: String(risk?.id ?? risk?._id ?? (risk?.type ? `${risk.type}-${index}` : index)),
+        riskId: String(risk?._id ?? risk?.id ?? (risk?.type ? `${risk.type}-${index}` : index)),
         type: risk.type,
-        occurred: false,
-        severity: risk.severity
+        occurred: undefined, // Will be set to true/false when user evaluates
+        severity: risk.severity,
+        source: risk.source || 'predicted' // DT, CBR, or predicted
       }));
+      
+      // IMPORTANT: Include manual risks added by PM during the project
+      // These must be sent to CBR for learning
+      const manualRiskEntries = (data.manualRisks || []).map((risk, index) => ({
+        riskId: String(risk?._id ?? risk?.id ?? `manual-${index}`),
+        type: risk.type,
+        occurred: undefined, // Will be set to true/false when user evaluates
+        severity: risk.severity,
+        source: 'manual',
+        description: risk.description
+      }));
+      
+      // Combine predicted and manual risks
+      const allInitialRisks = [...initialRisks, ...manualRiskEntries];
       
       setFormData(prev => ({
         ...prev,
-        actualizedRisks: initialRisks
+        actualizedRisks: allInitialRisks
       }));
       
     } catch (error) {
@@ -113,53 +127,9 @@ export default function ProjectCompletionPage() {
 
   const validateForm = () => {
     const newErrors = {};
-    
-    // Step 1 validation
-    if (currentStep === 1) {
-      if (formData.completed === undefined || formData.completed === null) {
-        newErrors.completed = t('projects.completionPage.validation.mustIndicateCompleted');
-      }
-      if (!formData.qualityScore || formData.qualityScore < 1 || formData.qualityScore > 5) {
-        newErrors.qualityScore = t('projects.completionPage.validation.qualityRequired');
-      }
-      if (!formData.clientSatisfaction || formData.clientSatisfaction < 1 || formData.clientSatisfaction > 5) {
-        newErrors.clientSatisfaction = t('projects.completionPage.validation.clientSatisfactionRequired');
-      }
-      if (!formData.teamMorale || formData.teamMorale < 1 || formData.teamMorale > 5) {
-        newErrors.teamMorale = t('projects.completionPage.validation.teamMoraleRequired');
-      }
-    }
-    
-    // Step 2 validation
-    if (currentStep === 2) {
-      const occurredRisks = (formData.actualizedRisks || []).filter(r => r.occurred);
-      
-      for (const risk of occurredRisks) {
-        if (!risk.description) {
-          newErrors.risks = t('projects.completionPage.validation.riskNeedsDescription');
-          break;
-        }
-        if (!risk.rootCause) {
-          newErrors.risks = t('projects.completionPage.validation.riskNeedsRootCause');
-          break;
-        }
-      }
-    }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
-
-  const handleNextStep = () => {
-    if (validateForm()) {
-      setCurrentStep(prev => prev + 1);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  };
-
-  const handlePrevStep = () => {
-    setCurrentStep(prev => prev - 1);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleSubmit = async () => {
@@ -170,78 +140,68 @@ export default function ProjectCompletionPage() {
     try {
       setSubmitting(true);
       
-      // Transform actualizedRisks to match backend format
-      const transformedRisks = (formData.actualizedRisks || []).map(risk => {
-        const baseRisk = {
-          type: risk.type,
-          occurred: risk.occurred
-        };
-        
-        if (risk.occurred) {
-          return {
-            ...baseRisk,
-            severity: risk.severity,
-            description: risk.description,
-            detectedAt: risk.detectedAt,
-            mitigatedAt: risk.mitigatedAt,
-            scheduleDelayDays: risk.scheduleDelayDays,
-            budgetOverrunPercent: risk.budgetOverrunPercent,
-            qualityImpact: risk.qualityImpact,
-            rootCause: risk.rootCause
-          };
-        } else {
-          return {
-            ...baseRisk,
-            avoidanceReason: risk.avoidanceReason
-          };
-        }
+      // NEW FLOW: Mark each risk individually using PUT /api/projects/:id/risks/:riskId
+      const risksToUpdate = (formData.actualizedRisks || []).filter(risk => {
+        // Only update risks that have been decided (occurred = true or false)
+        return risk.occurred !== undefined && risk.occurred !== null;
       });
-      
-      // Transform practices to string format (backend expects [string])
-      const transformedSuccessful = (formData.successfulPractices || [])
-        .filter(p => p.practice && p.practice.trim())
-        .map(p => {
-          let text = p.practice;
-          if (p.impact && p.impact.trim()) {
-            text += ` | Impact: ${p.impact}`;
-          }
-          if (p.replicable !== undefined) {
-            text += ` | Replicable: ${p.replicable ? 'Yes' : 'No'}`;
-          }
-          return text;
-        });
-      
-      const transformedUnsuccessful = (formData.unsuccessfulPractices || [])
-        .filter(p => p.practice && p.practice.trim())
-        .map(p => {
-          let text = p.practice;
-          if (p.impact && p.impact.trim()) {
-            text += ` | Impact: ${p.impact}`;
-          }
-          if (p.reason && p.reason.trim()) {
-            text += ` | Reason: ${p.reason}`;
-          }
-          return text;
-        });
-      
-      const outcomeData = {
-        completed: formData.completed,
-        actualCompletedDate: formData.actualCompletedDate,
-        budgetOverrun: formData.budgetOverrun || 0,
-        qualityScore: formData.qualityScore,
-        clientSatisfaction: formData.clientSatisfaction,
-        teamMorale: formData.teamMorale,
-        actualizedRisks: transformedRisks,
-        lessonsLearned: (formData.lessonsLearned || []).filter(l => l.trim()),
-        successfulPractices: transformedSuccessful,
-        unsuccessfulPractices: transformedUnsuccessful,
-        metrics: formData.metrics || {}
+
+      console.log('📝 Marking', risksToUpdate.length, 'risks...');
+
+      const normalizeList = (list) => {
+        if (!Array.isArray(list)) return undefined;
+        const normalized = list
+          .map((v) => String(v ?? '').trim())
+          .filter((v) => v.length > 0);
+        return normalized.length > 0 ? normalized : undefined;
       };
 
-      const response = await submitOutcome(id, outcomeData);
-      
-      setResults(response);
-      setShowResults(true);
+      const buildOccurredDetails = (risk) => {
+        const details = {
+          title: risk.title ? String(risk.title).trim() : undefined,
+          description: risk.description ? String(risk.description).trim() : undefined,
+          severity: risk.severity ? String(risk.severity) : undefined,
+          rootCause: risk.rootCause ? String(risk.rootCause).trim() : undefined,
+          recommendations: normalizeList(risk.recommendations),
+          indicators: normalizeList(risk.indicators)
+        };
+
+        for (const key of Object.keys(details)) {
+          if (details[key] === undefined) delete details[key];
+        }
+        return details;
+      };
+
+      // Mark each risk in parallel
+      const riskUpdatePromises = risksToUpdate.map(async (risk) => {
+        try {
+          // Find the actual risk ID from predictedRisks or manualRisks
+          const predictedRisk = predictedRisks.find(r => String(r.id || r._id) === String(risk.riskId));
+          const manualRisk = manualRisks.find(r => String(r.id || r._id) === String(risk.riskId));
+          const actualRiskId = predictedRisk?._id || manualRisk?._id || risk.riskId;
+
+          console.log('🔄 Updating risk:', actualRiskId, 'occurred:', risk.occurred);
+
+          if (risk.occurred === true) {
+            console.log('  ✅ Marking as occurred');
+            const details = buildOccurredDetails(risk);
+            return await markRiskOccurred(id, actualRiskId, details);
+          }
+
+          console.log('  ⛔ Marking as avoided');
+          return await markRiskAvoided(id, actualRiskId);
+        } catch (err) {
+          console.error('❌ Error updating risk:', risk.riskId, err);
+          console.error('   Error details:', err.response?.data);
+          throw err;
+        }
+      });
+
+      await Promise.all(riskUpdatePromises);
+      console.log('✅ All risks updated successfully');
+
+      // Navigate directly to project detail page
+      navigate(`/projects/${id}`);
       
     } catch (error) {
       console.error('Error submitting outcome:', error);
@@ -253,31 +213,8 @@ export default function ProjectCompletionPage() {
 
   const handleCloseResults = () => {
     setShowResults(false);
-    navigate('/projects');
+    navigate(`/projects/${id}`);
   };
-
-  const steps = [
-    {
-      number: 1,
-      title: t('projects.completionPage.steps.generalOutcome'),
-      icon: <BarChart3 size={20} />
-    },
-    {
-      number: 2,
-      title: t('projects.completionPage.steps.risks'),
-      icon: <AlertTriangle size={20} />
-    },
-    {
-      number: 3,
-      title: t('projects.completionPage.steps.lessons'),
-      icon: <Lightbulb size={20} />
-    },
-    {
-      number: 4,
-      title: t('projects.completionPage.steps.results'),
-      icon: <TrendingUp size={20} />
-    }
-  ];
 
   if (loading) {
     return (
@@ -330,137 +267,71 @@ export default function ProjectCompletionPage() {
         </div>
       </div>
 
-      {/* Progress Steps */}
-      <div style={styles.stepsContainer}>
-        {steps.map((step, index) => (
-          <React.Fragment key={step.number}>
-            <div style={{
-              ...styles.step,
-              ...(currentStep === step.number ? styles.stepActive : {}),
-              ...(currentStep > step.number ? styles.stepCompleted : {})
-            }}>
-              <div style={styles.stepIcon}>
-                {currentStep > step.number ? '✓' : step.icon}
-              </div>
-              <div style={styles.stepText}>
-                <div style={styles.stepNumber}>
-                  {t('projects.completionPage.stepLabel', { number: step.number })}
-                </div>
-                <div style={styles.stepTitle}>{step.title}</div>
-              </div>
-            </div>
-            {index < steps.length - 1 && (
-              <div style={{
-                ...styles.stepConnector,
-                ...(currentStep > step.number ? styles.stepConnectorCompleted : {})
-              }} />
-            )}
-          </React.Fragment>
-        ))}
-      </div>
-
       {/* Form Content */}
       <div style={styles.content}>
-        {currentStep === 1 && (
-          <GeneralOutcomeSection
-            formData={formData}
-            setFormData={setFormData}
-            errors={errors}
-          />
-        )}
-        
-        {currentStep === 2 && (
-          <>
-            {/* View Toggle */}
-            <div style={styles.viewToggle}>
-              <button
-                onClick={() => setRiskViewMode('list')}
-                style={{
-                  ...styles.viewButton,
-                  ...(riskViewMode === 'list' ? styles.viewButtonActive : {})
-                }}
-              >
-                <List size={18} />
-                <span>{t('projects.completionPage.riskView.listView')}</span>
-              </button>
-              <button
-                onClick={() => setRiskViewMode('flow')}
-                style={{
-                  ...styles.viewButton,
-                  ...(riskViewMode === 'flow' ? styles.viewButtonActive : {})
-                }}
-              >
-                <Network size={18} />
-                <span>{t('projects.completionPage.riskView.visualMap')}</span>
-              </button>
-            </div>
+        {/* View Toggle */}
+        <div style={styles.viewToggle}>
+          <button
+            onClick={() => setRiskViewMode('list')}
+            style={{
+              ...styles.viewButton,
+              ...(riskViewMode === 'list' ? styles.viewButtonActive : {})
+            }}
+          >
+            <List size={18} />
+            <span>{t('projects.completionPage.riskView.listView')}</span>
+          </button>
+          <button
+            onClick={() => setRiskViewMode('flow')}
+            style={{
+              ...styles.viewButton,
+              ...(riskViewMode === 'flow' ? styles.viewButtonActive : {})
+            }}
+          >
+            <Network size={18} />
+            <span>{t('projects.completionPage.riskView.visualMap')}</span>
+          </button>
+        </div>
 
-            {/* Conditional Rendering based on view mode */}
-            {riskViewMode === 'list' ? (
-              <RisksSection
-                formData={formData}
-                setFormData={setFormData}
-                predictedRisks={predictedRisks}
-              />
-            ) : (
-              <div style={styles.flowContainer}>
-                <div style={styles.flowDescription}>
-                  <AlertTriangle size={20} color="#F59E0B" />
-                  <span>{t('projects.completionPage.flowHint')}</span>
-                </div>
-                <RiskFlowMap
-                  predictedRisks={predictedRisks}
-                  actualizedRisks={formData.actualizedRisks}
-                  projectName={projectData?.projectName || t('projects.completionPage.projectFallbackName')}
-                />
-              </div>
-            )}
-          </>
-        )}
-        
-        {currentStep === 3 && (
-          <LessonsLearnedSection
+        {/* Conditional Rendering based on view mode */}
+        {riskViewMode === 'list' ? (
+          <RisksSection
             formData={formData}
             setFormData={setFormData}
+            predictedRisks={predictedRisks}
+            manualRisks={manualRisks}
           />
-        )}
-        
-        {currentStep === 4 && (
-          <MetricsSection
-            formData={formData}
-            setFormData={setFormData}
-          />
+        ) : (
+          <div style={styles.flowContainer}>
+            <div style={styles.flowDescription}>
+              <AlertTriangle size={20} color="#F59E0B" />
+              <span>{t('projects.completionPage.flowHint')}</span>
+            </div>
+            <RiskFlowMap
+              predictedRisks={predictedRisks}
+              actualizedRisks={formData.actualizedRisks}
+              projectName={projectData?.projectName || t('projects.completionPage.projectFallbackName')}
+            />
+          </div>
         )}
       </div>
 
       {/* Navigation */}
       <div style={styles.navigation}>
-        <div style={styles.navLeft}>
-          {currentStep > 1 && (
-            <SecondaryButton onClick={handlePrevStep} leftIcon={<ArrowLeft size={16} />}>
-              {t('common.previous')}
-            </SecondaryButton>
-          )}
-        </div>
+        <div style={styles.navLeft} />
         
         <div style={styles.navRight}>
           <SecondaryButton onClick={() => navigate('/projects')} leftIcon={<X size={16} />}>
             {t('common.cancel')}
           </SecondaryButton>
-          
-          {currentStep < steps.length ? (
-            <PrimaryButton onClick={handleNextStep} rightIcon={<ArrowRight size={16} />}>
-              {t('common.next')}
-            </PrimaryButton>
-          ) : (
-            <PrimaryButton 
-              onClick={handleSubmit}
-              disabled={submitting}
-              leftIcon={<Save size={16} />}
-            >
-              {submitting ? t('common.saving') : t('projects.completionPage.saveAndLearn')}
-            </PrimaryButton>
-          )}
+
+          <PrimaryButton 
+            onClick={handleSubmit}
+            disabled={submitting}
+            leftIcon={<Save size={16} />}
+          >
+            {submitting ? t('common.saving') : t('projects.completionPage.saveAndLearn')}
+          </PrimaryButton>
         </div>
       </div>
 
@@ -478,7 +349,7 @@ const styles = {
   container: {
     maxWidth: '1200px',
     margin: '0 auto',
-    padding: '32px 20px'
+    padding: '100px 20px 40px 20px'
   },
   loadingContainer: {
     textAlign: 'center',
@@ -517,7 +388,7 @@ const styles = {
     marginBottom: '24px'
   },
   header: {
-    marginBottom: '24px'
+    marginBottom: '32px'
   },
   title: {
     fontSize: '32px',
@@ -527,15 +398,16 @@ const styles = {
   },
   subtitle: {
     fontSize: '16px',
-    color: '#6B7280'
+    color: '#6B7280',
+    marginBottom: '0'
   },
   infoBanner: {
     display: 'flex',
     gap: '16px',
-    padding: '20px',
+    padding: '20px 24px',
     background: '#EFF6FF',
     border: '1px solid #BFDBFE',
-    borderRadius: '8px',
+    borderRadius: '12px',
     marginBottom: '32px'
   },
   infoIcon: {

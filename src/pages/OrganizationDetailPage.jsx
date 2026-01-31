@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Users } from 'lucide-react';
+import { Users, ArrowLeft } from 'lucide-react';
 import { useOrganization } from '../hooks/useOrganization';
 import SecondaryButton from '../components/SecondaryButton';
 import StatCard from '../components/common/StatCard';
@@ -32,6 +32,7 @@ export default function OrganizationDetailPage() {
     setActiveTab,
     error,
     isAdmin,
+    handleUpdateOrganization,
     reloadOrganization,
     reloadStats
   } = useOrganization();
@@ -65,7 +66,8 @@ export default function OrganizationDetailPage() {
       <div style={styles.header}>
         <div style={styles.headerTop}>
           <button style={styles.backButton} onClick={() => navigate('/organizations')}>
-            ← {t('organizations.back')}
+            <ArrowLeft size={18} style={{ marginRight: '8px' }} />
+            {t('organizations.back')}
           </button>
         </div>
         
@@ -145,7 +147,12 @@ export default function OrganizationDetailPage() {
       {/* Tab Content */}
       <div style={styles.content}>
         {activeTab === 'overview' && (
-          <OverviewTab organization={organization} styles={styles} />
+          <OverviewTab
+            organization={organization}
+            isAdmin={isAdmin}
+            onUpdateOrganization={handleUpdateOrganization}
+            styles={styles}
+          />
         )}
         {activeTab === 'employees' && (
           <EmployeesTab 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * CVCard Component
@@ -12,6 +13,8 @@ export default function CVCard({
   removeLabel,
   style = {}
 }) {
+  const { t } = useTranslation();
+  
   return (
     <div style={{
       marginBottom: '36px',
@@ -40,9 +43,9 @@ export default function CVCard({
             fontSize: '12px',
             cursor: 'pointer'
           }}
-          aria-label={removeLabel || 'Remove entry'}
+          aria-label={removeLabel || t('cv.remove')}
         >
-          Remove
+          {t('cv.remove')}
         </button>
       )}
       {children}

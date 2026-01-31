@@ -15,6 +15,10 @@ jest.mock('react-i18next', () => ({
       return key;
     },
   }),
+  initReactI18next: {
+    type: '3rdParty',
+    init: () => {}
+  }
 }));
 
 // Mock lucide-react

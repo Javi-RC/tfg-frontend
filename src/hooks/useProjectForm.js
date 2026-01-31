@@ -9,6 +9,7 @@ import {
 import { getMyOrganizations } from '../api/organization';
 import { validateCurrentStep } from '../validators/projectValidators';
 import { PROJECT_STATUS } from '../types/projectTypes';
+import { getApiErrorMessage } from '../utils/getApiErrorMessage';
 
 /**
  * Initial form data structure
@@ -19,7 +20,7 @@ function getInitialFormData() {
     briefDescription: '',
     estimatedStartDate: '',
     estimatedEndDate: '',
-    expectedDuration: { value: 1, unit: 'months' },
+    teamSize: 5,
     requiresSynchronousCommunication: 'no',
     realTimeCommunicationLevel: 'low',
     weeklyMeetingsCount: 0,
@@ -28,24 +29,43 @@ function getInitialFormData() {
     requiredLanguages: [],
     requiredLanguagesText: '',
     minimumLanguageProficiency: 'B1',
+    involvedCountries: [],
+    involvedCountriesText: '',
+    culturalDiversityLevel: 'medium',
     mainTechnologies: [],
     mainTechnologiesText: '',
     requiredExperienceLevel: 'mid',
-    systemComplexity: 'medium',
+    requiredAutonomyLevel: 3,
+    requiredScheduleFlexibility: 3,
+    requiredTravelAvailability: 3,
     sharedInfrastructureDependency: '',
     requiresSpecializedTools: { needed: false, description: '' },
     documentationLevel: 'partial',
-    teamRegions: [],
-    teamRegionsText: '',
+    documentationStandardization: 'medium',
+    knowledgeManagementSystem: '',
+    knowledgeManagementTools: [],
+    knowledgeManagementToolsText: '',
+    documentationProcesses: {
+      hasStandardization: false,
+      templates: false,
+      reviewProcess: false
+    },
     distributedWorkExperienceLevel: 'medium',
+    workMode: 'office_mode',
+    workModeDetails: '',
     expectedTimeOverlap: { value: 4, unit: 'hours' },
-    culturalDiversityLevel: 'medium',
-    specificRolesNeeded: [],
-    rolesFlexibility: 'adaptable',
-    rolesDependencyLevel: 'medium',
+    coreHours: { start: '', end: '', timezone: '' },
+    meetingRotationPolicy: false,
+    timezoneConsiderations: '',
+    requiresOffHoursReporting: false,
+    asyncCommunicationStrategy: '',
+    rolesAndResponsibilities: [],
     teamAvailabilityType: 'full-time',
-    partTimeWorkloadPercent: 100,
-    otherCommitments: [],
+    // Backend requires this field. Keep a sensible default so the user
+    // doesn't have to touch the input for the request to be valid.
+    weeklyHoursPerMember: 40,
+    requiresAfterHoursAvailability: 'no',
+    highLoadPeriods: [],
     coordinationRequirements: {
       workflowIntegration: 'medium',
       dependencyManagement: 'medium',
@@ -61,10 +81,10 @@ function getInitialFormData() {
       mentorshipAvailability: 'available',
       learningCurveAllowance: 'moderate'
     },
+    criticalDependencies: [],
     involvedTeams: [],
     informationFlow: 'bidirectional',
     criticalExchanges: [],
-    highLoadPeriods: [],
     managementMethod: 'scrum',
     followUpFrequency: {
       standups: { frequency: 'daily' },
@@ -75,10 +95,16 @@ function getInitialFormData() {
     communicationToolsText: '',
     taskManagementTools: [],
     taskManagementToolsText: '',
-    documentationStandardization: 'medium',
+    taskTrackingSystem: '',
     hasOnboardingProcesses: 'partial',
-    hasVersionControlAndCICD: 'yes',
-    internalToolsFragmentation: 'medium'
+    hasVersionControlAndCICD: 'partial',
+    internalToolsFragmentation: 'medium',
+    hasOrganizationalChart: false,
+    hasStandardizedProcedures: false,
+    requiresRegulatoryCompliance: false,
+    complianceStandards: [],
+    complianceStandardsText: '',
+    standardsDocumentation: ''
   };
 }
 
@@ -94,6 +120,7 @@ export function useProjectForm() {
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState(getInitialFormData());
   const [errors, setErrors] = useState({});
+  const [validationMessage, setValidationMessage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [organizations, setOrganizations] = useState([]);
   const [selectedOrg, setSelectedOrg] = useState('');
@@ -155,7 +182,6 @@ export function useProjectForm() {
         estimatedStartDate: projectData.estimatedStartDate?.split('T')[0] || '',
         estimatedEndDate: projectData.estimatedEndDate?.split('T')[0] || '',
         // Merge nested objects with defaults
-        expectedDuration: mergeObject(initialData.expectedDuration, projectData.expectedDuration),
         averageMeetingDuration: mergeObject(initialData.averageMeetingDuration, projectData.averageMeetingDuration),
         expectedTimeOverlap: mergeObject(initialData.expectedTimeOverlap, projectData.expectedTimeOverlap),
         requiresSpecializedTools: mergeObject(initialData.requiresSpecializedTools, projectData.requiresSpecializedTools),
@@ -170,29 +196,39 @@ export function useProjectForm() {
         // Ensure arrays are properly set
         requiredLanguages: projectData.requiredLanguages || [],
         mainTechnologies: projectData.mainTechnologies || [],
-        teamRegions: projectData.teamRegions || [],
-        specificRolesNeeded: projectData.specificRolesNeeded || [],
-        otherCommitments: projectData.otherCommitments || [],
+        involvedCountries: projectData.involvedCountries || [],
+        knowledgeManagementTools: projectData.knowledgeManagementTools || [],
+        rolesAndResponsibilities: projectData.rolesAndResponsibilities || [],
+        criticalDependencies: projectData.criticalDependencies || [],
         involvedTeams: projectData.involvedTeams || [],
         criticalExchanges: projectData.criticalExchanges || [],
         highLoadPeriods: projectData.highLoadPeriods || [],
         communicationTools: projectData.communicationTools || [],
-        taskManagementTools: projectData.taskManagementTools || []
+        taskManagementTools: projectData.taskManagementTools || [],
+        complianceStandards: projectData.complianceStandards || []
       };
 
       // Keep raw text versions for comma-separated list inputs (better typing UX)
       mappedData.requiredLanguagesText = mappedData.requiredLanguages.join(', ');
       mappedData.mainTechnologiesText = mappedData.mainTechnologies.join(', ');
-      mappedData.teamRegionsText = mappedData.teamRegions.join(', ');
+      mappedData.involvedCountriesText = mappedData.involvedCountries.join(', ');
+      mappedData.knowledgeManagementToolsText = mappedData.knowledgeManagementTools.join(', ');
       mappedData.communicationToolsText = mappedData.communicationTools.join(', ');
       mappedData.taskManagementToolsText = mappedData.taskManagementTools.join(', ');
+      mappedData.complianceStandardsText = mappedData.complianceStandards.join(', ');
       
       setFormData(mappedData);
       if (projectData.organization?._id) {
         setSelectedOrg(projectData.organization._id);
       }
     } catch (error) {
-      alert(error.response?.data?.error || 'Error loading project');
+      console.error('Error loading project:', {
+        status: error?.response?.status,
+        data: error?.response?.data,
+        url: error?.config?.url,
+        method: error?.config?.method
+      });
+      alert(getApiErrorMessage(error, 'Error loading project'));
       navigate('/projects');
     } finally {
       setLoading(false);
@@ -240,10 +276,15 @@ export function useProjectForm() {
     
     if (!validation.isValid) {
       setErrors(validation.errors);
+      // Show generic validation message
+      setValidationMessage('validation.completeRequiredFields');
+      // Clear message after 5 seconds
+      setTimeout(() => setValidationMessage(null), 5000);
       return false;
     }
     
     setErrors({});
+    setValidationMessage(null);
     setCurrentStep(prev => prev + 1);
     return true;
   };
@@ -287,16 +328,32 @@ export function useProjectForm() {
       [
         'requiredLanguagesText',
         'mainTechnologiesText',
-        'teamRegionsText',
+        'involvedCountriesText',
+        'knowledgeManagementToolsText',
         'communicationToolsText',
-        'taskManagementToolsText'
+        'taskManagementToolsText',
+        'complianceStandardsText'
       ].forEach((key) => {
         delete payloadFormData[key];
       });
 
+      // Normalize numeric fields that come from <input type="number"> as strings.
+      const rawWeeklyHours = payloadFormData.weeklyHoursPerMember;
+      const parsedWeeklyHours = Number(
+        rawWeeklyHours === undefined || rawWeeklyHours === null || rawWeeklyHours === ''
+          ? 40
+          : rawWeeklyHours
+      );
+      payloadFormData.weeklyHoursPerMember = Number.isFinite(parsedWeeklyHours) && parsedWeeklyHours > 0
+        ? parsedWeeklyHours
+        : 40;
+
       const payload = {
         ...payloadFormData,
-        organization: selectedOrg,
+        // Backend expects organizationId (validated as required + ObjectId)
+        organizationId: selectedOrg,
+        // Backend requires this field; force it to be present.
+        weeklyHoursPerMember: payloadFormData.weeklyHoursPerMember,
         status: PROJECT_STATUS.DRAFT
       };
 
@@ -315,7 +372,13 @@ export function useProjectForm() {
 
       navigate('/projects');
     } catch (error) {
-      alert(error.response?.data?.error || 'Error saving project');
+      console.error('Error saving project:', {
+        status: error?.response?.status,
+        data: error?.response?.data,
+        url: error?.config?.url,
+        method: error?.config?.method
+      });
+      alert(getApiErrorMessage(error, 'Error saving project'));
     } finally {
       setLoading(false);
     }
@@ -336,6 +399,7 @@ export function useProjectForm() {
     currentStep,
     formData,
     errors,
+    validationMessage,
     loading,
     organizations,
     selectedOrg,

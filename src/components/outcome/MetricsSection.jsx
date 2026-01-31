@@ -1,12 +1,14 @@
 import React from 'react';
 import { Info } from 'lucide-react';
 import { TrendingUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * MetricsSection Component
  * Optional metrics section for detailed project analytics
  */
 export default function MetricsSection({ formData, setFormData }) {
+  const { t } = useTranslation();
   
   const handleMetricChange = (field, value) => {
     setFormData(prev => ({
@@ -22,15 +24,15 @@ export default function MetricsSection({ formData, setFormData }) {
 
   return (
     <div style={styles.section}>
-      <h3 style={styles.sectionTitle}>📈 Project Metrics (Optional)</h3>
+      <h3 style={styles.sectionTitle}>📈 {t('outcome.metrics.title')}</h3>
       <p style={styles.sectionDescription}>
-        Provide additional metrics for more detailed analysis
+        {t('outcome.metrics.description')}
       </p>
 
       <div style={styles.metricsGrid}>
         <div style={styles.formGroup}>
           <label style={styles.label}>
-            Average velocity (points/sprint)
+            {t('outcome.metrics.avgVelocity')}
           </label>
           <input
             type="number"
@@ -44,7 +46,7 @@ export default function MetricsSection({ formData, setFormData }) {
 
         <div style={styles.formGroup}>
           <label style={styles.label}>
-            Bug rate (bugs/feature)
+            {t('outcome.metrics.bugRate')}
           </label>
           <input
             type="number"
@@ -59,7 +61,7 @@ export default function MetricsSection({ formData, setFormData }) {
 
         <div style={styles.formGroup}>
           <label style={styles.label}>
-            Meeting efficiency (1-5)
+            {t('outcome.metrics.meetingEfficiency')}
           </label>
           <input
             type="number"
@@ -74,26 +76,26 @@ export default function MetricsSection({ formData, setFormData }) {
 
         <div style={styles.formGroup}>
           <label style={styles.label}>
-            Deploy frequency
+            {t('outcome.metrics.deployFrequency')}
           </label>
           <select
             value={metrics.deploymentFrequency || ''}
             onChange={(e) => handleMetricChange('deploymentFrequency', e.target.value)}
             style={styles.select}
           >
-            <option value="">Select...</option>
-            <option value="multiple_per_day">Multiple per day</option>
-            <option value="daily">Daily</option>
-            <option value="weekly">Weekly</option>
-            <option value="bi-weekly">Bi-weekly</option>
-            <option value="monthly">Monthly</option>
-            <option value="less_than_monthly">Less than monthly</option>
+            <option value="">{t('outcome.metrics.select')}</option>
+            <option value="multiple_per_day">{t('outcome.metrics.multiplePerDay')}</option>
+            <option value="daily">{t('outcome.metrics.daily')}</option>
+            <option value="weekly">{t('outcome.metrics.weekly')}</option>
+            <option value="bi-weekly">{t('outcome.metrics.biweekly')}</option>
+            <option value="monthly">{t('outcome.metrics.monthly')}</option>
+            <option value="less_than_monthly">{t('outcome.metrics.lessThanMonthly')}</option>
           </select>
         </div>
 
         <div style={styles.formGroup}>
           <label style={styles.label}>
-            Average code review time (hours)
+            {t('outcome.metrics.codeReviewTime')}
           </label>
           <input
             type="number"
@@ -108,7 +110,7 @@ export default function MetricsSection({ formData, setFormData }) {
 
         <div style={styles.formGroup}>
           <label style={styles.label}>
-            CI/CD stability (1-5)
+            {t('outcome.metrics.cicdStability')}
           </label>
           <input
             type="number"
@@ -126,10 +128,10 @@ export default function MetricsSection({ formData, setFormData }) {
 
       <div style={styles.formGroup}>
         <label style={styles.label}>
-          Team morale progression (1-5 per month/sprint)
+          {t('outcome.metrics.teamMorale')}
         </label>
         <p style={styles.hint}>
-          Enter comma-separated values. E.g.: 4, 3, 3, 4, 4
+          {t('outcome.metrics.teamMoraleHint')}
         </p>
         <input
           type="text"
@@ -149,8 +151,7 @@ export default function MetricsSection({ formData, setFormData }) {
       <div style={styles.infoBox}>
         <div style={styles.infoIcon}><Info size={20} color="#3b82f6" /></div>
         <div>
-          <strong>Note:</strong> These metrics are optional but help the system generate
-          better predictions and comparisons with similar projects.
+          <strong>{t('common.note')}:</strong> {t('outcome.metrics.noteText')}
         </div>
       </div>
     </div>
@@ -159,9 +160,9 @@ export default function MetricsSection({ formData, setFormData }) {
 
 const styles = {
   section: {
-    padding: '24px',
+    padding: '28px',
     background: '#FFFFFF',
-    borderRadius: '8px',
+    borderRadius: '12px',
     border: '1px solid #E5E7EB'
   },
   sectionTitle: {
@@ -173,7 +174,7 @@ const styles = {
   sectionDescription: {
     fontSize: '14px',
     color: '#6B7280',
-    marginBottom: '24px'
+    marginBottom: '28px'
   },
   metricsGrid: {
     display: 'grid',

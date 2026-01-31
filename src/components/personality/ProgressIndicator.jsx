@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * ProgressIndicator Component
@@ -8,13 +9,14 @@ import React from 'react';
  * @param {number} totalQuestions - Total number of questions (default 44)
  */
 export default function ProgressIndicator({ answeredCount, totalQuestions = 44 }) {
+  const { t } = useTranslation();
   const percentage = Math.round((answeredCount / totalQuestions) * 100);
 
   return (
-    <div style={styles.progressSection} role="region" aria-label="Questionnaire progress">
+    <div style={styles.progressSection} role="region" aria-label={t('bfi44.questionnaireProgress')}>
       <div style={styles.progressInfo}>
-        <span>Progress: {percentage}%</span>
-        <span>{answeredCount} of {totalQuestions} answered</span>
+        <span>{t('bfi44.progress')}: {percentage}%</span>
+        <span>{t('bfi44.answeredCount', { answered: answeredCount, total: totalQuestions })}</span>
       </div>
       <div style={styles.mainProgressBar} role="progressbar" aria-valuenow={percentage} aria-valuemin="0" aria-valuemax="100">
         <div

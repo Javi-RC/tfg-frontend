@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FormTextarea, FormSelect } from './FormComponents';
+import { FormInput, FormTextarea, FormSelect } from './FormComponents';
 import { MANAGEMENT_METHODS, FREQUENCY_OPTIONS, COMPLEXITY_LEVELS } from '../../types/projectTypes';
 
 /**
@@ -28,7 +28,9 @@ export default function Step7Coordination({ formData, onChange }) {
       ? 'communicationToolsText'
       : field === 'taskManagementTools'
         ? 'taskManagementToolsText'
-        : null;
+        : field === 'knowledgeManagementTools'
+          ? 'knowledgeManagementToolsText'
+          : null;
 
     if (textField) {
       onChange({ [textField]: value, [field]: tools });
@@ -36,6 +38,15 @@ export default function Step7Coordination({ formData, onChange }) {
     }
 
     onChange({ [field]: tools });
+  };
+
+  const handleDocProcessChange = (field, checked) => {
+    onChange({
+      documentationProcesses: {
+        ...formData.documentationProcesses,
+        [field]: checked
+      }
+    });
   };
 
   return (
@@ -121,6 +132,70 @@ export default function Step7Coordination({ formData, onChange }) {
         rows={2}
       />
 
+      <FormInput
+        label={t('projects.steps.step7.taskTrackingSystem')}
+        name="taskTrackingSystem"
+        value={formData.taskTrackingSystem || ''}
+        onChange={handleChange}
+        placeholder={t('projects.steps.step7.taskTrackingSystemPlaceholder')}
+      />
+
+      <div style={styles.section}>
+        <h3 style={styles.sectionTitle}>{t('projects.steps.step7.knowledgeManagement')}</h3>
+        
+        <FormInput
+          label={t('projects.steps.step7.knowledgeManagementSystem')}
+          name="knowledgeManagementSystem"
+          value={formData.knowledgeManagementSystem || ''}
+          onChange={handleChange}
+          placeholder={t('projects.steps.step7.knowledgeManagementSystemPlaceholder')}
+        />
+
+        <FormTextarea
+          label={t('projects.steps.step7.knowledgeManagementTools')}
+          name="knowledgeManagementTools"
+          value={formData.knowledgeManagementToolsText ?? formData.knowledgeManagementTools?.join(', ') ?? ''}
+          onChange={(e) => handleToolsChange('knowledgeManagementTools', e.target.value)}
+          placeholder={t('projects.steps.step7.knowledgeManagementToolsPlaceholder')}
+          rows={2}
+        />
+
+        <div style={styles.checkboxGroup}>
+          <label style={styles.checkboxLabel} htmlFor="docProcess-standardization">
+            <input
+              type="checkbox"
+              id="docProcess-standardization"
+              checked={formData.documentationProcesses?.hasStandardization || false}
+              onChange={(e) => handleDocProcessChange('hasStandardization', e.target.checked)}
+              style={styles.checkbox}
+            />
+            {t('projects.steps.step7.hasStandardization')}
+          </label>
+
+          <label style={styles.checkboxLabel} htmlFor="docProcess-templates">
+            <input
+              type="checkbox"
+              id="docProcess-templates"
+              checked={formData.documentationProcesses?.templates || false}
+              onChange={(e) => handleDocProcessChange('templates', e.target.checked)}
+              style={styles.checkbox}
+            />
+            {t('projects.steps.step7.hasTemplates')}
+          </label>
+
+          <label style={styles.checkboxLabel} htmlFor="docProcess-review">
+            <input
+              type="checkbox"
+              id="docProcess-review"
+              checked={formData.documentationProcesses?.reviewProcess || false}
+              onChange={(e) => handleDocProcessChange('reviewProcess', e.target.checked)}
+              style={styles.checkbox}
+            />
+            {t('projects.steps.step7.hasReviewProcess')}
+          </label>
+        </div>
+      </div>
+
       <FormSelect
         label={t('projects.steps.step7.documentationStandardization')}
         name="documentationStandardization"
@@ -159,5 +234,24 @@ const styles = {
     fontWeight: '600',
     color: '#111',
     marginBottom: '20px'
+  },
+  checkboxGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    marginTop: '20px'
+  },
+  checkboxLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontSize: '14px',
+    color: '#374151',
+    cursor: 'pointer'
+  },
+  checkbox: {
+    width: '18px',
+    height: '18px',
+    cursor: 'pointer'
   }
 };

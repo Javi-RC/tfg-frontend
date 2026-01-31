@@ -7,35 +7,13 @@ import { WORK_MODEL_TYPES } from '../../types/projectTypes';
  * NEW CRITICAL STEP - Handles remote work and timezone management
  */
 export default function Step4WorkModel({ formData, onChange, errors }) {
-  const handleWorkModelChange = (type) => {
-    onChange({
-      workModel: {
-        ...formData.workModel,
-        type,
-        remotePercentage: type === 'on-site' ? 0 : (formData.workModel?.remotePercentage || 100)
-      }
-    });
+  const handleWorkModeChange = (mode) => {
+    onChange({ workMode: mode });
   };
 
-  const handleRemotePercentageChange = (value) => {
-    onChange({
-      workModel: {
-        ...formData.workModel,
-        remotePercentage: parseInt(value) || 0
-      }
-    });
-  };
-
-  const handleTeamRegionsChange = (regions) => {
-    const regionsArray = regions.split(',').map(r => r.trim()).filter(r => r.length > 0);
-    onChange({ teamRegions: regionsArray });
-  };
-
-  const handleTimezoneToggle = (checked) => {
-    onChange({
-      hasTimezoneSchedulingPolicy: checked,
-      ...(checked ? {} : { coreHours: undefined })
-    });
+  const handleCountriesChange = (countries) => {
+    const countriesArray = countries.split(',').map(r => r.trim()).filter(r => r.length > 0);
+    onChange({ involvedCountriesText: countries, involvedCountries: countriesArray });
   };
 
   const handleCoreHoursChange = (field, value) => {
@@ -47,10 +25,10 @@ export default function Step4WorkModel({ formData, onChange, errors }) {
     });
   };
 
-  const showTimezoneWarning = formData.workModel?.type === 'remote' && 
-                               !formData.hasTimezoneSchedulingPolicy;
+  const showTimezoneWarning = formData.workMode === 'remote_mode' && 
+                               (!formData.coreHours?.start || !formData.coreHours?.end);
   
-  const showOverlapWarning = (formData.teamRegions?.length || 0) > 2 && 
+  const showOverlapWarning = (formData.involvedCountries?.length || 0) > 2 && 
                               (formData.expectedTimeOverlap?.value || 0) < 4;
 
   return (
@@ -60,46 +38,105 @@ export default function Step4WorkModel({ formData, onChange, errors }) {
         Configure how the team will work together, especially for distributed teams
       </p>
 
-      {/* Work Model Type */}
+      {/* Work Mode Type */}
       <div style={styles.formGroup}>
-        <label style={styles.label}>
-          Work Model Type <span style={styles.required}>*</span>
+        <label style={styles.label} id="workMode-label">
+          Work Mode <span style={styles.required}>*</span>
         </label>
-        <div style={styles.radioGroup}>
-          {Object.values(WORK_MODEL_TYPES).map((value) => (
-            <label key={value} style={styles.radioLabel}>
-              <input
-                type="radio"
-                name="workModelType"
-                value={value}
-                checked={formData.workModel?.type === value}
-                onChange={(e) => handleWorkModelChange(e.target.value)}
-                style={styles.radio}
-              />
-              {value.charAt(0).toUpperCase() + value.slice(1).replace('-', ' ')}
-            </label>
-          ))}
+        <div style={styles.radioGroup} role="radiogroup" aria-labelledby="workMode-label">
+          <label style={styles.radioLabel} htmlFor="workMode-inherit">
+            <input
+              type="radio"
+              name="workMode"
+              value="inherit_from_organization"
+              id="workMode-inherit"
+              checked={formData.workMode === 'inherit_from_organization'}
+              onChange={(e) => handleWorkModeChange(e.target.value)}
+              style={styles.radio}
+            />
+            Inherit from Organization
+          </label>
+          <label style={styles.radioLabel} htmlFor="workMode-office">
+            <input
+              type="radio"
+              name="workMode"
+              value="office_mode"
+              id="workMode-office"
+              checked={formData.workMode === 'office_mode'}
+              onChange={(e) => handleWorkModeChange(e.target.value)}
+              style={styles.radio}
+            />
+            Office Mode
+          </label>
+          <label style={styles.radioLabel} htmlFor="workMode-office-first">
+            <input
+              type="radio"
+              name="workMode"
+              value="office_first"
+              id="workMode-office-first"
+              checked={formData.workMode === 'office_first'}
+              onChange={(e) => handleWorkModeChange(e.target.value)}
+              style={styles.radio}
+            />
+            Office First
+          </label>
+          <label style={styles.radioLabel} htmlFor="workMode-office-remote-mix">
+            <input
+              type="radio"
+              name="workMode"
+              value="office_remote_mix"
+              id="workMode-office-remote-mix"
+              checked={formData.workMode === 'office_remote_mix'}
+              onChange={(e) => handleWorkModeChange(e.target.value)}
+              style={styles.radio}
+            />
+            Office/Remote Mix
+          </label>
+          <label style={styles.radioLabel} htmlFor="workMode-remote-first">
+            <input
+              type="radio"
+              name="workMode"
+              value="remote_first"
+              id="workMode-remote-first"
+              checked={formData.workMode === 'remote_first'}
+              onChange={(e) => handleWorkModeChange(e.target.value)}
+              style={styles.radio}
+            />
+            Remote First
+          </label>
+          <label style={styles.radioLabel} htmlFor="workMode-remote-mode">
+            <input
+              type="radio"
+              name="workMode"
+              value="remote_mode"
+              id="workMode-remote-mode"
+              checked={formData.workMode === 'remote_mode'}
+              onChange={(e) => handleWorkModeChange(e.target.value)}
+              style={styles.radio}
+            />
+            Remote Mode
+          </label>
         </div>
-        {errors?.workModel && <span style={styles.error}>{errors.workModel}</span>}
+        {errors?.workMode && <span style={styles.error}>{errors.workMode}</span>}
       </div>
 
-      {/* Remote Percentage */}
-      {formData.workModel?.type !== 'on-site' && (
+      {/* Work Mode Details */}
+      {formData.workMode && formData.workMode !== 'inherit_from_organization' && (
         <div style={styles.formGroup}>
-          <label style={styles.label}>
-            Remote Work Percentage <span style={styles.required}>*</span>
-          </label>
-          <div style={styles.sliderContainer}>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={formData.workModel?.remotePercentage || 0}
-              onChange={(e) => handleRemotePercentageChange(e.target.value)}
-              style={styles.slider}
-            />
-            <span style={styles.sliderValue}>{formData.workModel?.remotePercentage || 0}%</span>
-          </div>
+          <label style={styles.label} htmlFor="workModeDetails">Work Mode Details</label>
+          <textarea
+            id="workModeDetails"
+            value={formData.workModeDetails || ''}
+            onChange={(e) => onChange({ workModeDetails: e.target.value })}
+            placeholder="Describe the work mode specifics (e.g., required office days, flexibility policies)..."
+            maxLength="500"
+            rows="3"
+            style={styles.textarea}
+            aria-label="Work mode details"
+          />
+          <small style={styles.helpText}>
+            {(formData.workModeDetails || '').length}/500 characters
+          </small>
         </div>
       )}
 
@@ -114,33 +151,37 @@ export default function Step4WorkModel({ formData, onChange, errors }) {
         </div>
       )}
 
-      {/* Team Regions */}
+      {/* Involved Countries */}
       <div style={styles.formGroup}>
-        <label style={styles.label}>
-          Team Regions/Locations
-          <span style={styles.hint}> (comma-separated, e.g., "USA, Europe, Asia")</span>
+        <label style={styles.label} htmlFor="involvedCountries">
+          Involved Countries
+          <span style={styles.hint}> (comma-separated, e.g., "USA, Spain, India")</span>
         </label>
         <input
           type="text"
-          value={(formData.teamRegions || []).join(', ')}
-          onChange={(e) => handleTeamRegionsChange(e.target.value)}
-          placeholder="e.g., North America, Europe, Asia"
+          id="involvedCountries"
+          value={formData.involvedCountriesText ?? (formData.involvedCountries || []).join(', ')}
+          onChange={(e) => handleCountriesChange(e.target.value)}
+          placeholder="e.g., United States, Spain, India"
           style={styles.input}
+          aria-label="Involved countries"
         />
         <small style={styles.helpText}>
-          Current regions: {formData.teamRegions?.length || 0}
+          Current countries: {formData.involvedCountries?.length || 0}
         </small>
       </div>
 
       {/* Geographic Distribution Options */}
-      {(formData.teamRegions?.length || 0) > 0 && (
+      {(formData.involvedCountries?.length || 0) > 0 && (
         <>
           <div style={styles.formGroup}>
-            <label style={styles.label}>Distributed Work Experience Level</label>
+            <label style={styles.label} htmlFor="distributedWorkExperienceLevel">Distributed Work Experience Level</label>
             <select
+              id="distributedWorkExperienceLevel"
               value={formData.distributedWorkExperienceLevel || 'medium'}
               onChange={(e) => onChange({ distributedWorkExperienceLevel: e.target.value })}
               style={styles.select}
+              aria-label="Distributed work experience level"
             >
               <option value="low">Low - Little remote experience</option>
               <option value="medium">Medium - Some remote experience</option>
@@ -149,10 +190,11 @@ export default function Step4WorkModel({ formData, onChange, errors }) {
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.label}>Expected Time Overlap (hours per day)</label>
+            <label style={styles.label} htmlFor="expectedTimeOverlap">Expected Time Overlap (hours per day)</label>
             <div style={styles.durationContainer}>
               <input
                 type="number"
+                id="expectedTimeOverlap"
                 min="0"
                 max="24"
                 value={formData.expectedTimeOverlap?.value || 4}
@@ -163,23 +205,26 @@ export default function Step4WorkModel({ formData, onChange, errors }) {
                   }
                 })}
                 style={styles.numberInput}
+                aria-label="Expected time overlap"
               />
               <span style={styles.unit}>hours</span>
             </div>
             {showOverlapWarning && (
               <div style={{ ...styles.warningInline, display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <AlertTriangle size={16} />
-                Low time overlap with {formData.teamRegions.length} regions may cause delays
+                Low time overlap with {formData.involvedCountries.length} countries may cause delays
               </div>
             )}
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.label}>Cultural Diversity Level</label>
+            <label style={styles.label} htmlFor="culturalDiversityLevel">Cultural Diversity Level</label>
             <select
+              id="culturalDiversityLevel"
               value={formData.culturalDiversityLevel || 'medium'}
               onChange={(e) => onChange({ culturalDiversityLevel: e.target.value })}
               style={styles.select}
+              aria-label="Cultural diversity level"
             >
               <option value="low">Low - Similar cultures</option>
               <option value="medium">Medium - Some diversity</option>
@@ -190,67 +235,60 @@ export default function Step4WorkModel({ formData, onChange, errors }) {
       )}
 
       {/* Timezone Management */}
-      {(formData.teamRegions?.length || 0) > 1 && (
+      {(formData.involvedCountries?.length || 0) > 1 && (
         <>
-          <div style={styles.formGroup}>
-            <label style={styles.checkboxLabel}>
-              <input
-                type="checkbox"
-                checked={formData.hasTimezoneSchedulingPolicy || false}
-                onChange={(e) => handleTimezoneToggle(e.target.checked)}
-                style={styles.checkbox}
-              />
-              Has Timezone Scheduling Policy
-            </label>
-            <small style={styles.helpText}>
-              Defines core hours and meeting rotation for distributed teams
-            </small>
-          </div>
+          <div style={styles.subSection}>
+            <h4 style={styles.subSectionTitle}>Core Hours Configuration</h4>
+            <p style={styles.helpText}>Define overlapping working hours for all team members</p>
+            
+            <div style={styles.row}>
+              <div style={styles.formGroup}>
+                  <label style={styles.label} htmlFor="coreHoursStart">Start Time</label>
+                <input
+                  type="time"
+                    id="coreHoursStart"
+                  value={formData.coreHours?.start || ''}
+                  onChange={(e) => handleCoreHoursChange('start', e.target.value)}
+                  style={styles.input}
+                  placeholder="09:00"
+                    aria-label="Core hours start time"
+                />
+              </div>
 
-          {formData.hasTimezoneSchedulingPolicy && (
-            <div style={styles.subSection}>
-              <h4 style={styles.subSectionTitle}>Core Hours Configuration</h4>
-              
-              <div style={styles.row}>
-                <div style={styles.formGroup}>
-                  <label style={styles.label}>Start Time</label>
-                  <input
-                    type="time"
-                    value={formData.coreHours?.start || '09:00'}
-                    onChange={(e) => handleCoreHoursChange('start', e.target.value)}
-                    style={styles.input}
-                  />
-                </div>
+              <div style={styles.formGroup}>
+                <label style={styles.label} htmlFor="coreHoursEnd">End Time</label>
+                <input
+                  type="time"
+                  id="coreHoursEnd"
+                  value={formData.coreHours?.end || ''}
+                  onChange={(e) => handleCoreHoursChange('end', e.target.value)}
+                  style={styles.input}
+                  placeholder="17:00"
+                  aria-label="Core hours end time"
+                />
+              </div>
 
-                <div style={styles.formGroup}>
-                  <label style={styles.label}>End Time</label>
-                  <input
-                    type="time"
-                    value={formData.coreHours?.end || '17:00'}
-                    onChange={(e) => handleCoreHoursChange('end', e.target.value)}
-                    style={styles.input}
-                  />
-                </div>
-
-                <div style={styles.formGroup}>
-                  <label style={styles.label}>Timezone</label>
-                  <input
-                    type="text"
-                    value={formData.coreHours?.timezone || 'UTC'}
-                    onChange={(e) => handleCoreHoursChange('timezone', e.target.value)}
-                    placeholder="e.g., UTC, America/New_York"
-                    style={styles.input}
-                  />
-                </div>
+              <div style={styles.formGroup}>
+                <label style={styles.label} htmlFor="coreHoursTimezone">Timezone</label>
+                <input
+                  type="text"
+                  id="coreHoursTimezone"
+                  value={formData.coreHours?.timezone || ''}
+                  onChange={(e) => handleCoreHoursChange('timezone', e.target.value)}
+                  placeholder="e.g., UTC, America/New_York"
+                  style={styles.input}
+                  aria-label="Core hours timezone"
+                />
               </div>
             </div>
-          )}
+          </div>
 
-          {(formData.teamRegions?.length || 0) > 2 && (
+          {(formData.involvedCountries?.length || 0) > 2 && (
             <div style={styles.formGroup}>
-              <label style={styles.checkboxLabel}>
+              <label style={styles.checkboxLabel} htmlFor="meetingRotationPolicy">
                 <input
                   type="checkbox"
+                  id="meetingRotationPolicy"
                   checked={formData.meetingRotationPolicy || false}
                   onChange={(e) => onChange({ meetingRotationPolicy: e.target.checked })}
                   style={styles.checkbox}
@@ -264,14 +302,16 @@ export default function Step4WorkModel({ formData, onChange, errors }) {
           )}
 
           <div style={styles.formGroup}>
-            <label style={styles.label}>Timezone Considerations</label>
+            <label style={styles.label} htmlFor="timezoneConsiderations">Timezone Considerations</label>
             <textarea
+              id="timezoneConsiderations"
               value={formData.timezoneConsiderations || ''}
               onChange={(e) => onChange({ timezoneConsiderations: e.target.value })}
               placeholder="Describe how you'll manage different timezones (max 1000 chars)..."
               maxLength="1000"
               rows="4"
               style={styles.textarea}
+              aria-label="Timezone considerations"
             />
             <small style={styles.helpText}>
               {(formData.timezoneConsiderations || '').length}/1000 characters
@@ -279,9 +319,27 @@ export default function Step4WorkModel({ formData, onChange, errors }) {
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.checkboxLabel}>
+            <label style={styles.label} htmlFor="asyncCommunicationStrategy">Async Communication Strategy</label>
+            <textarea
+              id="asyncCommunicationStrategy"
+              value={formData.asyncCommunicationStrategy || ''}
+              onChange={(e) => onChange({ asyncCommunicationStrategy: e.target.value })}
+              placeholder="Describe your asynchronous communication approach for distributed teams (max 1000 chars)..."
+              maxLength="1000"
+              rows="4"
+              style={styles.textarea}
+              aria-label="Async communication strategy"
+            />
+            <small style={styles.helpText}>
+              {(formData.asyncCommunicationStrategy || '').length}/1000 characters
+            </small>
+          </div>
+
+          <div style={styles.formGroup}>
+            <label style={styles.checkboxLabel} htmlFor="requiresOffHoursReporting">
               <input
                 type="checkbox"
+                id="requiresOffHoursReporting"
                 checked={formData.requiresOffHoursReporting || false}
                 onChange={(e) => onChange({ requiresOffHoursReporting: e.target.checked })}
                 style={styles.checkbox}

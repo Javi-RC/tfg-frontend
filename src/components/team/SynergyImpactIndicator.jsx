@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { ArrowUp, ArrowDown, Info } from 'lucide-react';
 
 /**
@@ -7,12 +8,13 @@ import { ArrowUp, ArrowDown, Info } from 'lucide-react';
  * @param {import('../../types/personality.jsdoc').SynergyValidation} props.validation
  */
 export default function SynergyImpactIndicator({ validation }) {
+  const { t } = useTranslation();
   // If no validation object at all, show default message
   if (!validation) {
     return (
       <div style={styles.noData}>
         <Info size={14} />
-        <span>No personality data available</span>
+        <span>{t('team.synergy.noPersonalityData')}</span>
       </div>
     );
   }
@@ -24,7 +26,7 @@ export default function SynergyImpactIndicator({ validation }) {
     return (
       <div style={styles.noData}>
         <Info size={14} />
-        <span>No personality data</span>
+        <span>{t('team.synergy.noPersonalityData')}</span>
       </div>
     );
   }
@@ -40,16 +42,16 @@ export default function SynergyImpactIndicator({ validation }) {
 
   // Provide default message when backend doesn't send one
   const displayMessage = validation.message || 
-    (isPositive ? 'Good addition - improves team synergy' :
-     isNeutral ? 'Neutral addition - maintains current synergy level' :
-     'May impact team synergy negatively');
+    (isPositive ? t('team.synergy.positiveImpact') :
+     isNeutral ? t('team.synergy.neutralImpact') :
+     t('team.synergy.negativeImpact'));
 
   return (
     <div style={styles.container}>
       <div style={{ ...styles.pill, ...containerStyle }}>
         {isPositive ? <ArrowUp size={14} /> : isNeutral ? <Info size={14} /> : <ArrowDown size={14} />}
         <span style={styles.pillText}>
-          {isPositive ? '+' : ''}{Number(impact).toFixed(1)} synergy
+          {isPositive ? '+' : ''}{Number(impact).toFixed(1)} {t('team.synergy.synergy')}
         </span>
       </div>
       <span style={styles.message}>{displayMessage}</span>

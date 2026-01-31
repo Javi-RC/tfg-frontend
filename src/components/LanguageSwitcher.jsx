@@ -3,14 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { Globe } from 'lucide-react';
 import enFlag from '../assets/en.svg';
 import esFlag from '../assets/es.svg';
+import { updateLanguagePreference } from '../api/language';
 
 /**
  * LanguageSwitcher Component
  * Allows users to switch between English and Spanish
+ * Syncs language preference with backend
  */
 export default function LanguageSwitcher() {
   const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = React.useState(false);
+  const [isSaving, setIsSaving] = React.useState(false);
 
   const languages = [
     { code: 'en', label: 'English', flagSrc: enFlag },
@@ -20,15 +23,36 @@ export default function LanguageSwitcher() {
   const activeCode = (i18n.language || 'en').split('-')[0];
   const currentLanguage = languages.find((lang) => lang.code === activeCode) || languages[0];
 
-  const handleLanguageChange = (langCode) => {
-    i18n.changeLanguage(langCode);
+  const handleLanguageChange = async (langCode) => {
+    if (langCode === activeCode || isSaving) return;
+    
+    setIsSaving(true);
     setIsOpen(false);
+    
+    try {
+      // Update i18n immediately for better UX
+      await i18n.changeLanguage(langCode);
+      
+      // Sync with backend (only if user is authenticated)
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          await updateLanguagePreference(langCode);
+        } catch (err) {
+          // Silently fail if backend sync fails - language is still changed locally
+          console.warn('Failed to sync language preference with backend:', err);
+        }
+      }
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
     <div style={{ position: 'relative' }}>
       <button
         onClick={() => setIsOpen(!isOpen)}
+        disabled={isSaving}
         style={{
           display: 'flex',
           alignItems: 'center',
@@ -37,14 +61,17 @@ export default function LanguageSwitcher() {
           background: 'transparent',
           border: '1px solid #e2e8f0',
           borderRadius: '8px',
-          cursor: 'pointer',
+          cursor: isSaving ? 'wait' : 'pointer',
           fontSize: '14px',
           color: '#4a5568',
-          transition: 'all 0.2s'
+          transition: 'all 0.2s',
+          opacity: isSaving ? 0.6 : 1
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.background = '#f7fafc';
-          e.currentTarget.style.borderColor = '#cbd5e0';
+          if (!isSaving) {
+            e.currentTarget.style.background = '#f7fafc';
+            e.currentTarget.style.borderColor = '#cbd5e0';
+          }
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.background = 'transparent';
@@ -98,6 +125,7 @@ export default function LanguageSwitcher() {
               <button
                 key={lang.code}
                 onClick={() => handleLanguageChange(lang.code)}
+                disabled={isSaving}
                 style={{
                   width: '100%',
                   display: 'flex',
@@ -106,15 +134,16 @@ export default function LanguageSwitcher() {
                   padding: '12px 16px',
                   background: currentLanguage.code === lang.code ? '#f0f4f8' : 'transparent',
                   border: 'none',
-                  cursor: 'pointer',
+                  cursor: isSaving ? 'wait' : 'pointer',
                   fontSize: '14px',
                   color: currentLanguage.code === lang.code ? '#2563eb' : '#4a5568',
                   fontWeight: currentLanguage.code === lang.code ? '600' : '400',
                   textAlign: 'left',
-                  transition: 'all 0.2s'
+                  transition: 'all 0.2s',
+                  opacity: isSaving ? 0.6 : 1
                 }}
                 onMouseEnter={(e) => {
-                  if (currentLanguage.code !== lang.code) {
+                  if (currentLanguage.code !== lang.code && !isSaving) {
                     e.currentTarget.style.background = '#f7fafc';
                   }
                 }}

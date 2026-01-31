@@ -44,8 +44,11 @@ export default function MyOrganizationsPage() {
             {isOrgAdmin ? t('organizations.owner') : t('organizations.member')}
           </p>
         </div>
-        {isOrgAdmin && (
-          <PrimaryButton onClick={toggleCreateModal} leftIcon={<Building2 size={18} />}>
+        {isOrgAdmin && organizations.length > 0 && (
+          <PrimaryButton
+            onClick={toggleCreateModal}
+            leftIcon={<Building2 size={18} />}
+          >
             {t('organizations.createOrganization')}
           </PrimaryButton>
         )}
@@ -64,7 +67,11 @@ export default function MyOrganizationsPage() {
               : t('organizations.noOrganizationsDesc')}
           </p>
           {isOrgAdmin && (
-            <PrimaryButton onClick={toggleCreateModal} leftIcon={<Building2 size={18} />}>
+            <PrimaryButton
+              onClick={toggleCreateModal}
+              leftIcon={<Building2 size={18} />}
+              style={{ margin: '0 auto' }}
+            >
               {t('organizations.createOrganization')}
             </PrimaryButton>
           )}
@@ -260,21 +267,21 @@ const styles = {
   modal: {
     background: 'white',
     borderRadius: '16px',
-    maxWidth: '600px',
-    width: '90%',
-    maxHeight: '90vh',
-    overflow: 'auto',
+    maxWidth: '1024px',
+    width: '94%',
+    maxHeight: '95vh',
+    overflow: 'hidden',
     boxShadow: '0 8px 32px rgba(0,0,0,0.12)'
   },
   modalHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: '24px',
+    padding: '14px 16px',
     borderBottom: '1px solid #eee'
   },
   modalTitle: {
-    fontSize: '24px',
+    fontSize: '20px',
     fontWeight: '600',
     color: '#1a1a1a',
     margin: 0
@@ -302,29 +309,30 @@ const styles = {
     fontSize: '14px'
   },
   form: {
-    padding: '24px'
+    padding: '14px 16px 16px',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
+    gap: '10px 12px'
   },
   formGroup: {
-    marginBottom: '20px'
+    marginBottom: 0
   },
-  formRow: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '16px'
+  fullWidth: {
+    gridColumn: '1 / -1'
   },
   label: {
     display: 'block',
-    fontSize: '14px',
+    fontSize: '12px',
     fontWeight: '500',
     color: '#333',
-    marginBottom: '8px'
+    marginBottom: '4px'
   },
   input: {
     width: '100%',
-    padding: '10px 14px',
+    padding: '6px 10px',
     border: '1px solid #ddd',
     borderRadius: '8px',
-    fontSize: '14px',
+    fontSize: '13px',
     fontFamily: 'inherit',
     outline: 'none',
     transition: 'border-color 0.2s',
@@ -336,8 +344,8 @@ const styles = {
     display: 'flex',
     justifyContent: 'flex-end',
     gap: '12px',
-    marginTop: '24px',
-    paddingTop: '24px',
+    marginTop: '6px',
+    paddingTop: '12px',
     borderTop: '1px solid #eee'
   }
 };

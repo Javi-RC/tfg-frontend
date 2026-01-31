@@ -8,6 +8,7 @@ import {
   PreferencesSection, 
   CVManagementSection 
 } from '../components/profile';
+import { DangerZone } from '../components/account';
 
 export default function Profile() {
   const { t } = useTranslation();
@@ -92,60 +93,71 @@ export default function Profile() {
   return (
     <div style={{
       minHeight: '100vh',
-      background: '#fafbfc',
-      padding: '104px 20px 40px',
+      background: 'linear-gradient(to bottom, #f7fafc 0%, #edf2f7 100%)',
+      padding: '104px 20px 60px',
       fontFamily: 'Poppins, Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial'
     }}>
-      
-
       <div style={{
-        maxWidth: '900px',
+        maxWidth: '1000px',
         margin: '0 auto'
       }}>
-        <ProfileHeader
-          displayName={displayName}
-          email={email}
-          role={role}
-          isAdmin={isAdmin}
-          userInitial={userInitial}
-          profileUser={profileUser}
-          organizationDisplay={organizationDisplay}
-          editMode={editMode}
-          saving={saving}
-          onStartEditing={startEditing}
-          onCancelEditing={cancelEditing}
-          onSaveProfile={saveProfile}
-        />
-        <PreferencesSection
-          profileUser={profileUser}
-          editMode={editMode}
-          draft={draft}
-          saveError={saveError}
-          saveSuccess={saveSuccess}
-          onUpdateDraftField={updateDraftField}
-          onUpdateNestedField={updateNestedField}
-        />
-        <ConsentSection
-          consentLoading={consentLoading}
-          consentError={consentError}
-          consentSuccess={consentSuccess}
-          hasConsent={hasConsent}
-          consentData={consentData}
-          onLoadConsent={loadConsent}
-          onOpenConsentModal={openConsentModal}
-          onRevokeConsent={revokeConsent}
-        />
+        {/* Contenedor unificado */}
+        <div style={{
+          background: 'white',
+          borderRadius: '12px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+          overflow: 'hidden'
+        }}>
+          <ProfileHeader
+            displayName={displayName}
+            email={email}
+            role={role}
+            isAdmin={isAdmin}
+            userInitial={userInitial}
+            profileUser={profileUser}
+            organizationDisplay={organizationDisplay}
+            editMode={editMode}
+            saving={saving}
+            onStartEditing={startEditing}
+            onCancelEditing={cancelEditing}
+            onSaveProfile={saveProfile}
+          />
+          
+          <PreferencesSection
+            profileUser={profileUser}
+            editMode={editMode}
+            draft={draft}
+            saveError={saveError}
+            saveSuccess={saveSuccess}
+            onUpdateDraftField={updateDraftField}
+            onUpdateNestedField={updateNestedField}
+          />
+          
+          <ConsentSection
+            consentLoading={consentLoading}
+            consentError={consentError}
+            consentSuccess={consentSuccess}
+            hasConsent={hasConsent}
+            consentData={consentData}
+            onLoadConsent={loadConsent}
+            onOpenConsentModal={openConsentModal}
+            onRevokeConsent={revokeConsent}
+          />
+
+          <CVManagementSection
+            isAdmin={isAdmin}
+            onNavigateToCV={navigateToCV}
+            onNavigateToCVStats={navigateToCVStats}
+            onNavigateToAdminCVs={navigateToAdminCVs}
+          />
+
+          <DangerZone />
+        </div>
 
         <CVConsentModal
-        show={showConsentModal}
-        onClose={closeConsentModal}
-        onAccepted={handleConsentAccepted}
-        />
-        <CVManagementSection
-          isAdmin={isAdmin}
-          onNavigateToCV={navigateToCV}
-          onNavigateToCVStats={navigateToCVStats}
-          onNavigateToAdminCVs={navigateToAdminCVs}
+          show={showConsentModal}
+          onClose={closeConsentModal}
+          onAccepted={handleConsentAccepted}
         />
       </div>
     </div>

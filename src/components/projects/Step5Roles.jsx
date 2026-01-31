@@ -11,19 +11,25 @@ export default function Step5Roles({ formData, onChange }) {
   const { t } = useTranslation();
 
   const handleRoleChange = (index, field, value) => {
-    const newRoles = [...(formData.keyRoles || [])];
-    newRoles[index] = { ...newRoles[index], [field]: value };
-    onChange({ keyRoles: newRoles });
+    const newRoles = [...(formData.rolesAndResponsibilities || [])];
+    if (field === 'responsibilities') {
+      // Convert text to array of responsibilities (split by newline)
+      const responsibilitiesArray = value.split('\n').map(r => r.trim()).filter(r => r);
+      newRoles[index] = { ...newRoles[index], responsibilities: responsibilitiesArray };
+    } else {
+      newRoles[index] = { ...newRoles[index], [field]: value };
+    }
+    onChange({ rolesAndResponsibilities: newRoles });
   };
 
   const addRole = () => {
-    const newRoles = [...(formData.keyRoles || []), { roleName: '', responsibilities: '', clarityLevel: 3 }];
-    onChange({ keyRoles: newRoles });
+    const newRoles = [...(formData.rolesAndResponsibilities || []), { roleName: '', responsibilities: [], clarityScore: 3 }];
+    onChange({ rolesAndResponsibilities: newRoles });
   };
 
   const removeRole = (index) => {
-    const newRoles = formData.keyRoles.filter((_, i) => i !== index);
-    onChange({ keyRoles: newRoles });
+    const newRoles = formData.rolesAndResponsibilities.filter((_, i) => i !== index);
+    onChange({ rolesAndResponsibilities: newRoles });
   };
 
   const handleDependenciesChange = (e) => {
@@ -41,12 +47,12 @@ export default function Step5Roles({ formData, onChange }) {
 
       <div style={styles.section}>
         <div style={styles.sectionHeader}>
-          <h3 style={styles.sectionTitle}>{t('projects.steps.step5.keyRoles')}</h3>
+          <h3 style={styles.sectionTitle}>{t('projects.steps.step5.rolesAndResponsibilities')}</h3>
           <PrimaryButton onClick={addRole}>{t('projects.steps.step5.addRole')}</PrimaryButton>
         </div>
 
-        {formData.keyRoles && formData.keyRoles.length > 0 ? (
-          formData.keyRoles.map((role, index) => (
+        {formData.rolesAndResponsibilities && formData.rolesAndResponsibilities.length > 0 ? (
+          formData.rolesAndResponsibilities.map((role, index) => (
             <div key={index} style={styles.roleCard}>
               <div style={styles.roleHeader}>
                 <span style={styles.roleNumber}>{t('projects.steps.step5.role')} {index + 1}</span>
@@ -70,34 +76,35 @@ export default function Step5Roles({ formData, onChange }) {
               <FormTextarea
                 label={t('projects.steps.step5.responsibilities')}
                 name={`responsibilities-${index}`}
-                value={role.responsibilities || ''}
+                value={Array.isArray(role.responsibilities) ? role.responsibilities.join('\n') : role.responsibilities || ''}
                 onChange={(e) => handleRoleChange(index, 'responsibilities', e.target.value)}
                 placeholder={t('projects.steps.step5.responsibilitiesPlaceholder')}
                 rows={3}
-                maxLength={1000}
               />
 
               <div style={styles.claritySection}>
-                <label style={styles.label}>
-                  Clarity Level: {role.clarityLevel || 3}
+                <label style={styles.label} htmlFor={`clarityScore-${index}`}>
+                  {t('projects.steps.step5.clarityScore')}: {role.clarityScore || 3}
                 </label>
                 <input
                   type="range"
+                  id={`clarityScore-${index}`}
                   min="1"
                   max="5"
-                  value={role.clarityLevel || 3}
-                  onChange={(e) => handleRoleChange(index, 'clarityLevel', parseInt(e.target.value))}
+                  value={role.clarityScore || 3}
+                  onChange={(e) => handleRoleChange(index, 'clarityScore', parseInt(e.target.value))}
                   style={styles.slider}
+                  aria-label={t('projects.steps.step5.clarityScore')}
                 />
                 <div style={styles.sliderLabels}>
-                  <span>1 - Unclear</span>
-                  <span>5 - Very Clear</span>
+                  <span>1 - {t('projects.steps.step5.unclear')}</span>
+                  <span>5 - {t('projects.steps.step5.veryClear')}</span>
                 </div>
               </div>
             </div>
           ))
         ) : (
-          <p style={styles.emptyText}>No roles added yet. Click "Add Role" to start.</p>
+          <p style={styles.emptyText}>{t('projects.steps.step5.noRolesMessage')}</p>
         )}
       </div>
 

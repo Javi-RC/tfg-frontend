@@ -25,26 +25,28 @@ export default function Step7StandardsCompliance({ formData, onChange }) {
 
       {/* Requires Regulatory Compliance */}
       <div style={styles.formGroup}>
-        <label style={styles.label}>
+        <label style={styles.label} id="requiresRegulatoryCompliance-label">
           Requires Regulatory Compliance <span style={styles.required}>*</span>
         </label>
-        <div style={styles.radioGroup}>
-          <label style={styles.radioLabel}>
+        <div style={styles.radioGroup} role="radiogroup" aria-labelledby="requiresRegulatoryCompliance-label">
+          <label style={styles.radioLabel} htmlFor="requiresRegulatoryCompliance-yes">
             <input
               type="radio"
               name="requiresRegulatoryCompliance"
               value="true"
+              id="requiresRegulatoryCompliance-yes"
               checked={formData.requiresRegulatoryCompliance === true}
               onChange={() => onChange({ requiresRegulatoryCompliance: true })}
               style={styles.radio}
             />
             Yes
           </label>
-          <label style={styles.radioLabel}>
+          <label style={styles.radioLabel} htmlFor="requiresRegulatoryCompliance-no">
             <input
               type="radio"
               name="requiresRegulatoryCompliance"
               value="false"
+              id="requiresRegulatoryCompliance-no"
               checked={formData.requiresRegulatoryCompliance === false}
               onChange={() => onChange({ 
                 requiresRegulatoryCompliance: false,
@@ -62,15 +64,17 @@ export default function Step7StandardsCompliance({ formData, onChange }) {
       {formData.requiresRegulatoryCompliance && (
         <>
           <div style={styles.formGroup}>
-            <label style={styles.label}>Compliance Standards</label>
+            <label style={styles.label} id="complianceStandards-label">Compliance Standards</label>
             <div style={styles.checkboxGroup}>
               {Object.entries(COMPLIANCE_STANDARDS).map(([key, value]) => (
-                <label key={key} style={styles.checkboxLabel}>
+                <label key={key} style={styles.checkboxLabel} htmlFor={`compliance-${key}`}>
                   <input
                     type="checkbox"
+                    id={`compliance-${key}`}
                     checked={(formData.complianceStandards || []).includes(value)}
                     onChange={() => handleStandardToggle(value)}
                     style={styles.checkbox}
+                    aria-labelledby="complianceStandards-label"
                   />
                   {value}
                 </label>
@@ -83,24 +87,26 @@ export default function Step7StandardsCompliance({ formData, onChange }) {
 
           {/* Has Standardized Procedures */}
           <div style={styles.formGroup}>
-            <label style={styles.label}>Has Standardized Procedures</label>
-            <div style={styles.radioGroup}>
-              <label style={styles.radioLabel}>
+            <label style={styles.label} id="hasStandardizedProcedures-label">Has Standardized Procedures</label>
+            <div style={styles.radioGroup} role="radiogroup" aria-labelledby="hasStandardizedProcedures-label">
+              <label style={styles.radioLabel} htmlFor="hasStandardizedProcedures-yes">
                 <input
                   type="radio"
                   name="hasStandardizedProcedures"
                   value="true"
+                  id="hasStandardizedProcedures-yes"
                   checked={formData.hasStandardizedProcedures === true}
                   onChange={() => onChange({ hasStandardizedProcedures: true })}
                   style={styles.radio}
                 />
                 Yes
               </label>
-              <label style={styles.radioLabel}>
+              <label style={styles.radioLabel} htmlFor="hasStandardizedProcedures-no">
                 <input
                   type="radio"
                   name="hasStandardizedProcedures"
                   value="false"
+                  id="hasStandardizedProcedures-no"
                   checked={formData.hasStandardizedProcedures === false}
                   onChange={() => onChange({ hasStandardizedProcedures: false })}
                   style={styles.radio}
@@ -115,14 +121,16 @@ export default function Step7StandardsCompliance({ formData, onChange }) {
 
           {/* Standards Documentation */}
           <div style={styles.formGroup}>
-            <label style={styles.label}>Standards Documentation</label>
+            <label style={styles.label} htmlFor="standardsDocumentation">Standards Documentation</label>
             <textarea
+              id="standardsDocumentation"
               value={formData.standardsDocumentation || ''}
               onChange={(e) => onChange({ standardsDocumentation: e.target.value })}
               placeholder="Describe the standards, procedures, and compliance requirements (max 2000 chars)..."
               maxLength="2000"
               rows="6"
               style={styles.textarea}
+              aria-label="Standards documentation"
             />
             <small style={styles.helpText}>
               {(formData.standardsDocumentation || '').length}/2000 characters

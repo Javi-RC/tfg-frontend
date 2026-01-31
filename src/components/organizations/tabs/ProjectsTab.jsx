@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FolderOpen } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * ProjectsTab
  */
 export default function ProjectsTab({ organizationId, isAdmin, styles }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -46,13 +48,13 @@ export default function ProjectsTab({ organizationId, isAdmin, styles }) {
   };
 
   if (loading) {
-    return <p style={styles.loadingText}>Loading projects...</p>;
+    return <p style={styles.loadingText}>{t('organization.projects.loading')}</p>;
   }
 
   return (
     <div style={styles.card}>
       <div style={styles.cardHeader}>
-        <h2 style={styles.cardTitle}>Projects</h2>
+        <h2 style={styles.cardTitle}>{t('organization.projects.title')}</h2>
       </div>
 
       {/* Stats Cards */}
@@ -60,19 +62,19 @@ export default function ProjectsTab({ organizationId, isAdmin, styles }) {
         <div style={styles.statsSection}>
           <div style={styles.statCard}>
             <div style={styles.statValue}>{stats.total || 0}</div>
-            <div style={styles.statLabel}>Total Projects</div>
+            <div style={styles.statLabel}>{t('organization.projects.totalProjects')}</div>
           </div>
           <div style={styles.statCard}>
             <div style={styles.statValue}>{stats.byStatus?.active || 0}</div>
-            <div style={styles.statLabel}>Active</div>
+            <div style={styles.statLabel}>{t('organization.projects.active')}</div>
           </div>
           <div style={styles.statCard}>
             <div style={styles.statValue}>{stats.byStatus?.completed || 0}</div>
-            <div style={styles.statLabel}>Completed</div>
+            <div style={styles.statLabel}>{t('organization.projects.completed')}</div>
           </div>
           <div style={styles.statCard}>
             <div style={styles.statValue}>{stats.totalAssignedEmployees || 0}</div>
-            <div style={styles.statLabel}>Team Members</div>
+            <div style={styles.statLabel}>{t('organization.projects.teamMembers')}</div>
           </div>
         </div>
       )}
@@ -80,7 +82,7 @@ export default function ProjectsTab({ organizationId, isAdmin, styles }) {
       {projects.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '40px 20px' }}>
           <FolderOpen size={48} color="#999" style={{ marginBottom: '16px', opacity: 0.5 }} />
-          <p style={styles.emptyText}>No projects found for this organization</p>
+          <p style={styles.emptyText}>{t('organization.projects.noProjects')}</p>
         </div>
       ) : (
         <div style={styles.projectsList}>
@@ -120,18 +122,18 @@ export default function ProjectsTab({ organizationId, isAdmin, styles }) {
               </div>
               <div style={styles.projectInfo}>
                 <div>
-                  <strong>PM:</strong> {project.projectManager?.name || 'N/A'}
+                  <strong>{t('organization.projects.pm')}:</strong> {project.projectManager?.name || 'N/A'}
                 </div>
                 <div>
-                  <strong>Team:</strong> {project.assignedEmployeesCount || 0} members
+                  <strong>{t('organization.projects.team')}:</strong> {project.assignedEmployeesCount || 0} {t('organization.projects.members')}
                 </div>
                 <div>
-                  <strong>Risk Score:</strong> {project.riskScore || 0}
+                  <strong>{t('organization.projects.riskScore')}:</strong> {project.riskScore || 0}
                 </div>
               </div>
               <div style={styles.projectActions}>
                 <button style={styles.actionButton} onClick={() => navigate(`/projects/${project._id}`)}>
-                  View Details
+                  {t('organization.projects.viewDetails')}
                 </button>
               </div>
             </div>

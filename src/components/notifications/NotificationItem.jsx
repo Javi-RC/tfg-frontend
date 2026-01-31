@@ -8,6 +8,36 @@ import { getNotificationTypeIcon } from '../../types/notificationTypes';
 import './NotificationItem.css';
 
 /**
+ * Normaliza la prioridad traducida del backend a códigos fijos
+ * @param {string} priority - Prioridad del backend (puede estar traducida)
+ * @returns {string} Código de prioridad normalizado (urgent, high, medium, low)
+ */
+const normalizePriority = (priority) => {
+  if (!priority) return 'medium';
+  
+  const lowerPriority = priority.toLowerCase();
+  
+  // Mapeo de prioridades en diferentes idiomas
+  const priorityMap = {
+    // English
+    'urgent': 'urgent',
+    'high': 'high',
+    'medium': 'medium',
+    'low': 'low',
+    // Spanish
+    'urgente': 'urgent',
+    'alta': 'high',
+    'media': 'medium',
+    'baja': 'low',
+    // Just in case
+    'critical': 'urgent',
+    'crítica': 'urgent'
+  };
+  
+  return priorityMap[lowerPriority] || 'medium';
+};
+
+/**
  * NotificationItem Component
  * Single notification item.
  * Shows title, message, relative time, and actions.
@@ -18,7 +48,7 @@ import './NotificationItem.css';
  *   type: string (cv_processed, org_employee_added, etc.),
  *   title: string,
  *   message: string,
- *   priority: 'low' | 'medium' | 'high' | 'urgent',
+ *   priority: 'low' | 'medium' | 'high' | 'urgent' (puede venir traducido del backend),
  *   readAt: Date | null,
  *   actionUrl: string (URL para navegar),
  *   actionText: string,
@@ -30,6 +60,9 @@ const NotificationItem = ({ notification, onClose }) => {
   const navigate = useNavigate();
   const { markAsRead, deleteNotification } = useNotifications();
   const isUnread = !notification.readAt;
+  
+  // Normalizar la prioridad traducida del backend
+  const normalizedPriority = normalizePriority(notification.priority);
 
   const handleClick = async () => {
     if (isUnread) {
@@ -60,7 +93,7 @@ const NotificationItem = ({ notification, onClose }) => {
     locale: timeLocale
   });
 
-  const priorityClass = `priority-${notification.priority || 'normal'}`;
+  const priorityClass = `priority-${normalizedPriority}`;
 
   return (
     <div 
@@ -85,11 +118,11 @@ const NotificationItem = ({ notification, onClose }) => {
         <div className="notification-message">{notification.message}</div>
         <div className="notification-meta">
           <span className="notification-time">{timeAgo}</span>
-          {notification.priority === 'urgent' && (
-            <span className="urgent-badge">{t('notifications.priority.urgent')}</span>
+          {normalizedPriority === 'urgent' && (
+            <span className="urgent-badge">{notification.priority}</span>
           )}
-          {notification.priority === 'high' && (
-            <span className="high-badge">{t('notifications.priority.high')}</span>
+          {normalizedPriority === 'high' && (
+            <span className="high-badge">{notification.priority}</span>
           )}
         </div>
       </div>

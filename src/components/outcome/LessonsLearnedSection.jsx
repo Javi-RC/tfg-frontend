@@ -1,11 +1,13 @@
 import React from 'react';
 import { Lightbulb, BookOpen, ThumbsUp, ThumbsDown, CheckCircle, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * LessonsLearnedSection Component
  * Captures lessons learned and practices (successful/unsuccessful)
  */
 export default function LessonsLearnedSection({ formData, setFormData }) {
+  const { t } = useTranslation();
   
   const handleAddLesson = () => {
     const lessons = formData.lessonsLearned || [];
@@ -76,17 +78,17 @@ export default function LessonsLearnedSection({ formData, setFormData }) {
     <div style={styles.section}>
       <h3 style={{...styles.sectionTitle, display: 'flex', alignItems: 'center', gap: '8px'}}>
         <Lightbulb size={24} />
-        Lessons Learned
+        {t('outcome.lessons.title')}
       </h3>
       <p style={styles.sectionDescription}>
-        Capture key learnings and practices that worked or didn't work
+        {t('outcome.lessons.description')}
       </p>
 
       {/* General Lessons */}
       <div style={styles.subsection}>
         <h4 style={{...styles.subsectionTitle, display: 'flex', alignItems: 'center', gap: '8px'}}>
           <BookOpen size={20} />
-          Lessons Learned
+          {t('outcome.lessons.lessonsTitle')}
         </h4>
         
         {(formData.lessonsLearned || []).map((lesson, index) => (
@@ -97,7 +99,7 @@ export default function LessonsLearnedSection({ formData, setFormData }) {
               onChange={(e) => handleUpdateLesson(index, e.target.value)}
               style={styles.textarea}
               rows={2}
-              placeholder="E.g.: Distributed teams across more than 2 zones require at least 4 hours of overlap"
+              placeholder={t('outcome.lessons.lessonPlaceholder')}
             />
             <button
               type="button"
@@ -114,7 +116,7 @@ export default function LessonsLearnedSection({ formData, setFormData }) {
           onClick={handleAddLesson}
           style={styles.addButton}
         >
-          + Add Lesson
+          {t('outcome.lessons.addLesson')}
         </button>
       </div>
 
@@ -124,10 +126,10 @@ export default function LessonsLearnedSection({ formData, setFormData }) {
       <div style={styles.subsection}>
         <h4 style={{...styles.subsectionTitle, display: 'flex', alignItems: 'center', gap: '8px'}}>
           <CheckCircle size={20} />
-          Successful Practices
+          {t('outcome.lessons.successfulTitle')}
         </h4>
         <p style={styles.subsectionDescription}>
-          Document what worked well and should be replicated
+          {t('outcome.lessons.successfulDescription')}
         </p>
 
         {(formData.successfulPractices || []).map((practice, index) => (
@@ -135,7 +137,7 @@ export default function LessonsLearnedSection({ formData, setFormData }) {
             <div style={styles.practiceHeader}>
               <span style={{...styles.practiceBadge, background: '#10B981', display: 'flex', alignItems: 'center', gap: '4px'}}>
                 <CheckCircle size={14} />
-                SUCCESSFUL
+                {t('outcome.lessons.successfulBadge')}
               </span>
               <button
                 type="button"
@@ -148,27 +150,27 @@ export default function LessonsLearnedSection({ formData, setFormData }) {
 
             <div style={styles.formGroup}>
               <label style={styles.label}>
-                Practice <span style={styles.required}>*</span>
+                {t('outcome.lessons.practice')} <span style={styles.required}>*</span>
               </label>
               <input
                 type="text"
                 value={practice.practice || ''}
                 onChange={(e) => handleUpdatePractice('successful', index, 'practice', e.target.value)}
                 style={styles.input}
-                placeholder="E.g.: Daily async updates in Slack with structured template"
+                placeholder={t('outcome.lessons.practicePlaceholder')}
               />
             </div>
 
             <div style={styles.formGroup}>
               <label style={styles.label}>
-                Impact <span style={styles.required}>*</span>
+                {t('outcome.lessons.impact')} <span style={styles.required}>*</span>
               </label>
               <textarea
                 value={practice.impact || ''}
                 onChange={(e) => handleUpdatePractice('successful', index, 'impact', e.target.value)}
                 style={styles.textarea}
                 rows={2}
-                placeholder="E.g.: Reduced meeting dependency by 40% and improved transparency"
+                placeholder={t('outcome.lessons.impactPlaceholder')}
               />
             </div>
 
@@ -180,7 +182,7 @@ export default function LessonsLearnedSection({ formData, setFormData }) {
                   onChange={(e) => handleUpdatePractice('successful', index, 'replicable', e.target.checked)}
                   style={styles.checkbox}
                 />
-                <span>Is it replicable in other projects?</span>
+                <span>{t('outcome.lessons.replicable')}</span>
               </label>
             </div>
           </div>
@@ -191,7 +193,7 @@ export default function LessonsLearnedSection({ formData, setFormData }) {
           onClick={() => handleAddPractice('successful')}
           style={styles.addButton}
         >
-          + Add Successful Practice
+          {t('outcome.lessons.addSuccessful')}
         </button>
       </div>
 
@@ -201,10 +203,10 @@ export default function LessonsLearnedSection({ formData, setFormData }) {
       <div style={styles.subsection}>
         <h4 style={{...styles.subsectionTitle, display: 'flex', alignItems: 'center', gap: '8px'}}>
           <X size={20} />
-          Failed Practices
+          {t('outcome.lessons.failedTitle')}
         </h4>
         <p style={styles.subsectionDescription}>
-          Document what didn't work to avoid it in the future
+          {t('outcome.lessons.failedDescription')}
         </p>
 
         {(formData.unsuccessfulPractices || []).map((practice, index) => (
@@ -212,7 +214,7 @@ export default function LessonsLearnedSection({ formData, setFormData }) {
             <div style={styles.practiceHeader}>
               <span style={{...styles.practiceBadge, background: '#EF4444', display: 'flex', alignItems: 'center', gap: '4px'}}>
                 <X size={14} />
-                FAILED
+                {t('outcome.lessons.failedBadge')}
               </span>
               <button
                 type="button"
@@ -225,40 +227,40 @@ export default function LessonsLearnedSection({ formData, setFormData }) {
 
             <div style={styles.formGroup}>
               <label style={styles.label}>
-                Practice <span style={styles.required}>*</span>
+                {t('outcome.lessons.practice')} <span style={styles.required}>*</span>
               </label>
               <input
                 type="text"
                 value={practice.practice || ''}
                 onChange={(e) => handleUpdatePractice('unsuccessful', index, 'practice', e.target.value)}
                 style={styles.input}
-                placeholder="E.g.: Daily standup at 9 AM CET"
+                placeholder={t('outcome.lessons.failedPracticePlaceholder')}
               />
             </div>
 
             <div style={styles.formGroup}>
               <label style={styles.label}>
-                Negative Impact <span style={styles.required}>*</span>
+                {t('outcome.lessons.negativeImpact')} <span style={styles.required}>*</span>
               </label>
               <textarea
                 value={practice.impact || ''}
                 onChange={(e) => handleUpdatePractice('unsuccessful', index, 'impact', e.target.value)}
                 style={styles.textarea}
                 rows={2}
-                placeholder="E.g.: Asian team had to wake up at 4 AM, causing fatigue"
+                placeholder={t('outcome.lessons.negativeImpactPlaceholder')}
               />
             </div>
 
             <div style={styles.formGroup}>
               <label style={styles.label}>
-                Reason for Failure <span style={styles.required}>*</span>
+                {t('outcome.lessons.reason')} <span style={styles.required}>*</span>
               </label>
               <textarea
                 value={practice.reason || ''}
                 onChange={(e) => handleUpdatePractice('unsuccessful', index, 'reason', e.target.value)}
                 style={styles.textarea}
                 rows={2}
-                placeholder="E.g.: Did not consider time zone differences properly"
+                placeholder={t('outcome.lessons.reasonPlaceholder')}
               />
             </div>
           </div>
@@ -269,7 +271,7 @@ export default function LessonsLearnedSection({ formData, setFormData }) {
           onClick={() => handleAddPractice('unsuccessful')}
           style={styles.addButton}
         >
-          + Add Failed Practice
+          {t('outcome.lessons.addFailed')}
         </button>
       </div>
     </div>
@@ -278,9 +280,9 @@ export default function LessonsLearnedSection({ formData, setFormData }) {
 
 const styles = {
   section: {
-    padding: '24px',
+    padding: '28px',
     background: '#FFFFFF',
-    borderRadius: '8px',
+    borderRadius: '12px',
     border: '1px solid #E5E7EB'
   },
   sectionTitle: {
@@ -292,10 +294,10 @@ const styles = {
   sectionDescription: {
     fontSize: '14px',
     color: '#6B7280',
-    marginBottom: '24px'
+    marginBottom: '28px'
   },
   subsection: {
-    marginBottom: '24px'
+    marginBottom: '28px'
   },
   subsectionTitle: {
     fontSize: '16px',

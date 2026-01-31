@@ -129,15 +129,6 @@ const RiskNode = memo(({ data }) => {
             }}>
               {severity?.toUpperCase()}
             </span>
-            {probability && (
-              <span style={{ 
-                background: 'rgba(0,0,0,0.1)', 
-                padding: '2px 6px', 
-                borderRadius: '4px' 
-              }}>
-                {Math.round(probability * 100)}%
-              </span>
-            )}
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import SecondaryButton from './SecondaryButton';
 import CVConsentModal from './cv/CVConsentModal';
 import QuestionnaireModal from '../pages/CVUpload/QuestionnaireModal';
 import { getCVConsent } from '../api/cvConsent';
+import { normalizeConsentResponse } from '../utils/consent';
 
 /**
  * CVUpload Component
@@ -42,7 +43,8 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
       setCheckingConsent(true);
       try {
         const res = await getCVConsent();
-        const nextHasConsent = Boolean(res?.data?.hasConsent);
+        const normalized = normalizeConsentResponse(res?.data);
+        const nextHasConsent = normalized.hasConsent;
         if (!mounted) return;
         setHasConsent(nextHasConsent);
         setShowConsentModal(!nextHasConsent);
@@ -238,7 +240,7 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
 
     <div style={{
       maxWidth: '600px',
-      margin: '0 auto',
+      margin: '32px auto 0 auto',
       padding: '32px',
       background: 'white',
       borderRadius: '16px',
@@ -421,7 +423,7 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
       <div style={{
         display: 'flex',
         gap: '12px',
-        justifyContent: 'flex-end'
+        justifyContent: 'center'
       }}>
         {onCancel && (
           <SecondaryButton

@@ -1,11 +1,13 @@
 import React from 'react';
 import { Lightbulb, BarChart3, CheckCircle, GraduationCap, Target, Trophy, Award } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * ResultsModal Component
  * Displays outcome capture results and learning report
  */
 export default function ResultsModal({ show, results, onClose, onViewFullReport }) {
+  const { t } = useTranslation();
   if (!show || !results) return null;
 
   const { predictionAccuracy, learningReport } = results.data || {};
@@ -20,9 +22,9 @@ export default function ResultsModal({ show, results, onClose, onViewFullReport 
         {/* Header */}
         <div style={styles.header}>
           <div style={styles.successIcon}>✓</div>
-          <h2 style={styles.title}>Project Completed Successfully!</h2>
+          <h2 style={styles.title}>{t('outcome.results.title')}</h2>
           <p style={styles.subtitle}>
-            The system has learned from this experience and is ready to improve future predictions
+            {t('outcome.results.subtitle')}
           </p>
         </div>
 
@@ -31,7 +33,7 @@ export default function ResultsModal({ show, results, onClose, onViewFullReport 
           <div style={styles.statCard}>
             <div style={styles.statIcon}>🏆</div>
             <div>
-              <div style={styles.statLabel}>Prediction Accuracy</div>
+              <div style={styles.statLabel}>{t('outcome.results.predictionAccuracy')}</div>
               <div style={{
                 ...styles.statValue,
                 color: accuracyPercent >= 70 ? '#10B981' : '#DC2626'
@@ -51,7 +53,7 @@ export default function ResultsModal({ show, results, onClose, onViewFullReport 
           <div style={styles.statCard}>
             <div style={styles.statIcon}>✓</div>
             <div>
-              <div style={styles.statLabel}>Correct Predictions</div>
+              <div style={styles.statLabel}>{t('outcome.results.correctPredictions')}</div>
               <div style={{...styles.statValue, color: '#10B981'}}>
                 {predictionAccuracy.correctPredictions}
               </div>
@@ -61,7 +63,7 @@ export default function ResultsModal({ show, results, onClose, onViewFullReport 
           <div style={styles.statCard}>
             <div style={styles.statIcon}><Lightbulb size={32} color="#2563EB" /></div>
             <div>
-              <div style={styles.statLabel}>Total Cases in Base</div>
+              <div style={styles.statLabel}>{t('outcome.results.totalCases')}</div>
               <div style={{...styles.statValue, color: '#2563EB'}}>
                 {learningReport.systemImpact?.caseBaseSize || 0}
               </div>
@@ -73,22 +75,22 @@ export default function ResultsModal({ show, results, onClose, onViewFullReport 
         <div style={styles.section}>
           <h3 style={{ ...styles.sectionTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
             <BarChart3 size={24} />
-            System Impact
+            {t('outcome.results.systemImpact')}
           </h3>
           <div style={styles.impactList}>
             <div style={styles.impactItem}>
-              <span style={styles.impactLabel}>Case added to knowledge base:</span>
+              <span style={styles.impactLabel}>{t('outcome.results.caseAdded')}</span>
               <span style={{ ...styles.successBadge, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                 <CheckCircle size={16} />
-                Completed
+                {t('outcome.results.completed')}
               </span>
             </div>
             <div style={styles.impactItem}>
-              <span style={styles.impactLabel}>Expected confidence increase:</span>
+              <span style={styles.impactLabel}>{t('outcome.results.confidenceIncrease')}</span>
               <strong>+{Math.round((learningReport.systemImpact?.expectedConfidenceIncrease || 0) * 100)}%</strong>
             </div>
             <div style={styles.impactItem}>
-              <span style={styles.impactLabel}>Real cases in organization:</span>
+              <span style={styles.impactLabel}>{t('outcome.results.realCases')}</span>
               <strong>{learningReport.systemImpact?.caseBaseSize || 0}</strong>
             </div>
           </div>
@@ -99,14 +101,14 @@ export default function ResultsModal({ show, results, onClose, onViewFullReport 
           <div style={styles.section}>
             <h3 style={{ ...styles.sectionTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
               <GraduationCap size={24} />
-              Key Learnings
+              {t('outcome.results.keyLearnings')}
             </h3>
             
             {learningReport.learnings.strengthenedBeliefs?.length > 0 && (
               <div style={styles.learningBlock}>
                 <h4 style={{ ...styles.learningTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <CheckCircle size={20} />
-                  Strengthened Beliefs
+                  {t('outcome.results.strengthenedBeliefs')}
                 </h4>
                 <ul style={styles.learningList}>
                   {learningReport.learnings.strengthenedBeliefs.map((belief, i) => (
@@ -120,7 +122,7 @@ export default function ResultsModal({ show, results, onClose, onViewFullReport 
               <div style={styles.learningBlock}>
                 <h4 style={{ ...styles.learningTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Lightbulb size={20} />
-                  New Insights
+                  {t('outcome.results.newInsights')}
                 </h4>
                 <ul style={styles.learningList}>
                   {learningReport.learnings.newInsights.map((insight, i) => (
@@ -134,7 +136,7 @@ export default function ResultsModal({ show, results, onClose, onViewFullReport 
               <div style={styles.learningBlock}>
                 <h4 style={{ ...styles.learningTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
                   <Target size={20} />
-                  Surprises
+                  {t('outcome.results.surprises')}
                 </h4>
                 <ul style={styles.learningList}>
                   {learningReport.learnings.surprises.map((surprise, i) => (
@@ -151,7 +153,7 @@ export default function ResultsModal({ show, results, onClose, onViewFullReport 
           <div style={styles.section}>
             <h3 style={{ ...styles.sectionTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Target size={24} />
-              Accuracy Details
+              {t('outcome.results.accuracyDetails')}
             </h3>
             <div style={styles.accuracyGrid}>
               {Object.entries(learningReport.accuracy).map(([riskType, data]) => (
@@ -164,12 +166,12 @@ export default function ResultsModal({ show, results, onClose, onViewFullReport 
                       ...styles.resultBadge,
                       background: data.result === 'correct_prediction' ? '#10B981' : '#F59E0B'
                     }}>
-                      {data.result === 'correct_prediction' ? '✓ Correct' : '⚠ False Positive'}
+                      {data.result === 'correct_prediction' ? t('outcome.results.correct') : t('outcome.results.falsePositive')}
                     </span>
                   </div>
                   <div style={styles.accuracyDetail}>
-                    <span>Predicted: {data.predicted ? 'Yes' : 'No'}</span>
-                    <span>Occurred: {data.occurred ? 'Yes' : 'No'}</span>
+                    <span>{t('outcome.results.predicted')}: {data.predicted ? t('common.yes') : t('common.no')}</span>
+                    <span>{t('outcome.results.occurred')}: {data.occurred ? t('common.yes') : t('common.no')}</span>
                   </div>
                 </div>
               ))}
@@ -184,14 +186,14 @@ export default function ResultsModal({ show, results, onClose, onViewFullReport 
               onClick={onViewFullReport}
               style={styles.secondaryButton}
             >
-              View Full Report
+              {t('outcome.results.viewFullReport')}
             </button>
           )}
           <button
             onClick={onClose}
             style={styles.primaryButton}
           >
-            Close
+            {t('common.close')}
           </button>
         </div>
       </div>
@@ -211,75 +213,78 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,
-    padding: '20px'
+    padding: '12px',
+    overflowY: 'auto'
   },
   modal: {
     background: '#FFFFFF',
     borderRadius: '12px',
-    maxWidth: '800px',
+    maxWidth: '700px',
     width: '100%',
-    maxHeight: '90vh',
+    maxHeight: '95vh',
     overflow: 'auto',
-    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
+    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+    margin: 'auto'
   },
   header: {
-    padding: '32px 32px 24px',
+    padding: '24px 20px 20px',
     textAlign: 'center',
     borderBottom: '1px solid #E5E7EB'
   },
   successIcon: {
-    width: '64px',
-    height: '64px',
-    margin: '0 auto 16px',
+    width: '56px',
+    height: '56px',
+    margin: '0 auto 12px',
     background: '#10B981',
     borderRadius: '50%',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    fontSize: '32px',
+    fontSize: '28px',
     color: '#FFFFFF',
     fontWeight: 'bold'
   },
   title: {
-    fontSize: '24px',
+    fontSize: '20px',
     fontWeight: '700',
     color: '#111827',
-    marginBottom: '8px'
+    marginBottom: '6px'
   },
   subtitle: {
-    fontSize: '14px',
+    fontSize: '13px',
     color: '#6B7280',
-    maxWidth: '600px',
-    margin: '0 auto'
+    maxWidth: '500px',
+    margin: '0 auto',
+    lineHeight: '1.5'
   },
   statsGrid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '16px',
-    padding: '24px 32px'
+    gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+    gap: '12px',
+    padding: '20px'
   },
   statCard: {
     display: 'flex',
-    gap: '12px',
-    padding: '16px',
+    gap: '10px',
+    padding: '14px',
     background: '#F9FAFB',
     borderRadius: '8px',
     border: '1px solid #E5E7EB'
   },
   statIcon: {
-    fontSize: '32px',
+    fontSize: '28px',
     flexShrink: 0
   },
   statLabel: {
-    fontSize: '12px',
+    fontSize: '11px',
     color: '#6B7280',
-    marginBottom: '4px',
+    marginBottom: '3px',
     textTransform: 'uppercase',
     fontWeight: '500',
-    letterSpacing: '0.5px'
+    letterSpacing: '0.3px'
   },
   statValue: {
-    fontSize: '28px',
+    fontSize: '24px',
     fontWeight: '700',
     lineHeight: 1
   },
@@ -296,26 +301,28 @@ const styles = {
     transition: 'width 0.5s ease'
   },
   section: {
-    padding: '24px 32px',
+    padding: '20px',
     borderTop: '1px solid #E5E7EB'
   },
   sectionTitle: {
-    fontSize: '18px',
+    fontSize: '16px',
     fontWeight: '600',
     color: '#111827',
-    marginBottom: '16px'
+    marginBottom: '12px'
   },
   impactList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px'
+    gap: '10px'
   },
   impactItem: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    fontSize: '14px',
-    color: '#374151'
+    fontSize: '13px',
+    color: '#374151',
+    flexWrap: 'wrap',
+    gap: '8px'
   },
   impactLabel: {
     color: '#6B7280'
@@ -329,30 +336,30 @@ const styles = {
     fontWeight: '600'
   },
   learningBlock: {
-    marginBottom: '20px'
+    marginBottom: '16px'
   },
   learningTitle: {
-    fontSize: '14px',
+    fontSize: '13px',
     fontWeight: '600',
     color: '#374151',
-    marginBottom: '8px'
+    marginBottom: '6px'
   },
   learningList: {
     margin: 0,
-    paddingLeft: '24px'
+    paddingLeft: '20px'
   },
   learningItem: {
-    fontSize: '13px',
+    fontSize: '12px',
     color: '#6B7280',
-    marginBottom: '6px',
-    lineHeight: 1.5
+    marginBottom: '4px',
+    lineHeight: 1.4
   },
   accuracyGrid: {
     display: 'grid',
-    gap: '12px'
+    gap: '10px'
   },
   accuracyCard: {
-    padding: '12px',
+    padding: '10px',
     background: '#F9FAFB',
     border: '1px solid #E5E7EB',
     borderRadius: '6px'
@@ -361,10 +368,12 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '8px'
+    marginBottom: '6px',
+    flexWrap: 'wrap',
+    gap: '6px'
   },
   riskTypeName: {
-    fontSize: '13px',
+    fontSize: '12px',
     fontWeight: '600',
     color: '#111827',
     textTransform: 'capitalize'
@@ -384,11 +393,12 @@ const styles = {
     color: '#6B7280'
   },
   actions: {
-    padding: '24px 32px',
+    padding: '16px 20px',
     borderTop: '1px solid #E5E7EB',
     display: 'flex',
     justifyContent: 'flex-end',
-    gap: '12px'
+    gap: '10px',
+    flexWrap: 'wrap'
   },
   primaryButton: {
     padding: '10px 24px',

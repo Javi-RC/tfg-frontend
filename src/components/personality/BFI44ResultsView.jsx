@@ -1,6 +1,6 @@
 import React from 'react';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Tooltip, ResponsiveContainer } from 'recharts';
-import { RefreshCcw, BarChart3 } from 'lucide-react';
+import { RefreshCcw, BarChart3, ArrowLeft } from 'lucide-react';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 import FactorCard, { FACTOR_CONFIG } from './FactorCard';
@@ -133,7 +133,10 @@ export default function BFI44ResultsView({ results, onRetake, onNavigateBack }) 
           </span>
         </PrimaryButton>
         <SecondaryButton onClick={onNavigateBack} style={{ minWidth: '200px' }} aria-label="Back to profile">
-          ← Back to Profile
+          <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <ArrowLeft size={16} aria-hidden="true" />
+            Back to Profile
+          </span>
         </SecondaryButton>
       </div>
     </>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CheckCheck, BellOff, ArrowRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useNotifications } from '../../contexts/useNotifications';
 import NotificationItem from './NotificationItem';
 import './NotificationDropdown.css';
@@ -13,6 +14,7 @@ import './NotificationDropdown.css';
  * Se carga al abrir el panel (GET /api/notifications)
  */
 const NotificationDropdown = ({ onClose }) => {
+  const { t } = useTranslation();
   const { 
     notifications, 
     loading, 
@@ -38,15 +40,15 @@ const NotificationDropdown = ({ onClose }) => {
   return (
     <div className="notification-dropdown">
       <div className="notification-dropdown-header">
-        <h3>Notifications</h3>
+        <h3>{t('notifications.title')}</h3>
         <button 
           className="mark-all-read-btn"
           onClick={handleMarkAllAsRead}
           disabled={!hasUnreadNotifications}
-          title={hasUnreadNotifications ? 'Mark all as read' : 'No unread notifications'}
+          title={hasUnreadNotifications ? t('notifications.markAllAsRead') : t('notifications.noUnread')}
         >
           <CheckCheck size={16} />
-          Mark all as read
+          {t('notifications.markAllAsRead')}
         </button>
       </div>
 
@@ -55,13 +57,13 @@ const NotificationDropdown = ({ onClose }) => {
           className={`tab ${activeTab === 'all' ? 'active' : ''}`}
           onClick={() => setActiveTab('all')}
         >
-          All ({(notifications || []).length})
+          {t('notifications.all')} ({(notifications || []).length})
         </button>
         <button 
           className={`tab ${activeTab === 'unread' ? 'active' : ''}`}
           onClick={() => setActiveTab('unread')}
         >
-          Unread ({(notifications || []).filter(n => !n.readAt).length})
+          {t('notifications.unread')} ({(notifications || []).filter(n => !n.readAt).length})
         </button>
       </div>
 
@@ -69,12 +71,12 @@ const NotificationDropdown = ({ onClose }) => {
         {loading ? (
           <div className="notification-loading">
             <div className="loading-spinner"></div>
-            <p>Loading notifications...</p>
+            <p>{t('notifications.loading')}</p>
           </div>
         ) : filteredNotifications.length === 0 ? (
           <div className="notification-empty">
             <BellOff size={48} />
-            <p>You don't have any {activeTab === 'unread' ? 'unread ' : ''}notifications</p>
+            <p>{t('notifications.noNotifications', { type: activeTab === 'unread' ? t('notifications.unread').toLowerCase() + ' ' : '' })}</p>
           </div>
         ) : (
           filteredNotifications.map(notification => (
@@ -89,7 +91,7 @@ const NotificationDropdown = ({ onClose }) => {
 
       <div className="notification-dropdown-footer">
         <Link to="/notifications" className="view-all-link" onClick={onClose}>
-          View all notifications
+          {t('notifications.viewAll')}
           <ArrowRight size={16} />
         </Link>
       </div>

@@ -33,27 +33,26 @@ export default function PreferencesSection({
 
   return (
     <div style={{
-      background: 'white',
-      borderRadius: '16px',
-      padding: '32px',
-      marginBottom: '24px',
-      boxShadow: '0 2px 12px rgba(0,0,0,0.08)'
+      padding: '32px 40px',
+      borderBottom: '1px solid #e2e8f0'
     }}>
-      <h2 style={{
-        fontSize: '20px',
-        fontWeight: '600',
-        color: '#1a1a1a',
-        marginBottom: '16px'
-      }}>
-        {t('profile.preferences')}
-      </h2>
-      <p style={{
-        fontSize: '14px',
-        color: '#666',
-        marginBottom: '20px'
-      }}>
-        {t('profile.preferencesSection.description')}
-      </p>
+      <div style={{ marginBottom: '24px' }}>
+        <h2 style={{
+          fontSize: '20px',
+          fontWeight: '700',
+          color: '#1a202c',
+          marginBottom: '8px'
+        }}>
+          {t('profile.preferences')}
+        </h2>
+        <p style={{
+          fontSize: '14px',
+          color: '#718096',
+          lineHeight: '1.6'
+        }}>
+          {t('profile.preferencesSection.description')}
+        </p>
+      </div>
 
       {saveError && (
         <div style={{

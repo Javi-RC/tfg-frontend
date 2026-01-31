@@ -57,7 +57,9 @@ const styles = {
     color: '#6B7280',
     cursor: 'pointer',
     transition: 'all 0.2s',
-    borderBottom: '2px solid transparent',
+    borderBottomWidth: '2px',
+    borderBottomStyle: 'solid',
+    borderBottomColor: 'transparent',
     marginBottom: '-2px'
   },
   tabActive: {

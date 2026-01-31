@@ -94,5 +94,3 @@ export function useAdminCVList() {
     navigateToCVDetail
   };
 }
-
-export default useAdminCVList;

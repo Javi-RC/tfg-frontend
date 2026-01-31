@@ -7,7 +7,8 @@ import { KNOWLEDGE_MANAGEMENT_SYSTEMS } from '../../types/projectTypes';
  * NEW CRITICAL STEP - Manages knowledge sharing and documentation
  */
 export default function Step6KnowledgeManagement({ formData, onChange, errors }) {
-  const showWarning = !formData.hasKnowledgeManagementTools;
+  const hasTools = formData.knowledgeManagementSystem || (formData.knowledgeManagementTools?.length > 0);
+  const showWarning = !hasTools;
 
   const handleProcessToggle = (process) => {
     const processes = formData.documentationProcesses || {};
@@ -31,44 +32,6 @@ export default function Step6KnowledgeManagement({ formData, onChange, errors })
         Configure how knowledge and documentation will be managed across the team
       </p>
 
-      {/* Has Knowledge Management Tools */}
-      <div style={styles.formGroup}>
-        <label style={styles.label}>
-          Has Knowledge Management Tools <span style={styles.required}>*</span>
-        </label>
-        <div style={styles.radioGroup}>
-          <label style={styles.radioLabel}>
-            <input
-              type="radio"
-              name="hasKnowledgeManagementTools"
-              value="true"
-              checked={formData.hasKnowledgeManagementTools === true}
-              onChange={() => onChange({ hasKnowledgeManagementTools: true })}
-              style={styles.radio}
-            />
-            Yes
-          </label>
-          <label style={styles.radioLabel}>
-            <input
-              type="radio"
-              name="hasKnowledgeManagementTools"
-              value="false"
-              checked={formData.hasKnowledgeManagementTools === false}
-              onChange={() => onChange({ 
-                hasKnowledgeManagementTools: false,
-                knowledgeManagementSystem: undefined,
-                knowledgeManagementTools: []
-              })}
-              style={styles.radio}
-            />
-            No
-          </label>
-        </div>
-        {errors?.hasKnowledgeManagementTools && (
-          <span style={styles.error}>{errors.hasKnowledgeManagementTools}</span>
-        )}
-      </div>
-
       {/* Warning Alert */}
       {showWarning && (
         <div style={styles.warningBox}>
@@ -88,83 +51,86 @@ export default function Step6KnowledgeManagement({ formData, onChange, errors })
         </div>
       )}
 
-      {/* Conditional: Knowledge Management System */}
-      {formData.hasKnowledgeManagementTools && (
-        <>
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Knowledge Management System</label>
-            <select
-              value={formData.knowledgeManagementSystem || ''}
-              onChange={(e) => onChange({ knowledgeManagementSystem: e.target.value })}
-              style={styles.select}
-            >
-              <option value="">Select a system...</option>
-              {Object.entries(KNOWLEDGE_MANAGEMENT_SYSTEMS).map(([key, value]) => (
-                <option key={key} value={value}>{value}</option>
-              ))}
-            </select>
-          </div>
+      {/* Knowledge Management System */}
+      <div style={styles.formGroup}>
+        <label style={styles.label} htmlFor="knowledgeManagementSystem">Knowledge Management System</label>
+        <select
+          id="knowledgeManagementSystem"
+          value={formData.knowledgeManagementSystem || ''}
+          onChange={(e) => onChange({ knowledgeManagementSystem: e.target.value })}
+          style={styles.select}
+          aria-label="Knowledge management system"
+        >
+          <option value="">Select a system...</option>
+          {Object.entries(KNOWLEDGE_MANAGEMENT_SYSTEMS).map(([key, value]) => (
+            <option key={key} value={value}>{value}</option>
+          ))}
+        </select>
+      </div>
 
-          <div style={styles.formGroup}>
-            <label style={styles.label}>
-              Knowledge Management Tools
-              <span style={styles.hint}> (comma-separated)</span>
-            </label>
+      <div style={styles.formGroup}>
+        <label style={styles.label} htmlFor="knowledgeManagementTools">
+          Knowledge Management Tools
+          <span style={styles.hint}> (comma-separated)</span>
+        </label>
+        <input
+          type="text"
+          id="knowledgeManagementTools"
+          value={(formData.knowledgeManagementTools || []).join(', ')}
+          onChange={(e) => handleKnowledgeToolsChange(e.target.value)}
+          placeholder="e.g., Confluence, Notion, SharePoint"
+          style={styles.input}
+          aria-label="Knowledge management tools"
+        />
+        <small style={styles.helpText}>
+          Current tools: {formData.knowledgeManagementTools?.length || 0}
+        </small>
+      </div>
+
+      {/* Documentation Processes */}
+      <div style={styles.formGroup}>
+        <label style={styles.label}>Documentation Processes</label>
+        <div style={styles.checkboxGroup}>
+          <label style={styles.checkboxLabel} htmlFor="km-doc-standardization">
             <input
-              type="text"
-              value={(formData.knowledgeManagementTools || []).join(', ')}
-              onChange={(e) => handleKnowledgeToolsChange(e.target.value)}
-              placeholder="e.g., Confluence, Notion, SharePoint"
-              style={styles.input}
+              type="checkbox"
+              id="km-doc-standardization"
+              checked={formData.documentationProcesses?.hasStandardization || false}
+              onChange={() => handleProcessToggle('hasStandardization')}
+              style={styles.checkbox}
             />
-            <small style={styles.helpText}>
-              Current tools: {formData.knowledgeManagementTools?.length || 0}
-            </small>
-          </div>
+            Has Documentation Standardization
+          </label>
 
-          {/* Documentation Processes */}
-          <div style={styles.formGroup}>
-            <label style={styles.label}>Documentation Processes</label>
-            <div style={styles.checkboxGroup}>
-              <label style={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={formData.documentationProcesses?.hasStandardization || false}
-                  onChange={() => handleProcessToggle('hasStandardization')}
-                  style={styles.checkbox}
-                />
-                Has Documentation Standardization
-              </label>
+          <label style={styles.checkboxLabel} htmlFor="km-doc-templates">
+            <input
+              type="checkbox"
+              id="km-doc-templates"
+              checked={formData.documentationProcesses?.templates || false}
+              onChange={() => handleProcessToggle('templates')}
+              style={styles.checkbox}
+            />
+            Uses Templates
+          </label>
 
-              <label style={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={formData.documentationProcesses?.templates || false}
-                  onChange={() => handleProcessToggle('templates')}
-                  style={styles.checkbox}
-                />
-                Uses Templates
-              </label>
-
-              <label style={styles.checkboxLabel}>
-                <input
-                  type="checkbox"
-                  checked={formData.documentationProcesses?.reviewProcess || false}
-                  onChange={() => handleProcessToggle('reviewProcess')}
-                  style={styles.checkbox}
-                />
-                Has Review Process
-              </label>
-            </div>
-            <small style={styles.helpText}>
-              Select all that apply to improve documentation quality
-            </small>
-          </div>
-        </>
-      )}
+          <label style={styles.checkboxLabel} htmlFor="km-doc-review">
+            <input
+              type="checkbox"
+              id="km-doc-review"
+              checked={formData.documentationProcesses?.reviewProcess || false}
+              onChange={() => handleProcessToggle('reviewProcess')}
+              style={styles.checkbox}
+            />
+            Has Review Process
+          </label>
+        </div>
+        <small style={styles.helpText}>
+          Select all that apply to improve documentation quality
+        </small>
+      </div>
 
       {/* Best Practices Tip */}
-      {formData.hasKnowledgeManagementTools && (
+      {hasTools && (
         <div style={styles.tipBox}>
           <span style={styles.tipIcon}>💡</span>
           <div>

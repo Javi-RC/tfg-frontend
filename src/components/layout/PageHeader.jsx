@@ -1,5 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * PageHeader Component
@@ -11,9 +13,10 @@ export default function PageHeader({
   action,
   actions,
   backButton,
-  backButtonText = '← Back',
+  backButtonText,
   children
 }) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
@@ -23,7 +26,8 @@ export default function PageHeader({
           style={styles.backButton}
           onClick={() => navigate(backButton)}
         >
-          {backButtonText}
+          <ArrowLeft size={18} style={{ marginRight: '8px' }} />
+          {backButtonText || t('layout.back')}
         </button>
       )}
       
@@ -52,15 +56,17 @@ const styles = {
     marginBottom: '32px'
   },
   backButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
     background: 'none',
     border: 'none',
     color: '#6B7280',
     fontSize: '14px',
+    fontWeight: '600',
     cursor: 'pointer',
-    padding: '8px 0',
+    padding: '8px 12px 8px 0',
     marginBottom: '16px',
-    display: 'inline-block',
-    transition: 'color 0.2s'
+    transition: 'color 0.2s, transform 0.2s'
   },
   content: {
     display: 'flex',

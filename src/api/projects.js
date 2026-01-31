@@ -62,9 +62,16 @@ export const activateProject = (id) =>
   api.patch(`/api/projects/${id}/activate`);
 
 /**
- * Complete project
+ * Complete project (mark as finished)
+ * IMPORTANT: Call this BEFORE submitting project outcome
+ * This changes project status to 'completed' and is required for outcome submission
+ * 
+ * WORKFLOW:
+ * 1. Call completeProject(id) - marks status as 'completed'
+ * 2. Call submitProjectOutcome(id, data) - captures results and creates CBR case
+ * 
  * @param {string} id - Project ID
- * @returns {Promise} API response
+ * @returns {Promise} API response with completedAt timestamp
  */
 export const completeProject = (id) => 
   api.patch(`/api/projects/${id}/complete`);
@@ -147,7 +154,7 @@ export const getTeamAnalysis = (id) =>
   api.get(`/api/projects/${id}/team-analysis`);
 
 /**
- * Get detailed team synergy analysis (personality complementarity)
+ * Get detailed team synergy analysis
  * @param {string} id - Project ID
  * @returns {Promise} API response with synergy analysis
  */
@@ -164,7 +171,7 @@ export const suggestTeam = (data) =>
   api.post('/api/projects/suggest-team', data);
 
 /**
- * Predict project risks using Decision Tree + CBR + Team Analysis
+ * Predict project risks using Expert Rules + CBR + Team Analysis
  * Combines expert rules, historical cases, and team composition analysis
  * @param {string} id - Project ID
  * @returns {Promise} API response with comprehensive risk analysis
@@ -229,9 +236,10 @@ export const updateCBRConfig = (projectId, cbrConfig) =>
   api.patch(`/api/projects/${projectId}/team-config/cbr`, cbrConfig);
 
 /**
- * Update Decision Tree configuration only
+ * Update Expert Rules configuration only
+ * Controls 29 expert rules risk thresholds
  * @param {string} projectId - Project ID
- * @param {Object} decisionTreeConfig - Decision Tree configuration
+ * @param {Object} decisionTreeConfig - Expert rules configuration
  * @returns {Promise} API response
  */
 export const updateDecisionTreeConfig = (projectId, decisionTreeConfig) => 
@@ -253,11 +261,21 @@ export const resetTeamConfig = (projectId) =>
 export const getTeamConfigSummary = (projectId) => 
   api.get(`/api/projects/${projectId}/team-config/summary`);
 
+// ==================== Project Completion Questionnaire ====================
+
 /**
- * Validate team configuration
+ * Check if project has a pending completion questionnaire
  * @param {string} projectId - Project ID
- * @param {Object} config - Configuration to validate
- * @returns {Promise} API response with validation result
+ * @returns {Promise} API response with { pending: boolean, questionnaire?: object }
  */
-export const validateTeamConfig = (projectId, config) => 
-  api.post(`/api/projects/${projectId}/team-config/validate`, config);
+export const getCompletionQuestionnaire = (projectId) => 
+  api.get(`/api/projects/${projectId}/completion-questionnaire`);
+
+/**
+ * Submit project completion questionnaire responses
+ * @param {string} projectId - Project ID
+ * @param {Object} responses - Questionnaire responses
+ * @returns {Promise} API response
+ */
+export const submitCompletionQuestionnaire = (projectId, responses) => 
+  api.post(`/api/projects/${projectId}/completion-questionnaire`, responses);

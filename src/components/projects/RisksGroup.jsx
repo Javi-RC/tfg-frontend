@@ -7,7 +7,7 @@ import RiskCard from './RiskCard';
  * Risks Group Component
  * Groups and displays risks by severity
  */
-export default function RisksGroup({ title, severity, risks, dataCompleteness }) {
+export default function RisksGroup({ title, severity, risks, dataCompleteness, metadata }) {
   const { t } = useTranslation();
   if (!risks || risks.length === 0) {
     return null;
@@ -92,6 +92,7 @@ export default function RisksGroup({ title, severity, risks, dataCompleteness })
             key={idx} 
             risk={risk} 
             dataCompleteness={dataCompleteness}
+            metadata={metadata}
           />
         ))}
       </div>

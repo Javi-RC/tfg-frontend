@@ -31,24 +31,43 @@ export default function OAuthSuccess() {
 
   useEffect(() => {
     const token = searchParams.get('token');
+    console.log('[OAuthSuccess] Token from URL:', token ? 'present' : 'missing');
+    console.log('[OAuthSuccess] Full token value:', token);
+    
     if (!token) {
+      console.error('[OAuthSuccess] No token found in URL');
       navigate('/login', { replace: true });
       return;
     }
 
     try {
       const decoded = decodeJwt(token);
+      console.log('[OAuthSuccess] Decoded JWT:', decoded);
       const userData = decoded.user || decoded;
-      setSession(token, userData);
+      console.log('[OAuthSuccess] User data extracted:', userData);
       
-      // Navigate after setting session
-      if (userData.role === 'unassigned') {
-        navigate('/complete-profile', { replace: true });
-      } else {
-        navigate('/', { replace: true });
-      }
+      // CRITICAL: Call setSession FIRST to update both token and user in state
+      // This prevents the AuthContext useEffect from trying to fetch profile
+      // when it sees token but no user
+      setSession(token, userData);
+      console.log('[OAuthSuccess] setSession called');
+      
+      // Verify token is in localStorage after setSession
+      const storedToken = localStorage.getItem('token');
+      const storedUser = localStorage.getItem('user');
+      console.log('[OAuthSuccess] Verification - token in localStorage:', storedToken ? 'yes' : 'no');
+      console.log('[OAuthSuccess] Verification - user in localStorage:', storedUser ? 'yes' : 'no');
+      
+      // Navigate after ensuring session is set
+      setTimeout(() => {
+        if (userData.role === 'unassigned') {
+          navigate('/complete-profile', { replace: true });
+        } else {
+          navigate('/', { replace: true });
+        }
+      }, 100);
     } catch (err) {
-      console.error('Invalid token on OAuth success:', err);
+      console.error('[OAuthSuccess] Invalid token on OAuth success:', err);
       navigate('/login', { replace: true });
     }
   }, [searchParams, setSession, navigate]);

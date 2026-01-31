@@ -22,10 +22,15 @@ export default function SkillsSection({
 
   const formatSkillLevel = (level) => {
     const mapping = {
-      básico: t('cv.beginner'),
-      intermedio: t('cv.intermediate'),
-      avanzado: t('cv.advanced'),
-      experto: t('cv.expert')
+      'beginner': t('cv.beginner'),
+      'intermediate': t('cv.intermediate'),
+      'advanced': t('cv.advanced'),
+      'expert': t('cv.expert'),
+      // Legacy Spanish values for backward compatibility
+      'básico': t('cv.beginner'),
+      'intermedio': t('cv.intermediate'),
+      'avanzado': t('cv.advanced'),
+      'experto': t('cv.expert')
     };
 
     return mapping[level] || level;
@@ -65,10 +70,10 @@ export default function SkillsSection({
                 onChange={(value) => onSkillChange(index, 'level', value)}
                 placeholder={t('cv.editor.skills.fields.level.placeholder')}
                 options={[
-                  { value: 'básico', label: t('cv.beginner') },
-                  { value: 'intermedio', label: t('cv.intermediate') },
-                  { value: 'avanzado', label: t('cv.advanced') },
-                  { value: 'experto', label: t('cv.expert') }
+                  { value: 'beginner', label: t('cv.beginner') },
+                  { value: 'intermediate', label: t('cv.intermediate') },
+                  { value: 'advanced', label: t('cv.advanced') },
+                  { value: 'expert', label: t('cv.expert') }
                 ]}
               />
               <Field
@@ -79,12 +84,12 @@ export default function SkillsSection({
                 onChange={(value) => onSkillChange(index, 'category', value)}
                 placeholder={t('cv.editor.skills.fields.category.placeholder')}
                 options={[
-                  { value: 'lenguaje', label: t('cv.editor.skills.categories.language') },
+                  { value: 'language', label: t('cv.editor.skills.categories.language') },
                   { value: 'framework', label: t('cv.editor.skills.categories.framework') },
-                  { value: 'herramienta', label: t('cv.editor.skills.categories.tool') },
-                  { value: 'base_datos', label: t('cv.editor.skills.categories.database') },
+                  { value: 'tool', label: t('cv.editor.skills.categories.tool') },
+                  { value: 'database', label: t('cv.editor.skills.categories.database') },
                   { value: 'cloud', label: t('cv.editor.skills.categories.cloud') },
-                  { value: 'otro', label: t('cv.editor.skills.categories.other') }
+                  { value: 'other', label: t('cv.editor.skills.categories.other') }
                 ]}
               />
               <button
@@ -122,10 +127,10 @@ export default function SkillsSection({
               fontSize: '14px',
               fontWeight: '500',
               color: skill.category === 'framework' ? '#2c5282' : '#2d3748',
-              border: skill.level === 'avanzado' ? '2px solid #2d3748' : '1px solid transparent'
+              border: skill.level === 'advanced' ? '2px solid #2d3748' : '1px solid transparent'
             }}>
               {skill.name}
-              {skill.level && skill.level !== 'básico' && (
+              {skill.level && skill.level !== 'beginner' && skill.level !== 'básico' && (
                 <span style={{ fontSize: '11px', opacity: 0.7, marginLeft: '4px' }}>
                   ({formatSkillLevel(skill.level)})
                 </span>

@@ -14,25 +14,38 @@ export function FormInput({
   error = '',
   ...props 
 }) {
+  const inputId = props.id || name;
+  const errorId = error ? `${inputId}-error` : undefined;
   return (
     <div style={styles.field}>
-      <label style={styles.label}>
-        {label}
-        {required && <span style={styles.required}> *</span>}
+      <label style={styles.label} htmlFor={inputId}>
+        <span style={styles.labelLeft}>
+          {label}
+          {required && (
+            <span style={styles.required} aria-hidden="true">*</span>
+          )}
+        </span>
       </label>
       <input
         type={type}
+        id={inputId}
         name={name}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
+        aria-invalid={Boolean(error)}
+        aria-describedby={errorId}
         style={{
           ...styles.input,
           ...(error && styles.inputError)
         }}
         {...props}
       />
-      {error && <span style={styles.errorText}>{error}</span>}
+      {error && (
+        <span id={errorId} style={styles.errorText} role="alert" aria-live="polite">
+          {error}
+        </span>
+      )}
     </div>
   );
 }
@@ -52,11 +65,17 @@ export function FormTextarea({
   error = '',
   ...props 
 }) {
+  const inputId = props.id || name;
+  const errorId = error ? `${inputId}-error` : undefined;
   return (
     <div style={styles.field}>
-      <label style={styles.label}>
-        {label}
-        {required && <span style={styles.required}> *</span>}
+      <label style={styles.label} htmlFor={inputId}>
+        <span style={styles.labelLeft}>
+          {label}
+          {required && (
+            <span style={styles.required} aria-hidden="true">*</span>
+          )}
+        </span>
         {maxLength && (
           <span style={styles.charCount}>
             {value?.length || 0} / {maxLength}
@@ -64,19 +83,26 @@ export function FormTextarea({
         )}
       </label>
       <textarea
+        id={inputId}
         name={name}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
         rows={rows}
         maxLength={maxLength}
+        aria-invalid={Boolean(error)}
+        aria-describedby={errorId}
         style={{
           ...styles.textarea,
           ...(error && styles.inputError)
         }}
         {...props}
       />
-      {error && <span style={styles.errorText}>{error}</span>}
+      {error && (
+        <span id={errorId} style={styles.errorText} role="alert" aria-live="polite">
+          {error}
+        </span>
+      )}
     </div>
   );
 }
@@ -95,16 +121,25 @@ export function FormSelect({
   error = '',
   ...props 
 }) {
+  const inputId = props.id || name;
+  const errorId = error ? `${inputId}-error` : undefined;
   return (
     <div style={styles.field}>
-      <label style={styles.label}>
-        {label}
-        {required && <span style={styles.required}> *</span>}
+      <label style={styles.label} htmlFor={inputId}>
+        <span style={styles.labelLeft}>
+          {label}
+          {required && (
+            <span style={styles.required} aria-hidden="true">*</span>
+          )}
+        </span>
       </label>
       <select
+        id={inputId}
         name={name}
         value={value}
         onChange={onChange}
+        aria-invalid={Boolean(error)}
+        aria-describedby={errorId}
         style={{
           ...styles.select,
           ...(error && styles.inputError)
@@ -118,7 +153,11 @@ export function FormSelect({
           </option>
         ))}
       </select>
-      {error && <span style={styles.errorText}>{error}</span>}
+      {error && (
+        <span id={errorId} style={styles.errorText} role="alert" aria-live="polite">
+          {error}
+        </span>
+      )}
     </div>
   );
 }
@@ -137,26 +176,39 @@ export function FormNumber({
   error = '',
   ...props 
 }) {
+  const inputId = props.id || name;
+  const errorId = error ? `${inputId}-error` : undefined;
   return (
     <div style={styles.field}>
-      <label style={styles.label}>
-        {label}
-        {required && <span style={styles.required}> *</span>}
+      <label style={styles.label} htmlFor={inputId}>
+        <span style={styles.labelLeft}>
+          {label}
+          {required && (
+            <span style={styles.required} aria-hidden="true">*</span>
+          )}
+        </span>
       </label>
       <input
         type="number"
+        id={inputId}
         name={name}
         value={value}
         onChange={onChange}
         min={min}
         max={max}
+        aria-invalid={Boolean(error)}
+        aria-describedby={errorId}
         style={{
           ...styles.input,
           ...(error && styles.inputError)
         }}
         {...props}
       />
-      {error && <span style={styles.errorText}>{error}</span>}
+      {error && (
+        <span id={errorId} style={styles.errorText} role="alert" aria-live="polite">
+          {error}
+        </span>
+      )}
     </div>
   );
 }
@@ -216,8 +268,16 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'space-between'
   },
+  labelLeft: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '4px',
+    minWidth: 0
+  },
   required: {
-    color: '#EF4444'
+    color: '#EF4444',
+    fontWeight: '700',
+    lineHeight: 1
   },
   charCount: {
     fontSize: '12px',

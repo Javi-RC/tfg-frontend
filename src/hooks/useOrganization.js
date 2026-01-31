@@ -4,6 +4,7 @@ import { AuthContext } from '../contexts/AuthContext';
 import {
   getOrganizationById,
   getOrganizationStats,
+  updateOrganization,
   updateOrganizationSettings,
   addEmployee,
   removeEmployee,
@@ -28,7 +29,9 @@ export function useOrganization() {
 
   // Check if current user is admin of THIS specific organization
   const isAdmin = user && organization && (
-    // User is the creator of the organization
+    // User has org_admin role (organization administrators have full access)
+    user.role === 'org_admin' ||
+    // Or user is the creator of the organization
     (organization.createdBy === user._id || organization.createdBy?._id === user._id) ||
     // Or user is in the admins array
     (organization.admins && organization.admins.some(admin => 
@@ -91,6 +94,20 @@ export function useOrganization() {
       return true;
     } catch (err) {
       setError(err.response?.data?.error || 'Error updating settings');
+      return false;
+    }
+  };
+
+  /**
+   * Update organization profile
+   */
+  const handleUpdateOrganization = async (updates) => {
+    try {
+      await updateOrganization(id, updates);
+      await loadOrganization();
+      return true;
+    } catch (err) {
+      setError(err.response?.data?.error || 'Error updating organization');
       return false;
     }
   };
@@ -190,6 +207,7 @@ export function useOrganization() {
     // Actions
     setActiveTab,
     handleUpdateSettings,
+    handleUpdateOrganization,
     handleAddEmployee,
     handleRemoveEmployee,
     handleUpdateEmployeeStatus,

@@ -11,7 +11,7 @@ import {
 /**
  * Step 2: Collaboration Requirements
  */
-export default function Step2Collaboration({ formData, onChange }) {
+export default function Step2Collaboration({ formData, onChange, errors = {} }) {
   const { t } = useTranslation();
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,6 +46,7 @@ export default function Step2Collaboration({ formData, onChange }) {
         value={formData.requiresSynchronousCommunication || 'yes'}
         onChange={handleChange}
         required
+        error={errors.requiresSynchronousCommunication}
         options={[
           { value: SYNCHRONOUS_COMMUNICATION.YES, label: t('projects.yesNoPartial.yes') },
           { value: SYNCHRONOUS_COMMUNICATION.NO, label: t('projects.yesNoPartial.no') },
@@ -59,6 +60,7 @@ export default function Step2Collaboration({ formData, onChange }) {
         value={formData.realTimeCommunicationLevel || 'medium'}
         onChange={handleChange}
         required
+        error={errors.realTimeCommunicationLevel}
         options={[
           { value: COMMUNICATION_LEVELS.LOW, label: t('projects.levels.low') },
           { value: COMMUNICATION_LEVELS.MEDIUM, label: t('projects.levels.medium') },
@@ -73,6 +75,7 @@ export default function Step2Collaboration({ formData, onChange }) {
         onChange={handleChange}
         required
         min={0}
+        error={errors.weeklyMeetingsCount}
       />
 
       <div style={styles.section}>

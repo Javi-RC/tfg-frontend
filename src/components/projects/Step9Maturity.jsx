@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { CheckCircle } from 'lucide-react';
-import { FormSelect } from './FormComponents';
+import { FormSelect, FormTextarea } from './FormComponents';
 import { YES_NO_PARTIAL, COMPLEXITY_LEVELS } from '../../types/projectTypes';
 
 /**
@@ -10,8 +10,14 @@ import { YES_NO_PARTIAL, COMPLEXITY_LEVELS } from '../../types/projectTypes';
 export default function Step9Maturity({ formData, onChange }) {
   const { t } = useTranslation();
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    onChange({ [name]: value });
+    const { name, value, type, checked } = e.target;
+    onChange({ [name]: type === 'checkbox' ? checked : value });
+  };
+
+  const handleComplianceChange = (e) => {
+    const value = e.target.value;
+    const standards = value.split(',').map(s => s.trim()).filter(s => s);
+    onChange({ complianceStandardsText: value, complianceStandards: standards });
   };
 
   return (
@@ -57,6 +63,71 @@ export default function Step9Maturity({ formData, onChange }) {
         ]}
       />
 
+      <div style={styles.checkboxSection}>
+        <label style={styles.checkboxLabel} htmlFor="hasOrganizationalChart">
+          <input
+            type="checkbox"
+            name="hasOrganizationalChart"
+            id="hasOrganizationalChart"
+            checked={formData.hasOrganizationalChart || false}
+            onChange={handleChange}
+            style={styles.checkbox}
+          />
+          {t('projects.steps.step9.hasOrganizationalChart')}
+        </label>
+
+        <label style={styles.checkboxLabel} htmlFor="hasStandardizedProcedures">
+          <input
+            type="checkbox"
+            name="hasStandardizedProcedures"
+            id="hasStandardizedProcedures"
+            checked={formData.hasStandardizedProcedures || false}
+            onChange={handleChange}
+            style={styles.checkbox}
+          />
+          {t('projects.steps.step9.hasStandardizedProcedures')}
+        </label>
+      </div>
+
+      <div style={styles.section}>
+        <h3 style={styles.sectionTitle}>{t('projects.steps.step9.complianceTitle')}</h3>
+        
+        <label style={styles.checkboxLabel} htmlFor="requiresRegulatoryCompliance">
+          <input
+            type="checkbox"
+            name="requiresRegulatoryCompliance"
+            id="requiresRegulatoryCompliance"
+            checked={formData.requiresRegulatoryCompliance || false}
+            onChange={handleChange}
+            style={styles.checkbox}
+          />
+          {t('projects.steps.step9.requiresRegulatoryCompliance')}
+        </label>
+
+        {formData.requiresRegulatoryCompliance && (
+          <>
+            <FormTextarea
+              label={t('projects.steps.step9.complianceStandards')}
+              name="complianceStandards"
+              value={formData.complianceStandardsText ?? formData.complianceStandards?.join(', ') ?? ''}
+              onChange={handleComplianceChange}
+              placeholder={t('projects.steps.step9.complianceStandardsPlaceholder')}
+              rows={2}
+            />
+
+            <FormTextarea
+              label={t('projects.steps.step9.standardsDocumentation')}
+              name="standardsDocumentation"
+              value={formData.standardsDocumentation || ''}
+              onChange={handleChange}
+              placeholder={t('projects.steps.step9.standardsDocumentationPlaceholder')}
+              rows={4}
+              maxLength={2000}
+            />
+          </>
+        )}
+      </div>
+
       <div style={styles.completionCard}>
         <div style={styles.completionIcon}><CheckCircle size={48} color="#10b981" /></div>
         <h3 style={styles.completionTitle}>{t('projects.steps.step9.formComplete')}</h3>
@@ -101,5 +172,36 @@ const styles = {
     fontSize: '15px',
     lineHeight: '1.6',
     opacity: 0.95
+  },
+  section: {
+    marginTop: '32px',
+    padding: '24px',
+    background: '#F9FAFB',
+    borderRadius: '12px'
+  },
+  sectionTitle: {
+    fontSize: '18px',
+    fontWeight: '600',
+    color: '#111',
+    marginBottom: '20px'
+  },
+  checkboxSection: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '12px',
+    marginTop: '24px'
+  },
+  checkboxLabel: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    fontSize: '14px',
+    color: '#374151',
+    cursor: 'pointer'
+  },
+  checkbox: {
+    width: '18px',
+    height: '18px',
+    cursor: 'pointer'
   }
 };

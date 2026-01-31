@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import './ArrayQuestion.css';
 
 /**
  * ArrayQuestion - Handles array inputs (phones, skills, etc.)
  */
 const ArrayQuestion = ({ question, value = [], onChange }) => {
+  const { t } = useTranslation();
   const [inputValue, setInputValue] = useState('');
   const [phoneType, setPhoneType] = useState('mobile');
+  const inputId = `${question.field || 'array'}-input`;
+  const selectId = `${question.field || 'array'}-type`;
+  const labelText = question.label || question.question || question.field || t('questionnaire.array.addItem');
 
   const isPhoneField = question.field?.includes('phone');
 
@@ -37,27 +42,31 @@ const ArrayQuestion = ({ question, value = [], onChange }) => {
       <div className="array-input">
         <input
           type="text"
+          id={inputId}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyPress={handleKeyPress}
-          placeholder={question.placeholder || 'Add item...'}
+          placeholder={question.placeholder || t('questionnaire.array.placeholder')}
           className="form-input"
+          aria-label={labelText}
         />
         
         {isPhoneField && (
           <select 
+            id={selectId}
             value={phoneType} 
             onChange={(e) => setPhoneType(e.target.value)}
             className="phone-type-select"
+            aria-label={`${labelText} type`}
           >
-            <option value="mobile">Mobile</option>
-            <option value="home">Home</option>
-            <option value="work">Work</option>
+            <option value="mobile">{t('questionnaire.array.mobile')}</option>
+            <option value="home">{t('questionnaire.array.home')}</option>
+            <option value="work">{t('questionnaire.array.work')}</option>
           </select>
         )}
         
-        <button type="button" onClick={handleAdd} className="btn-add">
-          + Add
+        <button type="button" onClick={handleAdd} className="btn-add" aria-label={`Add ${labelText}`}>
+          {t('questionnaire.array.add')}
         </button>
       </div>
 
@@ -74,6 +83,7 @@ const ArrayQuestion = ({ question, value = [], onChange }) => {
                 type="button"
                 onClick={() => handleRemove(index)}
                 className="btn-remove"
+                aria-label={`Remove ${typeof item === 'object' ? item.number || 'item' : item}`}
               >
                 ✕
               </button>

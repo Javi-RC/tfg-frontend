@@ -4,7 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
  * Custom hook to manage CV editing logic
  * Centralizes all state and handlers for CV editing
  */
-export default function useCVEditor(initialCV) {
+export function useCVEditor(initialCV) {
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState(initialCV);
   const [saving, setSaving] = useState(false);

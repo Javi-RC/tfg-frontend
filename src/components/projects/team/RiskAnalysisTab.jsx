@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Users, CheckCircle, AlertTriangle, Lightbulb, Shield, Circle, List, Network, Download } from 'lucide-react';
 import RiskFlowMap from '../../outcome/RiskFlowMap';
@@ -6,6 +6,8 @@ import Tooltip from '../../common/Tooltip';
 import RiskErrorMessage from '../../risk/RiskErrorMessage';
 import CompletenessIndicator from '../../risk/CompletenessIndicator';
 import RiskFilters from '../../risk/RiskFilters';
+import SeparatedRisksView from '../../risk/SeparatedRisksView';
+import RiskPredictionMetadata from '../../risk/RiskPredictionMetadata';
 
 /**
  * RiskAnalysisTab - Risk analysis and predictions interface
@@ -27,7 +29,28 @@ export default function RiskAnalysisTab({
   onRetryAnalysis,
   onEditProject
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const previousLanguage = useRef(i18n.language);
+  
+  // Reload risks when language changes
+  useEffect(() => {
+    const currentLanguage = i18n.language;
+    if (previousLanguage.current && previousLanguage.current !== currentLanguage && riskAnalysis?.risks?.length > 0) {
+      console.log('🌐 [RiskAnalysisTab] Language changed from', previousLanguage.current, 'to', currentLanguage);
+      console.log('🔄 [RiskAnalysisTab] Reloading risks to get translations...');
+      onRetryAnalysis();
+    }
+    previousLanguage.current = currentLanguage;
+  }, [i18n.language, onRetryAnalysis, riskAnalysis?.risks?.length]);
+  
+  // Debug: Log whenever component receives new props
+  console.log('🎨 [RiskAnalysisTab] Component rendered');
+  console.log('🎨 [RiskAnalysisTab] ├─ riskLoading:', riskLoading);
+  console.log('🎨 [RiskAnalysisTab] ├─ riskAnalysis:', riskAnalysis);
+  console.log('🎨 [RiskAnalysisTab] ├─ riskAnalysis.risks:', riskAnalysis?.risks);
+  console.log('🎨 [RiskAnalysisTab] ├─ risks count:', riskAnalysis?.risks?.length || 0);
+  console.log('🎨 [RiskAnalysisTab] ├─ teamCount:', teamCount);
+  console.log('🎨 [RiskAnalysisTab] └─ error:', riskAnalysis?.error);
   
   // View mode toggle: 'list' or 'flow'
   const [viewMode, setViewMode] = useState('list');
@@ -54,11 +77,18 @@ export default function RiskAnalysisTab({
 
   // Calculate risk summary - Always call hooks, even if we return early later
   const risks = useMemo(() => {
+    console.log('🔄 [RiskAnalysisTab] Recalculating risks memo');
     const rawRisks = riskAnalysis?.risks || [];
-    return rawRisks.map(risk => ({
+    console.log('🔄 [RiskAnalysisTab] ├─ rawRisks:', rawRisks);
+    console.log('🔄 [RiskAnalysisTab] └─ rawRisks length:', rawRisks.length);
+    
+    const processedRisks = rawRisks.map(risk => ({
       ...risk,
       severity: normalizeSeverity(risk.severity),
     }));
+    
+    console.log('✅ [RiskAnalysisTab] Processed risks count:', processedRisks.length);
+    return processedRisks;
   }, [riskAnalysis]);
 
   // Get available risk types for filters
@@ -115,20 +145,7 @@ export default function RiskAnalysisTab({
     );
   }
 
-  // Show empty state if no team
-  if (teamCount === 0) {
-    return (
-      <div style={styles.emptyState} role="status">
-        <Users size={48} color="#6c757d" style={{ opacity: 0.3, marginBottom: '16px' }} aria-hidden="true" />
-        <h3 style={styles.emptyTitle}>{t('projects.riskAnalysisTab.empty.noTeamTitle')}</h3>
-        <p style={styles.emptyText}>
-          {t('projects.assignTeamForRisk')}
-        </p>
-      </div>
-    );
-  }
-
-  // Show no risks found
+  // Show no risks found (allow analysis even without team)
   if (!riskAnalysis || !riskAnalysis.risks || riskAnalysis.risks.length === 0) {
     return (
       <div style={styles.emptyState} role="status">
@@ -373,6 +390,11 @@ export default function RiskAnalysisTab({
         </div>
       ) : (
         <>
+          {/* Prediction Metadata */}
+          {riskAnalysis.metadata && (
+            <RiskPredictionMetadata metadata={riskAnalysis.metadata} />
+          )}
+
           {/* Filters */}
           <RiskFilters
             onSearchChange={setSearchTerm}
@@ -391,36 +413,33 @@ export default function RiskAnalysisTab({
             </div>
           )}
 
-          {/* Risk Details */}
+          {/* Risk Details - Separated View */}
           {filteredRisks.length > 0 ? (
-            <div style={styles.risksSection}>
-              <h3 style={{ ...styles.sectionTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <AlertTriangle size={20} aria-hidden="true" />
-                Identified Risks
-              </h3>
-
-              <div style={styles.risksList} role="list">
-                {/* Critical Risks First */}
-                {filteredCritical.map((risk, idx) => (
-                  <RiskCard key={`critical-${idx}`} risk={risk} />
-                ))}
-                
-                {/* High Risks */}
-                {filteredHigh.map((risk, idx) => (
-                  <RiskCard key={`high-${idx}`} risk={risk} />
-                ))}
-                
-                {/* Medium Risks */}
-                {filteredMedium.map((risk, idx) => (
-                  <RiskCard key={`medium-${idx}`} risk={risk} />
-                ))}
-                
-                {/* Low Risks */}
-                {filteredLow.map((risk, idx) => (
-                  <RiskCard key={`low-${idx}`} risk={risk} />
-                ))}
-              </div>
-            </div>
+            <SeparatedRisksView
+              cbrRisks={riskAnalysis.cbrRisks ? filteredRisks.filter(r => {
+                // Check if risk is in CBR list
+                const isCbr = riskAnalysis.cbrRisks.some(cbr => 
+                  (cbr.id && r.id && cbr.id === r.id) || 
+                  (cbr.type === r.type && cbr.title === r.title)
+                );
+                return isCbr;
+              }) : []}
+              dtRisks={riskAnalysis.dtRisks ? filteredRisks.filter(r => {
+                // Check if risk is in DT list
+                const isDt = riskAnalysis.dtRisks.some(dt => 
+                  (dt.id && r.id && dt.id === r.id) || 
+                  (dt.type === r.type && dt.title === r.title)
+                );
+                // IMPORTANT: Only include in DT if it's NOT already in CBR (avoid duplicates)
+                const isCbr = riskAnalysis.cbrRisks && riskAnalysis.cbrRisks.some(cbr => 
+                  (cbr.id && r.id && cbr.id === r.id) || 
+                  (cbr.type === r.type && cbr.title === r.title)
+                );
+                return isDt && !isCbr;
+              }) : []}
+              allRisks={filteredRisks}
+              metadata={riskAnalysis.metadata}
+            />
           ) : (
             <div style={styles.noResults} role="status" className="riskHeader">
               <p>No risks match your current filters. Try adjusting your search or filters.</p>

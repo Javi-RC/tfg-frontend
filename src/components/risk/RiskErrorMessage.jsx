@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertCircle, RefreshCw, FileText } from 'lucide-react';
 
 /**
@@ -6,22 +7,24 @@ import { AlertCircle, RefreshCw, FileText } from 'lucide-react';
  * Provides specific error information and actionable steps
  */
 export default function RiskErrorMessage({ error, onRetry, onEditProject }) {
+  const { t } = useTranslation();
+  
   const getErrorDetails = () => {
     if (!error) {
       return {
-        title: 'Unknown Error',
-        message: 'An unexpected error occurred.',
+        title: t('risk.errors.unknownTitle'),
+        message: t('risk.errors.unknownMessage'),
         actions: []
       };
     }
 
     if (error.type === 'validation') {
       return {
-        title: 'Incomplete Project Data',
-        message: error.message || 'Project name and description are required for risk analysis.',
+        title: t('risk.errors.incompleteTitle'),
+        message: error.message || t('risk.errors.incompleteMessage'),
         actions: [
           {
-            label: 'Complete Project Information',
+            label: t('risk.errors.completeInfo'),
             icon: FileText,
             onClick: onEditProject,
             primary: true
@@ -32,17 +35,17 @@ export default function RiskErrorMessage({ error, onRetry, onEditProject }) {
 
     if (error.type === 'api') {
       return {
-        title: 'Analysis Failed',
-        message: error.message || 'Unable to complete risk analysis at this time.',
+        title: t('risk.errors.analysisFailedTitle'),
+        message: error.message || t('risk.errors.analysisFailedMessage'),
         actions: [
           {
-            label: 'Retry Analysis',
+            label: t('risk.errors.retryAnalysis'),
             icon: RefreshCw,
             onClick: onRetry,
             primary: true
           },
           {
-            label: 'Check Project Data',
+            label: t('risk.errors.checkData'),
             icon: FileText,
             onClick: onEditProject,
             primary: false

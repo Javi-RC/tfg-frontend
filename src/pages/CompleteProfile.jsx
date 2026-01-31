@@ -1,7 +1,9 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { jwtDecode } from 'jwt-decode';
 import { AuthContext } from '../contexts/AuthContext';
+import saraIcon from '../assets/icon.png';
 
 function CompleteProfile() {
   const { t } = useTranslation();
@@ -10,6 +12,50 @@ function CompleteProfile() {
   const [isLoading, setIsLoading] = useState(false);
   const auth = useContext(AuthContext);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  // CRITICAL: Extract token from URL and save to localStorage FIRST
+  useEffect(() => {
+    const tokenFromUrl = searchParams.get('token');
+    console.log('[CompleteProfile] Token from URL:', tokenFromUrl ? 'present' : 'missing');
+    
+    if (tokenFromUrl) {
+      console.log('[CompleteProfile] Saving token from URL to localStorage');
+      try {
+        // Decode and validate token
+        const decoded = jwtDecode(tokenFromUrl);
+        console.log('[CompleteProfile] Decoded token:', decoded);
+        const userData = decoded.user || decoded;
+        
+        // Save to localStorage immediately
+        localStorage.setItem('token', tokenFromUrl);
+        localStorage.setItem('user', JSON.stringify(userData));
+        console.log('[CompleteProfile] Token saved to localStorage');
+        
+        // Update context
+        if (auth?.setSession) {
+          auth.setSession(tokenFromUrl, userData);
+        }
+        
+        // Clean URL (remove token from query string for security)
+        const url = new URL(window.location.href);
+        url.searchParams.delete('token');
+        window.history.replaceState(null, '', url.toString());
+      } catch (err) {
+        console.error('[CompleteProfile] Error processing token from URL:', err);
+        setError('Invalid authentication token. Please try logging in again.');
+      }
+    }
+  }, [searchParams, auth]);
+
+  // Debug: Check localStorage on component mount
+  useEffect(() => {
+    console.log('[CompleteProfile] Component mounted');
+    console.log('[CompleteProfile] Token in localStorage:', localStorage.getItem('token') ? 'present' : 'missing');
+    console.log('[CompleteProfile] User in localStorage:', localStorage.getItem('user'));
+    console.log('[CompleteProfile] Auth context user:', auth?.user);
+    console.log('[CompleteProfile] Auth context token:', auth?.token ? 'present' : 'missing');
+  }, [auth]);
 
   // Redirect if no context available
   useEffect(() => {
@@ -22,7 +68,7 @@ function CompleteProfile() {
     return null;
   }
 
-  const { user, updateProfile } = auth;
+  const { user, updateProfile, completeOAuthProfile } = auth;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -32,13 +78,19 @@ function CompleteProfile() {
       return;
     }
 
+    console.log('[CompleteProfile] About to update profile with role:', role);
+    console.log('[CompleteProfile] Token in localStorage:', localStorage.getItem('token') ? 'present' : 'missing');
+    console.log('[CompleteProfile] User in context:', user);
+    
     setIsLoading(true);
     try {
-      await updateProfile({ role });
+      // Use completeOAuthProfile for OAuth flow, which uses /auth/complete-profile endpoint
+      await completeOAuthProfile({ role });
       navigate('/', { replace: true });
     } catch (err) {
       // Log full error for debugging
       console.error('Error updating profile:', err);
+      console.error('Error response:', err?.response);
 
       // Prefer explicit backend message if available, otherwise stringify response
       const backendMessage = err?.response?.data?.error || err?.response?.data?.message;
@@ -56,13 +108,24 @@ function CompleteProfile() {
 
   return (
     <div className="login-page">
-      <div className="decorative-circle" aria-hidden="true" />
-      
       <header className="header">
         <div className="brand">
-          <div className="logo" aria-hidden="true" />
-          <span className="brand-name" style={{ fontSize: '18px', fontWeight: 600 }}>
-            Home
+          <img 
+            src={saraIcon} 
+            alt="Sara" 
+            style={{
+              width: '40px',
+              height: '40px',
+              objectFit: 'contain'
+            }}
+          />
+          <span className="brand-name" style={{ 
+            fontSize: '28px', 
+            fontWeight: '400',
+            color: '#2563eb',
+            fontFamily: "'Pacifico', cursive"
+          }}>
+            Sara
           </span>
         </div>
       </header>
@@ -175,17 +238,6 @@ function CompleteProfile() {
           color: #222;
           margin: 0;
           padding: 0;
-        }
-
-        .decorative-circle {
-          position: absolute;
-          width: 1014px;
-          height: 914px;
-          left: -452px;
-          top: 82px;
-          background: #AFF4C6;
-          border-radius: 9999px;
-          z-index: 0;
         }
 
         .header {

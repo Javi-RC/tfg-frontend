@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, ArrowRight, Save, CheckCircle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Save, CheckCircle, AlertCircle } from 'lucide-react';
 import { useProjectForm } from '../hooks/useProjectForm';
 import PrimaryButton from '../components/PrimaryButton';
 import SecondaryButton from '../components/SecondaryButton';
@@ -14,6 +14,7 @@ import Step7Coordination from '../components/projects/Step7Coordination';
 import Step8CollaborationIntensity from '../components/projects/Step8CollaborationIntensity';
 import Step9Maturity from '../components/projects/Step9Maturity';
 import { FORM_STEPS } from '../types/projectTypes';
+import './ProjectFormPage.css';
 
 /**
  * Project Form Page
@@ -25,6 +26,7 @@ export default function ProjectFormPage() {
     currentStep,
     formData,
     errors,
+    validationMessage,
     loading,
     organizations,
     selectedOrg,
@@ -134,7 +136,8 @@ export default function ProjectFormPage() {
         {/* Header */}
         <div style={styles.header}>
           <button style={styles.backButton} onClick={() => navigate('/projects')}>
-            ← {t('projects.backToProjects')}
+            <ArrowLeft size={18} style={{ marginRight: '8px' }} />
+            {t('projects.backToProjects')}
           </button>
           <h1 style={styles.title}>
             {isEditMode ? t('projects.form.editProject') : t('projects.form.createNew')}
@@ -193,6 +196,17 @@ export default function ProjectFormPage() {
 
         {/* Form Content */}
         <div style={styles.formContent}>
+          {/* Validation Message Alert */}
+          {validationMessage && (
+            <div style={styles.validationAlert} className="validation-alert">
+              <AlertCircle size={24} color="#991B1B" style={{ flexShrink: 0 }} />
+              <div>
+                <strong style={styles.alertTitle}>{t('projects.form.validationError')}</strong>
+                <p style={styles.alertMessage}>{t(validationMessage)}</p>
+              </div>
+            </div>
+          )}
+          
           {renderStepContent()}
         </div>
 
@@ -257,6 +271,8 @@ const styles = {
     marginBottom: '32px'
   },
   backButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
     background: 'none',
     border: 'none',
     color: '#6B7280',
@@ -264,8 +280,8 @@ const styles = {
     fontWeight: '600',
     cursor: 'pointer',
     marginBottom: '16px',
-    padding: '8px 0',
-    transition: 'color 0.2s'
+    padding: '8px 12px 8px 0',
+    transition: 'color 0.2s, transform 0.2s'
   },
   title: {
     fontSize: '32px',
@@ -354,6 +370,29 @@ const styles = {
   },
   formContent: {
     marginBottom: '40px'
+  },
+  validationAlert: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '12px',
+    padding: '16px 20px',
+    background: '#FEF2F2',
+    border: '2px solid #FCA5A5',
+    borderRadius: '12px',
+    marginBottom: '24px'
+  },
+  alertTitle: {
+    display: 'block',
+    fontSize: '15px',
+    fontWeight: '700',
+    color: '#991B1B',
+    marginBottom: '4px'
+  },
+  alertMessage: {
+    fontSize: '14px',
+    color: '#7F1D1D',
+    margin: 0,
+    lineHeight: '1.5'
   },
   simplifiedStep: {
     padding: '40px',

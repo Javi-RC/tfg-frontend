@@ -4,26 +4,22 @@ import { Users } from 'lucide-react';
 
 /**
  * Phase 2 Configuration Form
- * Controls synergy weights (backend: phase2.synergyWeights)
+ * Controls synergy weights (backend: phase2.synergyWeights as decimals 0-1)
  */
 export default function Phase2ConfigForm({ config, onChange, errors = {} }) {
   const { t } = useTranslation();
 
-  const clampPercent = (num) => Math.max(0, Math.min(100, num));
-
   const enabled = config?.enabled ?? true;
   const synergyWeights = config?.synergyWeights || {};
 
-  const getTotal = (weights) => (
-    (weights.roleDiversityWeight || 0) +
-    (weights.complementarityWeight || 0) +
-    (weights.projectFitWeight || 0) +
-    (weights.conflictRiskWeight || 0) +
-    (weights.balanceWeight || 0)
-  );
+  const getTotalDecimal = (weights) => {
+    return (weights.roleDiversityWeight || 0) +
+      (weights.projectFitWeight || 0) +
+      (weights.previousCollaborationsWeight || 0);
+  };
 
-  const total = getTotal(synergyWeights);
-  const isTotalOk = Math.abs(total - 100) <= 1;
+  const total = getTotalDecimal(synergyWeights);
+  const isTotalOk = Math.abs(total - 1.0) <= 0.01;
 
   const handleEnabledChange = (checked) => {
     onChange({
@@ -33,26 +29,34 @@ export default function Phase2ConfigForm({ config, onChange, errors = {} }) {
   };
 
   const handleWeightChange = (field, nextValue) => {
-    const parsed = clampPercent(parseFloat(nextValue) || 0);
-    const currentValue = clampPercent(synergyWeights[field] || 0);
-    const currentTotal = getTotal(synergyWeights);
-
-    // If increasing this field would push total above 100, clamp the increase.
-    const delta = parsed - currentValue;
-    let finalValue = parsed;
-    if (delta > 0) {
-      const remaining = Math.max(0, 100 - currentTotal);
-      const allowed = Math.min(delta, remaining);
-      finalValue = clampPercent(currentValue + allowed);
-    }
-
+    const parsed = parseFloat(nextValue) || 0;
+    
+    // Calculate the sum of other weights (excluding the current field)
+    const otherWeightsSum = Object.keys(synergyWeights)
+      .filter(key => key !== field)
+      .reduce((sum, key) => sum + (synergyWeights[key] || 0), 0);
+    
+    // Maximum allowed for this field is what remains to reach 1.0 (100%)
+    const maxAllowed = 1.0 - otherWeightsSum;
+    
+    // Clamp the value between 0 and maxAllowed
+    const clamped = Math.max(0, Math.min(maxAllowed, parsed));
+    
     onChange({
       ...config,
       synergyWeights: {
         ...synergyWeights,
-        [field]: finalValue
+        [field]: clamped
       }
     });
+  };
+  
+  // Helper to calculate max allowed for each field
+  const getMaxAllowed = (field) => {
+    const otherWeightsSum = Object.keys(synergyWeights)
+      .filter(key => key !== field)
+      .reduce((sum, key) => sum + (synergyWeights[key] || 0), 0);
+    return 1.0 - otherWeightsSum;
   };
 
   return (
@@ -84,7 +88,7 @@ export default function Phase2ConfigForm({ config, onChange, errors = {} }) {
         ...(!enabled ? styles.totalBarDisabled : (isTotalOk ? styles.totalBarSuccess : styles.totalBarError))
       }}>
         <span style={styles.totalLabel}>{t('teamConfig.totalWeight')}:</span>
-        <span style={styles.totalValue}>{total.toFixed(1)}%</span>
+        <span style={styles.totalValue}>{(total * 100).toFixed(1)}%</span>
         {enabled && !isTotalOk && (
           <span style={styles.totalError}>
             {t('teamConfig.mustEqual100')}
@@ -105,14 +109,6 @@ export default function Phase2ConfigForm({ config, onChange, errors = {} }) {
         />
         
         <WeightSlider
-          label={t('teamConfig.phase2.complementarityWeight')}
-          value={synergyWeights.complementarityWeight || 0}
-          onChange={(val) => handleWeightChange('complementarityWeight', val)}
-          error={errors.complementarityWeight}
-          disabled={!enabled}
-        />
-        
-        <WeightSlider
           label={t('teamConfig.phase2.projectFitWeight')}
           value={synergyWeights.projectFitWeight || 0}
           onChange={(val) => handleWeightChange('projectFitWeight', val)}
@@ -121,19 +117,10 @@ export default function Phase2ConfigForm({ config, onChange, errors = {} }) {
         />
 
         <WeightSlider
-          label={t('teamConfig.phase2.conflictRiskWeight')}
-          value={synergyWeights.conflictRiskWeight || 0}
-          onChange={(val) => handleWeightChange('conflictRiskWeight', val)}
-          error={errors.conflictRiskWeight}
-          disabled={!enabled}
-          inverted
-        />
-
-        <WeightSlider
-          label={t('teamConfig.phase2.balanceWeight')}
-          value={synergyWeights.balanceWeight || 0}
-          onChange={(val) => handleWeightChange('balanceWeight', val)}
-          error={errors.balanceWeight}
+          label={t('teamConfig.phase2.previousCollaborationsWeight')}
+          value={synergyWeights.previousCollaborationsWeight || 0}
+          onChange={(val) => handleWeightChange('previousCollaborationsWeight', val)}
+          error={errors.previousCollaborationsWeight}
           disabled={!enabled}
         />
       </div>
@@ -146,16 +133,16 @@ function WeightSlider({ label, value, onChange, error, disabled = false, inverte
     <div style={styles.sliderContainer}>
       <div style={styles.sliderHeader}>
         <label style={styles.label}>{label}</label>
-        <span style={styles.valueDisplay}>{Math.round(value)}%</span>
+        <span style={styles.valueDisplay}>{(value * 100).toFixed(0)}%</span>
       </div>
       
       <input
         type="range"
         min="0"
-        max="100"
-        step="1"
+        max="1"
+        step="0.05"
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => onChange(parseFloat(e.target.value))}
         disabled={disabled}
         style={{
           ...styles.slider,

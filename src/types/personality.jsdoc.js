@@ -17,11 +17,14 @@
  * @property {number} [overallScore] - Overall synergy score (0-100)
  * @property {{
  *   roleDiversity: RoleDiversityMetric,
- *   complementarity: ComplementarityMetric,
  *   projectFit: ProjectFitMetric,
- *   conflictRisk: ConflictRiskMetric,
- *   balance: BalanceMetric
+ *   previousCollaborations: PreviousCollaborationsMetric
  * }} [metrics] - Detailed metrics
+ * @property {{
+ *   roleDiversity: number,
+ *   projectFit: number,
+ *   previousCollaborations: number
+ * }} [weightsUsed] - Weights used in the overallScore calculation
  * @property {Recommendation[]} [recommendations] - Recommendations
  * @property {string} [message] - Message when not available
  */
@@ -43,13 +46,6 @@
  */
 
 /**
- * @typedef {Object} ComplementarityMetric
- * @property {number} score
- * @property {'excellent'|'good'|'fair'|'poor'} level
- * @property {string} message
- */
-
-/**
  * @typedef {Object} ProjectFitMetric
  * @property {number} score
  * @property {'excellent'|'good'|'fair'|'poor'} level
@@ -58,38 +54,14 @@
  */
 
 /**
- * @typedef {Object} ConflictRiskMetric
+ * @typedef {Object} PreviousCollaborationsMetric
  * @property {number} score
- * @property {'low'|'medium'|'high'|'critical'} level
- * @property {number} risksDetected
- * @property {ConflictRisk[]} risks
+ * @property {number} totalCollaborations
+ * @property {number} pairsWithHistory
+ * @property {number} totalPairs
+ * @property {number} collaborationPercentage
+ * @property {'excellent'|'good'|'moderate'|'limited'|'none'} level
  * @property {string} message
- */
-
-/**
- * @typedef {Object} ConflictRisk
- * @property {string} type
- * @property {'low'|'medium'|'high'} severity
- * @property {string} description
- * @property {string} recommendation
- * @property {string} [trait]
- */
-
-/**
- * @typedef {Object} BalanceMetric
- * @property {number} score
- * @property {'excellent'|'good'|'fair'|'poor'} level
- * @property {Object.<string, TraitBalance>} traitBalance
- * @property {string} message
- */
-
-/**
- * @typedef {Object} TraitBalance
- * @property {number} average
- * @property {number} variance
- * @property {number} avgScore
- * @property {number} varianceScore
- * @property {number} overallScore
  */
 
 /**

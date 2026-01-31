@@ -228,11 +228,6 @@ export default function RiskFlowMap({
                     {selectedRisk.severity?.toUpperCase()}
                   </span>
                 </span>
-                {selectedRisk.probability && (
-                  <span style={styles.detailMetaItem}>
-                    <strong>Probability:</strong> {Math.round(selectedRisk.probability * 100)}%
-                  </span>
-                )}
               </div>
             </div>
             <button

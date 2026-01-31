@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { FileText, Edit } from 'lucide-react';
+import { FileText, Edit, ArrowLeft } from 'lucide-react';
 import { getOrganizationCV } from '../api/organization';
 import SecondaryButton from '../components/SecondaryButton';
 import PrimaryButton from '../components/PrimaryButton';
@@ -86,6 +86,7 @@ export default function CVDetailPage() {
             {error || t('cv.detailPage.notFoundDescription')}
           </p>
           <SecondaryButton onClick={() => navigate(-1)}>
+            <ArrowLeft size={16} style={{ marginRight: '6px' }} />
             {t('cv.detailPage.goBack')}
           </SecondaryButton>
         </div>
@@ -166,6 +167,7 @@ export default function CVDetailPage() {
               </span>
             )}
             <SecondaryButton onClick={() => navigate(-1)}>
+              <ArrowLeft size={16} style={{ marginRight: '6px' }} />
               {t('cv.detailPage.backToList')}
             </SecondaryButton>
             <PrimaryButton onClick={loadCV}>

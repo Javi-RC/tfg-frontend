@@ -15,7 +15,7 @@ import ProjectsSection from '../components/cv/ProjectsSection';
 import CertificationsSection from '../components/cv/CertificationsSection';
 import SubmitCVToOrganization from '../components/SubmitCVToOrganization';
 import { useMyCVPage } from '../hooks/useMyCVPage';
-import useCVEditor from '../hooks/useCVEditor';
+import { useCVEditor } from '../hooks/useCVEditor';
 
 /**
  * MyCVPage Component
@@ -101,7 +101,8 @@ export default function MyCVPage() {
       minHeight: '100vh',
       background: '#f5f7fa',
       display: 'flex',
-      paddingTop: '64px'
+      paddingTop: '64px',
+      marginTop: '32px' // Added margin to provide space at the top
     }} role="main" aria-label={t('cv.aria.myCvPage')}>
       <CVHeader
         editMode={editMode}

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BellOff } from 'lucide-react';
+import { BellOff, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useNotifications } from '../contexts/useNotifications';
 import NotificationItem from '../components/notifications/NotificationItem';
@@ -171,7 +171,8 @@ const NotificationsPage = () => {
               disabled={currentPage === 1}
               aria-label={t('notifications.aria.previousPage')}
             >
-              ← Previous
+              <ChevronLeft size={16} style={{ marginRight: '6px' }} />
+              Previous
             </button>
             <span className="pagination-info">
               Page {currentPage} of {pagination.pages}
@@ -182,7 +183,8 @@ const NotificationsPage = () => {
               disabled={currentPage === pagination.pages}
               aria-label={t('notifications.aria.nextPage')}
             >
-              Next →
+              Next
+              <ChevronRight size={16} style={{ marginLeft: '6px' }} />
             </button>
           </div>
         )}

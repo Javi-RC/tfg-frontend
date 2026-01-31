@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -20,9 +20,11 @@ export default function Field({
   required = false
 }) {
   const { t } = useTranslation();
+  const inputId = useId();
   // Verificar si el campo está vacío y es requerido
   const isEmpty = !value || (typeof value === 'string' && value.trim() === '');
   const hasError = required && editable && isEmpty;
+  const errorId = hasError ? `${inputId}-error` : undefined;
 
   const baseInputStyle = {
     width: '100%',
@@ -92,25 +94,28 @@ export default function Field({
 
   return (
     <div>
-      {label && <label style={labelStyle}>{label}{requiredIndicator}</label>}
+      {label && <label htmlFor={inputId} style={labelStyle}>{label}{requiredIndicator}</label>}
       {hasError && (
         <div style={{
           fontSize: '12px',
           color: '#e53e3e',
           marginBottom: '6px',
           fontWeight: '500'
-        }}>
+        }} id={errorId} role="alert" aria-live="polite">
           {t('form.requiredField')}
         </div>
       )}
       {multiline ? (
         <textarea
+          id={inputId}
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
           onFocus={handleFocus}
           onBlur={handleBlur}
           rows={rows}
           placeholder={placeholder}
+          aria-invalid={hasError}
+          aria-describedby={errorId}
           style={{
             ...baseInputStyle,
             resize: 'vertical',
@@ -119,10 +124,13 @@ export default function Field({
         />
       ) : type === 'select' ? (
         <select
+          id={inputId}
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          aria-invalid={hasError}
+          aria-describedby={errorId}
           style={{
             ...baseInputStyle,
             cursor: 'pointer',
@@ -153,11 +161,14 @@ export default function Field({
       ) : (
         <input
           type={type}
+          id={inputId}
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
           onFocus={handleFocus}
           onBlur={handleBlur}
           placeholder={placeholder}
+          aria-invalid={hasError}
+          aria-describedby={errorId}
           style={baseInputStyle}
         />
       )}

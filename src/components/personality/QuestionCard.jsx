@@ -1,15 +1,5 @@
 import React from 'react';
-
-/**
- * Likert scale labels
- */
-export const SCALE_LABELS = {
-  1: 'Disagree strongly',
-  2: 'Disagree a little',
-  3: 'Neither agree nor disagree',
-  4: 'Agree a little',
-  5: 'Agree strongly'
-};
+import { useTranslation } from 'react-i18next';
 
 /**
  * QuestionCard Component
@@ -20,12 +10,21 @@ export const SCALE_LABELS = {
  * @param {Function} onResponseChange - Callback when response changes
  */
 export default function QuestionCard({ question, selectedValue, onResponseChange }) {
+  const { t } = useTranslation();
+
+  const SCALE_LABELS = {
+    1: t('bfi44.scale.disagreeStrongly'),
+    2: t('bfi44.scale.disagreeALittle'),
+    3: t('bfi44.scale.neitherAgreeNorDisagree'),
+    4: t('bfi44.scale.agreeALittle'),
+    5: t('bfi44.scale.agreeStrongly')
+  };
   return (
     <div style={styles.questionCard} role="group" aria-labelledby={`question-${question.id}`}>
       <div style={styles.questionHeader}>
         <span style={styles.questionNumber}>{question.id}.</span>
         <span style={styles.questionText} id={`question-${question.id}`}>
-          I see myself as someone who {question.text.toLowerCase()}
+          {t('bfi44.questionPrefix')} {question.text.toLowerCase()}
         </span>
       </div>
       <div style={styles.optionsRow} role="radiogroup" aria-labelledby={`question-${question.id}`}>

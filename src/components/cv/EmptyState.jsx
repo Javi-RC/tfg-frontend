@@ -1,7 +1,9 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { FileText, Upload } from 'lucide-react';
+import { FileText, Upload, ArrowLeft } from 'lucide-react';
 import PrimaryButton from '../PrimaryButton';
+import SecondaryButton from '../SecondaryButton';
 
 /**
  * EmptyState Component
@@ -9,6 +11,12 @@ import PrimaryButton from '../PrimaryButton';
  */
 export default function EmptyState({ error, onUpload }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate('/profile');
+  };
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -20,6 +28,17 @@ export default function EmptyState({ error, onUpload }) {
       justifyContent: 'center',
       gap: '20px'
     }}>
+      {/* Back button at the top */}
+      <div style={{ position: 'fixed', top: '80px', left: '24px', zIndex: 10 }}>
+        <SecondaryButton 
+          onClick={handleBack}
+          aria-label={t('cv.backToDashboard')}
+          leftIcon={<ArrowLeft size={18} />}
+        >
+          {t('cv.backToDashboard')}
+        </SecondaryButton>
+      </div>
+
       <div style={{
         maxWidth: '500px',
         textAlign: 'center',
@@ -37,9 +56,11 @@ export default function EmptyState({ error, onUpload }) {
         <p style={{ fontSize: '14px', color: '#666', marginBottom: '24px' }}>
           {error || t('cv.uploadToGetStarted')}
         </p>
-        <PrimaryButton onClick={onUpload} aria-label={t('cv.aria.openUploadDialog')} leftIcon={<Upload size={18} />}>
-          {t('cv.uploadCV')}
-        </PrimaryButton>
+        <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <PrimaryButton onClick={onUpload} aria-label={t('cv.aria.openUploadDialog')} leftIcon={<Upload size={18} />}>
+            {t('cv.uploadCV')}
+          </PrimaryButton>
+        </div>
       </div>
     </div>
   );

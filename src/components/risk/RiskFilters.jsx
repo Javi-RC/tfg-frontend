@@ -109,12 +109,15 @@ export default function RiskFilters({
                 <label
                   key={option.value}
                   style={styles.checkboxLabel}
+                  htmlFor={`severity-${option.value}`}
                 >
                   <input
                     type="checkbox"
+                    id={`severity-${option.value}`}
                     checked={selectedSeverities.includes(option.value)}
                     onChange={() => handleSeverityToggle(option.value)}
                     style={styles.checkbox}
+                    aria-label={option.label}
                   />
                   <span style={{
                     ...styles.severityDot,
@@ -135,12 +138,15 @@ export default function RiskFilters({
                   <label
                     key={type}
                     style={styles.checkboxLabel}
+                    htmlFor={`type-${type}`}
                   >
                     <input
                       type="checkbox"
+                      id={`type-${type}`}
                       checked={selectedTypes.includes(type)}
                       onChange={() => handleTypeToggle(type)}
                       style={styles.checkbox}
+                      aria-label={type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                     />
                     {type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
                   </label>

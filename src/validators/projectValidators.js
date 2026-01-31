@@ -34,6 +34,25 @@ export function validateProjectDescription(description) {
 }
 
 /**
+ * Validates team size
+ * @param {number} teamSize - Team size to validate
+ * @returns {Object} { isValid: boolean, error: string }
+ */
+export function validateTeamSize(teamSize) {
+  const size = Number(teamSize);
+  
+  if (teamSize === null || teamSize === undefined || teamSize === '' || isNaN(size)) {
+    return { isValid: false, error: 'Team size is required' };
+  }
+  
+  if (size < 1 || size > 100) {
+    return { isValid: false, error: 'Team size must be between 1 and 100' };
+  }
+  
+  return { isValid: true, error: null };
+}
+
+/**
  * Validates date range
  * @param {string} startDate - Start date
  * @param {string} endDate - End date
@@ -94,8 +113,9 @@ export function validateStep1(formData) {
     errors.dateRange = dateValidation.error;
   }
   
-  if (!formData.expectedDuration?.value || formData.expectedDuration.value <= 0) {
-    errors.expectedDuration = 'Expected duration must be greater than 0';
+  const teamSizeValidation = validateTeamSize(formData.teamSize);
+  if (!teamSizeValidation.isValid) {
+    errors.teamSize = teamSizeValidation.error;
   }
   
   return {

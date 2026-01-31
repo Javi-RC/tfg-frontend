@@ -3,6 +3,7 @@ import './components/SkipLink.css'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import { NotificationProvider } from './contexts/NotificationContext'
+import { useLanguagePreference } from './hooks'
 import TopNavBar from './components/TopNavBar'
 import SkipLink from './components/SkipLink'
 import Login from './pages/Login'
@@ -24,11 +25,17 @@ import BFI44Page from './pages/BFI44Page'
 import ProjectsPage from './pages/ProjectsPage'
 import ProjectFormPage from './pages/ProjectFormPage'
 import ProjectDetailPage from './pages/ProjectDetailPage'
+import ProjectCompletionPage from './pages/ProjectCompletionPage'
 import TermsPage from './pages/TermsPage'
+import DeleteAccountPage from './pages/DeleteAccountPage'
+import SecretRisksDebugPage from './pages/SecretRisksDebugPage'
 import { isNoNavBarRoute } from './constants/routes'
 
 function AppRoutes() {
   const location = useLocation();
+  
+  // Load user's language preference from backend
+  useLanguagePreference();
   
   // Páginas sin barra de navegación
   const showNavBar = !isNoNavBarRoute(location.pathname);
@@ -62,6 +69,10 @@ function AppRoutes() {
         <Route path="/projects/new" element={<ProtectedRoute><ProjectFormPage/></ProtectedRoute>} />
         <Route path="/projects/:id" element={<ProtectedRoute><ProjectDetailPage/></ProtectedRoute>} />
         <Route path="/projects/:id/edit" element={<ProtectedRoute><ProjectFormPage/></ProtectedRoute>} />
+        <Route path="/projects/:id/completion" element={<ProtectedRoute><ProjectCompletionPage/></ProtectedRoute>} />
+        <Route path="/account/delete" element={<ProtectedRoute><DeleteAccountPage/></ProtectedRoute>} />
+        {/* Secret debug route - not linked in navigation */}
+        <Route path="/secret-risks-debug-panel-2026" element={<ProtectedRoute><SecretRisksDebugPage/></ProtectedRoute>} />
         </Routes>
       </main>
     </>

@@ -2,14 +2,29 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Circle, AlertTriangle, Calendar, DollarSign, Sparkles, Users } from 'lucide-react';
 import RiskSeverityBadge from './RiskSeverityBadge';
+import RiskSourceBadge from '../risk/RiskSourceBadge';
 
 /**
  * Risk Card Component
- * Displays detailed information about a specific risk with confidence indicators
+ * Displays detailed information about a specific risk
  */
-export default function RiskCard({ risk, dataCompleteness }) {
+export default function RiskCard({ risk, dataCompleteness, metadata }) {
   const { t } = useTranslation();
   const [expanded, setExpanded] = React.useState(false);
+
+  const getReadableSource = (source) => {
+    const normalized = String(source || '').trim().toLowerCase();
+    if (normalized === 'dt' || normalized === 'decision_tree' || normalized === 'expert_rules') {
+      return t('riskSummary.source.expertRules');
+    }
+    if (normalized === 'cbr') {
+      return t('riskSummary.source.cbr');
+    }
+    if (normalized === 'manual') {
+      return 'Manual';
+    }
+    return source;
+  };
 
   const getRiskTypeLabel = (type) => {
     return t(`riskTypes.${type}`, {
@@ -27,18 +42,6 @@ export default function RiskCard({ risk, dataCompleteness }) {
     }
   };
 
-  // Get confidence level indicator
-  const getConfidenceIndicator = (confidence) => {
-    if (confidence >= 0.75) {
-      return { emoji: '🟢', label: t('riskCard.confidence.high'), color: '#10B981' };
-    }
-    if (confidence >= 0.50) {
-      return { emoji: '🟡', label: t('riskCard.confidence.medium'), color: '#F59E0B' };
-    }
-    return { emoji: '🔴', label: t('riskCard.confidence.low'), color: '#EF4444' };
-  };
-
-  const confidenceInfo = getConfidenceIndicator(risk.confidence);
   const showDataWarning = dataCompleteness && dataCompleteness < 60;
 
   return (
@@ -57,30 +60,12 @@ export default function RiskCard({ risk, dataCompleteness }) {
       <div style={styles.header}>
         <div style={styles.headerLeft}>
           <RiskSeverityBadge severity={risk.severity} />
+          <RiskSourceBadge 
+            risk={risk}
+            strategy={metadata?.strategy}
+            size="sm"
+          />
           <h4 style={styles.title}>{getRiskTypeLabel(risk.type)}</h4>
-        </div>
-        <div style={styles.headerRight}>
-          <div style={styles.probability}>
-            <span style={styles.probabilityLabel}>{t('riskCard.probability')}</span>
-            <span style={{
-              ...styles.probabilityValue,
-              color: getSeverityColor(risk.severity)
-            }}>
-              {(risk.probability * 100).toFixed(0)}%
-            </span>
-          </div>
-          <div style={styles.confidence}>
-            <span style={styles.confidenceLabel}>
-              {confidenceInfo.emoji} {confidenceInfo.label}
-            </span>
-            <span style={{
-              ...styles.confidenceValue,
-              color: confidenceInfo.color,
-              fontWeight: '600'
-            }}>
-              {(risk.confidence * 100).toFixed(0)}%
-            </span>
-          </div>
         </div>
       </div>
 
@@ -222,7 +207,7 @@ export default function RiskCard({ risk, dataCompleteness }) {
 
       {/* Source */}
       <div style={styles.footer}>
-        <span style={styles.source}>{t('riskCard.source', { source: risk.source })}</span>
+        <span style={styles.source}>{t('riskCard.source', { source: getReadableSource(risk.source) })}</span>
       </div>
     </div>
   );

@@ -1,24 +1,32 @@
-import React, { useState } from 'react';
-import { AlertTriangle, CheckCircle, X, Search, XCircle } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import RiskEvaluationModal from './RiskEvaluationModal';
 
 /**
  * RisksSection Component
- * Tracks which predicted risks occurred and captures unpredicted risks
+ * Retrospective evaluation for predicted + manual risks.
+ * Matches the UX: list of risks + per-risk evaluation modal (occurred yes/no).
  */
-export default function RisksSection({ formData, setFormData, predictedRisks = [] }) {
-  const [expandedRisks, setExpandedRisks] = useState({});
+export default function RisksSection({ formData, setFormData, predictedRisks = [], manualRisks = [] }) {
+  const { t } = useTranslation();
+  const [selectedRiskMeta, setSelectedRiskMeta] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const getRiskTypeLabel = (type) => {
     const labels = {
-      communication_breakdown: 'Communication Breakdown',
-      skill_gap: 'Skill Gap',
-      team_overload: 'Team Overload',
-      dependency_blockage: 'Dependency Blockage',
-      scope_creep: 'Scope Creep',
-      process_mismatch: 'Process Mismatch',
-      technical_infrastructure: 'Technical Infrastructure',
-      quality_degradation: 'Quality Degradation',
-      other: 'Other'
+      communication_issues: t('outcome.risks.types.communicationIssues'),
+      communication_breakdown: t('outcome.risks.types.communicationBreakdown'),
+      skill_gap: t('outcome.risks.types.skillGap'),
+      team_overload: t('outcome.risks.types.teamOverload'),
+      dependency_blockage: t('outcome.risks.types.dependencyBlockage'),
+      scope_creep: t('outcome.risks.types.scopeCreep'),
+      process_mismatch: t('outcome.risks.types.processMismatch'),
+      technical_infrastructure: t('outcome.risks.types.technicalInfrastructure'),
+      quality_degradation: t('outcome.risks.types.qualityDegradation'),
+      vendor_issue: t('outcome.risks.types.vendorIssue'),
+      resource_unavailability: t('outcome.risks.types.resourceUnavailability'),
+      other: t('outcome.risks.types.other')
     };
     return labels[type] || type;
   };
@@ -33,565 +41,332 @@ export default function RisksSection({ formData, setFormData, predictedRisks = [
     return colors[severity] || '#6B7280';
   };
 
-  const handleRiskOccurred = (riskId, occurred) => {
-    const actualizedRisks = formData.actualizedRisks || [];
-    const existingIndex = actualizedRisks.findIndex(r => r.riskId === riskId);
+  const actualizedById = useMemo(() => {
+    const map = new Map();
+    for (const r of formData.actualizedRisks || []) {
+      if (r?.riskId !== undefined && r?.riskId !== null) {
+        map.set(String(r.riskId), r);
+      }
+    }
+    return map;
+  }, [formData.actualizedRisks]);
 
-    if (existingIndex >= 0) {
-      const updated = [...actualizedRisks];
-      updated[existingIndex] = {
-        ...updated[existingIndex],
-        occurred
+  const predictedItems = useMemo(() => {
+    return (predictedRisks || []).map((risk, index) => {
+      const riskId = String(risk?._id ?? risk?.id ?? (risk?.type ? `${risk.type}-${index}` : index));
+      const severity = risk?.severity || 'medium';
+      const source = risk?.source || 'system';
+      const sourceLabel = source === 'CBR' ? t('outcome.risks.sourceCBR') : source === 'DT' ? t('outcome.risks.sourceDT') : t('outcome.risks.sourceSystem');
+      return {
+        riskId,
+        kind: 'predicted',
+        title: risk?.title || getRiskTypeLabel(risk?.type),
+        description: risk?.description,
+        type: risk?.type || 'other',
+        severity,
+        rootCause: risk?.rootCause,
+        recommendations: risk?.recommendations,
+        indicators: risk?.indicators,
+        source,
+        sourceLabel
       };
-      setFormData(prev => ({ ...prev, actualizedRisks: updated }));
-    } else {
-      const risk = predictedRisks.find(r => r.id === riskId);
-      setFormData(prev => ({
-        ...prev,
-        actualizedRisks: [
-          ...actualizedRisks,
-          {
-            riskId,
-            type: risk?.type || 'other',
-            occurred,
-            severity: risk?.severity || 'medium'
-          }
-        ]
-      }));
-    }
+    });
+  }, [predictedRisks]);
 
-    if (occurred) {
-      setExpandedRisks(prev => ({ ...prev, [riskId]: true }));
-    }
-  };
-
-  const updateRiskField = (riskId, field, value) => {
-    const actualizedRisks = formData.actualizedRisks || [];
-    const existingIndex = actualizedRisks.findIndex(r => r.riskId === riskId);
-
-    if (existingIndex >= 0) {
-      const updated = [...actualizedRisks];
-      updated[existingIndex] = {
-        ...updated[existingIndex],
-        [field]: value
+  const manualItems = useMemo(() => {
+    return (manualRisks || []).map((risk, index) => {
+      const riskId = String(risk?._id ?? risk?.id ?? `manual-${index}`);
+      const severity = risk?.severity || 'medium';
+      return {
+        riskId,
+        kind: 'manual',
+        title: risk?.title || getRiskTypeLabel(risk?.type),
+        description: risk?.description,
+        type: risk?.type || 'other',
+        severity,
+        source: 'manual',
+        sourceLabel: t('outcome.risks.sourceManual'),
+        rootCause: risk?.rootCause,
+        recommendations: risk?.recommendations,
+        indicators: risk?.indicators
       };
-      setFormData(prev => ({ ...prev, actualizedRisks: updated }));
-    }
+    });
+  }, [manualRisks]);
+
+  const allItems = useMemo(() => [...predictedItems, ...manualItems], [predictedItems, manualItems]);
+
+  const progress = useMemo(() => {
+    const total = allItems.length;
+    const evaluated = allItems.filter((item) => {
+      const v = actualizedById.get(item.riskId);
+      return v?.occurred === true || v?.occurred === false;
+    }).length;
+    return {
+      total,
+      evaluated,
+      percent: total > 0 ? Math.round((evaluated / total) * 100) : 0
+    };
+  }, [allItems, actualizedById]);
+
+  const upsertActualizedRisk = (riskMeta, patch) => {
+    setFormData((prev) => {
+      const list = prev.actualizedRisks || [];
+      const riskId = String(riskMeta.riskId);
+      const idx = list.findIndex((r) => String(r.riskId) === riskId);
+
+      const base = idx >= 0 ? list[idx] : {
+        riskId,
+        type: riskMeta.type,
+        severity: riskMeta.severity,
+        source: riskMeta.kind === 'manual' ? 'manual' : (riskMeta.source || 'predicted')
+      };
+
+      const merged = { ...base, ...patch };
+
+      // If user explicitly marks as avoided, drop any occurred-only details to keep payloads clean.
+      if (merged.occurred === false) {
+        delete merged.title;
+        delete merged.description;
+        delete merged.rootCause;
+        delete merged.recommendations;
+        delete merged.indicators;
+      }
+      // Remove undefined keys so we don't keep stale fields around
+      for (const key of Object.keys(merged)) {
+        if (merged[key] === undefined) delete merged[key];
+      }
+
+      const next = [...list];
+      if (idx >= 0) next[idx] = merged;
+      else next.push(merged);
+
+      return { ...prev, actualizedRisks: next };
+    });
   };
 
-  const addUnpredictedRisk = () => {
-    const newRiskId = `unpredicted_${Date.now()}`;
-    const actualizedRisks = formData.actualizedRisks || [];
-    
-    setFormData(prev => ({
-      ...prev,
-      actualizedRisks: [
-        ...actualizedRisks,
-        {
-          riskId: newRiskId,
-          type: 'other',
-          occurred: true,
-          severity: 'medium',
-          unpredicted: true,
-          description: ''
-        }
-      ]
-    }));
-    
-    setExpandedRisks(prev => ({ ...prev, [newRiskId]: true }));
+  const openEvaluation = (riskMeta) => {
+    setSelectedRiskMeta(riskMeta);
+    setIsModalOpen(true);
   };
 
-  const removeUnpredictedRisk = (riskId) => {
-    const actualizedRisks = formData.actualizedRisks || [];
-    setFormData(prev => ({
-      ...prev,
-      actualizedRisks: actualizedRisks.filter(r => r.riskId !== riskId)
-    }));
+  const closeEvaluation = () => {
+    setIsModalOpen(false);
+    setSelectedRiskMeta(null);
   };
 
-  const getRiskData = (riskId) => {
-    return (formData.actualizedRisks || []).find(r => r.riskId === riskId) || {};
-  };
+  const renderRiskRow = (riskMeta) => {
+    const evaluation = actualizedById.get(riskMeta.riskId);
+    const occurred = evaluation?.occurred;
 
-  const toggleExpanded = (riskId) => {
-    setExpandedRisks(prev => ({ ...prev, [riskId]: !prev[riskId] }));
-  };
+    const status = occurred === true ? 'occurred' : occurred === false ? 'avoided' : 'pending';
+    const statusIcon =
+      status === 'occurred' ? (
+        <CheckCircle size={18} color="#10B981" />
+      ) : status === 'avoided' ? (
+        <XCircle size={18} color="#EF4444" />
+      ) : (
+        <AlertTriangle size={18} color="#F59E0B" />
+      );
 
-  // Combine predicted risks with unpredicted ones
-  const unpredictedRisks = (formData.actualizedRisks || []).filter(r => r.unpredicted);
+    const summary =
+      status === 'occurred'
+        ? t('outcome.risks.occurred')
+        : status === 'avoided'
+          ? t('outcome.risks.didNotOccur')
+          : t('outcome.risks.notEvaluatedYet');
+
+    return (
+      <div key={riskMeta.riskId} style={styles.riskCard}>
+        <div style={styles.riskHeader}>
+          <div style={styles.riskHeaderLeft}>
+            {statusIcon}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+              <div style={styles.riskTitle}>{riskMeta.title}</div>
+              <div style={styles.riskMetaLine}>
+                <span
+                  style={{
+                    ...styles.severityBadge,
+                    background: getSeverityColor(riskMeta.severity)
+                  }}
+                >
+                  {t(`risk.severity.${riskMeta.severity || 'medium'}`).toUpperCase()}
+                </span>
+                <span style={styles.metaSeparator}>|</span>
+                <span style={styles.riskType}>{getRiskTypeLabel(riskMeta.type)}</span>
+                <span style={styles.metaSeparator}>|</span>
+                <span style={styles.sourceText}>{riskMeta.sourceLabel}</span>
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => openEvaluation(riskMeta)}
+            style={styles.evaluateButton}
+          >
+            {status === 'pending' ? t('outcome.risks.evaluateRisk') : t('outcome.risks.viewEdit')}
+          </button>
+        </div>
+
+        <div style={styles.riskSummary}>{summary}</div>
+      </div>
+    );
+  };
 
   return (
     <div style={styles.section}>
-      <h3 style={{...styles.sectionTitle, display: 'flex', alignItems: 'center', gap: '8px'}}>
-        <AlertTriangle size={24} />
-        Predicted vs Actual Risks
+      <h3 style={{ ...styles.sectionTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <AlertTriangle size={22} />
+        {t('outcome.risks.title')}
       </h3>
-      <p style={styles.sectionDescription}>
-        {predictedRisks.length} risks were predicted for this project. Indicate which ones actually occurred.
-      </p>
 
-      {/* Predicted Risks */}
-      <div style={styles.risksList}>
-        {predictedRisks.map(risk => {
-          const riskData = getRiskData(risk.id);
-          const occurred = riskData.occurred || false;
-          const isExpanded = expandedRisks[risk.id] || false;
-
-          return (
-            <div key={risk.id} style={styles.riskCard}>
-              <div style={styles.riskHeader}>
-                <div style={styles.riskHeaderLeft}>
-                  <span 
-                    style={{
-                      ...styles.severityBadge,
-                      background: getSeverityColor(risk.severity),
-                    }}
-                  >
-                    {risk.severity?.toUpperCase()}
-                  </span>
-                  <span style={styles.riskType}>
-                    {getRiskTypeLabel(risk.type)}
-                  </span>
-                </div>
-                <label style={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    checked={occurred}
-                    onChange={(e) => handleRiskOccurred(risk.id, e.target.checked)}
-                    style={styles.checkbox}
-                  />
-                  <span style={{ color: occurred ? '#10B981' : '#6B7280' }}>
-                    {occurred ? (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                        <CheckCircle size={16} />
-                        Occurred
-                      </span>
-                    ) : (
-                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                        <X size={16} />
-                        Did not occur
-                      </span>
-                    )}
-                  </span>
-                </label>
-              </div>
-
-              <p style={styles.riskPrediction}>
-                Prediction: {risk.description}
-              </p>
-
-              {occurred && (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => toggleExpanded(risk.id)}
-                    style={styles.expandButton}
-                  >
-                    {isExpanded ? '▼ Hide details' : '▶ Show details'}
-                  </button>
-
-                  {isExpanded && (
-                    <div style={styles.riskDetails}>
-                      <div style={styles.formGroup}>
-                        <label style={styles.label}>
-                          Description of what occurred <span style={styles.required}>*</span>
-                        </label>
-                        <textarea
-                          value={riskData.description || ''}
-                          onChange={(e) => updateRiskField(risk.id, 'description', e.target.value)}
-                          style={styles.textarea}
-                          rows={3}
-                          placeholder="E.g.: Team in Asia could not attend daily meetings due to time zone difference"
-                        />
-                      </div>
-
-                      <div style={styles.formRow}>
-                        <div style={styles.formGroup}>
-                          <label style={styles.label}>Detection date</label>
-                          <input
-                            type="date"
-                            value={riskData.detectedAt ? new Date(riskData.detectedAt).toISOString().split('T')[0] : ''}
-                            onChange={(e) => updateRiskField(risk.id, 'detectedAt', e.target.value ? new Date(e.target.value).toISOString() : '')}
-                            style={styles.input}
-                          />
-                        </div>
-
-                        <div style={styles.formGroup}>
-                          <label style={styles.label}>Mitigation date</label>
-                          <input
-                            type="date"
-                            value={riskData.mitigatedAt ? new Date(riskData.mitigatedAt).toISOString().split('T')[0] : ''}
-                            onChange={(e) => updateRiskField(risk.id, 'mitigatedAt', e.target.value ? new Date(e.target.value).toISOString() : '')}
-                            style={styles.input}
-                          />
-                        </div>
-                      </div>
-
-                      <div style={styles.formRow}>
-                        <div style={styles.formGroup}>
-                          <label style={styles.label}>Days of delay caused</label>
-                          <input
-                            type="number"
-                            min="0"
-                            value={riskData.scheduleDelayDays || ''}
-                            onChange={(e) => updateRiskField(risk.id, 'scheduleDelayDays', parseInt(e.target.value) || 0)}
-                            style={styles.input}
-                            placeholder="0"
-                          />
-                        </div>
-
-                        <div style={styles.formGroup}>
-                            <label style={styles.label}>Extra budget (%)</label>
-                          <input
-                            type="number"
-                            min="0"
-                            max="100"
-                            value={riskData.budgetOverrunPercent || ''}
-                            onChange={(e) => updateRiskField(risk.id, 'budgetOverrunPercent', parseFloat(e.target.value) || 0)}
-                            style={styles.input}
-                            placeholder="0"
-                          />
-                        </div>
-                      </div>
-
-                      <div style={styles.formGroup}>
-                        <label style={styles.label}>Quality impact</label>
-                        <select
-                          value={riskData.qualityImpact || 'none'}
-                          onChange={(e) => updateRiskField(risk.id, 'qualityImpact', e.target.value)}
-                          style={styles.select}
-                        >
-                          <option value="none">No impact</option>
-                          <option value="low">Low</option>
-                          <option value="medium">Medium</option>
-                          <option value="high">High</option>
-                        </select>
-                      </div>
-
-                      <div style={styles.formGroup}>
-                        <label style={styles.label}>
-                          Root cause <span style={styles.required}>*</span>
-                        </label>
-                        <textarea
-                          value={riskData.rootCause || ''}
-                          onChange={(e) => updateRiskField(risk.id, 'rootCause', e.target.value)}
-                          style={styles.textarea}
-                          rows={2}
-                          placeholder="E.g.: Time zone overlap too small (only 3 hours)"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-
-              {!occurred && (
-                <div style={styles.formGroup}>
-                  <label style={styles.label}>Why didn't it occur?</label>
-                  <textarea
-                    value={riskData.avoidanceReason || ''}
-                    onChange={(e) => updateRiskField(risk.id, 'avoidanceReason', e.target.value)}
-                    style={styles.textarea}
-                    rows={2}
-                    placeholder="E.g.: Good resource planning and realistic sprint goals"
-                  />
-                </div>
-              )}
-            </div>
-          );
-        })}
+      <div style={styles.progressRow}>
+        <div style={styles.progressText}>
+          {t('outcome.risks.progress', { evaluated: progress.evaluated, total: progress.total, percent: progress.percent })}
+        </div>
+        <div style={styles.progressBar}>
+          <div style={{ ...styles.progressFill, width: `${progress.percent}%` }} />
+        </div>
       </div>
 
-      {/* Unpredicted Risks */}
-      {unpredictedRisks.length > 0 && (
-        <>
-          <div style={styles.divider} />
-          <h4 style={styles.subsectionTitle}>🔍 Unpredicted Risks</h4>
-          
-          <div style={styles.risksList}>
-            {unpredictedRisks.map(risk => {
-              const isExpanded = expandedRisks[risk.riskId] || false;
+      <div style={styles.subsection}>
+        <h4 style={styles.subsectionTitle}>{t('outcome.risks.predictedRisks', { count: predictedItems.length })}</h4>
+        <div style={styles.risksList}>{predictedItems.map(renderRiskRow)}</div>
+      </div>
 
-              return (
-                <div key={risk.riskId} style={styles.riskCard}>
-                  <div style={styles.riskHeader}>
-                    <div style={styles.riskHeaderLeft}>
-                      <span style={{...styles.severityBadge, background: '#9333EA'}}>
-                        UNPREDICTED
-                      </span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => removeUnpredictedRisk(risk.riskId)}
-                      style={styles.removeButton}
-                    >
-                      ✕ Delete
-                    </button>
-                  </div>
+      <div style={styles.subsection}>
+        <h4 style={styles.subsectionTitle}>{t('outcome.risks.manualRisks', { count: manualItems.length })}</h4>
+        <div style={styles.risksList}>{manualItems.map(renderRiskRow)}</div>
+      </div>
 
-                  <div style={styles.formGroup}>
-                    <label style={styles.label}>
-                      Risk type <span style={styles.required}>*</span>
-                    </label>
-                    <select
-                      value={risk.type || 'other'}
-                      onChange={(e) => updateRiskField(risk.riskId, 'type', e.target.value)}
-                      style={styles.select}
-                    >
-                      <option value="communication_breakdown">Communication Breakdown</option>
-                      <option value="skill_gap">Skill Gap</option>
-                      <option value="team_overload">Team Overload</option>
-                      <option value="dependency_blockage">Dependency Blockage</option>
-                      <option value="scope_creep">Scope Creep</option>
-                      <option value="process_mismatch">Process Mismatch</option>
-                      <option value="technical_infrastructure">Technical Infrastructure</option>
-                      <option value="quality_degradation">Quality Degradation</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => toggleExpanded(risk.riskId)}
-                    style={styles.expandButton}
-                  >
-                    {isExpanded ? '▼ Hide details' : '▶ Show details'}
-                  </button>
-
-                  {isExpanded && (
-                    <div style={styles.riskDetails}>
-                      <div style={styles.formGroup}>
-                        <label style={styles.label}>
-                          Description <span style={styles.required}>*</span>
-                        </label>
-                        <textarea
-                          value={risk.description || ''}
-                          onChange={(e) => updateRiskField(risk.riskId, 'description', e.target.value)}
-                          style={styles.textarea}
-                          rows={3}
-                          placeholder="Describe what occurred"
-                        />
-                      </div>
-
-                      <div style={styles.formRow}>
-                        <div style={styles.formGroup}>
-                          <label style={styles.label}>Days of delay</label>
-                          <input
-                            type="number"
-                            min="0"
-                            value={risk.scheduleDelayDays || ''}
-                            onChange={(e) => updateRiskField(risk.riskId, 'scheduleDelayDays', parseInt(e.target.value) || 0)}
-                            style={styles.input}
-                          />
-                        </div>
-
-                        <div style={styles.formGroup}>
-                          <label style={styles.label}>% extra budget</label>
-                          <input
-                            type="number"
-                            min="0"
-                            value={risk.budgetOverrunPercent || ''}
-                            onChange={(e) => updateRiskField(risk.riskId, 'budgetOverrunPercent', parseFloat(e.target.value) || 0)}
-                            style={styles.input}
-                          />
-                        </div>
-                      </div>
-
-                      <div style={styles.formGroup}>
-                        <label style={styles.label}>
-                          Root cause <span style={styles.required}>*</span>
-                        </label>
-                        <textarea
-                          value={risk.rootCause || ''}
-                          onChange={(e) => updateRiskField(risk.riskId, 'rootCause', e.target.value)}
-                          style={styles.textarea}
-                          rows={2}
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </>
-      )}
-
-      <button
-        type="button"
-        onClick={addUnpredictedRisk}
-        style={styles.addButton}
-      >
-        + Add Unpredicted Risk
-      </button>
+      <RiskEvaluationModal
+        isOpen={isModalOpen}
+        onClose={closeEvaluation}
+        riskMeta={selectedRiskMeta}
+        value={selectedRiskMeta ? actualizedById.get(selectedRiskMeta.riskId) : undefined}
+        onSave={async (patch) => {
+          if (!selectedRiskMeta) return;
+          upsertActualizedRisk(selectedRiskMeta, patch);
+        }}
+      />
     </div>
   );
 }
-
+ 
 const styles = {
   section: {
-    padding: '24px',
     background: '#FFFFFF',
-    borderRadius: '8px',
+    borderRadius: '12px',
+    padding: '28px',
+    marginBottom: '28px',
     border: '1px solid #E5E7EB'
   },
   sectionTitle: {
-    fontSize: '20px',
-    fontWeight: '600',
-    color: '#111827',
-    marginBottom: '8px'
+    fontSize: '18px',
+    fontWeight: '800',
+    marginBottom: '16px',
+    color: '#111827'
   },
-  sectionDescription: {
-    fontSize: '14px',
-    color: '#6B7280',
+  progressRow: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '10px',
     marginBottom: '24px'
   },
+  progressText: {
+    fontSize: '14px',
+    fontWeight: '700',
+    color: '#374151'
+  },
+  progressBar: {
+    width: '100%',
+    height: '10px',
+    borderRadius: '999px',
+    background: '#E5E7EB',
+    overflow: 'hidden'
+  },
+  progressFill: {
+    height: '100%',
+    background: '#3B82F6'
+  },
+  subsection: {
+    marginTop: '24px'
+  },
   subsectionTitle: {
-    fontSize: '16px',
-    fontWeight: '600',
-    color: '#374151',
-    marginBottom: '16px'
+    margin: '0 0 12px 0',
+    fontSize: '14px',
+    fontWeight: '800',
+    color: '#111827'
   },
   risksList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px'
+    gap: '14px'
   },
   riskCard: {
-    padding: '16px',
-    background: '#F9FAFB',
     border: '1px solid #E5E7EB',
-    borderRadius: '8px'
+    borderRadius: '12px',
+    padding: '16px',
+    background: '#F9FAFB'
   },
   riskHeader: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '12px'
+    alignItems: 'flex-start',
+    gap: '12px'
   },
   riskHeaderLeft: {
     display: 'flex',
-    alignItems: 'center',
-    gap: '12px'
+    alignItems: 'flex-start',
+    gap: '10px',
+    flex: 1
   },
-  severityBadge: {
-    padding: '4px 8px',
-    borderRadius: '4px',
-    fontSize: '11px',
-    fontWeight: '600',
-    color: '#FFFFFF',
-    textTransform: 'uppercase'
-  },
-  riskType: {
+  riskTitle: {
     fontSize: '14px',
-    fontWeight: '600',
+    fontWeight: '800',
     color: '#111827'
   },
-  checkboxLabel: {
+  riskMetaLine: {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    cursor: 'pointer',
-    fontSize: '14px',
-    fontWeight: '500'
+    flexWrap: 'wrap'
   },
-  checkbox: {
-    cursor: 'pointer',
-    width: '16px',
-    height: '16px'
+  severityBadge: {
+    padding: '3px 8px',
+    borderRadius: '999px',
+    fontSize: '11px',
+    fontWeight: '800',
+    color: '#FFFFFF'
   },
-  riskPrediction: {
-    fontSize: '13px',
-    color: '#6B7280',
-    fontStyle: 'italic',
-    marginBottom: '12px'
+  metaSeparator: {
+    color: '#9CA3AF'
   },
-  expandButton: {
-    background: 'none',
-    border: 'none',
-    color: '#2563EB',
-    fontSize: '13px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    padding: '4px 0',
-    marginTop: '8px'
-  },
-  riskDetails: {
-    marginTop: '16px',
-    paddingTop: '16px',
-    borderTop: '1px solid #E5E7EB'
-  },
-  formGroup: {
-    marginBottom: '16px'
-  },
-  formRow: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '16px'
-  },
-  label: {
-    display: 'block',
-    fontSize: '13px',
-    fontWeight: '500',
-    color: '#374151',
-    marginBottom: '6px'
-  },
-  required: {
-    color: '#DC2626'
-  },
-  input: {
-    width: '100%',
-    padding: '8px 10px',
-    fontSize: '14px',
-    border: '1px solid #D1D5DB',
-    borderRadius: '6px',
-    outline: 'none'
-  },
-  textarea: {
-    width: '100%',
-    padding: '8px 10px',
-    fontSize: '14px',
-    border: '1px solid #D1D5DB',
-    borderRadius: '6px',
-    outline: 'none',
-    fontFamily: 'inherit',
-    resize: 'vertical'
-  },
-  select: {
-    width: '100%',
-    padding: '8px 10px',
-    fontSize: '14px',
-    border: '1px solid #D1D5DB',
-    borderRadius: '6px',
-    outline: 'none',
-    background: '#FFFFFF'
-  },
-  addButton: {
-    width: '100%',
-    padding: '12px',
-    background: '#FFFFFF',
-    border: '2px dashed #D1D5DB',
-    borderRadius: '8px',
-    color: '#2563EB',
-    fontSize: '14px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    marginTop: '16px',
-    transition: 'all 0.2s'
-  },
-  removeButton: {
-    background: '#FEE2E2',
-    border: 'none',
-    color: '#DC2626',
-    padding: '6px 12px',
-    borderRadius: '4px',
+  riskType: {
     fontSize: '12px',
-    fontWeight: '500',
-    cursor: 'pointer'
+    fontWeight: '700',
+    color: '#374151'
   },
-  divider: {
-    height: '1px',
-    background: '#E5E7EB',
-    margin: '24px 0'
+  sourceText: {
+    fontSize: '12px',
+    fontWeight: '700',
+    color: '#6B7280'
+  },
+  evaluateButton: {
+    background: '#111827',
+    color: '#FFFFFF',
+    border: 'none',
+    borderRadius: '10px',
+    padding: '10px 12px',
+    fontSize: '13px',
+    fontWeight: '800',
+    cursor: 'pointer',
+    whiteSpace: 'nowrap'
+  },
+  riskSummary: {
+    marginTop: '10px',
+    fontSize: '13px',
+    color: '#6B7280'
   }
 };
+

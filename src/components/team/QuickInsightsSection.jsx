@@ -66,19 +66,6 @@ export default function QuickInsightsSection({ employee, project }) {
           <p style={styles.recText}>
             {generateOverallRecommendation(employee, insights, t)}
           </p>
-          <div style={styles.recScore}>
-            <div style={styles.recScoreLabel}>{t('team.quickInsights.recommendationConfidence')}</div>
-            <div style={styles.recScoreBar}>
-              <div 
-                style={{
-                  ...styles.recScoreFill,
-                  width: `${calculateConfidence(insights)}%`,
-                  backgroundColor: getConfidenceColor(calculateConfidence(insights))
-                }}
-              />
-            </div>
-            <div style={styles.recScoreValue}>{calculateConfidence(insights)}%</div>
-          </div>
         </div>
       )}
     </div>
@@ -403,38 +390,7 @@ function generateOverallRecommendation(employee, insights, t) {
   });
 }
 
-/**
- * Calculate confidence score
- */
-function calculateConfidence(insights) {
-  if (insights.length === 0) return 50;
 
-  const positiveCount = insights.filter(i => i.type === 'positive').length;
-  const criticalCount = insights.filter(i => i.type === 'critical').length;
-  const warningCount = insights.filter(i => i.type === 'warning').length;
-
-  // Base score
-  let confidence = 50;
-
-  // Add for positives
-  confidence += positiveCount * 12;
-
-  // Subtract for warnings and criticals
-  confidence -= warningCount * 8;
-  confidence -= criticalCount * 15;
-
-  // Clamp between 20-95
-  return Math.max(20, Math.min(95, confidence));
-}
-
-/**
- * Get confidence color
- */
-function getConfidenceColor(confidence) {
-  if (confidence >= 75) return '#28a745';
-  if (confidence >= 50) return '#ffc107';
-  return '#dc3545';
-}
 
 /**
  * Get timezone offset value (simplified)
@@ -581,38 +537,9 @@ const styles = {
     color: '#24292e',
   },
   recText: {
-    margin: '0 0 16px 0',
+    margin: 0,
     fontSize: '14px',
     color: '#24292e',
     lineHeight: '1.6',
-  },
-  recScore: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-  },
-  recScoreLabel: {
-    fontSize: '13px',
-    fontWeight: '600',
-    color: '#586069',
-    whiteSpace: 'nowrap',
-  },
-  recScoreBar: {
-    flex: 1,
-    height: '10px',
-    backgroundColor: '#e1e4e8',
-    borderRadius: '5px',
-    overflow: 'hidden',
-  },
-  recScoreFill: {
-    height: '100%',
-    transition: 'width 0.5s ease',
-  },
-  recScoreValue: {
-    fontSize: '16px',
-    fontWeight: '700',
-    color: '#24292e',
-    minWidth: '45px',
-    textAlign: 'right',
   },
 };

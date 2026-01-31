@@ -79,7 +79,7 @@ export default function ProjectCard({ project, onEdit, onDelete, showActions = t
             <span style={styles.metaLabel}>{t('projects.card.duration')}:</span>
           </div>
           <span style={styles.metaValue}>
-            {project.expectedDuration?.value} {project.expectedDuration?.unit}
+            {project.expectedDuration?.value} {project.expectedDuration?.unit ? t(`projects.timeUnits.${project.expectedDuration.unit}`, { defaultValue: project.expectedDuration.unit }) : ''}
           </span>
         </div>
       </div>

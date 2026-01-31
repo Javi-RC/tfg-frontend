@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { getMyCV, deleteCV, updateCV } from '../api/cv';
 import { validateCV } from '../services/cvService';
 
@@ -7,6 +8,7 @@ import { validateCV } from '../services/cvService';
  * Manages CV loading, editing, deletion, and upload
  */
 export function useMyCVPage() {
+  const { t } = useTranslation();
   const [cv, setCV] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,9 +32,9 @@ export function useMyCVPage() {
       setCV(cvData);
     } catch (err) {
       if (err.response?.status === 404) {
-        setError('No CV found. Please upload one.');
+        setError(t('cv.noCVFoundUploadOne'));
       } else {
-        setError(err.response?.data?.error || 'Error loading CV');
+        setError(err.response?.data?.error || t('cv.errorLoadingCV'));
       }
     } finally {
       setLoading(false);
@@ -45,7 +47,7 @@ export function useMyCVPage() {
   const handleDelete = async () => {
     if (!cv?._id) return;
     
-    if (!window.confirm('Are you sure you want to delete your CV? This action cannot be undone.')) {
+    if (!window.confirm(t('cv.confirmDeleteCV'))) {
       return;
     }
 
@@ -54,7 +56,7 @@ export function useMyCVPage() {
       setCV(null);
       setError(null);
     } catch (err) {
-      setError(err.response?.data?.error || 'Error deleting CV');
+      setError(err.response?.data?.error || t('cv.errorDeletingCV'));
     }
   };
 
@@ -71,7 +73,7 @@ export function useMyCVPage() {
    * Save CV changes
    */
   const handleSaveCV = async (editData) => {
-    if (!cv?._id) return { success: false, errors: ['No CV found'] };
+    if (!cv?._id) return { success: false, errors: [t('cv.noCVFound')] };
     
     // Validate CV data
     const validationErrors = validateCV(editData);
@@ -87,7 +89,7 @@ export function useMyCVPage() {
       await loadCV();
       return { success: true, errors: [] };
     } catch (err) {
-      const errorMsg = err.response?.data?.error || 'Error updating CV';
+      const errorMsg = err.response?.data?.error || t('cv.errorUpdatingCV');
       setError(errorMsg);
       return { success: false, errors: [errorMsg] };
     }

@@ -680,9 +680,13 @@ const styles = {
     color: '#24292e',
   },
   scoreLabel: {
-    fontSize: '11px',
+    fontSize: '10px',
     color: '#586069',
     marginTop: '-2px',
+    whiteSpace: 'nowrap',
+    maxWidth: '80px',
+    overflow: 'hidden',
+    textOverflow: 'ellipsis',
   },
   matchSummary: {
     flex: 1,
@@ -719,7 +723,9 @@ const styles = {
     justifyContent: 'center',
     gap: '6px',
     transition: 'all 0.2s',
-    borderBottom: '2px solid transparent',
+    borderBottomWidth: '2px',
+    borderBottomStyle: 'solid',
+    borderBottomColor: 'transparent',
     whiteSpace: 'nowrap',
   },
   activeTab: {

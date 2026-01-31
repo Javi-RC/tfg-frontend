@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { User, Users } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { getOrganizationStats } from '../../api/organization';
 
 export default function OrganizationCard({ organization, isAdmin, onClick, styles }) {
+  const { t } = useTranslation();
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
@@ -30,7 +32,7 @@ export default function OrganizationCard({ organization, isAdmin, onClick, style
             color: organization.status === 'active' ? '#2e7d32' : '#c62828'
           }}
         >
-          {organization.status === 'active' ? 'Active' : 'Inactive'}
+          {organization.status === 'active' ? t('organization.status.active') : t('organization.status.inactive')}
         </span>
       </div>
 
@@ -40,12 +42,12 @@ export default function OrganizationCard({ organization, isAdmin, onClick, style
 
       <div style={styles.cardInfo}>
         <div style={styles.infoItem}>
-          <span style={styles.infoLabel}>Industry:</span>
-          <span style={styles.infoValue}>{organization.industry || 'N/A'}</span>
+          <span style={styles.infoLabel}>{t('organization.card.industry')}:</span>
+          <span style={styles.infoValue}>{organization.industry || t('common.na')}</span>
         </div>
         <div style={styles.infoItem}>
-          <span style={styles.infoLabel}>Size:</span>
-          <span style={styles.infoValue}>{organization.size || 'N/A'}</span>
+          <span style={styles.infoLabel}>{t('organization.card.size')}:</span>
+          <span style={styles.infoValue}>{organization.size || t('common.na')}</span>
         </div>
       </div>
 
@@ -53,15 +55,15 @@ export default function OrganizationCard({ organization, isAdmin, onClick, style
         <div style={styles.statsContainer}>
           <div style={styles.statItem}>
             <span style={styles.statValue}>{stats.totalEmployees}</span>
-            <span style={styles.statLabel}>Employees</span>
+            <span style={styles.statLabel}>{t('organization.card.employees')}</span>
           </div>
           <div style={styles.statItem}>
             <span style={styles.statValue}>{stats.activeEmployees}</span>
-            <span style={styles.statLabel}>Active</span>
+            <span style={styles.statLabel}>{t('organization.card.active')}</span>
           </div>
           <div style={styles.statItem}>
             <span style={styles.statValue}>{stats.pendingEmployees}</span>
-            <span style={styles.statLabel}>Pending</span>
+            <span style={styles.statLabel}>{t('organization.card.pending')}</span>
           </div>
         </div>
       )}
@@ -71,12 +73,12 @@ export default function OrganizationCard({ organization, isAdmin, onClick, style
           {isAdmin ? (
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
               <User size={14} />
-              Administrator
+              {t('organization.card.administrator')}
             </span>
           ) : (
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
               <Users size={14} />
-              Employee
+              {t('organization.card.employee')}
             </span>
           )}
         </span>

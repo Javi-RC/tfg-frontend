@@ -1,19 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Lightbulb, Edit, Trash, AlertCircle, CheckCircle } from 'lucide-react';
+import { Lightbulb, Edit, Trash, AlertCircle, CheckCircle, MessageSquare, CheckCircle2, Plus, ArrowLeft } from 'lucide-react';
 import { useProjectDetail } from '../hooks/useProjectDetail';
+import { useManualRisks } from '../hooks/useManualRisks';
 import PrimaryButton from '../components/PrimaryButton';
 import SecondaryButton from '../components/SecondaryButton';
 import ProjectStatusBadge from '../components/projects/ProjectStatusBadge';
 import EmployeeAssignmentModal from '../components/projects/EmployeeAssignmentModal';
+import ProjectCompletionQuestionnaireModal from '../components/projects/ProjectCompletionQuestionnaireModal';
 import DraftTeamAnalysis from '../components/projects/DraftTeamAnalysis';
 import TeamMembersSection from '../components/projects/TeamMembersSection';
 import TabNavigation from '../components/navigation/TabNavigation';
 import LoadingState from '../components/common/LoadingState';
 import ErrorState from '../components/common/ErrorState';
 import InfoGrid from '../components/common/InfoGrid';
+import ManualRiskForm from '../components/risk/ManualRiskForm';
+import ManualRisksList from '../components/risk/ManualRisksList';
 import { PROJECT_STATUS } from '../types/projectTypes';
+import { getCompletionQuestionnaire, submitCompletionQuestionnaire } from '../api/projects';
 
 /**
  * Project Detail Page
@@ -22,6 +27,7 @@ import { PROJECT_STATUS } from '../types/projectTypes';
 export default function ProjectDetailPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const previousLanguage = useRef(i18n.language);
   
   const {
     project,
@@ -41,6 +47,152 @@ export default function ProjectDetailPage() {
     reloadProject
   } = useProjectDetail();
 
+  // Manual risks management
+  const {
+    manualRisks,
+    loading: risksLoading,
+    error: risksError,
+    loadManualRisks,
+    addRisk,
+    updateRisk,
+    deleteRisk,
+    repredictRisks,
+    clearError: clearRisksError
+  } = useManualRisks(project?._id);
+
+  // State for completion questionnaire modal
+  const [showQuestionnaireModal, setShowQuestionnaireModal] = useState(false);
+  const [questionnaireChecked, setQuestionnaireChecked] = useState(false);
+  const [feedbackStatus, setFeedbackStatus] = useState('pending'); // 'pending', 'completed', 'skipped'
+
+  // State for manual risk form modal
+  const [showRiskForm, setShowRiskForm] = useState(false);
+  const [editingRisk, setEditingRisk] = useState(null);
+  const [addingRisk, setAddingRisk] = useState(false);
+
+  // Check for pending completion questionnaire when project is completed
+  useEffect(() => {
+    const checkCompletionQuestionnaire = async () => {
+      if (!project || project.status !== PROJECT_STATUS.COMPLETED || questionnaireChecked) {
+        return;
+      }
+
+      // Check if user already skipped this questionnaire
+      const skippedKey = `questionnaire_skipped_${project._id}`;
+      const completedKey = `questionnaire_completed_${project._id}`;
+      
+      if (localStorage.getItem(completedKey)) {
+        setFeedbackStatus('completed');
+        setQuestionnaireChecked(true);
+        return;
+      }
+      
+      if (localStorage.getItem(skippedKey)) {
+        setFeedbackStatus('skipped');
+        setQuestionnaireChecked(true);
+        return;
+      }
+
+      try {
+        const response = await getCompletionQuestionnaire(project._id);
+        const data = response.data?.success ? response.data.data : response.data;
+        
+        if (data?.pending) {
+          setShowQuestionnaireModal(true);
+          setFeedbackStatus('pending');
+        } else if (data?.completed) {
+          setFeedbackStatus('completed');
+        }
+      } catch (error) {
+        // If endpoint doesn't exist yet or error, silently continue
+        console.debug('Completion questionnaire check:', error.message);
+        setFeedbackStatus('pending');
+      } finally {
+        setQuestionnaireChecked(true);
+      }
+    };
+
+    checkCompletionQuestionnaire();
+  }, [project, questionnaireChecked]);
+
+  // Load manual risks when project is active or higher status
+  useEffect(() => {
+    if (project && project.status !== PROJECT_STATUS.DRAFT) {
+      loadManualRisks();
+    }
+  }, [project, loadManualRisks]);
+
+  // Reload manual risks when language changes to get translated content from backend
+  useEffect(() => {
+    const currentLanguage = i18n.language;
+    if (previousLanguage.current && previousLanguage.current !== currentLanguage && manualRisks.length > 0) {
+      console.log('🌐 [ProjectDetailPage] Language changed from', previousLanguage.current, 'to', currentLanguage);
+      console.log('🔄 [ProjectDetailPage] Reloading manual risks to get translations...');
+      loadManualRisks();
+    }
+    previousLanguage.current = currentLanguage;
+  }, [i18n.language, loadManualRisks, manualRisks.length]);
+
+  const handleAddRisk = async (riskData) => {
+    setAddingRisk(true);
+    const newRisk = await addRisk(riskData);
+    setAddingRisk(false);
+    if (newRisk) {
+      setShowRiskForm(false);
+    }
+  };
+
+  const handleEditRisk = async (riskData) => {
+    setAddingRisk(true);
+    const updated = await updateRisk(editingRisk._id, riskData);
+    setAddingRisk(false);
+    if (updated) {
+      setShowRiskForm(false);
+      setEditingRisk(null);
+    }
+  };
+
+  const handleOpenEditRisk = (risk) => {
+    setEditingRisk(risk);
+    setShowRiskForm(true);
+  };
+
+  const handleCloseRiskForm = () => {
+    setShowRiskForm(false);
+    setEditingRisk(null);
+  };
+
+  const handleDeleteRisk = async (riskId) => {
+    await deleteRisk(riskId);
+  };
+
+  const handleQuestionnaireSubmit = async (responses) => {
+    try {
+      await submitCompletionQuestionnaire(project._id, responses);
+      localStorage.setItem(`questionnaire_completed_${project._id}`, Date.now().toString());
+      setShowQuestionnaireModal(false);
+      setFeedbackStatus('completed');
+      alert(t('projectQuestionnaire.successMessage'));
+    } catch (error) {
+      console.error('Error submitting questionnaire:', error);
+      alert(error.response?.data?.error || t('projectQuestionnaire.errorMessage'));
+    }
+  };
+
+  const handleQuestionnaireClose = () => {
+    setShowQuestionnaireModal(false);
+  };
+
+  const handleQuestionnaireSkip = () => {
+    setShowQuestionnaireModal(false);
+    setFeedbackStatus('skipped');
+  };
+
+  const handleOpenFeedbackModal = () => {
+    // Redirect to new completion page instead of opening old modal
+    navigate(`/projects/${project._id}/completion`);
+  };
+
   const formatDate = (date) => {
     if (!date) return t('common.notAvailable');
     const dateObj = new Date(date);
@@ -56,6 +208,19 @@ export default function ProjectDetailPage() {
     if (!value) return t('common.notAvailable');
     const normalized = typeof value === 'string' ? value.toLowerCase() : value;
     return t(`projects.levels.${normalized}`, { defaultValue: value });
+  };
+
+  const translateWorkMode = (value) => {
+    if (!value) return t('common.notAvailable');
+    const modeMap = {
+      'inherit_from_organization': t('projects.workMode.inherit'),
+      'office_mode': t('projects.workMode.officeMode'),
+      'office_first': t('projects.workMode.officeFirst'),
+      'office_remote_mix': t('projects.workMode.officeMix'),
+      'remote_first': t('projects.workMode.remoteFirst'),
+      'remote_mode': t('projects.workMode.remoteMode')
+    };
+    return modeMap[value] || value;
   };
 
   if (loading) {
@@ -79,7 +244,8 @@ export default function ProjectDetailPage() {
       {/* Header */}
       <div style={styles.header}>
         <button style={styles.backButton} onClick={() => navigate('/projects')}>
-          ← {t('projects.backToProjects')}
+          <ArrowLeft size={18} style={{ marginRight: '8px' }} />
+          {t('projects.backToProjects')}
         </button>
         
         <div style={styles.headerContent}>
@@ -137,6 +303,39 @@ export default function ProjectDetailPage() {
         </div>
       </div>
 
+      {/* Feedback Banner for Completed Projects */}
+      {project.status === PROJECT_STATUS.COMPLETED && (
+        <div style={feedbackStatus === 'completed' ? styles.feedbackBannerCompleted : styles.feedbackBanner}>
+          <div style={styles.feedbackBannerContent}>
+            {feedbackStatus === 'completed' ? (
+              <CheckCircle2 size={24} color="#059669" />
+            ) : (
+              <MessageSquare size={24} color="#6366F1" />
+            )}
+            <div style={styles.feedbackBannerText}>
+              <h3 style={styles.feedbackBannerTitle}>
+                {feedbackStatus === 'completed' 
+                  ? t('projectQuestionnaire.banner.completed')
+                  : t('projectQuestionnaire.banner.title')}
+              </h3>
+              <p style={styles.feedbackBannerDescription}>
+                {feedbackStatus === 'completed'
+                  ? t('projectQuestionnaire.banner.completedDescription')
+                  : t('projectQuestionnaire.banner.description')}
+              </p>
+            </div>
+          </div>
+          {feedbackStatus !== 'completed' && (
+            <PrimaryButton 
+              onClick={handleOpenFeedbackModal}
+              leftIcon={<MessageSquare size={16} />}
+            >
+              {t('projectQuestionnaire.banner.action')}
+            </PrimaryButton>
+          )}
+        </div>
+      )}
+
       {/* Tabs */}
       <TabNavigation
         tabs={[
@@ -148,7 +347,10 @@ export default function ProjectDetailPage() {
             id: 'team',
             label: t('projects.detailPage.tabs.teamWithCount', { count: project.assignedEmployeesCount || 0 })
           },
-          { id: 'details', label: t('projects.detailPage.tabs.details') }
+          { id: 'details', label: t('projects.detailPage.tabs.details') },
+          ...(project.status !== PROJECT_STATUS.DRAFT ? [
+            { id: 'risks', label: t('projects.detailPage.tabs.risks') }
+          ] : [])
         ]}
         activeTab={activeTab}
         onChange={setActiveTab}
@@ -208,8 +410,20 @@ export default function ProjectDetailPage() {
               <InfoGrid
                 items={[
                   { label: t('projects.detailPage.experienceLevel'), value: translateProjectLevel(project.requiredExperienceLevel) },
-                  { label: t('projects.detailPage.systemComplexity'), value: translateProjectLevel(project.systemComplexity) },
-                  { label: t('projects.detailPage.documentationLevel'), value: translateProjectLevel(project.documentationLevel) }
+                  { label: t('projects.detailPage.documentationLevel'), value: translateProjectLevel(project.documentationLevel) },
+                  { label: t('projects.detailPage.technologies'), value: project.mainTechnologies?.join(', ') || t('common.notAvailable') }
+                ]}
+              />
+            </div>
+
+            <div style={styles.detailsSection}>
+              <h3 style={styles.sectionTitle}>{t('projects.detailPage.workDistribution')}</h3>
+              <InfoGrid
+                items={[
+                  { label: t('projects.detailPage.workMode'), value: project.workMode ? translateWorkMode(project.workMode) : t('common.notAvailable') },
+                  { label: t('projects.detailPage.involvedCountries'), value: project.involvedCountries?.join(', ') || t('common.notAvailable') },
+                  { label: t('projects.detailPage.distributedExperience'), value: translateProjectLevel(project.distributedWorkExperienceLevel) },
+                  { label: t('projects.detailPage.culturalDiversity'), value: translateProjectLevel(project.culturalDiversityLevel) }
                 ]}
               />
             </div>
@@ -225,6 +439,96 @@ export default function ProjectDetailPage() {
             </div>
           </div>
         )}
+
+        {activeTab === 'risks' && project.status !== PROJECT_STATUS.DRAFT && (
+          <div>
+            <div style={styles.section}>
+              <div style={styles.risksSectionHeader}>
+                <div style={styles.risksHeaderInfo}>
+                  <h3 style={styles.sectionTitle}>{t('projects.detailPage.risksSection.title')}</h3>
+                  <p style={styles.sectionDescription}>
+                    {project.status === PROJECT_STATUS.ACTIVE
+                      ? t('projects.detailPage.risksSection.descriptionActive')
+                      : t('projects.detailPage.risksSection.descriptionInactive')}
+                  </p>
+                  
+                  {/* Risk Statistics */}
+                  {manualRisks && manualRisks.length > 0 && (
+                    <div style={styles.riskStats}>
+                      <div style={styles.statItem}>
+                        <span style={styles.statValue}>
+                          {manualRisks.filter(r => r.severity === 'high' || r.severity === 'critical').length}
+                        </span>
+                        <span style={styles.statLabel}>{t('projects.detailPage.risksSection.stats.highCritical')}</span>
+                      </div>
+                      <div style={styles.statItem}>
+                        <span style={styles.statValue}>
+                          {manualRisks.filter(r => r.status === 'predicted').length}
+                        </span>
+                        <span style={styles.statLabel}>{t('projects.detailPage.risksSection.stats.predicted')}</span>
+                      </div>
+                      <div style={styles.statItem}>
+                        <span style={styles.statValue}>
+                          {manualRisks.filter(r => r.source === 'manual').length}
+                        </span>
+                        <span style={styles.statLabel}>{t('projects.detailPage.risksSection.stats.manual')}</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Only allow adding risks when project is ACTIVE */}
+                {canEdit && project.status === PROJECT_STATUS.ACTIVE && (
+                  <PrimaryButton
+                    onClick={() => {
+                      setEditingRisk(null);
+                      setShowRiskForm(true);
+                    }}
+                    leftIcon={<Plus size={16} />}
+                  >
+                    {t('risk.form.addRiskButton')}
+                  </PrimaryButton>
+                )}
+              </div>
+
+              {/* Info banner for non-active projects */}
+              {project.status === PROJECT_STATUS.COMPLETED && (
+                <div style={styles.infoBanner}>
+                  <AlertCircle size={20} color="#3B82F6" />
+                  <div style={styles.infoBannerText}>
+                    <strong>{t('projects.detailPage.risksSection.completedBanner.title')}</strong> {t('projects.detailPage.risksSection.completedBanner.description')}
+                  </div>
+                </div>
+              )}
+
+              {risksError && (
+                <div style={styles.errorBanner}>
+                  <AlertCircle size={20} />
+                  <div>{risksError}</div>
+                  <button 
+                    onClick={() => {
+                      clearRisksError();
+                      loadManualRisks();
+                    }}
+                    style={styles.errorRetryButton}
+                  >
+                    {t('projects.detailPage.risksSection.retry')}
+                  </button>
+                </div>
+              )}
+
+              <ManualRisksList
+                risks={manualRisks}
+                loading={risksLoading}
+                error={risksError}
+                onEdit={handleOpenEditRisk}
+                onDelete={handleDeleteRisk}
+                onRefresh={repredictRisks}
+                canManage={canEdit && project.status === PROJECT_STATUS.ACTIVE}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Employee Assignment Modal */}
@@ -234,6 +538,34 @@ export default function ProjectDetailPage() {
           currentEmployees={project.assignedEmployees || []}
           onAssign={handleAssignEmployee}
           onClose={() => setShowAssignModal(false)}
+        />
+      )}
+
+      {/* Project Completion Questionnaire Modal */}
+      {showQuestionnaireModal && project && (
+        <ProjectCompletionQuestionnaireModal
+          project={project}
+          onClose={handleQuestionnaireClose}
+          onSubmit={handleQuestionnaireSubmit}
+          onSkip={handleQuestionnaireSkip}
+        />
+      )}
+
+      {/* Manual Risk Form Modal */}
+      {showRiskForm && (
+        <ManualRiskForm
+          initialRisk={editingRisk}
+          onSubmit={editingRisk ? handleEditRisk : handleAddRisk}
+          onCancel={handleCloseRiskForm}
+          onDelete={
+            editingRisk
+              ? async () => {
+                  await handleDeleteRisk(editingRisk._id);
+                  handleCloseRiskForm();
+                }
+              : undefined
+          }
+          loading={addingRisk}
         />
       )}
     </div>
@@ -250,6 +582,8 @@ const styles = {
     marginBottom: '32px'
   },
   backButton: {
+    display: 'inline-flex',
+    alignItems: 'center',
     background: 'none',
     border: 'none',
     color: '#6B7280',
@@ -257,7 +591,11 @@ const styles = {
     fontWeight: '600',
     cursor: 'pointer',
     marginBottom: '16px',
-    padding: '8px 0'
+    padding: '8px 12px 8px 0',
+    transition: 'color 0.2s, transform 0.2s',
+    ':hover': {
+      color: '#374151'
+    }
   },
   headerContent: {
     display: 'flex',
@@ -347,7 +685,9 @@ const styles = {
     fontWeight: '600',
     color: '#6B7280',
     cursor: 'pointer',
-    borderBottom: '2px solid transparent',
+    borderBottomWidth: '2px',
+    borderBottomStyle: 'solid',
+    borderBottomColor: 'transparent',
     marginBottom: '-2px',
     transition: 'all 0.2s'
   },
@@ -497,5 +837,137 @@ const styles = {
     color: '#DC2626',
     padding: '60px',
     fontSize: '16px'
+  },
+  feedbackBanner: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: '16px',
+    padding: '24px',
+    background: 'linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%)',
+    borderRadius: '16px',
+    marginBottom: '32px',
+    border: '1px solid #C7D2FE',
+    boxShadow: '0 4px 12px rgba(99, 102, 241, 0.1)'
+  },
+  feedbackBannerCompleted: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: '16px',
+    padding: '24px',
+    background: 'linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%)',
+    borderRadius: '16px',
+    marginBottom: '32px',
+    border: '1px solid #A7F3D0',
+    boxShadow: '0 4px 12px rgba(5, 150, 105, 0.1)'
+  },
+  feedbackBannerContent: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '16px',
+    flex: '1 1 auto',
+    minWidth: '0'
+  },
+  feedbackBannerText: {
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '6px',
+    flex: 1,
+    minWidth: '0'
+  },
+  feedbackBannerTitle: {
+    fontSize: '16px',
+    fontWeight: '700',
+    color: '#111',
+    margin: 0
+  },
+  feedbackBannerDescription: {
+    fontSize: '14px',
+    color: '#4B5563',
+    margin: 0
+  },
+  risksSectionHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    gap: '20px',
+    marginBottom: '24px'
+  },
+  risksHeaderInfo: {
+    flex: 1
+  },
+  riskStats: {
+    display: 'flex',
+    gap: '24px',
+    marginTop: '16px',
+    padding: '16px',
+    backgroundColor: '#F9FAFB',
+    borderRadius: '12px',
+    border: '1px solid #E5E7EB'
+  },
+  statItem: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '4px'
+  },
+  statValue: {
+    fontSize: '24px',
+    fontWeight: '700',
+    color: '#111'
+  },
+  statLabel: {
+    fontSize: '12px',
+    color: '#6B7280',
+    fontWeight: '500',
+    textTransform: 'uppercase',
+    letterSpacing: '0.5px'
+  },
+  sectionDescription: {
+    fontSize: '14px',
+    color: '#6B7280',
+    margin: '6px 0 0 0',
+    lineHeight: '1.5'
+  },
+  infoBanner: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '16px',
+    backgroundColor: '#EFF6FF',
+    borderRadius: '8px',
+    marginBottom: '16px',
+    border: '1px solid #BFDBFE'
+  },
+  infoBannerText: {
+    fontSize: '14px',
+    color: '#1E40AF',
+    lineHeight: '1.5'
+  },
+  errorBanner: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '16px',
+    backgroundColor: '#FEE2E2',
+    borderRadius: '8px',
+    marginBottom: '16px',
+    color: '#991B1B',
+    fontSize: '14px'
+  },
+  errorRetryButton: {
+    marginLeft: 'auto',
+    padding: '6px 12px',
+    backgroundColor: '#FFFFFF',
+    border: '1px solid #FECACA',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    fontSize: '13px',
+    fontWeight: '500',
+    color: '#DC2626',
+    whiteSpace: 'nowrap'
   }
 };

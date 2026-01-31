@@ -22,13 +22,20 @@ export default function LanguagesSection({
 
   const formatLanguageLevel = (level) => {
     const mapping = {
-      nativo: t('cv.native'),
+      'native': t('cv.native'),
+      'bilingual': t('cv.bilingual'),
+      'fluent': t('cv.fluent'),
+      'advanced': t('cv.advanced'),
+      'intermediate': t('cv.intermediate'),
+      'beginner': t('cv.beginner'),
+      // Legacy Spanish values for backward compatibility
+      'nativo': t('cv.native'),
       'bilingüe': t('cv.bilingual'),
       'bilingüé': t('cv.bilingual'),
-      fluido: t('cv.fluent'),
-      avanzado: t('cv.advanced'),
-      intermedio: t('cv.intermediate'),
-      básico: t('cv.beginner')
+      'fluido': t('cv.fluent'),
+      'avanzado': t('cv.advanced'),
+      'intermedio': t('cv.intermediate'),
+      'básico': t('cv.beginner')
     };
 
     return mapping[level] || level;

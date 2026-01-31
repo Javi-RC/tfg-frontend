@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { getProfile } from '../api/auth';
 import { AuthContext } from '../contexts/AuthContext';
 import { getCVConsent, updateCVConsent } from '../api/cvConsent';
-import { getOrganizationById } from '../api/organization';
+import { normalizeConsentResponse } from '../utils/consent';
+import { getMyOrganizations, getOrganizationById } from '../api/organization';
 
 /**
  * Custom hook for Profile page business logic
@@ -111,6 +112,10 @@ export function useProfile() {
   const loadProfile = async () => {
     try {
       const res = await getProfile();
+      console.log('[useProfile] Full response:', res);
+      console.log('[useProfile] res.data:', res.data);
+      console.log('[useProfile] res.data.data:', res.data?.data);
+      console.log('[useProfile] res.data.data.user:', res.data?.data?.user);
       setProfile(res.data);
     } catch (error) {
       console.error('Error loading profile:', error);
@@ -128,8 +133,9 @@ export function useProfile() {
     
     try {
       const res = await getCVConsent();
-      setHasConsent(Boolean(res?.data?.hasConsent));
-      setConsentData(res?.data?.consent || null);
+      const normalized = normalizeConsentResponse(res?.data);
+      setHasConsent(normalized.hasConsent);
+      setConsentData(normalized.consent);
     } catch (err) {
       setHasConsent(false);
       setConsentData(null);
@@ -148,11 +154,55 @@ export function useProfile() {
    */
   const profileUser = useMemo(() => {
     if (!profile) return null;
-    return profile.user || profile;
+    console.log('[useProfile] profile object:', profile);
+    // Handle nested response: { success: true, data: { user: {...} } }
+    if (profile.data?.user) {
+      console.log('[useProfile] Using profile.data.user:', profile.data.user);
+      return profile.data.user;
+    }
+    // Handle direct response: { user: {...} }
+    if (profile.user) {
+      console.log('[useProfile] Using profile.user:', profile.user);
+      return profile.user;
+    }
+    // Fallback to profile itself
+    console.log('[useProfile] Using profile directly:', profile);
+    return profile;
   }, [profile]);
 
   const isLikelyObjectId = (value) =>
     typeof value === 'string' && /^[a-f\d]{24}$/i.test(value.trim());
+
+  const getOrganizationValue = (primaryUser, fallbackUser) => {
+    const candidate =
+      primaryUser?.organization ??
+      primaryUser?.organizationId ??
+      primaryUser?.organization_id ??
+      primaryUser?.orgId ??
+      primaryUser?.org ??
+      primaryUser?.organizationRef ??
+      fallbackUser?.organization ??
+      fallbackUser?.organizationId ??
+      fallbackUser?.organization_id ??
+      fallbackUser?.orgId ??
+      fallbackUser?.org ??
+      fallbackUser?.organizationRef;
+
+    if (Array.isArray(candidate)) {
+      if (candidate.length === 0) return null;
+      return candidate[0];
+    }
+
+    if (primaryUser?.organizations && Array.isArray(primaryUser.organizations) && primaryUser.organizations.length > 0) {
+      return primaryUser.organizations[0];
+    }
+
+    if (fallbackUser?.organizations && Array.isArray(fallbackUser.organizations) && fallbackUser.organizations.length > 0) {
+      return fallbackUser.organizations[0];
+    }
+
+    return candidate ?? null;
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -161,11 +211,32 @@ export function useProfile() {
       setResolvedOrganizationName(null);
       setResolvingOrganization(false);
 
-      const orgValue = profileUser?.organization;
-      if (!orgValue) return;
+      const orgValue = getOrganizationValue(profileUser, authUser);
+      console.log('[useProfile] Resolving organization:', orgValue);
+      console.log('[useProfile] orgValue type:', typeof orgValue);
+      
+      if (!orgValue) {
+        console.log('[useProfile] No organization value, checking my organizations');
+        setResolvingOrganization(true);
+        try {
+          const res = await getMyOrganizations();
+          const list = res?.data?.success ? res?.data?.data : res?.data;
+          const firstOrg = Array.isArray(list) ? list[0] : null;
+          const name = firstOrg?.name || firstOrg?.title || null;
+          if (mounted) setResolvedOrganizationName(name);
+        } catch (err) {
+          console.error('Error loading my organizations:', err);
+          if (mounted) setResolvedOrganizationName(null);
+        } finally {
+          if (mounted) setResolvingOrganization(false);
+        }
+        return;
+      }
 
       if (typeof orgValue === 'object') {
+        console.log('[useProfile] Organization is object:', orgValue);
         const name = orgValue?.name || orgValue?.title || orgValue?.organizationName;
+        console.log('[useProfile] Extracted name:', name);
         if (mounted) setResolvedOrganizationName(name || null);
         return;
       }
@@ -193,7 +264,7 @@ export function useProfile() {
     return () => {
       mounted = false;
     };
-  }, [profileUser?.organization]);
+  }, [profileUser, authUser]);
 
   useEffect(() => {
     if (!profileUser) return;
@@ -314,8 +385,9 @@ export function useProfile() {
 
     try {
       const res = await updateCVConsent({ accepted: false });
-      setHasConsent(Boolean(res?.data?.hasConsent));
-      setConsentData(res?.data?.consent || null);
+      const normalized = normalizeConsentResponse(res?.data);
+      setHasConsent(normalized.hasConsent);
+      setConsentData(normalized.consent);
       setConsentSuccess(
         res?.data?.message ||
           'Consent revoked. You cannot upload CVs until you accept again.'
@@ -389,5 +461,3 @@ export function useProfile() {
     loadConsent
   };
 }
-
-export default useProfile;

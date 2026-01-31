@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../contexts/AuthContext';
 import {
   getProjectById,
@@ -20,6 +21,7 @@ export function useProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
+  const { t } = useTranslation();
 
   const [project, setProject] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,7 +29,14 @@ export function useProjectDetail() {
   const [showAssignModal, setShowAssignModal] = useState(false);
 
   const isAdmin = user?.role === 'org_admin';
-  const isProjectManager = project?.projectManager?._id === user?.id;
+  
+  // Normalize user ID (can be id, _id, or userId depending on source)
+  const userId = user?.userId || user?._id || user?.id;
+  
+  // Normalize project manager ID (can be id or _id)
+  const projectManagerId = project?.projectManager?._id || project?.projectManager?.id;
+  
+  const isProjectManager = projectManagerId && userId && projectManagerId === userId;
   const canEdit = isProjectManager || isAdmin;
   const canDelete = isAdmin;
 
@@ -79,7 +88,7 @@ export function useProjectDetail() {
         setActiveTab('teamAnalysis');
       }
     } catch (error) {
-      alert(error.response?.data?.error || 'Error loading project');
+      alert(error.response?.data?.error || t('projects.messages.errorLoading'));
       navigate('/projects');
     } finally {
       setLoading(false);
@@ -90,16 +99,16 @@ export function useProjectDetail() {
    * Delete project
    */
   const handleDelete = async () => {
-    if (!window.confirm(`Are you sure you want to delete "${project.projectName}"?`)) {
+    if (!window.confirm(t('projects.messages.confirmDelete', { name: project.projectName }))) {
       return;
     }
 
     try {
       await deleteProject(id);
-      alert('Project deleted successfully');
+      alert(t('projects.projectDeleted'));
       navigate('/projects');
     } catch (error) {
-      alert(error.response?.data?.error || 'Error deleting project');
+      alert(error.response?.data?.error || t('projects.messages.errorDeleting'));
     }
   };
 
@@ -109,10 +118,10 @@ export function useProjectDetail() {
   const handleActivate = async () => {
     try {
       await activateProject(id);
-      alert('Project activated successfully');
+      alert(t('projects.projectActivated'));
       await loadProject();
     } catch (error) {
-      alert(error.response?.data?.error || 'Error activating project');
+      alert(error.response?.data?.error || t('projects.messages.errorActivating'));
     }
   };
 
@@ -120,16 +129,16 @@ export function useProjectDetail() {
    * Complete project
    */
   const handleComplete = async () => {
-    if (!window.confirm('Are you sure you want to mark this project as completed?')) {
+    if (!window.confirm(t('projects.messages.confirmComplete'))) {
       return;
     }
 
     try {
       await completeProject(id);
-      alert('Project completed successfully');
+      alert(t('projects.projectCompleted'));
       await loadProject();
     } catch (error) {
-      alert(error.response?.data?.error || 'Error completing project');
+      alert(error.response?.data?.error || t('projects.messages.errorCompleting'));
     }
   };
 
@@ -137,16 +146,16 @@ export function useProjectDetail() {
    * Cancel project
    */
   const handleCancel = async () => {
-    if (!window.confirm('Are you sure you want to cancel this project?')) {
+    if (!window.confirm(t('projects.messages.confirmCancel'))) {
       return;
     }
 
     try {
       await cancelProject(id);
-      alert('Project cancelled successfully');
+      alert(t('projects.projectCancelled'));
       await loadProject();
     } catch (error) {
-      alert(error.response?.data?.error || 'Error cancelling project');
+      alert(error.response?.data?.error || t('projects.messages.errorCancelling'));
     }
   };
 
@@ -159,7 +168,7 @@ export function useProjectDetail() {
       await loadProject();
       setShowAssignModal(false);
     } catch (error) {
-      alert(error.response?.data?.error || 'Error assigning employee');
+      alert(error.response?.data?.error || t('projects.messages.errorAssigning'));
     }
   };
 
@@ -167,7 +176,7 @@ export function useProjectDetail() {
    * Remove employee from project
    */
   const handleRemoveEmployee = async (employeeId) => {
-    if (!window.confirm('Are you sure you want to remove this employee from the project?')) {
+    if (!window.confirm(t('projects.messages.confirmRemoveEmployee'))) {
       return;
     }
 
@@ -175,7 +184,7 @@ export function useProjectDetail() {
       await removeEmployeeFromProject(id, employeeId);
       await loadProject();
     } catch (error) {
-      alert(error.response?.data?.error || 'Error removing employee');
+      alert(error.response?.data?.error || t('projects.messages.errorRemoving'));
     }
   };
 

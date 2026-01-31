@@ -1,7 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { FormInput, FormTextarea, FormSelect, FormNumber } from './FormComponents';
-import { TIME_UNITS } from '../../types/projectTypes';
+import { FormInput, FormTextarea } from './FormComponents';
 
 /**
  * Step 1: General Information
@@ -11,15 +10,6 @@ export default function Step1GeneralInfo({ formData, onChange, errors = {} }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
     onChange({ [name]: value });
-  };
-
-  const handleDurationChange = (field, value) => {
-    onChange({
-      expectedDuration: {
-        ...formData.expectedDuration,
-        [field]: value
-      }
-    });
   };
 
   return (
@@ -73,38 +63,30 @@ export default function Step1GeneralInfo({ formData, onChange, errors = {} }) {
           error={errors.estimatedEndDate}
         />
       </div>
-
-      <div style={styles.section}>
-        <label style={styles.label}>
-          {t('projects.steps.step1.expectedDuration')} <span style={styles.required}>*</span>
-        </label>
-        <div style={styles.row}>
-          <FormNumber
-            label=""
-            name="durationValue"
-            value={formData.expectedDuration?.value || ''}
-            onChange={(e) => handleDurationChange('value', parseInt(e.target.value) || 1)}
-            min={1}
-            required
-            error={errors.expectedDuration}
-          />
-
-          <FormSelect
-            label=""
-            name="durationUnit"
-            value={formData.expectedDuration?.unit || ''}
-            onChange={(e) => handleDurationChange('unit', e.target.value)}
-            required
-            options={[
-              { value: TIME_UNITS.DAYS, label: t('projects.timeUnits.days') },
-              { value: TIME_UNITS.WEEKS, label: t('projects.timeUnits.weeks') },
-              { value: TIME_UNITS.MONTHS, label: t('projects.timeUnits.months') },
-              { value: TIME_UNITS.YEARS, label: t('projects.timeUnits.years') }
-            ]}
-            placeholder={t('projects.steps.step1.selectUnit')}
-          />
+      
+      {errors.dateRange && (
+        <div style={styles.dateRangeError}>
+          {errors.dateRange}
         </div>
-      </div>
+      )}
+
+      <FormInput
+        label={t('projects.steps.step1.teamSize')}
+        name="teamSize"
+        type="number"
+        value={formData.teamSize || 5}
+        onChange={handleChange}
+        required
+        min={1}
+        max={100}
+        placeholder={t('projects.steps.step1.teamSizePlaceholder')}
+        error={errors.teamSize}
+      />
+      {!errors.teamSize && (
+        <p style={styles.helperText}>
+          {t('projects.steps.step1.teamSizeHelper')}
+        </p>
+      )}
     </div>
   );
 }
@@ -125,6 +107,18 @@ const styles = {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
     gap: '16px'
+  },
+  dateRangeError: {
+    color: '#EF4444',
+    fontSize: '13px',
+    marginTop: '8px',
+    fontWeight: '500'
+  },
+  helperText: {
+    fontSize: '13px',
+    color: '#6B7280',
+    marginTop: '-16px',
+    marginBottom: '16px'
   },
   section: {
     marginBottom: '20px'

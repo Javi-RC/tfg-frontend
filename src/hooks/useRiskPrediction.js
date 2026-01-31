@@ -52,25 +52,22 @@ export function useRiskPrediction() {
     if (project.requiredExperienceLevel) completedFields++;
     else suggestions.push('💡 Define required experience level');
 
-    if (project.systemComplexity) completedFields++;
-    else suggestions.push('💡 Specify system complexity');
-
     // Communication fields
     if (project.requiredLanguages?.length) completedFields++;
     else suggestions.push('💡 Add required languages');
 
-    if (project.teamRegions?.length) completedFields++;
-    else suggestions.push('💡 Define team regions');
+    if (project.involvedCountries?.length) completedFields++;
+    else suggestions.push('💡 Define involved countries');
 
     // Work model fields
-    if (project.workModel?.type) completedFields++;
-    else suggestions.push('💡 Configure work model (remote/hybrid/on-site)');
+    if (project.workMode) completedFields++;
+    else suggestions.push('💡 Configure work mode (remote/hybrid/on-site)');
 
-    if (project.hasTimezoneSchedulingPolicy !== undefined) completedFields++;
-    else suggestions.push('💡 Add timezone scheduling policy');
+    if (project.coreHours?.start && project.coreHours?.end) completedFields++;
+    else suggestions.push('💡 Add core hours for timezone coordination');
 
     // Knowledge Management
-    if (project.hasKnowledgeManagementTools !== undefined) completedFields++;
+    if (project.knowledgeManagementTools?.length) completedFields++;
     else suggestions.push('💡 Specify knowledge management tools');
 
     if (project.documentationLevel) completedFields++;
@@ -80,8 +77,8 @@ export function useRiskPrediction() {
     if (project.hasOrganizationalChart !== undefined) completedFields++;
     else suggestions.push('💡 Indicate if organizational chart exists');
 
-    if (project.hasTaskTrackingTool !== undefined) completedFields++;
-    else suggestions.push('💡 Specify task tracking tool');
+    if (project.taskTrackingSystem) completedFields++;
+    else suggestions.push('💡 Specify task tracking system');
 
     // Roles and responsibilities
     if (project.rolesAndResponsibilities?.length) completedFields++;

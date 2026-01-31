@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useId } from 'react';
 
 /**
  * InfoField Component
  * Displays an editable or read-only field with professional styling
  */
 export default function InfoField({ label, value, editMode, onChange, fullWidth = false }) {
+  const inputId = useId();
   return (
     <div style={fullWidth ? { gridColumn: '1 / -1' } : {}}>
       <label style={{
@@ -15,14 +16,16 @@ export default function InfoField({ label, value, editMode, onChange, fullWidth 
         marginBottom: '8px',
         textTransform: 'uppercase',
         letterSpacing: '0.5px'
-      }}>
+      }} htmlFor={inputId}>
         {label}
       </label>
       {editMode ? (
         <input
           type="text"
+          id={inputId}
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
+          aria-label={label}
           style={{
             width: '100%',
             padding: '12px 14px',

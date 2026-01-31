@@ -81,7 +81,7 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
       <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div style={styles.header}>
           <h2 style={styles.title}>{t('cv.submitToOrg')}</h2>
-          <button style={styles.closeButton} onClick={onClose}>×</button>
+          <button style={styles.closeButton} onClick={onClose} aria-label={t('common.close')}>×</button>
         </div>
 
         {error && (
@@ -103,6 +103,7 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{...styles.searchInput, paddingLeft: '48px'}}
+            aria-label={t('organizations.searchOrganizations')}
           />
         </div>
 
@@ -121,6 +122,16 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
                     border: selectedOrg?._id === org._id ? '2px solid #2563eb' : '1px solid #ddd'
                   }}
                   onClick={() => setSelectedOrg(org)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setSelectedOrg(org);
+                    }
+                  }}
+                  aria-pressed={selectedOrg?._id === org._id}
+                  aria-label={t('organizations.selectOrganization', { name: org.name, defaultValue: `Select ${org.name}` })}
                 >
                   <div style={styles.orgInfo}>
                     <div style={styles.orgName}>{org.name}</div>

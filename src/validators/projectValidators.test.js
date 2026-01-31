@@ -3,6 +3,7 @@ import {
   validateProjectDescription,
   validateDateRange,
   validateOrganization,
+  validateTeamSize,
   validateStep1,
   validateStep2,
   validateStep3,
@@ -142,13 +143,59 @@ describe('projectValidators', () => {
     });
   });
 
+  describe('validateTeamSize', () => {
+    it('validates correct team size', () => {
+      const result = validateTeamSize(5);
+      expect(result.isValid).toBe(true);
+      expect(result.error).toBeNull();
+    });
+
+    it('validates minimum team size', () => {
+      const result = validateTeamSize(1);
+      expect(result.isValid).toBe(true);
+    });
+
+    it('validates maximum team size', () => {
+      const result = validateTeamSize(100);
+      expect(result.isValid).toBe(true);
+    });
+
+    it('rejects team size below minimum', () => {
+      const result = validateTeamSize(0);
+      expect(result.isValid).toBe(false);
+      expect(result.error).toBe('Team size must be between 1 and 100');
+    });
+
+    it('rejects team size above maximum', () => {
+      const result = validateTeamSize(101);
+      expect(result.isValid).toBe(false);
+      expect(result.error).toBe('Team size must be between 1 and 100');
+    });
+
+    it('rejects empty team size', () => {
+      const result = validateTeamSize('');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toBe('Team size is required');
+    });
+
+    it('rejects null team size', () => {
+      const result = validateTeamSize(null);
+      expect(result.isValid).toBe(false);
+    });
+
+    it('rejects non-numeric team size', () => {
+      const result = validateTeamSize('abc');
+      expect(result.isValid).toBe(false);
+    });
+  });
+
   describe('validateStep1', () => {
     const validFormData = {
       projectName: 'Valid Project',
       briefDescription: 'This is a valid project description',
       estimatedStartDate: '2024-01-01',
       estimatedEndDate: '2024-12-31',
-      expectedDuration: { value: 12, unit: 'months' }
+      teamSize: 5
     };
 
     it('validates correct step 1 data', () => {
@@ -171,6 +218,20 @@ describe('projectValidators', () => {
       expect(result.errors.briefDescription).toBeDefined();
     });
 
+    it('returns errors for invalid team size', () => {
+      const formData = { ...validFormData, teamSize: 0 };
+      const result = validateStep1(formData);
+      expect(result.isValid).toBe(false);
+      expect(result.errors.teamSize).toBeDefined();
+    });
+
+    it('returns errors for team size above maximum', () => {
+      const formData = { ...validFormData, teamSize: 101 };
+      const result = validateStep1(formData);
+      expect(result.isValid).toBe(false);
+      expect(result.errors.teamSize).toBeDefined();
+    });
+
     it('returns errors for invalid date range', () => {
       const formData = {
         ...validFormData,
@@ -182,26 +243,13 @@ describe('projectValidators', () => {
       expect(result.errors.dateRange).toBeDefined();
     });
 
-    it('returns errors for zero duration', () => {
-      const formData = { ...validFormData, expectedDuration: { value: 0 } };
-      const result = validateStep1(formData);
-      expect(result.isValid).toBe(false);
-      expect(result.errors.expectedDuration).toBeDefined();
-    });
-
-    it('returns errors for negative duration', () => {
-      const formData = { ...validFormData, expectedDuration: { value: -5 } };
-      const result = validateStep1(formData);
-      expect(result.isValid).toBe(false);
-    });
-
     it('returns multiple errors for multiple invalid fields', () => {
       const formData = {
         projectName: 'AB',
         briefDescription: 'Short',
         estimatedStartDate: '',
         estimatedEndDate: '',
-        expectedDuration: { value: 0 }
+        teamSize: 0
       };
       const result = validateStep1(formData);
       expect(result.isValid).toBe(false);

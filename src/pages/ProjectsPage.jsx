@@ -118,11 +118,6 @@ export default function ProjectsPage() {
               ? t('projects.createFirstProject')
               : t('projects.noProjectsDesc')
           }
-          action={activeTab === 'my-projects' && isProjectManager && (
-            <PrimaryButton onClick={() => navigate('/projects/new')} leftIcon={<Plus size={18} />}>
-              {t('projects.createProject')}
-            </PrimaryButton>
-          )}
         />
       ) : (
         <div style={styles.grid}>

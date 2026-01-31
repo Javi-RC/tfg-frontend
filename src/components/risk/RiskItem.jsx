@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Badge from '../common/Badge';
+import RiskSourceBadge from './RiskSourceBadge';
 
 /**
  * RiskItem Component
  * Display individual risk with status and probability
  * Enhanced with hover effects and accessibility
  */
-export default function RiskItem({ risk, actualized, onClick }) {
+export default function RiskItem({ risk, actualized, onClick, metadata }) {
+  const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
 
   const getSeverityColor = (severity) => {
@@ -20,7 +23,7 @@ export default function RiskItem({ risk, actualized, onClick }) {
   };
 
   const formatRiskType = (type) => {
-    if (!type) return 'Unknown Risk';
+    if (!type) return t('risk.item.unknownRisk');
     return type.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
   };
 
@@ -66,14 +69,19 @@ export default function RiskItem({ risk, actualized, onClick }) {
         </div>
       </div>
       <div style={styles.right}>
+        <RiskSourceBadge 
+          risk={risk}
+          strategy={metadata?.strategy}
+          size="sm"
+        />
         {actualized?.occurred === true && (
           <Badge color="#D1FAE5" textColor="#065F46">
-            ✓ Occurred
+            ✓ {t('risk.item.occurred')}
           </Badge>
         )}
         {actualized?.occurred === false && (
           <Badge variant="neutral">
-            ✗ Not Occurred
+            ✗ {t('risk.item.notOccurred')}
           </Badge>
         )}
         {risk.probability && (

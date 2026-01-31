@@ -1,5 +1,5 @@
 import React from 'react';
-import { User, Mail, Shield, Building2, Globe, Clock } from 'lucide-react';
+import { Mail, Shield, Building2, Globe, Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import SecondaryButton from '../SecondaryButton';
 import PrimaryButton from '../PrimaryButton';
@@ -37,29 +37,30 @@ export default function ProfileHeader({
 
   return (
     <div style={{
-      background: 'white',
-      borderRadius: '16px',
-      padding: '32px',
-      marginBottom: '24px',
-      boxShadow: '0 2px 12px rgba(0,0,0,0.08)'
+      padding: '40px',
+      borderBottom: '1px solid #e2e8f0'
     }}>
+      {/* Header Row with Avatar, Info and Actions */}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'start'
+        alignItems: 'flex-start',
+        gap: '24px',
+        marginBottom: '32px'
       }}>
-        <div style={{ display: 'flex', gap: '18px', alignItems: 'flex-start' }}>
+        {/* Left: Avatar and Basic Info */}
+        <div style={{ display: 'flex', gap: '20px', alignItems: 'flex-start', flex: '1' }}>
           <div style={{
-            width: '72px',
-            height: '72px',
-            borderRadius: '999px',
+            width: '80px',
+            height: '80px',
+            borderRadius: '50%',
             overflow: 'hidden',
-            background: '#f0f4f8',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            border: '1px solid #e2e8f0',
-            flex: '0 0 auto'
+            flexShrink: 0,
+            boxShadow: '0 4px 6px rgba(0,0,0,0.1)'
           }} aria-label={t('profile.aria.avatar')}>
             {profileUser?.avatar ? (
               <img
@@ -72,72 +73,65 @@ export default function ProfileHeader({
               />
             ) : (
               <div style={{
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: '26px',
+                fontSize: '32px',
                 fontWeight: '700',
-                color: '#4a5568'
+                color: 'white'
               }}>
                 {userInitial}
               </div>
             )}
           </div>
 
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <h1 style={{
-              fontSize: '32px',
-              fontWeight: '600',
-              color: '#1a1a1a',
+              fontSize: '28px',
+              fontWeight: '700',
+              color: '#1a202c',
               marginBottom: '8px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px'
+              lineHeight: '1.2'
             }}>
-              <User size={28} color="#666" />
               {displayName}
             </h1>
-            <p style={{
-              fontSize: '16px',
-              color: '#666',
-              marginBottom: '4px',
+            <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '8px'
+              gap: '8px',
+              fontSize: '14px',
+              color: '#718096',
+              marginBottom: '12px'
             }}>
-              <Mail size={16} color="#999" />
-              {email || '—'}
-            </p>
+              <Mail size={14} />
+              <span>{email || '—'}</span>
+            </div>
             <div style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '6px 16px',
-              background: isAdmin ? '#e8f4f8' : '#f0f0f0',
+              padding: '6px 14px',
+              background: isAdmin ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#e2e8f0',
               borderRadius: '20px',
-              fontSize: '14px',
-              fontWeight: '500',
-              color: isAdmin ? '#0066cc' : '#666',
-              marginTop: '8px'
+              fontSize: '13px',
+              fontWeight: '600',
+              color: isAdmin ? 'white' : '#4a5568',
+              textTransform: 'uppercase',
+              letterSpacing: '0.5px'
             }}>
-              <Shield size={14} />
+              <Shield size={13} />
               {role || '—'}
             </div>
           </div>
         </div>
 
+        {/* Right: Action Buttons */}
         <div style={{
           display: 'flex',
           gap: '12px',
-          alignItems: 'center',
-          justifyContent: 'flex-end'
+          flexShrink: 0
         }}>
           {!editMode ? (
             <SecondaryButton 
               onClick={onStartEditing} 
-              style={{ padding: '12px 18px' }}
+              style={{ padding: '10px 20px', fontSize: '14px', fontWeight: '500' }}
               aria-label={t('profile.aria.editProfile')}
             >
               {t('profile.editProfile')}
@@ -147,7 +141,7 @@ export default function ProfileHeader({
               <SecondaryButton 
                 onClick={onCancelEditing} 
                 disabled={saving} 
-                style={{ padding: '12px 18px' }}
+                style={{ padding: '10px 20px', fontSize: '14px', fontWeight: '500' }}
                 aria-label={t('profile.aria.cancelEditing')}
               >
                 {t('common.cancel')}
@@ -155,7 +149,7 @@ export default function ProfileHeader({
               <PrimaryButton 
                 onClick={onSaveProfile} 
                 disabled={saving} 
-                style={{ padding: '14px 22px' }}
+                style={{ padding: '10px 24px', fontSize: '14px', fontWeight: '500' }}
                 aria-label={t('profile.aria.saveChanges')}
               >
                 {saving ? t('profile.saving') : t('profile.saveChanges')}
@@ -165,36 +159,78 @@ export default function ProfileHeader({
         </div>
       </div>
 
+      {/* Info Grid */}
       <div style={{
-        marginTop: '16px',
-        paddingTop: '16px',
-        borderTop: '1px solid #f0f0f0',
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-        gap: '16px'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: '24px',
+        paddingTop: '24px',
+        borderTop: '1px solid #e2e8f0'
       }}>
         <div>
-          <div style={labelStyle}>{t('profile.organization')}</div>
-          <p style={{ fontSize: '15px', color: '#2d3748', lineHeight: '1.6', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Building2 size={16} color="#999" />
+          <div style={{
+            ...labelStyle,
+            color: '#718096',
+            fontSize: '11px',
+            marginBottom: '6px'
+          }}>
+            {t('profile.organization')}
+          </div>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '14px',
+            color: '#2d3748',
+            fontWeight: '500'
+          }}>
+            <Building2 size={16} color="#a0aec0" />
             {organizationDisplay}
-          </p>
+          </div>
         </div>
 
         <div>
-          <div style={labelStyle}>{t('profile.location')}</div>
-          <p style={{ fontSize: '15px', color: '#2d3748', lineHeight: '1.6', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Globe size={16} color="#999" />
+          <div style={{
+            ...labelStyle,
+            color: '#718096',
+            fontSize: '11px',
+            marginBottom: '6px'
+          }}>
+            {t('profile.location')}
+          </div>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '14px',
+            color: '#2d3748',
+            fontWeight: '500'
+          }}>
+            <Globe size={16} color="#a0aec0" />
             {formatText(profileUser?.country)}
-          </p>
+          </div>
         </div>
 
         <div>
-          <div style={labelStyle}>{t('profile.timezone')}</div>
-          <p style={{ fontSize: '15px', color: '#2d3748', lineHeight: '1.6', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <Clock size={16} color="#999" />
+          <div style={{
+            ...labelStyle,
+            color: '#718096',
+            fontSize: '11px',
+            marginBottom: '6px'
+          }}>
+            {t('profile.timezone')}
+          </div>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '14px',
+            color: '#2d3748',
+            fontWeight: '500'
+          }}>
+            <Clock size={16} color="#a0aec0" />
             {formatText(profileUser?.timezone)}
-          </p>
+          </div>
         </div>
       </div>
     </div>

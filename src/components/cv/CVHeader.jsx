@@ -1,6 +1,7 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Edit, Upload, Send, Trash2, Save, X } from 'lucide-react';
+import { Edit, Upload, Send, Trash2, Save, X, ArrowLeft } from 'lucide-react';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
 
@@ -19,6 +20,11 @@ export default function CVHeader({
   onSubmitToOrg
 }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+
+  const handleBack = () => {
+    navigate('/profile');
+  };
 
   return (
     <div style={{
@@ -36,6 +42,31 @@ export default function CVHeader({
       zIndex: 100,
       overflowY: 'auto'
     }}>
+      {/* Back button */}
+      <button
+        onClick={handleBack}
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '8px',
+          background: 'transparent',
+          border: 'none',
+          cursor: 'pointer',
+          color: '#4a5568',
+          fontSize: '14px',
+          fontWeight: '500',
+          transition: 'color 0.2s',
+          marginBottom: '8px'
+        }}
+        onMouseEnter={(e) => e.currentTarget.style.color = '#2d3748'}
+        onMouseLeave={(e) => e.currentTarget.style.color = '#4a5568'}
+        aria-label={t('cv.backToDashboard')}
+      >
+        <ArrowLeft size={18} />
+        {t('cv.backToDashboard')}
+      </button>
+      
       <h1 style={{
         fontSize: '28px',
         fontWeight: '700',

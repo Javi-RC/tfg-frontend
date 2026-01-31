@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -7,8 +7,10 @@ import { useTranslation } from 'react-i18next';
  */
 export default function EditableField({ label, value, editMode, onChange, required = false }) {
   const { t } = useTranslation();
+  const inputId = useId();
   const isEmpty = !value || (typeof value === 'string' && value.trim() === '');
   const hasError = required && editMode && isEmpty;
+  const errorId = hasError ? `${inputId}-error` : undefined;
 
   const requiredIndicator = required && editMode ? (
     <span style={{ color: '#e53e3e', marginLeft: '4px' }} aria-label={t('form.required')}>*</span>
@@ -24,7 +26,7 @@ export default function EditableField({ label, value, editMode, onChange, requir
         marginBottom: '8px',
         textTransform: 'uppercase',
         letterSpacing: '0.5px'
-      }}>
+      }} htmlFor={inputId}>
         {label}{requiredIndicator}
       </label>
       {hasError && (
@@ -33,15 +35,18 @@ export default function EditableField({ label, value, editMode, onChange, requir
           color: '#e53e3e',
           marginBottom: '6px',
           fontWeight: '500'
-        }}>
+        }} id={errorId} role="alert" aria-live="polite">
           {t('form.requiredField')}
         </div>
       )}
       {editMode ? (
         <input
           type="text"
+          id={inputId}
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
+          aria-invalid={hasError}
+          aria-describedby={errorId}
           style={{
             width: '100%',
             padding: '12px 14px',

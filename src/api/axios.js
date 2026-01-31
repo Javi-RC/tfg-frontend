@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { isPublicRoute } from '../constants/routes';
+import i18n from '../i18n';
 
 // If VITE_API_URL is not set, use relative URLs and rely on Vite dev proxy
 // (and in production, same-origin deployments).
@@ -14,7 +15,35 @@ const api = axios.create({
 
 api.interceptors.request.use(config => {
   const token = localStorage.getItem('token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  console.log('[axios interceptor] Token from localStorage:', token ? 'present' : 'missing');
+  if (token) {
+    console.log('[axios interceptor] Token value (first 20 chars):', token.substring(0, 20));
+  }
+  console.log('[axios interceptor] Request URL:', config.url);
+  console.log('[axios interceptor] Request method:', config.method);
+  
+  // Add language header (normalize to base language code)
+  // Force refresh from localStorage to get the most recent value
+  const storedLanguage = localStorage.getItem('i18nextLng');
+  const rawLanguage = storedLanguage || i18n.language || 'en';
+  const currentLanguage = rawLanguage.split('-')[0]; // Extract base language (en, es)
+  
+  // Additional debugging
+  console.log('[axios interceptor] ============ LANGUAGE DEBUG ============');
+  console.log('[axios interceptor] localStorage i18nextLng:', storedLanguage);
+  console.log('[axios interceptor] i18n.language (raw):', i18n.language);
+  console.log('[axios interceptor] Final language used:', currentLanguage);
+  console.log('[axios interceptor] =======================================');
+  
+  config.headers['Accept-Language'] = currentLanguage;
+  
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+    console.log('[axios interceptor] Authorization header set:', config.headers.Authorization ? 'yes' : 'no');
+  } else {
+    console.warn('[axios interceptor] NO TOKEN FOUND - Request will fail if authentication is required');
+  }
+  
   return config;
 });
 

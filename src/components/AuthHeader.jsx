@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
+import saraIcon from '../assets/icon.png';
 
 export default function AuthHeader({ onLoginClick, onSignupClick, disableLogin = false, disableSignup = false }) {
   const { t } = useTranslation();
@@ -18,13 +19,23 @@ export default function AuthHeader({ onLoginClick, onSignupClick, disableLogin =
       borderBottom: '1px solid rgba(102,102,102,0.12)'
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }} role="img" aria-label={t('auth.header.aria.logo')}>
-        <div aria-hidden="true" style={{
-          width: '40px',
-          height: '40px',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          borderRadius: '50%'
-        }} />
-        <span style={{ fontSize: '18px', color: '#000', fontWeight: '600' }}>{t('auth.header.home')}</span>
+        <img 
+          src={saraIcon} 
+          alt="Sara" 
+          style={{
+            width: '40px',
+            height: '40px',
+            objectFit: 'contain'
+          }}
+        />
+        <span style={{ 
+          fontSize: '28px', 
+          fontWeight: '400',
+          color: '#2563eb',
+          fontFamily: "'Pacifico', cursive"
+        }}>
+          Sara
+        </span>
       </div>
 
       <nav aria-label={t('auth.header.aria.nav')} style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>

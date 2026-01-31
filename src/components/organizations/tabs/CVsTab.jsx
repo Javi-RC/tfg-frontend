@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import SecondaryButton from '../../SecondaryButton';
 import { getOrganizationCVs, updateCVStatus } from '../../../api/organization';
 
@@ -8,6 +9,7 @@ import { getOrganizationCVs, updateCVStatus } from '../../../api/organization';
  * CVsTab (Admin only)
  */
 export default function CVsTab({ organizationId, onUpdate, styles }) {
+  const { t } = useTranslation();
   const [cvs, setCvs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('pending');
@@ -46,12 +48,12 @@ export default function CVsTab({ organizationId, onUpdate, styles }) {
       loadCVs();
       if (onUpdate) onUpdate();
     } catch (err) {
-      alert(err.response?.data?.error || err.message || 'Error updating CV status');
+      alert(err.response?.data?.error || err.message || t('organization.cvs.errorUpdating'));
     }
   };
 
   if (loading) {
-    return <p style={styles.loadingText}>Loading CVs...</p>;
+    return <p style={styles.loadingText}>{t('organization.cvs.loading')}</p>;
   }
 
   const formatSkills = (skills) => {
@@ -82,19 +84,19 @@ export default function CVsTab({ organizationId, onUpdate, styles }) {
   return (
     <div style={styles.card}>
       <div style={styles.cardHeader}>
-        <h2 style={styles.cardTitle}>Received CVs</h2>
+        <h2 style={styles.cardTitle}>{t('organization.cvs.title')}</h2>
         <div style={styles.filterButtons}>
           <button style={filter === 'pending' ? styles.filterActive : styles.filterButton} onClick={() => setFilter('pending')}>
-            Pending
+            {t('organization.cvs.pending')}
           </button>
           <button style={filter === 'reviewed' ? styles.filterActive : styles.filterButton} onClick={() => setFilter('reviewed')}>
-            Reviewed
+            {t('organization.cvs.reviewed')}
           </button>
           <button style={filter === 'accepted' ? styles.filterActive : styles.filterButton} onClick={() => setFilter('accepted')}>
-            Accepted
+            {t('organization.cvs.accepted')}
           </button>
           <button style={filter === 'rejected' ? styles.filterActive : styles.filterButton} onClick={() => setFilter('rejected')}>
-            Rejected
+            {t('organization.cvs.rejected')}
           </button>
         </div>
       </div>
@@ -102,7 +104,7 @@ export default function CVsTab({ organizationId, onUpdate, styles }) {
       {cvs.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '40px 20px' }}>
           <FileText size={48} color="#999" style={{ marginBottom: '16px', opacity: 0.5 }} />
-          <p style={styles.emptyText}>No CVs found</p>
+          <p style={styles.emptyText}>{t('organization.cvs.noCVs')}</p>
         </div>
       ) : (
         <div style={styles.cvList}>
@@ -140,20 +142,20 @@ export default function CVsTab({ organizationId, onUpdate, styles }) {
 
               <div style={styles.cvInfo}>
                 <div>
-                  <strong>Skills:</strong> {formatSkills(cv.skills)}
+                  <strong>{t('organization.cvs.skills')}:</strong> {formatSkills(cv.skills)}
                 </div>
                 <div>
-                  <strong>Languages:</strong> {formatLanguages(cv.languages)}
+                  <strong>{t('organization.cvs.languages')}:</strong> {formatLanguages(cv.languages)}
                 </div>
                 <div>
-                  <strong>Submitted:</strong>{' '}
+                  <strong>{t('organization.cvs.submitted')}:</strong>{' '}
                   {cv.submittedToOrganizationAt ? new Date(cv.submittedToOrganizationAt).toLocaleDateString() : 'N/A'}
                 </div>
               </div>
 
               {cv.organizationNotes && (
                 <div style={styles.cvNotes}>
-                  <strong>Notes:</strong> {cv.organizationNotes}
+                  <strong>{t('organization.cvs.notes')}:</strong> {cv.organizationNotes}
                 </div>
               )}
 
@@ -163,30 +165,30 @@ export default function CVsTab({ organizationId, onUpdate, styles }) {
                     navigate(`/organizations/${organizationId}/cvs/${cv._id}`);
                   }}
                 >
-                  View Full CV
+                  {t('organization.cvs.viewFull')}
                 </SecondaryButton>
                 {cv.organizationStatus === 'pending' && (
                   <>
                     <button style={styles.actionButton} onClick={() => handleStatusChange(cv._id, 'reviewed')}>
-                      Mark as Reviewed
+                      {t('organization.cvs.markReviewed')}
                     </button>
                     <button
                       style={{ ...styles.actionButton, background: '#4caf50' }}
                       onClick={() => {
-                        const notes = prompt('Add notes (optional):');
+                        const notes = prompt(t('organization.cvs.addNotesOptional'));
                         handleStatusChange(cv._id, 'accepted', notes || '');
                       }}
                     >
-                      Accept
+                      {t('organization.cvs.accept')}
                     </button>
                     <button
                       style={{ ...styles.actionButton, background: '#f44336' }}
                       onClick={() => {
-                        const notes = prompt('Add rejection reason (optional):');
+                        const notes = prompt(t('organization.cvs.addRejectionReason'));
                         handleStatusChange(cv._id, 'rejected', notes || '');
                       }}
                     >
-                      Reject
+                      {t('organization.cvs.reject')}
                     </button>
                   </>
                 )}

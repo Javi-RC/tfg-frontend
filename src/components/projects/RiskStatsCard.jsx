@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { BarChart3, Target, AlertTriangle, Info, CheckCircle } from 'lucide-react';
+import { BarChart3, Target, AlertTriangle, Info } from 'lucide-react';
+import { getStrategyLabel, usesDT, usesCBR } from '../../utils/strategyHelpers';
 
 /**
  * Risk Statistics Card Component
@@ -19,13 +20,8 @@ export default function RiskStatsCard({ prediction, loading }) {
     high: risks?.filter(r => r.severity === 'high').length || 0,
     medium: risks?.filter(r => r.severity.includes('medium')).length || 0,
     low: risks?.filter(r => r.severity === 'low').length || 0,
-    confidence: metadata?.overallConfidence || 0,
     similarCases: metadata?.similarCases?.length || 0
   };
-
-  const avgProbability = risks?.length > 0
-    ? risks.reduce((sum, r) => sum + (r.probability || 0), 0) / risks.length
-    : 0;
 
   return (
     <div style={styles.container}>
@@ -70,35 +66,37 @@ export default function RiskStatsCard({ prediction, loading }) {
           <div style={styles.statLabel}>{t('riskStats.lowSeverity')}</div>
         </div>
 
-        <div style={styles.statCard}>
-          <div style={styles.statIcon}><Target size={32} color="#8b5cf6" /></div>
-          <div style={styles.statValue}>{(avgProbability * 100).toFixed(0)}%</div>
-          <div style={styles.statLabel}>{t('riskStats.averageProbability')}</div>
-        </div>
-
-        <div style={styles.statCard}>
-          <div style={styles.statIcon}><CheckCircle size={32} color="#10b981" /></div>
-          <div style={styles.statValue}>{(stats.confidence * 100).toFixed(0)}%</div>
-          <div style={styles.statLabel}>{t('riskStats.confidence')}</div>
-        </div>
       </div>
 
-      {/* System Phase & Weights */}
-      {metadata?.systemPhase && (
+      {/* System Phase & Strategy */}
+      {metadata?.phase && metadata?.strategy && (
         <div style={styles.metadata}>
           <div style={styles.metaItem}>
-            <span style={styles.metaLabel}>{t('riskStats.systemPhase')}</span>
-            <span style={styles.metaValue}>{metadata.systemPhase}</span>
+            <span style={styles.metaLabel}>{t('riskStats.phase')}</span>
+            <span style={styles.metaValue}>Fase {metadata.phase}/4</span>
           </div>
-          {metadata.weights && (
+          <div style={styles.metaItem}>
+            <span style={styles.metaLabel}>{t('riskStats.strategy')}</span>
+            <span style={styles.metaValue}>{getStrategyLabel(metadata.strategy, 'es')}</span>
+          </div>
+          {metadata?.caseBaseSize !== undefined && (
             <div style={styles.metaItem}>
-              <span style={styles.metaLabel}>{t('riskStats.weights')}</span>
-              <span style={styles.metaValue}>
-                Tree: {(metadata.weights.treeWeight * 100).toFixed(0)}% | 
-                CBR: {(metadata.weights.cbrWeight * 100).toFixed(0)}%
-              </span>
+              <span style={styles.metaLabel}>{t('riskStats.casesLearned')}</span>
+              <span style={styles.metaValue}>{metadata.caseBaseSize}</span>
             </div>
           )}
+          <div style={styles.metaItem}>
+            <span style={styles.metaLabel}>{t('riskStats.dtActive')}</span>
+            <span style={styles.metaValue}>
+              {usesDT(metadata.strategy) ? t('riskStats.yes') : t('riskStats.no')}
+            </span>
+          </div>
+          <div style={styles.metaItem}>
+            <span style={styles.metaLabel}>{t('riskStats.cbrActive')}</span>
+            <span style={styles.metaValue}>
+              {usesCBR(metadata.strategy) ? t('riskStats.yes') : t('riskStats.no')}
+            </span>
+          </div>
           {stats.similarCases > 0 && (
             <div style={styles.metaItem}>
               <span style={styles.metaLabel}>{t('riskStats.similarCases')}</span>

@@ -60,6 +60,7 @@ export default function DraftTeamAnalysis({ project, onProjectUpdate }) {
   // Loading States
   const [loading, setLoading] = useState(true);
   const [riskLoading, setRiskLoading] = useState(false);
+  const [riskError, setRiskError] = useState(null);
   const [assignLoading, setAssignLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   
@@ -207,12 +208,18 @@ export default function DraftTeamAnalysis({ project, onProjectUpdate }) {
         // Incluye Fase 1 (técnico) + Fase 2 (sinergia) automáticamente
         const matchScore = member.matchScore ?? 0;
         const synergyBonus = member.synergyBonus ?? null;
+
+        const orgCv = (orgEmp?.cv && typeof orgEmp.cv === 'object') ? orgEmp.cv : null;
+        const memberCv = (member?.cv && typeof member.cv === 'object') ? member.cv : null;
+        const mergedCv = (orgCv || memberCv)
+          ? { ...(orgCv || {}), ...(memberCv || {}) }
+          : null;
         
         return {
           // De Team Analysis (backend)
           userId: stableUserId,
           user: normalizedUser,
-          cv: member.cv,
+          cv: mergedCv,
           score: member.score ?? 999,
           matchScore,
           matchPercentage: matchScore, // MatchScore (overall) for existing UI components
@@ -310,25 +317,65 @@ export default function DraftTeamAnalysis({ project, onProjectUpdate }) {
    * Load risk analysis for current team
    */
   const loadRiskAnalysis = useCallback(async () => {
+    console.log('🔍 [RISK ANALYSIS] Starting risk analysis for project:', project._id);
+    console.log('🔍 [RISK ANALYSIS] Team count:', project.assignedEmployees?.length || 0);
+    
     try {
       setRiskLoading(true);
+      setRiskError(null);
+      
+      console.log('🔍 [RISK ANALYSIS] Calling API: POST /projects/:id/risks/predict');
       const riskResponse = await predictProjectRisks(project._id);
+      
+      console.log('✅ [RISK ANALYSIS] Full response:', riskResponse);
+      console.log('✅ [RISK ANALYSIS] Response data:', riskResponse.data);
+      console.log('✅ [RISK ANALYSIS] Response.data.data:', riskResponse.data?.data);
+      
       const riskData = riskResponse.data?.data || riskResponse.data;
-      console.log('🔴 [RISK ANALYSIS] Response from backend:', riskData);
+      
+      console.log('📊 [RISK ANALYSIS] Extracted risk data:', riskData);
+      console.log('📊 [RISK ANALYSIS] Risks array:', riskData?.risks);
+      console.log('📊 [RISK ANALYSIS] Risks count:', riskData?.risks?.length || 0);
+      
+      if (riskData?.risks && riskData.risks.length > 0) {
+        console.log('✅ [RISK ANALYSIS] Successfully loaded', riskData.risks.length, 'risks');
+        console.log('📋 [RISK ANALYSIS] First risk:', riskData.risks[0]);
+      } else {
+        console.warn('⚠️ [RISK ANALYSIS] No risks found in response');
+      }
+      
       setRiskAnalysis(riskData);
     } catch (err) {
-      console.error('Error loading risk analysis:', err);
+      console.error('❌ [RISK ANALYSIS] Error loading risk analysis:', err);
+      console.error('❌ [RISK ANALYSIS] Error response:', err.response);
+      console.error('❌ [RISK ANALYSIS] Error data:', err.response?.data);
+      
+      const errorMessage = err.response?.data?.message 
+        || err.response?.data?.error 
+        || t('projects.riskAnalysis.loadError', 'Error loading risk analysis. Please try again.');
+      setRiskError(errorMessage);
     } finally {
       setRiskLoading(false);
+      console.log('🏁 [RISK ANALYSIS] Risk loading finished');
     }
-  }, [project._id]);
+  }, [project._id, project.assignedEmployees, t]);
 
   // Load risk analysis when switching to risks tab
   useEffect(() => {
     const teamCount = project.assignedEmployees?.length || 0;
-    if (activeTab === 'risks' && !riskAnalysis && !riskLoading && teamCount > 0) {
-      console.log('🔴 [RISK ANALYSIS] Tab activated, loading risk analysis...');
+    
+    console.log('🔄 [RISK ANALYSIS] useEffect triggered');
+    console.log('🔄 [RISK ANALYSIS] ├─ activeTab:', activeTab);
+    console.log('🔄 [RISK ANALYSIS] ├─ teamCount:', teamCount);
+    console.log('🔄 [RISK ANALYSIS] ├─ riskAnalysis:', riskAnalysis ? 'exists' : 'null');
+    console.log('🔄 [RISK ANALYSIS] ├─ riskLoading:', riskLoading);
+    
+    // Allow risk analysis even without team (removed teamCount > 0 condition)
+    if (activeTab === 'risks' && !riskAnalysis && !riskLoading) {
+      console.log('🚀 [RISK ANALYSIS] Conditions met, loading risk analysis...');
       loadRiskAnalysis();
+    } else {
+      console.log('⏭️ [RISK ANALYSIS] Skipping load (conditions not met)');
     }
   }, [activeTab, riskAnalysis, riskLoading, project.assignedEmployees, loadRiskAnalysis]);
 
@@ -482,9 +529,9 @@ export default function DraftTeamAnalysis({ project, onProjectUpdate }) {
    * Called from RiskAnalysisTab when user clicks retry button
    */
   const handleRetryAnalysis = useCallback(async () => {
+    console.log('🔄 [handleRetryAnalysis] Retry requested');
     await loadRiskAnalysis();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loadRiskAnalysis]);
 
   /**
    * Navigate to project edit page
@@ -537,7 +584,7 @@ export default function DraftTeamAnalysis({ project, onProjectUpdate }) {
     ? currentTeamEmployees
     : (teamAnalysis?.currentTeam || []);
   const filteredEmployees = getFilteredEmployees();
-  const requiredTeamSize = project.requiredTeamSize || 6;
+  const requiredTeamSize = project.teamSize || project.requiredTeamSize || 5;
   const teamCount = project.assignedEmployees?.length || 0;
 
   return (
@@ -663,10 +710,24 @@ export default function DraftTeamAnalysis({ project, onProjectUpdate }) {
         <TeamConfigModal
           projectId={project._id}
           onClose={() => setShowConfigModal(false)}
-          onSave={(newConfig) => {
+          onSave={async (newConfig) => {
             console.log('Configuration saved:', newConfig);
-            // Optionally reload analysis after config change
-            loadAnalysis();
+            setShowConfigModal(false);
+            
+            // Show loading state
+            setRefreshing(true);
+            
+            // Wait for backend to complete risk analysis (2 seconds should be enough)
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Reload both team analysis and risk analysis
+            await loadAnalysis();
+            await loadRiskAnalysis();
+            
+            setRefreshing(false);
+            
+            // Notify user if needed
+            console.log('✅ Analysis refreshed with new configuration');
           }}
         />
       )}
@@ -798,7 +859,9 @@ const styles = {
     color: '#586069',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-    borderBottom: '3px solid transparent',
+    borderBottomWidth: '3px',
+    borderBottomStyle: 'solid',
+    borderBottomColor: 'transparent',
     position: 'relative',
   },
   activeTab: {
