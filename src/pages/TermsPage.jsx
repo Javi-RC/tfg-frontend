@@ -1,9 +1,16 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FileText, RefreshCw } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import { getTerms } from '../api/legal';
 import SecondaryButton from '../components/SecondaryButton';
+
+/**
+ * Derive the backend locale code from an i18next language tag.
+ * e.g. 'es', 'es-ES', 'es_MX' → 'es' ; anything else → 'en'
+ */
+const resolveLocale = (lang = '') =>
+  lang.toLowerCase().replace(/[-_].*/, '').startsWith('es') ? 'es' : 'en';
 
 export default function TermsPage() {
   const { t, i18n } = useTranslation();
@@ -11,61 +18,33 @@ export default function TermsPage() {
   const [error, setError] = useState(null);
   const [doc, setDoc] = useState(null);
 
-  const locale = useMemo(() => {
-    const lang = (typeof navigator !== 'undefined' && navigator.language) || '';
-    return lang.toLowerCase().startsWith('es') ? 'es' : undefined;
-  }, []);
-
-  const load = async () => {
+  const load = useCallback(async () => {
     setLoading(true);
     setError(null);
 
+    const locale = resolveLocale(i18n.language);
+
     try {
-      const fetchDoc = async (requestedLocale) => {
-        const res = await getTerms({ locale: requestedLocale });
-        return res?.data?.document;
-      };
+      const res = await getTerms({ locale });
+      const document = res?.data?.document;
 
-      let document = await fetchDoc(locale);
-
-      // Some backends may require an explicit supported locale.
       if (!document) {
         throw new Error(t('errors.invalidServerResponse'));
       }
 
       setDoc(document);
     } catch (err) {
-      const status = err?.response?.status;
-      if (status === 406) {
-        // Retry with the only currently supported locale.
-        try {
-          const resEs = await getTerms({ locale: 'es' });
-          const documentEs = resEs?.data?.document;
-          if (documentEs) {
-            setDoc(documentEs);
-            setError(null);
-            return;
-          }
-        } catch {
-          // fall through to final error
-        }
-
-        setError(t('errors.localeNotSupported'));
-        setDoc(null);
-        return;
-      }
-
       setError(err?.response?.data?.error || err?.message || t('legal.couldNotLoadTerms'));
       setDoc(null);
     } finally {
       setLoading(false);
     }
-  };
+  }, [i18n.language, t]);
 
+  // Reload when the UI language changes
   useEffect(() => {
     load();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [load]);
 
   const formatDateTime = (value) => {
     if (!value) return '—';
