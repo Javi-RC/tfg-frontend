@@ -1678,6 +1678,21 @@
     "experiences": "experiences",
     "uploaded": "Uploaded",
     "admin": {
+      "allCVsCount": "All CVs ({{count}})",
+      "searchCVs": "Search CVs",
+      "hideSearch": "Hide search",
+      "resetFilters": "Reset filters",
+      "noCVsFound": "No CVs found",
+      "noCVsUploaded": "No CVs have been uploaded yet",
+      "noMatchingCVs": "No CVs match your search criteria",
+      "aria": {
+        "page": "CV administration",
+        "hideSearch": "Hide search filters",
+        "showSearch": "Show search filters",
+        "resetFilters": "Reset search filters",
+        "refreshList": "Refresh CV list",
+        "cvList": "List of CVs"
+      },
       "detailPanel": {
         "title": "CV Details",
         "aria": {
@@ -3013,7 +3028,9 @@
     },
     "aria": {
       "closeModal": "Close personality consent dialog"
-    }
+    },
+    "adminPanel": "Manage Team",
+    "goToAdminPanel": "Go to BFI-44 administration panel"
   },
   "bfi44Admin": {
     "title": "BFI-44 Management",

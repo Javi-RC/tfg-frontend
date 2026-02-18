@@ -1704,6 +1704,21 @@
     "experiences": "experiencias",
     "uploaded": "Subido",
     "admin": {
+      "allCVsCount": "Todos los currículos ({{count}})",
+      "searchCVs": "Buscar currículos",
+      "hideSearch": "Ocultar búsqueda",
+      "resetFilters": "Restablecer filtros",
+      "noCVsFound": "No se encontraron currículos",
+      "noCVsUploaded": "Aún no se han subido currículos",
+      "noMatchingCVs": "Ningún currículo coincide con tu búsqueda",
+      "aria": {
+        "page": "Administración de currículos",
+        "hideSearch": "Ocultar filtros de búsqueda",
+        "showSearch": "Mostrar filtros de búsqueda",
+        "resetFilters": "Restablecer filtros de búsqueda",
+        "refreshList": "Actualizar lista de currículos",
+        "cvList": "Lista de currículos"
+      },
       "detailPanel": {
         "title": "Detalles del currículo",
         "aria": {
@@ -3032,7 +3047,9 @@
     },
     "aria": {
       "closeModal": "Cerrar diálogo de consentimiento de personalidad"
-    }
+    },
+    "adminPanel": "Gestionar Equipo",
+    "goToAdminPanel": "Ir al panel de administración BFI-44"
   },
   "bfi44Admin": {
     "title": "Gestión BFI-44",

@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Sparkles, CheckCircle } from 'lucide-react';
+import { Sparkles, CheckCircle, Users } from 'lucide-react';
 import { getQuestions, submitResponses, getMyProfile, hasProfile } from '../api/bfi44';
 import { getBFI44ConsentStatus } from '../api/personalityConsent';
 import { ProgressIndicator, BFI44ResultsView, BFI44QuestionnaireView, ConsentStatusBadge } from '../components/personality';
 import PersonalityConsentModal from '../components/personality/PersonalityConsentModal';
+import { AuthContext } from '../contexts/AuthContext';
 
 
 
@@ -16,6 +17,8 @@ import PersonalityConsentModal from '../components/personality/PersonalityConsen
 export default function BFI44Page() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
+  const canManageTeam = user?.role === 'org_admin' || user?.isProjectManager === true;
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -219,7 +222,20 @@ export default function BFI44Page() {
                 <Sparkles size={32} />
                 {t('bfi44.yourProfile')}
               </h1>
-              <ConsentStatusBadge hasConsent={hasConsent} />
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                {canManageTeam && (
+                  <button
+                    type="button"
+                    onClick={() => navigate('/bfi-44/admin')}
+                    style={styles.adminLinkButton}
+                    aria-label={t('bfi44.goToAdminPanel')}
+                  >
+                    <Users size={16} />
+                    {t('bfi44.adminPanel')}
+                  </button>
+                )}
+                <ConsentStatusBadge hasConsent={hasConsent} />
+              </div>
             </div>
             <p style={styles.subtitle}>{t('bfi44.resultsSubtitle')}</p>
             {completedAt && (
@@ -251,7 +267,20 @@ export default function BFI44Page() {
         <div style={styles.headerCard}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <h1 style={styles.title}>{t('bfi44.bigFiveInventory')}</h1>
-            <ConsentStatusBadge hasConsent={hasConsent} onClick={() => setShowConsentModal(true)} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              {canManageTeam && (
+                <button
+                  type="button"
+                  onClick={() => navigate('/bfi-44/admin')}
+                  style={styles.adminLinkButton}
+                  aria-label={t('bfi44.goToAdminPanel')}
+                >
+                  <Users size={16} />
+                  {t('bfi44.adminPanel')}
+                </button>
+              )}
+              <ConsentStatusBadge hasConsent={hasConsent} onClick={() => setShowConsentModal(true)} />
+            </div>
           </div>
           <p style={styles.subtitle}>
             {t('bfi44.rateStatements')}
@@ -374,6 +403,21 @@ const styles = {
     border: 'none',
     cursor: 'pointer',
     boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+  },
+  adminLinkButton: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
+    background: 'rgba(255, 255, 255, 0.15)',
+    color: 'white',
+    border: '1px solid rgba(255, 255, 255, 0.3)',
+    borderRadius: '8px',
+    padding: '8px 16px',
+    fontSize: '13px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    whiteSpace: 'nowrap'
   }
 };
 
