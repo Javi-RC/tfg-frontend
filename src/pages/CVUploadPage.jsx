@@ -53,7 +53,7 @@ const CVUploadPage = () => {
       console.error('Error uploading CV:', err);
       console.error('Error Response:', err.response);
       console.error('Error Data:', err.response?.data);
-      setError(err.response?.data?.message || 'Error uploading CV. Please try again.');
+      setError(err.response?.data?.message || t('cv.upload.errorFallback'));
     } finally {
       setIsUploading(false);
     }
@@ -77,8 +77,8 @@ const CVUploadPage = () => {
   return (
     <div className="cv-upload-page">
       <div className="upload-container">
-        <h1>Upload Your CV</h1>
-        <p className="subtitle">Upload your CV in PDF or TXT format to get started</p>
+        <h1>{t('cv.upload.pageTitle')}</h1>
+        <p className="subtitle">{t('cv.upload.pageSubtitle')}</p>
         
         <FileUploader 
           onFileSelect={handleFileSelect}

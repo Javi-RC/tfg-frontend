@@ -6,54 +6,54 @@
     "other": "Otros"
   },
   "riskVisualizationDemo": {
-      "title": "Demostración de visualización de riesgos",
-      "subtitle": "Demostración interactiva de la visualización de riesgos con React Flow",
-      "about": {
-        "title": "Sobre esta demo",
-        "item1": "Esta página muestra datos de riesgos de ejemplo para un proyecto hipotético",
-        "item2Prefix": "Alterna entre las vistas",
-        "visualMap": "Mapa visual",
-        "item2Between": "y",
-        "statistics": "Estadísticas",
-        "item2Suffix": "",
-        "item3": "Haz clic en los nodos de riesgo del mapa para ver información detallada",
-        "item4": "Las marcas verdes (✓) indican riesgos que ocurrieron",
-        "item5": "Las cruces grises (✗) indican riesgos que no ocurrieron",
-        "item6": "Usa los controles de zoom y arrastra para navegar por el grafo"
+    "title": "Demostración de visualización de riesgos",
+    "subtitle": "Demostración interactiva de la visualización de riesgos con React Flow",
+    "about": {
+      "title": "Sobre esta demo",
+      "item1": "Esta página muestra datos de riesgos de ejemplo para un proyecto hipotético",
+      "item2Prefix": "Alterna entre las vistas",
+      "visualMap": "Mapa visual",
+      "item2Between": "y",
+      "statistics": "Estadísticas",
+      "item2Suffix": "",
+      "item3": "Haz clic en los nodos de riesgo del mapa para ver información detallada",
+      "item4": "Las marcas verdes (✓) indican riesgos que ocurrieron",
+      "item5": "Las cruces grises (✗) indican riesgos que no ocurrieron",
+      "item6": "Usa los controles de zoom y arrastra para navegar por el grafo"
+    },
+    "stats": {
+      "totalRisks": "Riesgos totales:",
+      "occurred": "Ocurrieron:",
+      "notOccurred": "No ocurrieron:",
+      "unknown": "Desconocidos:"
+    },
+    "features": {
+      "title": "Características clave",
+      "visualHierarchy": {
+        "title": "Jerarquía visual",
+        "desc": "Riesgos organizados por categoría con relaciones padre-hijo claras"
       },
-      "stats": {
-        "totalRisks": "Riesgos totales:",
-        "occurred": "Ocurrieron:",
-        "notOccurred": "No ocurrieron:",
-        "unknown": "Desconocidos:"
+      "colorCoded": {
+        "title": "Severidad por color",
+        "desc": "Feedback visual inmediato: Rojo (Crítico) → Naranja (Alto) → Amarillo (Medio) → Verde (Bajo)"
       },
-      "features": {
-        "title": "Características clave",
-        "visualHierarchy": {
-          "title": "Jerarquía visual",
-          "desc": "Riesgos organizados por categoría con relaciones padre-hijo claras"
-        },
-        "colorCoded": {
-          "title": "Severidad por color",
-          "desc": "Feedback visual inmediato: Rojo (Crítico) → Naranja (Alto) → Amarillo (Medio) → Verde (Bajo)"
-        },
-        "realTime": {
-          "title": "Estadísticas en tiempo real",
-          "desc": "Resumen completo con gráficos de distribución y precisión de predicción"
-        },
-        "controls": {
-          "title": "Controles interactivos",
-          "desc": "Zoom, desplazamiento, clic para detalles y cambio entre modos de vista"
-        }
+      "realTime": {
+        "title": "Estadísticas en tiempo real",
+        "desc": "Resumen completo con gráficos de distribución y precisión de predicción"
       },
-      "technical": {
-        "title": "Implementación técnica",
-        "libraryLabel": "Librería:",
-        "componentsLabel": "Componentes:",
-        "dataFlowLabel": "Flujo de datos:",
-        "featuresLabel": "Funciones:"
+      "controls": {
+        "title": "Controles interactivos",
+        "desc": "Zoom, desplazamiento, clic para detalles y cambio entre modos de vista"
       }
     },
+    "technical": {
+      "title": "Implementación técnica",
+      "libraryLabel": "Librería:",
+      "componentsLabel": "Componentes:",
+      "dataFlowLabel": "Flujo de datos:",
+      "featuresLabel": "Funciones:"
+    }
+  },
   "app": {
     "name": "Sara"
   },
@@ -69,10 +69,15 @@
     "myOrganizations": "Mis Empresas",
     "aria": {
       "main": "Navegación principal",
-      "navigateTo": "Navegar a {{label}}"
+      "navigateTo": "Navegar a {{label}}",
+      "goToHome": "Ir al inicio",
+      "userMenu": "Menú de usuario",
+      "userMenuOptions": "Opciones del menú de usuario"
     },
     "skipToMain": "Saltar al contenido principal",
-    "mainNavigation": "Navegación principal"
+    "mainNavigation": "Navegación principal",
+    "user": "Usuario",
+    "admin": "Admin"
   },
   "auth": {
     "login": "Iniciar sesión",
@@ -122,7 +127,8 @@
     "loadingProject": "Cargando proyecto...",
     "invalidCredentials": "Credenciales inválidas",
     "loginError": "Error al iniciar sesión. Por favor, inténtalo de nuevo.",
-    "oauthError": "Error de autenticación: {{detail}}. Si el problema persiste, completa tu perfil o contacta con soporte."
+    "oauthError": "Error de autenticación: {{detail}}. Si el problema persiste, completa tu perfil o contacta con soporte.",
+    "google": "Google"
   },
   "register": {
     "title": "¡Bienvenido!",
@@ -263,7 +269,8 @@
       "aria": {
         "refresh": "Actualizar estado del consentimiento",
         "reviewAndAccept": "Revisar y aceptar términos de consentimiento",
-        "revokeConsent": "Revocar consentimiento de datos"
+        "revokeConsent": "Revocar consentimiento de datos",
+        "revoke": "Revocar consentimiento"
       }
     },
     "cvManagementSection": {
@@ -306,7 +313,9 @@
       "editProfile": "Editar perfil",
       "cancelEditing": "Cancelar edición",
       "saveChanges": "Guardar cambios"
-    }
+    },
+    "saving": "Guardando...",
+    "userAvatar": "Avatar del usuario"
   },
   "team": {
     "personalityFit": {
@@ -463,7 +472,12 @@
       "years_other": "{{count}} años",
       "totalProfessionalExperience": "Experiencia profesional total",
       "relevantExperience_one": "{{count}} año de experiencia relevante",
-      "relevantExperience_other": "{{count}} años de experiencia relevante"
+      "relevantExperience_other": "{{count}} años de experiencia relevante",
+      "allSkillsTitle": "Todas las Habilidades",
+      "matchedSkillsTitle": "Habilidades Coincidentes",
+      "missingSkillsTitle": "Habilidades Faltantes",
+      "relevantExperience": "Experiencia Relevante",
+      "years": "{{count}} año"
     },
     "employeeDetail": {
       "tabs": {
@@ -481,7 +495,9 @@
         "skillsMatched_one": "{{count}} habilidad coincidente",
         "skillsMatched_other": "{{count}} habilidades coincidentes",
         "skillsMissing_one": "{{count}} habilidad faltante",
-        "skillsMissing_other": "{{count}} habilidades faltantes"
+        "skillsMissing_other": "{{count}} habilidades faltantes",
+        "skillsMatched": "{{count}} habilidad coincidente",
+        "skillsMissing": "{{count}} habilidad faltante"
       },
       "matchScore": {
         "label": "Puntuación de coincidencia"
@@ -505,7 +521,8 @@
         "linkedin": "LinkedIn",
         "github": "GitHub",
         "portfolio": "Portfolio"
-      }
+      },
+      "fallbackName": "Miembro del equipo"
     },
     "quickInsights": {
       "heroTitle": "Ideas clave",
@@ -515,7 +532,8 @@
       "recommendationConfidence": "Confianza de la recomendación:",
       "common": {
         "years_one": "{{count}} año",
-        "years_other": "{{count}} años"
+        "years_other": "{{count}} años",
+        "years": "{{count}} año"
       },
       "categories": {
         "skills": "Habilidades",
@@ -678,7 +696,27 @@
       },
       "labels": {
         "matchPercent": "{{percent}}% de coincidencia"
-      }
+      },
+      "fallbackMemberName": "Miembro del equipo",
+      "category": "Categoría:",
+      "source": "Fuente:",
+      "mitigationStrategy": "Estrategia de Mitigación",
+      "whatIf": "Qué Pasa Si...",
+      "whatIfSubtitle": "Mira cómo añadir estos candidatos afectaría los riesgos",
+      "calculatingScenarios": "Calculando escenarios...",
+      "ifYouAdd": "Si añades: {{name}}",
+      "match": "Coincidencia: {{score}}%",
+      "riskLevel": "Nivel de Riesgo:",
+      "improves": "(Mejora)",
+      "worsens": "(Empeora)",
+      "noChange": "(Sin cambios)",
+      "skillCoverage": "Cobertura de Habilidades:",
+      "resolves": "Resuelve: {{skills}}",
+      "newRisk": "Nuevo Riesgo:",
+      "noSignificantChanges": "No se detectaron cambios significativos",
+      "addName": "Añadir {{name}}",
+      "assignSelected": "Asignar Equipo Seleccionado ({{count}})",
+      "score": "Puntuación: {{score}}"
     },
     "riskAnalysisTab": {
       "loading": {
@@ -703,7 +741,9 @@
         "teamMembers_other": "{{count}} miembros del equipo",
         "risksIdentified_one": "{{count}} riesgo identificado",
         "risksIdentified_other": "{{count}} riesgos identificados",
-        "overallRiskLevel": "Nivel de riesgo general: {{level}}"
+        "overallRiskLevel": "Nivel de riesgo general: {{level}}",
+        "risksIdentified": "{{count}} Riesgo identificado",
+        "teamMembers": "{{count}} Miembro del equipo"
       },
       "export": {
         "tooltip": "Exportar datos del análisis de riesgos",
@@ -735,8 +775,31 @@
         "medium_one": "{{count}} riesgo medio",
         "medium_other": "{{count}} riesgos medios",
         "low_one": "{{count}} riesgo bajo",
-        "low_other": "{{count}} riesgos bajos"
-      }
+        "low_other": "{{count}} riesgos bajos",
+        "critical": "{{count}} Crítico",
+        "high": "{{count}} Alto",
+        "low": "{{count}} Bajo",
+        "medium": "{{count}} Medio"
+      },
+      "interactiveVisualization": "Visualización interactiva de riesgos - Explora relaciones entre riesgos del proyecto",
+      "risksVisualized": "{{count}} riesgo(s) visualizado(s). Usa la rueda del ratón para zoom, haz clic y arrastra para mover.",
+      "showingRisks": "Mostrando {{n}} de {{m}} riesgo(s)",
+      "noRisksMatch": "Ningún riesgo coincide con tus filtros actuales. Intenta ajustar tu búsqueda o filtros.",
+      "recommendations": "Recomendaciones",
+      "noDescription": "Sin descripción disponible",
+      "impact": "Impacto:",
+      "mitigationStrategy": "Estrategia de Mitigación",
+      "relatedFactors": "Factores Relacionados:",
+      "criticalDesc": "Severidad crítica - Requiere atención inmediata",
+      "highDesc": "Severidad alta - Necesita atención urgente",
+      "mediumDesc": "Severidad media - Debe ser monitoreado",
+      "lowDesc": "Severidad baja - Informativo",
+      "unnamedRisk": "Riesgo sin nombre",
+      "csvName": "Nombre",
+      "csvSeverity": "Severidad",
+      "csvType": "Tipo",
+      "csvDescription": "Descripci\u00f3n",
+      "csvMitigation": "Mitigaci\u00f3n"
     },
     "backToProjects": "Volver a Proyectos",
     "viewDetails": "Ver Detalles",
@@ -777,7 +840,13 @@
           "manual": "Manuales"
         },
         "retry": "Reintentar"
-      }
+      },
+      "culturalDiversity": "Diversidad Cultural",
+      "distributedExperience": "Experiencia Distribuida",
+      "involvedCountries": "Países Involucrados",
+      "technologies": "Tecnologías",
+      "workDistribution": "Distribución del Trabajo",
+      "workMode": "Modo de Trabajo"
     },
     "completionPage": {
       "title": "Finalizar proyecto: {{name}}",
@@ -922,7 +991,57 @@
         "workMode": "Modo de Trabajo",
         "distributedWorkExperienceLevel": "Nivel de Experiencia en Trabajo Distribuido",
         "expectedTimeOverlap": "Solapamiento de Tiempo Esperado",
-        "culturalDiversityLevel": "Nivel de Diversidad Cultural"
+        "culturalDiversityLevel": "Nivel de Diversidad Cultural",
+        "inherit": "Heredar de la Organización",
+        "office": "Modo Oficina",
+        "officeFirst": "Oficina Primero",
+        "hybrid": "Mixto Oficina/Remoto",
+        "remoteFirst": "Remoto Primero",
+        "remote": "Modo Remoto",
+        "workModeDetails": "Detalles del Modo de Trabajo",
+        "workModeDetailsPlaceholder": "Describe los detalles del modo de trabajo (días de oficina requeridos, políticas de flexibilidad)...",
+        "noTimezoneWarning": "Aviso: Sin Política de Horarios por Zona Horaria",
+        "noTimezoneWarningDesc": "Los proyectos remotos sin gestión de zonas horarias pueden enfrentar desafíos de coordinación.",
+        "countriesHint": "(separados por comas, ej., \"EEUU, España, India\")",
+        "currentCountries": "Países actuales: {{countries}}",
+        "distributedExperience": "Nivel de Experiencia en Trabajo Distribuido",
+        "distributedExpLow": "Bajo - Poca experiencia remota",
+        "distributedExpMedium": "Medio - Algo de experiencia remota",
+        "distributedExpHigh": "Alto - Amplia experiencia remota",
+        "timeOverlap": "Solapamiento Horario Esperado (horas por día)",
+        "hours": "horas",
+        "lowOverlapWarning": "Poco solapamiento horario con {{count}} países puede causar retrasos",
+        "culturalDiversity": "Nivel de Diversidad Cultural",
+        "culturalDivLow": "Bajo - Culturas similares",
+        "culturalDivMedium": "Medio - Algo de diversidad",
+        "culturalDivHigh": "Alto - Equipo muy diverso",
+        "coreHoursTitle": "Configuración de Horas Centrales",
+        "coreHoursDescription": "Define las horas de trabajo compartidas para todos los miembros del equipo",
+        "startTime": "Hora de Inicio",
+        "endTime": "Hora de Fin",
+        "timezone": "Zona Horaria",
+        "timezonePlaceholder": "ej., UTC, America/New_York",
+        "meetingRotation": "Tiene Política de Rotación de Reuniones",
+        "meetingRotationDesc": "Rota los horarios de reuniones para ser justo con todas las zonas horarias",
+        "timezoneConsiderations": "Consideraciones sobre Zonas Horarias",
+        "timezoneConsiderationsPlaceholder": "Describe cómo gestionarás las diferentes zonas horarias (máx. 1000 caracteres)...",
+        "asyncStrategy": "Estrategia de Comunicación Asíncrona",
+        "asyncStrategyPlaceholder": "Describe tu enfoque de comunicación asíncrona para equipos distribuidos (máx. 1000 caracteres)...",
+        "offHoursReporting": "Requiere Informes/Actualizaciones Fuera de Horario",
+        "offHoursReportingDesc": "Los miembros del equipo pueden necesitar proveer actualizaciones fuera de su horario laboral",
+        "workModeDetailsAria": "Detalles del modo de trabajo",
+        "involvedCountriesAria": "Países involucrados",
+        "distributedExperienceAria": "Nivel de experiencia en trabajo distribuido",
+        "timeOverlapAria": "Solapamiento horario esperado",
+        "culturalDiversityAria": "Nivel de diversidad cultural",
+        "coreHoursStartAria": "Hora de inicio de horas centrales",
+        "coreHoursEndAria": "Hora de fin de horas centrales",
+        "coreHoursTimezoneAria": "Zona horaria de horas centrales",
+        "timezoneConsiderationsAria": "Consideraciones sobre zonas horarias",
+        "asyncStrategyAria": "Estrategia de comunicación asíncrona",
+        "workModelTitle": "Modelo de Trabajo y Configuración Remota",
+        "workModelDescription": "Configure cómo trabajará el equipo, especialmente para equipos distribuidos",
+        "charCount": "{{current}}/{{max}} caracteres"
       },
       "step5": {
         "title": "Roles y Responsabilidades",
@@ -942,11 +1061,14 @@
         "veryClear": "Muy claro",
         "noRolesMessage": "No se han agregado roles aún. Haz clic en 'Agregar Rol' para comenzar.",
         "criticalDependencies": "Dependencias Críticas",
-        "dependenciesPlaceholder": "Lista las dependencias críticas (una por línea)..."
+        "dependenciesPlaceholder": "Lista las dependencias críticas (una por línea)...",
+        "criticalDependenciesPlaceholder": "Introduce cada dependencia en una nueva línea..."
       },
       "step6": {
         "title": "Requisitos de Disponibilidad",
         "description": "Define el compromiso de tiempo y necesidades de disponibilidad",
+        "knowledgeTitle": "Gestión del Conocimiento",
+        "knowledgeDescription": "Configure cómo se gestionará el conocimiento y la documentación en el equipo",
         "weeklyHoursPerMember": "Horas Semanales por Miembro",
         "requiresAfterHoursAvailability": "Requiere Disponibilidad Fuera de Horario",
         "afterHoursYes": "Sí",
@@ -959,11 +1081,39 @@
         "periodDescriptionPlaceholder": "ej., Sprint de Lanzamiento de Producto",
         "startDate": "Fecha de Inicio",
         "endDate": "Fecha de Fin",
-        "noPeriodsMessage": "No hay períodos de alta carga definidos."
+        "noPeriodsMessage": "No hay períodos de alta carga definidos.",
+        "noToolsWarning": "Riesgo: Sin Herramientas de Gestión del Conocimiento",
+        "noToolsWarningDesc": "Sin una gestión adecuada del conocimiento, tu equipo puede enfrentar:",
+        "risk1": "Silos de información y brechas de comunicación",
+        "risk2": "Trabajo repetido y pérdida de conocimiento tribal",
+        "risk3": "Dificultad para incorporar nuevos miembros al equipo",
+        "risk4": "Mayor riesgo de retrasos en el proyecto",
+        "knowledgeSystem": "Sistema de Gestión del Conocimiento",
+        "selectSystem": "Selecciona un sistema...",
+        "knowledgeSystemAria": "Sistema de gestión del conocimiento",
+        "tools": "Herramientas de Gestión del Conocimiento",
+        "toolsHint": "(separadas por comas)",
+        "toolsPlaceholder": "ej., Confluence, Notion, SharePoint",
+        "toolsAria": "Herramientas de gestión del conocimiento",
+        "currentTools": "Herramientas actuales: {{tools}}",
+        "documentationProcesses": "Procesos de Documentación",
+        "hasStandardization": "Tiene Estandarización de Documentación",
+        "usesTemplates": "Usa Plantillas",
+        "hasReviewProcess": "Tiene Proceso de Revisión",
+        "selectAllApply": "Selecciona todas las que apliquen para mejorar la calidad de la documentación",
+        "bestPractice": "Buena Práctica",
+        "bestPracticeDesc": "La gestión eficaz del conocimiento incluye:",
+        "bp1": "Actualizaciones regulares de documentación",
+        "bp2": "Convenciones de nomenclatura claras",
+        "bp3": "Base de conocimiento con búsqueda",
+        "bp4": "Control de versiones para documentos"
       },
       "step7": {
         "title": "Coordinación y Gestión",
         "description": "Define cómo se gestionará y coordinará el proyecto",
+        "standardsTitle": "Estándares y Cumplimiento",
+        "standardsDescription": "Defina los requisitos de cumplimiento normativo y procedimientos estandarizados",
+        "charCount": "{{current}}/{{max}} caracteres",
         "managementMethod": "Método de Gestión",
         "scrum": "Scrum",
         "kanban": "Kanban",
@@ -996,11 +1146,33 @@
         "codeReviewFrequency": "Frecuencia de Revisión de Código",
         "collaborationTools": "Herramientas de Colaboración",
         "toolsPlaceholder": "Ingresa herramientas separadas por comas (ej., Jira, Trello, Asana)",
-        "documentationStandardization": "Estandarización de Documentación"
+        "documentationStandardization": "Estandarización de Documentación",
+        "requiresCompliance": "Requiere Cumplimiento Regulatorio",
+        "yes": "Sí",
+        "no": "No",
+        "complianceStandards": "Estándares de Cumplimiento",
+        "selectedStandards": "Seleccionados: {{count}} estándar(es)",
+        "hasStandardizedProcedures": "Tiene Procedimientos Estandarizados",
+        "standardizedHelp": "Los procedimientos estandarizados ayudan a garantizar la consistencia del cumplimiento",
+        "standardsDocumentation": "Documentación de Estándares",
+        "standardsDocPlaceholder": "Describe los estándares, procedimientos y requisitos de cumplimiento (máx. 2000 caracteres)...",
+        "standardsDocAria": "Documentación de estándares",
+        "complianceConsiderations": "Consideraciones de Cumplimiento",
+        "gdpr": "RGPD: Regulación europea de protección de datos",
+        "hipaa": "HIPAA: Seguridad de datos sanitarios de EEUU",
+        "soc2": "SOC2: Controles de organizaciones de servicios",
+        "iso27001": "ISO27001: Gestión de seguridad de la información",
+        "pciDss": "PCI-DSS: Estándares de la industria de tarjetas de pago",
+        "noStandardizedWarning": "Aviso: Sin Procedimientos Estandarizados",
+        "noStandardizedWarningDesc": "Sin procedimientos estandarizados, los requisitos de cumplimiento pueden ser difíciles de mantener de forma consistente en el equipo, aumentando el riesgo de auditoría.",
+        "noComplianceTitle": "No se Requiere Cumplimiento Regulatorio",
+        "noComplianceDesc": "Este proyecto no tiene requisitos de cumplimiento específicos. Sin embargo, se recomienda seguir las mejores prácticas de seguridad y calidad."
       },
       "step8": {
         "title": "Intensidad de Colaboración del Equipo",
         "description": "Define cómo colaborarán los equipos e intercambiarán información",
+        "availabilityTitle": "Requisitos de Disponibilidad",
+        "availabilityDescription": "Defina el compromiso de tiempo y las necesidades de disponibilidad del equipo",
         "involvedTeams": "Equipos Involucrados",
         "addTeam": "+ Agregar Equipo",
         "team": "Equipo",
@@ -1023,7 +1195,32 @@
           "occasional": "Ocasional - Para emergencias",
           "yes": "Sí - Trabajo regular fuera de horario"
         },
-        "afterHoursHelper": "La disponibilidad fuera de horario puede aumentar el estrés y reducir el equilibrio vida-trabajo"
+        "afterHoursHelper": "La disponibilidad fuera de horario puede aumentar el estrés y reducir el equilibrio vida-trabajo",
+        "flowBottomUp": "Ascendente",
+        "flowTopDown": "Descendente",
+        "weeklyHours": "Horas Semanales por Miembro",
+        "standardFullTime": "La jornada completa estándar es de 40 horas semanales",
+        "overtimeDetected": "Horas Extra Detectadas",
+        "overtimeDesc": "{{hours}} horas/semana supera la jornada completa estándar. Esto puede afectar la moral del equipo y aumentar el riesgo de agotamiento.",
+        "partTimeTitle": "Compromiso a Tiempo Parcial",
+        "partTimeDesc": "{{hours}} horas/semana es tiempo parcial. Asegura que el cronograma del proyecto tenga en cuenta la disponibilidad reducida.",
+        "requiresAfterHours": "Requiere Disponibilidad Fuera de Horario",
+        "afterHoursWarning": "Alto Riesgo: Requisitos Fuera de Horario",
+        "afterHoursWarningDesc": "El trabajo regular fuera de horario aumenta significativamente el riesgo de agotamiento del equipo y puede afectar la calidad del trabajo y la retención.",
+        "highLoadPeriods": "Periodos de Alta Carga",
+        "highLoadDescription": "Define periodos que requieran esfuerzo extra u horas extendidas",
+        "addPeriod": "+ Añadir Periodo",
+        "period": "Periodo {{index}}",
+        "remove": "Eliminar",
+        "periodDescription": "Descripción",
+        "periodDescPlaceholder": "ej., Sprint de Lanzamiento, Release de Fin de Año",
+        "startDate": "Fecha de Inicio",
+        "endDate": "Fecha de Fin",
+        "duration": "Duración: {{days}} días",
+        "multipleHighLoad": "Múltiples Periodos de Alta Carga",
+        "multipleHighLoadDesc": "{{count}} periodos de alta carga detectados. Asegura tiempo de recuperación adecuado entre periodos para prevenir el agotamiento del equipo.",
+        "noHighLoad": "No hay periodos de alta carga definidos",
+        "noHighLoadHint": "Añade periodos donde el equipo necesite trabajar horas extra o con mayor intensidad"
       },
       "step9": {
         "title": "Madurez Organizacional",
@@ -1125,6 +1322,9 @@
       "viewDetails": "Ver Detalles",
       "edit": "Editar",
       "delete": "Eliminar"
+    },
+    "riskAnalysis": {
+      "loadError": "Error al cargar el análisis de riesgos"
     }
   },
   "validation": {
@@ -1479,7 +1679,16 @@
       "processedSuccessfully": "Currículo Procesado Correctamente",
       "percentComplete": "{{score}}% completo",
       "fieldsRemaining": "{{count}} campos restantes",
-      "profileComplete": "¡Tu perfil está completo! Redirigiendo al panel..."
+      "profileComplete": "¡Tu perfil está completo! Redirigiendo al panel...",
+      "invalidFormat": "Solo se aceptan archivos PDF o TXT",
+      "fileTooLarge": "El archivo es demasiado grande. Tamaño máximo: 10MB",
+      "dragHere": "Arrastra tu CV aquí o haz clic para seleccionar",
+      "fileFormats": "PDF o TXT (máx. 10MB)",
+      "processing": "Procesando...",
+      "uploadButton": "Subir CV",
+      "pageTitle": "Sube tu CV",
+      "pageSubtitle": "Sube tu CV en formato PDF o TXT para comenzar",
+      "errorFallback": "Error al subir el CV. Por favor, inténtalo de nuevo."
     },
     "search": {
       "title": "Buscar Currículos",
@@ -1534,20 +1743,27 @@
       "organizationNotes": "Notas de la empresa"
     },
     "admin": {
-      "allCVsCount": "Todos los Currículos ({{count}})",
+      "allCVsCount": "Todos los currículos ({{count}})",
+      "searchCVs": "Buscar currículos",
       "hideSearch": "Ocultar búsqueda",
-      "searchCVs": "Buscar Currículos",
       "resetFilters": "Restablecer filtros",
       "noCVsFound": "No se encontraron currículos",
-      "noCVsUploaded": "Aún no se ha subido ningún currículo.",
-      "noMatchingCVs": "Ningún currículo coincide con tu búsqueda.",
+      "noCVsUploaded": "Aún no se han subido currículos",
+      "noMatchingCVs": "Ningún currículo coincide con tu búsqueda",
       "aria": {
-        "page": "Página de currículos de administrador",
-        "showSearch": "Mostrar búsqueda de currículos",
-        "hideSearch": "Ocultar búsqueda de currículos",
-        "resetFilters": "Restablecer filtros de currículo",
+        "page": "Administración de currículos",
+        "hideSearch": "Ocultar filtros de búsqueda",
+        "showSearch": "Mostrar filtros de búsqueda",
+        "resetFilters": "Restablecer filtros de búsqueda",
         "refreshList": "Actualizar lista de currículos",
-        "cvList": "Lista de Currículos"
+        "cvList": "Lista de currículos"
+      },
+      "detailPanel": {
+        "title": "Detalles del currículo",
+        "aria": {
+          "panel": "Panel de detalles del currículo",
+          "close": "Cerrar panel de detalles del currículo"
+        }
       }
     },
     "stats": {
@@ -1588,7 +1804,7 @@
     "personalDetails": "Datos Personales",
     "workExperience": "Experiencia Laboral",
     "education": "Educación",
-    "skills": "Habilidades",
+    "skills": "habilidades",
     "certifications": "Certificaciones",
     "languages": "Idiomas",
     "references": "Referencias",
@@ -1605,7 +1821,8 @@
     "lastUpdated": "Última Actualización",
     "loadingCV": "Cargando currículo...",
     "aria": {
-      "openUploadDialog": "Abrir el diálogo de subida de currículo"
+      "openUploadDialog": "Abrir el diálogo de subida de currículo",
+      "myCvPage": "Página de mi currículum"
     },
     "savingCV": "Guardando currículo...",
     "cvSaved": "Currículo guardado exitosamente",
@@ -1636,7 +1853,6 @@
     "joinOrganization": "Unirse a Empresa",
     "loadingOrganizations": "Cargando empresas...",
     "owner": "Propietario",
-    "admin": "Administrador",
     "member": "Miembro",
     "role": "Rol",
     "joinedDate": "Unido",
@@ -1685,7 +1901,6 @@
     },
     "noCVFound": "No hay currículo encontrado",
     "uploadToGetStarted": "Sube tu currículo para empezar",
-    "uploadCV": "Subir currículo",
     "errorLoadingCV": "Error al cargar el currículo",
     "errorDeletingCV": "Error al eliminar el currículo",
     "errorUpdatingCV": "Error al actualizar el currículo",
@@ -1696,37 +1911,11 @@
     "native": "Nativo/Nativa",
     "bilingual": "Bilingüe",
     "fluent": "Fluido/Fluida",
-    "remove": "Eliminar",
     "addLanguage": "Agregar Idioma",
     "noEmail": "Sin correo",
     "unnamed": "Sin nombre",
-    "skills": "habilidades",
     "experiences": "experiencias",
     "uploaded": "Subido",
-    "admin": {
-      "allCVsCount": "Todos los currículos ({{count}})",
-      "searchCVs": "Buscar currículos",
-      "hideSearch": "Ocultar búsqueda",
-      "resetFilters": "Restablecer filtros",
-      "noCVsFound": "No se encontraron currículos",
-      "noCVsUploaded": "Aún no se han subido currículos",
-      "noMatchingCVs": "Ningún currículo coincide con tu búsqueda",
-      "aria": {
-        "page": "Administración de currículos",
-        "hideSearch": "Ocultar filtros de búsqueda",
-        "showSearch": "Mostrar filtros de búsqueda",
-        "resetFilters": "Restablecer filtros de búsqueda",
-        "refreshList": "Actualizar lista de currículos",
-        "cvList": "Lista de currículos"
-      },
-      "detailPanel": {
-        "title": "Detalles del currículo",
-        "aria": {
-          "panel": "Panel de detalles del currículo",
-          "close": "Cerrar panel de detalles del currículo"
-        }
-      }
-    },
     "consent": {
       "title": "Consentimiento para Procesamiento de currículo con IA",
       "version": "Versión de términos",
@@ -1748,7 +1937,10 @@
       "aria": {
         "closeModal": "Cerrar modal de consentimiento"
       }
-    }
+    },
+    "beginner": "Principiante",
+    "proficiency": "Competencia",
+    "skillName": "Nombre de la Habilidad"
   },
   "organizations": {
     "title": "Empresas",
@@ -1771,7 +1963,19 @@
       "edtech": "Tecnología educativa",
       "ecommerce": "Comercio electrónico",
       "saas": "Software como Servicio",
-      "other": "Otro"
+      "other": "Otro",
+      "softwareDevelopment": "Desarrollo de software",
+      "webDevelopment": "Desarrollo web",
+      "mobileDevelopment": "Desarrollo móvil",
+      "devOpsCloud": "DevOps y Cloud",
+      "dataScience": "Ciencia de datos",
+      "aiMl": "IA y Machine Learning",
+      "gameDevelopment": "Desarrollo de videojuegos",
+      "qaTesting": "QA y Testing",
+      "technologyConsulting": "Consultoría tecnológica",
+      "financialTechnology": "Tecnología financiera",
+      "healthTechnology": "Tecnología sanitaria",
+      "educationTechnology": "Tecnología educativa"
     },
     "sizes": {
       "select": "Seleccionar tamaño"
@@ -1877,6 +2081,52 @@
     },
     "aria": {
       "navigation": "Navegación de empresa"
+    },
+    "admin": "Administrador",
+    "deleteOrganization": "Eliminar Organización",
+    "description": "Descripción",
+    "editOrganization": "Editar Organización",
+    "inviteMember": "Invitar Miembro",
+    "joinedDate": "Unido",
+    "manageMembers": "Gestionar Miembros",
+    "noCVsSubmitted": "No se han enviado currículos aún",
+    "organizationSettings": "Configuración de la Organización",
+    "role": "Rol",
+    "searchMembers": "Buscar miembros",
+    "searchOrganizations": "Buscar organizaciones...",
+    "submittedCVs": "Currículos Enviados",
+    "totalMembers": "Total de Miembros",
+    "viewCVs": "Ver Currículos",
+    "viewDetails": "Ver Detalles",
+    "selectOrganization": "Seleccionar organización",
+    "overview": {
+      "title": "Información de la Organización",
+      "editOrganization": "Editar Organización",
+      "organizationName": "Nombre de la Organización",
+      "description": "Descripción",
+      "taxId": "CIF/NIF",
+      "email": "Correo Electrónico",
+      "phone": "Teléfono",
+      "website": "Sitio Web",
+      "streetAddress": "Dirección",
+      "street": "Calle",
+      "city": "Ciudad",
+      "stateProvince": "Provincia/Estado",
+      "state": "Estado",
+      "postalCode": "Código Postal",
+      "country": "País",
+      "industry": "Industria",
+      "companySize": "Tamaño de la Empresa",
+      "address": "Dirección",
+      "cancel": "Cancelar",
+      "saving": "Guardando...",
+      "saveChanges": "Guardar Cambios",
+      "websitePlaceholder": "https://ejemplo.com",
+      "validation": {
+        "nameTooShort": "El nombre de la organización debe tener al menos 2 caracteres",
+        "invalidEmail": "El correo de contacto no es válido",
+        "invalidWebsite": "La URL del sitio web no es válida"
+      }
     }
   },
   "notifications": {
@@ -2155,7 +2405,14 @@
     "unknown": "Desconocido",
     "tryAgain": "Intentar de nuevo",
     "somethingWentWrong": "Algo salió mal",
-    "pleaseWait": "Por favor espera..."
+    "pleaseWait": "Por favor espera...",
+    "confirmDelete": "¿Estás seguro de que quieres eliminar esto?",
+    "deleting": "Eliminando...",
+    "status": "Estado",
+    "submitting": "Enviando...",
+    "updating": "Actualizando...",
+    "na": "N/D",
+    "charCount": "{{current}}/{{max}} caracteres"
   },
   "errors": {
     "invalidEmail": "Dirección de correo electrónico inválida",
@@ -2175,12 +2432,18 @@
     "loadFailed": "Error al cargar",
     "tokenNotProvided": "Token no proporcionado",
     "invalidOrExpiredToken": "Token inválido o expirado",
-    "localeNotSupported": "Este idioma no es compatible con el servidor"
+    "localeNotSupported": "Este idioma no es compatible con el servidor",
+    "invalidServerResponse": "Respuesta del servidor no válida"
   },
   "legal": {
     "couldNotLoadTerms": "No se pudieron cargar los términos.",
     "terms": "Términos",
-    "refresh": "Actualizar"
+    "refresh": "Actualizar",
+    "aria": {
+      "termsContent": "Contenido de los términos y condiciones"
+    },
+    "lastUpdatedLabel": "Última actualización",
+    "versionLabel": "Versión"
   },
   "bfi44": {
     "title": "Test de Personalidad BFI-44",
@@ -2227,6 +2490,8 @@
     "progress": "Progreso",
     "answeredCount": "{{answered}} de {{total}} preguntas respondidas",
     "questionnaireProgress": "Progreso del cuestionario",
+    "adminPanel": "Gestionar Equipo",
+    "goToAdminPanel": "Ir al panel de administración BFI-44",
     "results": {
       "visualOverview": "Vista General Visual",
       "visualSubtitle": "Tu personalidad en cinco dimensiones",
@@ -2425,7 +2690,8 @@
       "assigned_other": "✓ {{count}} personas asignadas",
       "assignErrorFallback": "Error al asignar empleados",
       "removedOne": "✓ 1 persona eliminada",
-      "removeErrorFallback": "Error al eliminar empleado"
+      "removeErrorFallback": "Error al eliminar empleado",
+      "assigned": "{{name}} ha sido asignado/a"
     }
   },
   "teamConfig": {
@@ -2774,7 +3040,8 @@
       "mediumHigh": "Medio-Alto",
       "medium": "Medio",
       "low": "Bajo",
-      "emerging": "Emergente"
+      "emerging": "Emergente",
+      "label": "Severidad"
     },
     "source": {
       "expertRules": "Reglas Expertas",
@@ -2952,7 +3219,8 @@
       "cancelSelection": "Cancelar Selección",
       "acceptRisks": "Aceptar {{count}} Riesgo",
       "acceptRisks_plural": "Aceptar {{count}} Riesgos",
-      "accepting": "Aceptando..."
+      "accepting": "Aceptando...",
+      "unnamedRisk": "Riesgo sin nombre"
     },
     "card": {
       "type": "Tipo:",
@@ -2971,7 +3239,8 @@
       "budgetOverrun": "Sobrecosto:",
       "qualityScore": "Puntuación de Calidad:",
       "days": "{{count}} día",
-      "days_plural": "{{count}} días"
+      "days_plural": "{{count}} días",
+      "unnamedRisk": "Riesgo sin nombre"
     }
   },
   "projectQuestionnaire": {
@@ -3047,9 +3316,7 @@
     },
     "aria": {
       "closeModal": "Cerrar diálogo de consentimiento de personalidad"
-    },
-    "adminPanel": "Gestionar Equipo",
-    "goToAdminPanel": "Ir al panel de administración BFI-44"
+    }
   },
   "bfi44Admin": {
     "title": "Gestión BFI-44",
@@ -3079,6 +3346,28 @@
       "email": "Email",
       "actions": "Acciones"
     }
+  },
+  "riskSummary": {
+    "source": {
+      "cbr": "CBR",
+      "expertRules": "Reglas de Expertos"
+    }
+  },
+  "riskFlowMap": {
+    "ariaVisualization": "Mapa de visualización de riesgos",
+    "ariaFlowDiagram": "Diagrama de flujo de riesgos interactivo",
+    "ariaFlowControls": "Controles de flujo",
+    "ariaMinimap": "Vista general del minimapa",
+    "ariaLegend": "Leyenda de severidad de riesgos",
+    "riskSeverity": "Severidad del Riesgo",
+    "critical": "Crítico",
+    "high": "Alto",
+    "medium": "Medio",
+    "low": "Bajo",
+    "tip": "Consejo:",
+    "clickNode": "Haz clic en cualquier nodo de riesgo para ver detalles",
+    "zoomHint": "Usa la rueda del ratón para zoom • Arrastra para mover",
+    "severity": "Severidad:",
+    "ariaCloseDetails": "Cerrar detalles del riesgo"
   }
 }
-

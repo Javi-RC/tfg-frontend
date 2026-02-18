@@ -118,18 +118,18 @@ const isValidWebsite = (rawValue) => {
 
     const name = normalizeTrimmed(form.name);
     if (name && name.length < 2) {
-      setError('Organization name must be at least 2 characters');
+      setError(t('organizations.overview.validation.nameTooShort'));
       return;
     }
 
     const email = normalizeTrimmed(form.contact.email);
     if (email && !isValidEmail(email)) {
-      setError('Contact email is not valid');
+      setError(t('organizations.overview.validation.invalidEmail'));
       return;
     }
 
     if (!isValidWebsite(form.contact.website)) {
-      setError('Website URL is not valid');
+      setError(t('organizations.overview.validation.invalidWebsite'));
       return;
     }
 
@@ -179,10 +179,10 @@ const isValidWebsite = (rawValue) => {
   return (
     <div style={styles.card}>
       <div style={styles.cardHeader}>
-        <h2 style={styles.cardTitle}>Organization Information</h2>
+        <h2 style={styles.cardTitle}>{t('organizations.overview.title')}</h2>
         {isAdmin && !editMode && (
           <PrimaryButton onClick={() => setEditMode(true)}>
-            Edit Organization
+            {t('organizations.overview.editOrganization')}
           </PrimaryButton>
         )}
       </div>
@@ -190,7 +190,7 @@ const isValidWebsite = (rawValue) => {
       {editMode ? (
         <form style={styles.formGrid} onSubmit={handleSave} noValidate>
           <div style={{ ...styles.formGroup, ...styles.fullWidth }}>
-            <label style={styles.formLabel}>Organization Name</label>
+            <label style={styles.formLabel}>{t('organizations.overview.organizationName')}</label>
             <input
               type="text"
               value={form.name}
@@ -201,7 +201,7 @@ const isValidWebsite = (rawValue) => {
           </div>
 
           <div style={{ ...styles.formGroup, ...styles.fullWidth }}>
-            <label style={styles.formLabel}>Description</label>
+            <label style={styles.formLabel}>{t('organizations.overview.description')}</label>
             <textarea
               value={form.description}
               onChange={(event) => updateForm('description', event.target.value)}
@@ -211,7 +211,7 @@ const isValidWebsite = (rawValue) => {
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.formLabel}>Tax ID</label>
+            <label style={styles.formLabel}>{t('organizations.overview.taxId')}</label>
             <input
               type="text"
               value={form.taxId}
@@ -221,7 +221,7 @@ const isValidWebsite = (rawValue) => {
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.formLabel}>Email</label>
+            <label style={styles.formLabel}>{t('organizations.overview.email')}</label>
             <input
               type="email"
               value={form.contact.email}
@@ -231,7 +231,7 @@ const isValidWebsite = (rawValue) => {
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.formLabel}>Phone</label>
+            <label style={styles.formLabel}>{t('organizations.overview.phone')}</label>
             <input
               type="tel"
               value={form.contact.phone}
@@ -241,19 +241,19 @@ const isValidWebsite = (rawValue) => {
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.formLabel}>Website</label>
+            <label style={styles.formLabel}>{t('organizations.overview.website')}</label>
             <input
               type="text"
               inputMode="url"
               value={form.contact.website}
               onChange={(event) => updateForm('contact.website', event.target.value)}
               style={styles.formInput}
-              placeholder="https://example.com"
+              placeholder={t('organizations.overview.websitePlaceholder')}
             />
           </div>
 
           <div style={{ ...styles.formGroup, ...styles.fullWidth }}>
-            <label style={styles.formLabel}>Street Address</label>
+            <label style={styles.formLabel}>{t('organizations.overview.streetAddress')}</label>
             <input
               type="text"
               value={form.address.street}
@@ -263,7 +263,7 @@ const isValidWebsite = (rawValue) => {
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.formLabel}>City</label>
+            <label style={styles.formLabel}>{t('organizations.overview.city')}</label>
             <input
               type="text"
               value={form.address.city}
@@ -273,7 +273,7 @@ const isValidWebsite = (rawValue) => {
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.formLabel}>State/Province</label>
+            <label style={styles.formLabel}>{t('organizations.overview.stateProvince')}</label>
             <input
               type="text"
               value={form.address.state}
@@ -283,7 +283,7 @@ const isValidWebsite = (rawValue) => {
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.formLabel}>Postal Code</label>
+            <label style={styles.formLabel}>{t('organizations.overview.postalCode')}</label>
             <input
               type="text"
               value={form.address.postalCode}
@@ -293,7 +293,7 @@ const isValidWebsite = (rawValue) => {
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.formLabel}>Country</label>
+            <label style={styles.formLabel}>{t('organizations.overview.country')}</label>
             <input
               type="text"
               value={form.address.country}
@@ -303,7 +303,7 @@ const isValidWebsite = (rawValue) => {
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.formLabel}>Industry</label>
+            <label style={styles.formLabel}>{t('organizations.overview.industry')}</label>
             <select
               value={form.industry}
               onChange={(event) => updateForm('industry', event.target.value)}
@@ -318,7 +318,7 @@ const isValidWebsite = (rawValue) => {
           </div>
 
           <div style={styles.formGroup}>
-            <label style={styles.formLabel}>Company Size</label>
+            <label style={styles.formLabel}>{t('organizations.overview.companySize')}</label>
             <select
               value={form.size}
               onChange={(event) => updateForm('size', event.target.value)}
@@ -336,10 +336,10 @@ const isValidWebsite = (rawValue) => {
 
           <div style={{ ...styles.formActions, ...styles.fullWidth }}>
             <SecondaryButton type="button" onClick={handleCancel}>
-              Cancel
+              {t('organizations.overview.cancel')}
             </SecondaryButton>
             <PrimaryButton type="submit" disabled={saving}>
-              {saving ? 'Saving...' : 'Save Changes'}
+              {saving ? t('organizations.overview.saving') : t('organizations.overview.saveChanges')}
             </PrimaryButton>
           </div>
         </form>
@@ -347,22 +347,22 @@ const isValidWebsite = (rawValue) => {
         <>
           <div style={styles.infoGrid}>
             <div style={styles.infoItem}>
-              <div style={styles.infoLabel}>Tax ID</div>
+              <div style={styles.infoLabel}>{t('organizations.overview.taxId')}</div>
               <div style={styles.infoValue}>{organization.taxId || emptyValue}</div>
             </div>
 
             <div style={styles.infoItem}>
-              <div style={styles.infoLabel}>Email</div>
+              <div style={styles.infoLabel}>{t('organizations.overview.email')}</div>
               <div style={styles.infoValue}>{organization.contact?.email || emptyValue}</div>
             </div>
 
             <div style={styles.infoItem}>
-              <div style={styles.infoLabel}>Phone</div>
+              <div style={styles.infoLabel}>{t('organizations.overview.phone')}</div>
               <div style={styles.infoValue}>{organization.contact?.phone || emptyValue}</div>
             </div>
 
             <div style={styles.infoItem}>
-              <div style={styles.infoLabel}>Website</div>
+              <div style={styles.infoLabel}>{t('organizations.overview.website')}</div>
               <div style={styles.infoValue}>
                 {organization.contact?.website ? (
                   <a
@@ -380,36 +380,36 @@ const isValidWebsite = (rawValue) => {
             </div>
 
             <div style={styles.infoItem}>
-              <div style={styles.infoLabel}>Industry</div>
+              <div style={styles.infoLabel}>{t('organizations.overview.industry')}</div>
               <div style={styles.infoValue}>{organization.industry || emptyValue}</div>
             </div>
 
             <div style={styles.infoItem}>
-              <div style={styles.infoLabel}>Company Size</div>
+              <div style={styles.infoLabel}>{t('organizations.overview.companySize')}</div>
               <div style={styles.infoValue}>{organization.size || emptyValue}</div>
             </div>
           </div>
 
-          <h3 style={styles.sectionTitle}>Address</h3>
+          <h3 style={styles.sectionTitle}>{t('organizations.overview.address')}</h3>
           <div style={styles.infoGrid}>
             <div style={styles.infoItem}>
-              <div style={styles.infoLabel}>Street</div>
+              <div style={styles.infoLabel}>{t('organizations.overview.street')}</div>
               <div style={styles.infoValue}>{organization.address?.street || emptyValue}</div>
             </div>
             <div style={styles.infoItem}>
-              <div style={styles.infoLabel}>City</div>
+              <div style={styles.infoLabel}>{t('organizations.overview.city')}</div>
               <div style={styles.infoValue}>{organization.address?.city || emptyValue}</div>
             </div>
             <div style={styles.infoItem}>
-              <div style={styles.infoLabel}>State</div>
+              <div style={styles.infoLabel}>{t('organizations.overview.state')}</div>
               <div style={styles.infoValue}>{organization.address?.state || emptyValue}</div>
             </div>
             <div style={styles.infoItem}>
-              <div style={styles.infoLabel}>Postal Code</div>
+              <div style={styles.infoLabel}>{t('organizations.overview.postalCode')}</div>
               <div style={styles.infoValue}>{organization.address?.postalCode || emptyValue}</div>
             </div>
             <div style={styles.infoItem}>
-              <div style={styles.infoLabel}>Country</div>
+              <div style={styles.infoLabel}>{t('organizations.overview.country')}</div>
               <div style={styles.infoValue}>{organization.address?.country || emptyValue}</div>
             </div>
           </div>

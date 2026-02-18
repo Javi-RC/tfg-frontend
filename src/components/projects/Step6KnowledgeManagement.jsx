@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle, Lightbulb } from 'lucide-react';
 import { KNOWLEDGE_MANAGEMENT_SYSTEMS } from '../../types/projectTypes';
 
@@ -7,6 +8,8 @@ import { KNOWLEDGE_MANAGEMENT_SYSTEMS } from '../../types/projectTypes';
  * NEW CRITICAL STEP - Manages knowledge sharing and documentation
  */
 export default function Step6KnowledgeManagement({ formData, onChange }) {
+  const { t } = useTranslation();
+
   const hasTools = formData.knowledgeManagementSystem || (formData.knowledgeManagementTools?.length > 0);
   const showWarning = !hasTools;
 
@@ -27,9 +30,9 @@ export default function Step6KnowledgeManagement({ formData, onChange }) {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.sectionTitle}>Knowledge Management</h2>
+      <h2 style={styles.sectionTitle}>{t('projects.steps.step6.knowledgeTitle')}</h2>
       <p style={styles.description}>
-        Configure how knowledge and documentation will be managed across the team
+        {t('projects.steps.step6.knowledgeDescription')}
       </p>
 
       {/* Warning Alert */}
@@ -37,15 +40,15 @@ export default function Step6KnowledgeManagement({ formData, onChange }) {
         <div style={styles.warningBox}>
           <AlertTriangle size={20} color="#856404" style={{ flexShrink: 0 }} />
           <div>
-            <strong>Risk: No Knowledge Management Tools</strong>
+            <strong>{t('projects.steps.step6.noToolsWarning')}</strong>
             <p>
-              Without proper knowledge management, your team may face:
+              {t('projects.steps.step6.noToolsWarningDesc')}
             </p>
             <ul style={styles.warningList}>
-              <li>Information silos and communication gaps</li>
-              <li>Repeated work and lost tribal knowledge</li>
-              <li>Difficulty onboarding new team members</li>
-              <li>Higher risk of project delays</li>
+              <li>{t('projects.steps.step6.risk1')}</li>
+              <li>{t('projects.steps.step6.risk2')}</li>
+              <li>{t('projects.steps.step6.risk3')}</li>
+              <li>{t('projects.steps.step6.risk4')}</li>
             </ul>
           </div>
         </div>
@@ -53,15 +56,15 @@ export default function Step6KnowledgeManagement({ formData, onChange }) {
 
       {/* Knowledge Management System */}
       <div style={styles.formGroup}>
-        <label style={styles.label} htmlFor="knowledgeManagementSystem">Knowledge Management System</label>
+        <label style={styles.label} htmlFor="knowledgeManagementSystem">{t('projects.steps.step6.knowledgeSystem')}</label>
         <select
           id="knowledgeManagementSystem"
           value={formData.knowledgeManagementSystem || ''}
           onChange={(e) => onChange({ knowledgeManagementSystem: e.target.value })}
           style={styles.select}
-          aria-label="Knowledge management system"
+          aria-label={t('projects.steps.step6.knowledgeSystemAria')}
         >
-          <option value="">Select a system...</option>
+          <option value="">{t('projects.steps.step6.selectSystem')}</option>
           {Object.entries(KNOWLEDGE_MANAGEMENT_SYSTEMS).map(([key, value]) => (
             <option key={key} value={value}>{value}</option>
           ))}
@@ -70,26 +73,26 @@ export default function Step6KnowledgeManagement({ formData, onChange }) {
 
       <div style={styles.formGroup}>
         <label style={styles.label} htmlFor="knowledgeManagementTools">
-          Knowledge Management Tools
-          <span style={styles.hint}> (comma-separated)</span>
+          {t('projects.steps.step6.tools')}
+          <span style={styles.hint}> {t('projects.steps.step6.toolsHint')}</span>
         </label>
         <input
           type="text"
           id="knowledgeManagementTools"
           value={(formData.knowledgeManagementTools || []).join(', ')}
           onChange={(e) => handleKnowledgeToolsChange(e.target.value)}
-          placeholder="e.g., Confluence, Notion, SharePoint"
+          placeholder={t('projects.steps.step6.toolsPlaceholder')}
           style={styles.input}
-          aria-label="Knowledge management tools"
+          aria-label={t('projects.steps.step6.toolsAria')}
         />
         <small style={styles.helpText}>
-          Current tools: {formData.knowledgeManagementTools?.length || 0}
+          {t('projects.steps.step6.currentTools', { tools: formData.knowledgeManagementTools?.length || 0 })}
         </small>
       </div>
 
       {/* Documentation Processes */}
       <div style={styles.formGroup}>
-        <label style={styles.label}>Documentation Processes</label>
+        <label style={styles.label}>{t('projects.steps.step6.documentationProcesses')}</label>
         <div style={styles.checkboxGroup}>
           <label style={styles.checkboxLabel} htmlFor="km-doc-standardization">
             <input
@@ -99,7 +102,7 @@ export default function Step6KnowledgeManagement({ formData, onChange }) {
               onChange={() => handleProcessToggle('hasStandardization')}
               style={styles.checkbox}
             />
-            Has Documentation Standardization
+            {t('projects.steps.step6.hasStandardization')}
           </label>
 
           <label style={styles.checkboxLabel} htmlFor="km-doc-templates">
@@ -110,7 +113,7 @@ export default function Step6KnowledgeManagement({ formData, onChange }) {
               onChange={() => handleProcessToggle('templates')}
               style={styles.checkbox}
             />
-            Uses Templates
+            {t('projects.steps.step6.usesTemplates')}
           </label>
 
           <label style={styles.checkboxLabel} htmlFor="km-doc-review">
@@ -121,11 +124,11 @@ export default function Step6KnowledgeManagement({ formData, onChange }) {
               onChange={() => handleProcessToggle('reviewProcess')}
               style={styles.checkbox}
             />
-            Has Review Process
+            {t('projects.steps.step6.hasReviewProcess')}
           </label>
         </div>
         <small style={styles.helpText}>
-          Select all that apply to improve documentation quality
+          {t('projects.steps.step6.selectAllApply')}
         </small>
       </div>
 
@@ -134,15 +137,15 @@ export default function Step6KnowledgeManagement({ formData, onChange }) {
         <div style={styles.tipBox}>
           <span style={styles.tipIcon}>💡</span>
           <div>
-            <strong>Best Practice</strong>
+            <strong>{t('projects.steps.step6.bestPractice')}</strong>
             <p>
-              Effective knowledge management includes:
+              {t('projects.steps.step6.bestPracticeDesc')}
             </p>
             <ul style={styles.tipList}>
-              <li>Regular documentation updates</li>
-              <li>Clear naming conventions</li>
-              <li>Searchable knowledge base</li>
-              <li>Version control for documents</li>
+              <li>{t('projects.steps.step6.bp1')}</li>
+              <li>{t('projects.steps.step6.bp2')}</li>
+              <li>{t('projects.steps.step6.bp3')}</li>
+              <li>{t('projects.steps.step6.bp4')}</li>
             </ul>
           </div>
         </div>

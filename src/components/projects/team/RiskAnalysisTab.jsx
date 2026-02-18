@@ -185,7 +185,7 @@ export default function RiskAnalysisTab({
   };
 
   const exportToCSV = (risks) => {
-    const headers = ['Name', 'Severity', 'Type', 'Description', 'Impact', 'Mitigation'];
+    const headers = [t('projects.riskAnalysisTab.csvName', 'Name'), t('projects.riskAnalysisTab.csvSeverity', 'Severity'), t('projects.riskAnalysisTab.csvType', 'Type'), t('projects.riskAnalysisTab.csvDescription', 'Description'), t('projects.riskAnalysisTab.impact'), t('projects.riskAnalysisTab.csvMitigation', 'Mitigation')];
     const rows = risks.map(risk => [
       risk.name || risk.title || 'Unnamed',
       risk.severity || 'N/A',
@@ -366,8 +366,8 @@ export default function RiskAnalysisTab({
           <div style={styles.flowMapDescription} role="note">
             <AlertTriangle size={18} color="#F59E0B" aria-hidden="true" />
             <span>
-              Interactive risk visualization - Explore relationships between risks and their severity. 
-              {risks.length} risk{risks.length !== 1 ? 's' : ''} visualized. Use mouse wheel to zoom, click and drag to pan.
+              {t('projects.riskAnalysisTab.interactiveVisualization')}{' '}
+              {t('projects.riskAnalysisTab.risksVisualized', { count: risks.length })}
             </span>
           </div>
           <div style={styles.flowMapContainer} className="flowMapContainer">
@@ -403,7 +403,7 @@ export default function RiskAnalysisTab({
           {/* Results Count */}
           {(searchTerm || selectedSeverities.length > 0 || selectedTypes.length > 0) && (
             <div style={styles.resultsCount} role="status" aria-live="polite">
-              Showing {filteredRisks.length} of {risks.length} risk{risks.length !== 1 ? 's' : ''}
+              {t('projects.riskAnalysisTab.showingRisks', { n: filteredRisks.length, m: risks.length })}
             </div>
           )}
 
@@ -436,7 +436,7 @@ export default function RiskAnalysisTab({
             />
           ) : (
             <div style={styles.noResults} role="status" className="riskHeader">
-              <p>No risks match your current filters. Try adjusting your search or filters.</p>
+              <p>{t('projects.riskAnalysisTab.noRisksMatch')}</p>
             </div>
           )}
 
@@ -445,7 +445,7 @@ export default function RiskAnalysisTab({
             <div style={styles.recommendationsSection}>
               <h3 style={{ ...styles.sectionTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Lightbulb size={20} aria-hidden="true" />
-                Recommendations
+                {t('projects.riskAnalysisTab.recommendations')}
               </h3>
               <div style={styles.recommendationsList} role="list">
                 {riskAnalysis.recommendations.map((rec, idx) => (
@@ -467,31 +467,32 @@ export default function RiskAnalysisTab({
  * RiskCard - Individual risk display component with improved accessibility
  */
 function RiskCard({ risk }) {
+  const { t } = useTranslation();
 
   const severityConfig = {
     critical: { 
       color: '#dc3545', 
       icon: <Circle size={12} fill="#dc3545" color="#dc3545" aria-hidden="true" />, 
-      label: 'Critical',
-      description: 'Critical severity - Requires immediate attention'
+      label: t('risk.severity.critical'),
+      description: t('projects.riskAnalysisTab.criticalDesc')
     },
     high: { 
       color: '#fd7e14', 
       icon: <Circle size={12} fill="#fd7e14" color="#fd7e14" aria-hidden="true" />, 
-      label: 'High',
-      description: 'High severity - Needs urgent attention'
+      label: t('risk.severity.high'),
+      description: t('projects.riskAnalysisTab.highDesc')
     },
     medium: { 
       color: '#ffc107', 
       icon: <Circle size={12} fill="#ffc107" color="#ffc107" aria-hidden="true" />, 
-      label: 'Medium',
-      description: 'Medium severity - Should be monitored'
+      label: t('risk.severity.medium'),
+      description: t('projects.riskAnalysisTab.mediumDesc')
     },
     low: { 
       color: '#28a745', 
       icon: <Circle size={12} fill="#28a745" color="#28a745" aria-hidden="true" />, 
-      label: 'Low',
-      description: 'Low severity - Informational'
+      label: t('risk.severity.low'),
+      description: t('projects.riskAnalysisTab.lowDesc')
     },
   };
 
@@ -504,14 +505,14 @@ function RiskCard({ risk }) {
         borderLeftColor: config.color
       }}
       role="listitem"
-      aria-label={`${config.label} severity risk: ${risk.name || risk.title || 'Unnamed Risk'}`}
+      aria-label={`${config.label} severity risk: ${risk.name || risk.title || t('projects.riskAnalysisTab.unnamedRisk', 'Unnamed Risk')}`}
       onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.12)'}
       onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'none'}
     >
       <div style={styles.riskHeader}>
         <div style={styles.riskTitle}>
           <span style={styles.riskIcon}>{config.icon}</span>
-          {risk.name || risk.title || 'Unnamed Risk'}
+          {risk.name || risk.title || t('projects.riskAnalysisTab.unnamedRisk', 'Unnamed Risk')}
         </div>
         <Tooltip content={config.description}>
           <span 
@@ -524,13 +525,13 @@ function RiskCard({ risk }) {
       </div>
 
       <p style={styles.riskDescription}>
-        {risk.description || 'No description available'}
+        {risk.description || t('projects.riskAnalysisTab.noDescription')}
       </p>
 
       {/* Impact */}
       {risk.impact && (
         <div style={styles.riskDetail}>
-          <span style={styles.detailLabel}>Impact:</span>
+          <span style={styles.detailLabel}>{t('projects.riskAnalysisTab.impact')}</span>
           <span style={styles.detailValue}>{risk.impact}</span>
         </div>
       )}
@@ -541,7 +542,7 @@ function RiskCard({ risk }) {
           <div style={styles.mitigationLabel}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
               <Shield size={16} aria-hidden="true" />
-              Mitigation Strategy
+              {t('projects.riskAnalysisTab.mitigationStrategy')}
             </span>
           </div>
           <p style={styles.mitigationText}>{risk.mitigation}</p>
@@ -551,7 +552,7 @@ function RiskCard({ risk }) {
       {/* Related Factors */}
       {risk.factors && risk.factors.length > 0 && (
         <div style={styles.factorsSection}>
-          <span style={styles.factorsLabel}>Related Factors:</span>
+          <span style={styles.factorsLabel}>{t('projects.riskAnalysisTab.relatedFactors')}</span>
           <div style={styles.factorsList} role="list">
             {risk.factors.map((factor, idx) => (
               <span key={idx} style={styles.factorChip} role="listitem">

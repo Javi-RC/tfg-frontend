@@ -153,23 +153,23 @@ export default function CreateOrganizationModal({
               style={styles.input}
             >
               <option value="">{t('organization.create.selectIndustry')}</option>
-              <option value="software_development">Software development</option>
-              <option value="web_development">Web development</option>
-              <option value="mobile_development">Mobile development</option>
-              <option value="devops_cloud">DevOps y Cloud</option>
-              <option value="data_science">Data science</option>
-              <option value="cybersecurity">Cybersecurity</option>
-              <option value="ai_machine_learning">AI & Machine Learning</option>
-              <option value="blockchain">Blockchain</option>
-              <option value="game_development">Game development</option>
-              <option value="qa_testing">QA & Testing</option>
-              <option value="consulting">Technology consulting</option>
-              <option value="fintech">Financial technology</option>
-              <option value="healthtech">Health technology</option>
-              <option value="edtech">Education technology</option>
-              <option value="ecommerce">E-commerce</option>
-              <option value="saas">Software as a Service</option>
-              <option value="other">Other</option>
+              <option value="software_development">{t('organization.industries.software_development')}</option>
+              <option value="web_development">{t('organization.industries.web_development')}</option>
+              <option value="mobile_development">{t('organization.industries.mobile_development')}</option>
+              <option value="devops_cloud">{t('organization.industries.devops_cloud')}</option>
+              <option value="data_science">{t('organization.industries.data_science')}</option>
+              <option value="cybersecurity">{t('organization.industries.cybersecurity')}</option>
+              <option value="ai_machine_learning">{t('organization.industries.ai_machine_learning')}</option>
+              <option value="blockchain">{t('organization.industries.blockchain')}</option>
+              <option value="game_development">{t('organization.industries.game_development')}</option>
+              <option value="qa_testing">{t('organization.industries.qa_testing')}</option>
+              <option value="consulting">{t('organization.industries.consulting')}</option>
+              <option value="fintech">{t('organization.industries.fintech')}</option>
+              <option value="healthtech">{t('organization.industries.healthtech')}</option>
+              <option value="edtech">{t('organization.industries.edtech')}</option>
+              <option value="ecommerce">{t('organization.industries.ecommerce')}</option>
+              <option value="saas">{t('organization.industries.saas')}</option>
+              <option value="other">{t('organization.industries.other')}</option>
             </select>
           </div>
 

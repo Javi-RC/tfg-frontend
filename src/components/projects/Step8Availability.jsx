@@ -40,31 +40,30 @@ export default function Step8Availability({ formData, onChange }) {
     <div>
       <h2 style={{...styles.stepTitle, display: 'flex', alignItems: 'center', gap: '8px'}}>
         <Clock size={24} />
-        Availability Requirements
+        {t('projects.steps.step8.availabilityTitle')}
       </h2>
       <p style={styles.stepDescription}>
-        Define time commitment and availability needs for team members
+        {t('projects.steps.step8.availabilityDescription')}
       </p>
 
       <FormNumber
-        label="Weekly Hours per Member"
+        label={t('projects.steps.step8.weeklyHours')}
         name="weeklyHoursPerMember"
         value={weeklyHours}
         onChange={handleChange}
         required
         min={1}
         max={168}
-        helperText="Standard full-time is 40 hours per week"
+        helperText={t('projects.steps.step8.standardFullTime')}
       />
 
       {isOvertime && (
         <div style={styles.warningBox}>
           <AlertTriangle size={20} color="#856404" style={{ flexShrink: 0 }} />
           <div>
-            <strong>Overtime Detected</strong>
+            <strong>{t('projects.steps.step8.overtimeDetected')}</strong>
             <p>
-              {weeklyHours} hours/week exceeds standard full-time. This may impact team 
-              morale and increase burnout risk.
+              {t('projects.steps.step8.overtimeDesc', { hours: weeklyHours })}
             </p>
           </div>
         </div>
@@ -74,10 +73,9 @@ export default function Step8Availability({ formData, onChange }) {
         <div style={styles.infoBox}>
           <AlertCircle size={20} color="#004085" style={{ flexShrink: 0 }} />
           <div>
-            <strong>Part-Time Commitment</strong>
+            <strong>{t('projects.steps.step8.partTimeTitle')}</strong>
             <p>
-              {weeklyHours} hours/week is part-time. Ensure project timeline accounts 
-              for reduced availability.
+              {t('projects.steps.step8.partTimeDesc', { hours: weeklyHours })}
             </p>
           </div>
         </div>
@@ -100,10 +98,9 @@ export default function Step8Availability({ formData, onChange }) {
         <div style={styles.alertBox}>
           <AlertCircle size={20} color="#721c24" style={{ flexShrink: 0 }} />
           <div>
-            <strong>High Risk: After-Hours Requirements</strong>
+            <strong>{t('projects.steps.step8.afterHoursWarning')}</strong>
             <p>
-              Regular after-hours work significantly increases team burnout risk and may 
-              reduce productivity. Consider restructuring work to fit within standard hours.
+              {t('projects.steps.step8.afterHoursWarningDesc')}
             </p>
           </div>
         </div>
@@ -112,12 +109,12 @@ export default function Step8Availability({ formData, onChange }) {
       <div style={styles.section}>
         <div style={styles.sectionHeader}>
           <div>
-            <h3 style={styles.sectionTitle}>High Load Periods</h3>
+            <h3 style={styles.sectionTitle}>{t('projects.steps.step8.highLoadPeriods')}</h3>
             <p style={styles.sectionSubtitle}>
-              Define periods requiring extra effort or extended hours
+              {t('projects.steps.step8.highLoadDescription')}
             </p>
           </div>
-          <PrimaryButton onClick={addPeriod}>+ Add Period</PrimaryButton>
+          <PrimaryButton onClick={addPeriod}>{t('projects.steps.step8.addPeriod')}</PrimaryButton>
         </div>
 
         {formData.highLoadPeriods && formData.highLoadPeriods.length > 0 ? (
@@ -127,28 +124,28 @@ export default function Step8Availability({ formData, onChange }) {
                 <div style={styles.periodHeader}>
                   <span style={{ ...styles.periodNumber, display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                     <Calendar size={16} />
-                    Period {index + 1}
+                    {t('projects.steps.step8.period', { index: index + 1 })}
                   </span>
                   <button
                     style={styles.removeButton}
                     onClick={() => removePeriod(index)}
                   >
-                    Remove
+                    {t('projects.steps.step8.remove')}
                   </button>
                 </div>
 
                 <FormInput
-                  label="Description"
+                  label={t('projects.steps.step8.periodDescription')}
                   name={`periodDescription-${index}`}
                   value={period.description || ''}
                   onChange={(e) => handlePeriodChange(index, 'description', e.target.value)}
-                  placeholder="e.g., Product Launch Sprint, Year-End Release"
+                  placeholder={t('projects.steps.step8.periodDescPlaceholder')}
                   required
                 />
 
                 <div style={styles.row}>
                   <FormInput
-                    label="Start Date"
+                    label={t('projects.steps.step8.startDate')}
                     name={`periodStart-${index}`}
                     type="date"
                     value={period.startDate || ''}
@@ -157,7 +154,7 @@ export default function Step8Availability({ formData, onChange }) {
                   />
 
                   <FormInput
-                    label="End Date"
+                    label={t('projects.steps.step8.endDate')}
                     name={`periodEnd-${index}`}
                     type="date"
                     value={period.endDate || ''}
@@ -168,7 +165,7 @@ export default function Step8Availability({ formData, onChange }) {
 
                 {period.startDate && period.endDate && (
                   <div style={styles.periodDuration}>
-                    Duration: {calculateDays(period.startDate, period.endDate)} days
+                    {t('projects.steps.step8.duration', { days: calculateDays(period.startDate, period.endDate) })}
                   </div>
                 )}
               </div>
@@ -178,10 +175,9 @@ export default function Step8Availability({ formData, onChange }) {
               <div style={styles.warningBox}>
                 <span style={styles.warningIcon}><AlertTriangle size={20} color="#f59e0b" /></span>
                 <div>
-                  <strong>Multiple High-Load Periods</strong>
+                  <strong>{t('projects.steps.step8.multipleHighLoad')}</strong>
                   <p>
-                    {formData.highLoadPeriods.length} high-load periods detected. Ensure adequate 
-                    recovery time between periods to prevent team burnout.
+                    {t('projects.steps.step8.multipleHighLoadDesc', { count: formData.highLoadPeriods.length })}
                   </p>
                 </div>
               </div>
@@ -190,9 +186,9 @@ export default function Step8Availability({ formData, onChange }) {
         ) : (
           <div style={styles.emptyState}>
             <span style={styles.emptyIcon}>📅</span>
-            <p style={styles.emptyText}>No high-load periods defined</p>
+            <p style={styles.emptyText}>{t('projects.steps.step8.noHighLoad')}</p>
             <p style={styles.emptySubtext}>
-              Add periods where the team needs to work extra hours or with higher intensity
+              {t('projects.steps.step8.noHighLoadHint')}
             </p>
           </div>
         )}

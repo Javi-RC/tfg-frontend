@@ -1,4 +1,5 @@
 import React, { useMemo, useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   ReactFlow, 
   Background, 
@@ -23,6 +24,7 @@ export default function RiskFlowMap({
   projectName = 'Project',
   onRiskClick = null
 }) {
+  const { t } = useTranslation();
   const [selectedRisk, setSelectedRisk] = useState(null);
 
   // Define custom node types
@@ -94,7 +96,7 @@ export default function RiskFlowMap({
     <div 
       style={{ width: '100%', height: '100%', position: 'relative' }}
       role="application"
-      aria-label="Risk visualization map"
+      aria-label={t('riskFlowMap.ariaVisualization')}
     >
       <ReactFlow
         nodes={nodes}
@@ -121,12 +123,12 @@ export default function RiskFlowMap({
         nodesDraggable={true}
         nodesConnectable={false}
         elementsSelectable={true}
-        aria-label="Interactive risk flow diagram"
+        aria-label={t('riskFlowMap.ariaFlowDiagram')}
       >
         <Background color="#E5E7EB" gap={20} size={1} />
         <Controls 
           showInteractive={false}
-          aria-label="Flow controls"
+          aria-label={t('riskFlowMap.ariaFlowControls')}
         />
         <MiniMap 
           nodeColor={(node) => {
@@ -146,7 +148,7 @@ export default function RiskFlowMap({
             border: '1px solid #E5E7EB',
             borderRadius: '8px'
           }}
-          aria-label="Minimap overview"
+          aria-label={t('riskFlowMap.ariaMinimap')}
         />
       </ReactFlow>
 
@@ -154,35 +156,35 @@ export default function RiskFlowMap({
       <div 
         style={styles.legend}
         role="complementary"
-        aria-label="Risk severity legend"
+        aria-label={t('riskFlowMap.ariaLegend')}
       >
-        <div style={styles.legendTitle}>Risk Severity</div>
+        <div style={styles.legendTitle}>{t('riskFlowMap.riskSeverity')}</div>
         <div style={styles.legendContent}>
           <div style={styles.legendItem}>
             <span style={{ ...styles.legendDot, backgroundColor: '#DC2626' }} aria-hidden="true" />
             <div style={styles.legendText}>
-              <strong>Critical</strong>
+              <strong>{t('riskFlowMap.critical')}</strong>
               <span style={styles.legendCount}>{stats.bySeverity.critical}</span>
             </div>
           </div>
           <div style={styles.legendItem}>
             <span style={{ ...styles.legendDot, backgroundColor: '#F59E0B' }} aria-hidden="true" />
             <div style={styles.legendText}>
-              <strong>High</strong>
+              <strong>{t('riskFlowMap.high')}</strong>
               <span style={styles.legendCount}>{stats.bySeverity.high}</span>
             </div>
           </div>
           <div style={styles.legendItem}>
             <span style={{ ...styles.legendDot, backgroundColor: '#EAB308' }} aria-hidden="true" />
             <div style={styles.legendText}>
-              <strong>Medium</strong>
+              <strong>{t('riskFlowMap.medium')}</strong>
               <span style={styles.legendCount}>{stats.bySeverity.medium}</span>
             </div>
           </div>
           <div style={styles.legendItem}>
             <span style={{ ...styles.legendDot, backgroundColor: '#10B981' }} aria-hidden="true" />
             <div style={styles.legendText}>
-              <strong>Low</strong>
+              <strong>{t('riskFlowMap.low')}</strong>
               <span style={styles.legendCount}>{stats.bySeverity.low}</span>
             </div>
           </div>
@@ -191,9 +193,9 @@ export default function RiskFlowMap({
         <div style={styles.legendDivider} />
         
         <div style={styles.legendHint}>
-          💡 <strong>Tip:</strong> Click on any risk node for details
+          💡 <strong>{t('riskFlowMap.tip')}</strong> {t('riskFlowMap.clickNode')}
           <br />
-          <span style={{ fontSize: '11px' }}>Use mouse wheel to zoom • Drag to pan</span>
+          <span style={{ fontSize: '11px' }}>{t('riskFlowMap.zoomHint')}</span>
         </div>
       </div>
 
@@ -215,7 +217,7 @@ export default function RiskFlowMap({
               </div>
               <div style={styles.detailMeta}>
                 <span style={styles.detailMetaItem}>
-                  <strong>Severity:</strong>{' '}
+                  <strong>{t('riskFlowMap.severity')}</strong>{' '}
                   <span style={{ 
                     ...styles.severityBadge,
                     background: selectedRisk.severity === 'critical' ? '#FEE2E2' :
@@ -235,7 +237,7 @@ export default function RiskFlowMap({
                 setSelectedRisk(null);
               }}
               style={styles.closeButton}
-              aria-label="Close risk details"
+              aria-label={t('riskFlowMap.ariaCloseDetails')}
             >
               ✕
             </button>

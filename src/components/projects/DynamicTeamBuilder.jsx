@@ -415,7 +415,7 @@ export default function DynamicTeamBuilder({
                           </div>
 
                           <div style={styles.employeeScore}>
-                            Score: {emp.score.toFixed(2)}
+                            {t('projects.teamBuilder.score', { score: emp.score.toFixed(2) })}
                           </div>
 
                           <input
@@ -548,13 +548,13 @@ export default function DynamicTeamBuilder({
 
                             {risk.category && (
                               <div style={styles.riskDetail}>
-                                <span style={styles.detailLabel}>Category:</span>
+                                <span style={styles.detailLabel}>{t('projects.teamBuilder.category')}</span>
                                 <span style={styles.detailValue}>{risk.category}</span>
                               </div>
                             )}
 
                             <div style={styles.riskDetail}>
-                              <span style={styles.detailLabel}>Source:</span>
+                              <span style={styles.detailLabel}>{t('projects.teamBuilder.source')}</span>
                               <span style={styles.detailValue}>{sourceLabel}</span>
                             </div>
 
@@ -562,7 +562,7 @@ export default function DynamicTeamBuilder({
                               <div style={styles.mitigationBox}>
                                 <div style={styles.mitigationLabel}>
                                   <Lightbulb size={16} aria-hidden="true" />
-                                  Mitigation Strategy
+                                  {t('projects.teamBuilder.mitigationStrategy')}
                                 </div>
                                 <p style={styles.mitigationText}>{risk.recommendations[0]}</p>
                               </div>
@@ -578,16 +578,16 @@ export default function DynamicTeamBuilder({
                     <div style={styles.whatIfSection}>
                       <h4 style={{ ...styles.whatIfTitle, display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <Lightbulb size={20} />
-                        What If...
+                        {t('projects.teamBuilder.whatIf')}
                       </h4>
                       <p style={styles.whatIfSubtitle}>
-                        See how adding these candidates would impact risks
+                        {t('projects.teamBuilder.whatIfSubtitle')}
                       </p>
 
                       {scenariosLoading ? (
                         <div style={styles.miniLoadingState}>
                           <div style={styles.miniSpinner}></div>
-                          <span>Calculating scenarios...</span>
+                          <span>{t('projects.teamBuilder.calculatingScenarios')}</span>
                         </div>
                       ) : (
                         <div style={styles.scenariosList}>
@@ -595,11 +595,11 @@ export default function DynamicTeamBuilder({
                             <div key={scenario.employee.userId} style={styles.scenarioCard}>
                               <div style={styles.scenarioHeader}>
                                 <strong style={styles.scenarioName}>
-                                  If you add: {scenario.employee.name}
+                                  {t('projects.teamBuilder.ifYouAdd', { name: scenario.employee.name })}
                                 </strong>
                                 {scenario.employee.matchScore && (
                                   <span style={styles.scenarioMatch}>
-                                    Match: {(scenario.employee.matchScore * 100).toFixed(0)}%
+                                    {t('projects.teamBuilder.match', { score: (scenario.employee.matchScore * 100).toFixed(0) })}
                                   </span>
                                 )}
                               </div>
@@ -607,14 +607,14 @@ export default function DynamicTeamBuilder({
                               <div style={styles.scenarioMetrics}>
                                 {/* Risk Level Change */}
                                 <div style={styles.scenarioMetric}>
-                                  <span style={styles.metricLabel}>Risk Level:</span>
+                                  <span style={styles.metricLabel}>{t('projects.teamBuilder.riskLevel')}</span>
                                   <span style={styles.metricChange}>
                                     {scenario.improves && (
                                       <span style={styles.changeGood}>
                                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                           {scenario.newRiskLevel}
                                           <TrendingUp size={16} />
-                                          <span>(Improves)</span>
+                                          <span>{t('projects.teamBuilder.improves')}</span>
                                         </span>
                                       </span>
                                     )}
@@ -623,7 +623,7 @@ export default function DynamicTeamBuilder({
                                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                           {scenario.newRiskLevel}
                                           <TrendingDown size={16} />
-                                          <span>(Worsens)</span>
+                                          <span>{t('projects.teamBuilder.worsens')}</span>
                                         </span>
                                       </span>
                                     )}
@@ -632,7 +632,7 @@ export default function DynamicTeamBuilder({
                                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                           {scenario.newRiskLevel}
                                           <ArrowRight size={16} />
-                                          <span>(No change)</span>
+                                          <span>{t('projects.teamBuilder.noChange')}</span>
                                         </span>
                                       </span>
                                     )}
@@ -642,7 +642,7 @@ export default function DynamicTeamBuilder({
                                 {/* Skill Coverage */}
                                 {scenario.skillCoverage > 0 && (
                                   <div style={styles.scenarioMetric}>
-                                    <span style={styles.metricLabel}>Skill Coverage:</span>
+                                    <span style={styles.metricLabel}>{t('projects.teamBuilder.skillCoverage')}</span>
                                     <span style={styles.metricValue}>
                                       {(scenario.skillCoverage * 100).toFixed(0)}%
                                     </span>
@@ -653,7 +653,7 @@ export default function DynamicTeamBuilder({
                                 {scenario.resolvedRisks.length > 0 && (
                                   <div style={{ ...styles.scenarioResolved, display: 'flex', alignItems: 'center', gap: '4px' }}>
                                     <CheckCircle size={16} style={{ color: '#28a745' }} />
-                                    <span>Resolves: {scenario.resolvedRisks.map(formatRiskType).join(', ')}</span>
+                                    <span>{t('projects.teamBuilder.resolves', { skills: scenario.resolvedRisks.map(formatRiskType).join(', ') })}</span>
                                   </div>
                                 )}
 
@@ -662,7 +662,7 @@ export default function DynamicTeamBuilder({
                                   <div style={{ ...styles.scenarioNewRisk, display: 'flex', alignItems: 'flex-start', gap: '4px' }}>
                                     <AlertTriangle size={16} style={{ color: '#ffc107', flexShrink: 0 }} />
                                     <div>
-                                      <strong>New Risk:</strong> {formatRiskType(scenario.newRisks[0].type)}
+                                      <strong>{t('projects.teamBuilder.newRisk')}</strong> {formatRiskType(scenario.newRisks[0].type)}
                                       {scenario.newRisks[0].reasoning && scenario.newRisks[0].reasoning.length > 0 && (
                                         <div style={styles.newRiskDetail}>
                                           {scenario.newRisks[0].reasoning[0]}
@@ -675,7 +675,7 @@ export default function DynamicTeamBuilder({
                                 {/* No issues */}
                                 {scenario.resolvedRisks.length === 0 && scenario.newRisks.length === 0 && !scenario.worsens && (
                                   <div style={styles.scenarioNeutral}>
-                                    No significant changes detected
+                                    {t('projects.teamBuilder.noSignificantChanges')}
                                   </div>
                                 )}
                               </div>
@@ -689,7 +689,7 @@ export default function DynamicTeamBuilder({
                               >
                                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
                                   {scenario.improves && <CheckCircle size={14} />}
-                                  Add {scenario.employee.name.split(' ')[0]}
+                                  {t('projects.teamBuilder.addName', { name: scenario.employee.name.split(' ')[0] })}
                                 </span>
                               </button>
                             </div>
@@ -706,13 +706,13 @@ export default function DynamicTeamBuilder({
 
         <div style={styles.footer}>
           <SecondaryButton onClick={onClose}>
-            Cancel
+            {t('common.cancel')}
           </SecondaryButton>
           <PrimaryButton 
             onClick={handleAssignSelected}
             disabled={selectedEmployees.length === 0}
           >
-            Assign Selected Team ({selectedEmployees.length})
+            {t('projects.teamBuilder.assignSelected', { count: selectedEmployees.length })}
           </PrimaryButton>
         </div>
       </div>

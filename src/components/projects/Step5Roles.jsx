@@ -109,11 +109,11 @@ export default function Step5Roles({ formData, onChange }) {
       </div>
 
       <FormTextarea
-        label="Critical Dependencies"
+        label={t('projects.steps.step5.criticalDependencies')}
         name="criticalDependencies"
         value={formData.criticalDependencies?.join('\n') || ''}
         onChange={handleDependenciesChange}
-        placeholder="Enter each dependency on a new line..."
+        placeholder={t('projects.steps.step5.criticalDependenciesPlaceholder')}
         rows={4}
       />
     </div>

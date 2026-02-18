@@ -120,7 +120,7 @@ export default function TopNavBar() {
             boxShadow: '0 2px 8px rgba(102, 126, 234, 0.3)'
           }}>
             <Shield size={12} />
-            <span>Admin</span>
+            <span>{t('navigation.admin')}</span>
           </div>
         )}
       </div>

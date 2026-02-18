@@ -1,11 +1,13 @@
 import React, { useRef, useState } from 'react';
 import { Upload } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import './FileUploader.css';
 
 /**
  * FileUploader - Drag and drop file uploader
  */
 const FileUploader = ({ onFileSelect, isUploading }) => {
+  const { t } = useTranslation();
   const fileInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [dragActive, setDragActive] = useState(false);
@@ -39,13 +41,13 @@ const FileUploader = ({ onFileSelect, isUploading }) => {
 
     if (!ALLOWED_TYPES.includes(file.type)) {
       console.log('FileUploader - Invalid file type:', file.type);
-      alert('Only PDF or TXT files are accepted');
+      alert(t('cv.upload.invalidFormat'));
       return;
     }
 
     if (file.size > MAX_SIZE) {
       console.log('FileUploader - File too large:', file.size);
-      alert('File is too large. Maximum size is 10MB');
+      alert(t('cv.upload.fileTooLarge'));
       return;
     }
 
@@ -88,8 +90,8 @@ const FileUploader = ({ onFileSelect, isUploading }) => {
         {!selectedFile ? (
           <>
             <Upload className="upload-icon" size={48} />
-            <p className="drop-zone-text">Drag your CV here or click to select</p>
-            <span className="file-types">PDF or TXT (max. 10MB)</span>
+            <p className="drop-zone-text">{t('cv.upload.dragHere')}</p>
+            <span className="file-types">{t('cv.upload.fileFormats')}</span>
           </>
         ) : (
           <>
@@ -122,7 +124,7 @@ const FileUploader = ({ onFileSelect, isUploading }) => {
           disabled={isUploading}
           className="btn-upload"
         >
-          {isUploading ? 'Processing...' : 'Upload CV'}
+          {isUploading ? t('cv.upload.processing') : t('cv.upload.uploadButton')}
         </button>
       )}
     </div>

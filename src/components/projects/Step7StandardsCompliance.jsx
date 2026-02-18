@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertTriangle, CheckCircle, Info } from 'lucide-react';
 import { COMPLIANCE_STANDARDS } from '../../types/projectTypes';
 
@@ -7,6 +8,7 @@ import { COMPLIANCE_STANDARDS } from '../../types/projectTypes';
  * NEW CRITICAL STEP - Manages compliance and standardization requirements
  */
 export default function Step7StandardsCompliance({ formData, onChange }) {
+  const { t } = useTranslation();
 
   const handleStandardToggle = (standard) => {
     const current = formData.complianceStandards || [];
@@ -18,15 +20,15 @@ export default function Step7StandardsCompliance({ formData, onChange }) {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.sectionTitle}>Standards & Compliance</h2>
+      <h2 style={styles.sectionTitle}>{t('projects.steps.step7.standardsTitle')}</h2>
       <p style={styles.description}>
-        Define regulatory compliance requirements and standardized procedures
+        {t('projects.steps.step7.standardsDescription')}
       </p>
 
       {/* Requires Regulatory Compliance */}
       <div style={styles.formGroup}>
         <label style={styles.label} id="requiresRegulatoryCompliance-label">
-          Requires Regulatory Compliance <span style={styles.required}>*</span>
+          {t('projects.steps.step7.requiresCompliance')} <span style={styles.required}>*</span>
         </label>
         <div style={styles.radioGroup} role="radiogroup" aria-labelledby="requiresRegulatoryCompliance-label">
           <label style={styles.radioLabel} htmlFor="requiresRegulatoryCompliance-yes">
@@ -39,7 +41,7 @@ export default function Step7StandardsCompliance({ formData, onChange }) {
               onChange={() => onChange({ requiresRegulatoryCompliance: true })}
               style={styles.radio}
             />
-            Yes
+            {t('projects.steps.step7.yes')}
           </label>
           <label style={styles.radioLabel} htmlFor="requiresRegulatoryCompliance-no">
             <input
@@ -55,7 +57,7 @@ export default function Step7StandardsCompliance({ formData, onChange }) {
               })}
               style={styles.radio}
             />
-            No
+            {t('projects.steps.step7.no')}
           </label>
         </div>
       </div>
@@ -64,7 +66,7 @@ export default function Step7StandardsCompliance({ formData, onChange }) {
       {formData.requiresRegulatoryCompliance && (
         <>
           <div style={styles.formGroup}>
-            <label style={styles.label} id="complianceStandards-label">Compliance Standards</label>
+            <label style={styles.label} id="complianceStandards-label">{t('projects.steps.step7.complianceStandards')}</label>
             <div style={styles.checkboxGroup}>
               {Object.entries(COMPLIANCE_STANDARDS).map(([key, value]) => (
                 <label key={key} style={styles.checkboxLabel} htmlFor={`compliance-${key}`}>
@@ -81,13 +83,13 @@ export default function Step7StandardsCompliance({ formData, onChange }) {
               ))}
             </div>
             <small style={styles.helpText}>
-              Selected: {formData.complianceStandards?.length || 0} standard(s)
+              {t('projects.steps.step7.selectedStandards', { count: formData.complianceStandards?.length || 0 })}
             </small>
           </div>
 
           {/* Has Standardized Procedures */}
           <div style={styles.formGroup}>
-            <label style={styles.label} id="hasStandardizedProcedures-label">Has Standardized Procedures</label>
+            <label style={styles.label} id="hasStandardizedProcedures-label">{t('projects.steps.step7.hasStandardizedProcedures')}</label>
             <div style={styles.radioGroup} role="radiogroup" aria-labelledby="hasStandardizedProcedures-label">
               <label style={styles.radioLabel} htmlFor="hasStandardizedProcedures-yes">
                 <input
@@ -99,7 +101,7 @@ export default function Step7StandardsCompliance({ formData, onChange }) {
                   onChange={() => onChange({ hasStandardizedProcedures: true })}
                   style={styles.radio}
                 />
-                Yes
+                {t('projects.steps.step7.yes')}
               </label>
               <label style={styles.radioLabel} htmlFor="hasStandardizedProcedures-no">
                 <input
@@ -111,29 +113,29 @@ export default function Step7StandardsCompliance({ formData, onChange }) {
                   onChange={() => onChange({ hasStandardizedProcedures: false })}
                   style={styles.radio}
                 />
-                No
+                {t('projects.steps.step7.no')}
               </label>
             </div>
             <small style={styles.helpText}>
-              Standardized procedures help ensure compliance consistency
+              {t('projects.steps.step7.standardizedHelp')}
             </small>
           </div>
 
           {/* Standards Documentation */}
           <div style={styles.formGroup}>
-            <label style={styles.label} htmlFor="standardsDocumentation">Standards Documentation</label>
+            <label style={styles.label} htmlFor="standardsDocumentation">{t('projects.steps.step7.standardsDocumentation')}</label>
             <textarea
               id="standardsDocumentation"
               value={formData.standardsDocumentation || ''}
               onChange={(e) => onChange({ standardsDocumentation: e.target.value })}
-              placeholder="Describe the standards, procedures, and compliance requirements (max 2000 chars)..."
+              placeholder={t('projects.steps.step7.standardsDocPlaceholder')}
               maxLength="2000"
               rows="6"
               style={styles.textarea}
-              aria-label="Standards documentation"
+              aria-label={t('projects.steps.step7.standardsDocAria')}
             />
             <small style={styles.helpText}>
-              {(formData.standardsDocumentation || '').length}/2000 characters
+              {t('projects.steps.step7.charCount', { current: (formData.standardsDocumentation || '').length, max: 2000 })}
             </small>
           </div>
 
@@ -141,13 +143,13 @@ export default function Step7StandardsCompliance({ formData, onChange }) {
           <div style={styles.infoBox}>
             <Info size={20} color="#004085" style={{ flexShrink: 0 }} />
             <div>
-              <strong>Compliance Considerations</strong>
+              <strong>{t('projects.steps.step7.complianceConsiderations')}</strong>
               <ul style={styles.infoList}>
-                <li><strong>GDPR:</strong> EU data protection regulation</li>
-                <li><strong>HIPAA:</strong> US healthcare data security</li>
-                <li><strong>SOC2:</strong> Service organization controls</li>
-                <li><strong>ISO27001:</strong> Information security management</li>
-                <li><strong>PCI-DSS:</strong> Payment card industry standards</li>
+                <li>{t('projects.steps.step7.gdpr')}</li>
+                <li>{t('projects.steps.step7.hipaa')}</li>
+                <li>{t('projects.steps.step7.soc2')}</li>
+                <li>{t('projects.steps.step7.iso27001')}</li>
+                <li>{t('projects.steps.step7.pciDss')}</li>
               </ul>
             </div>
           </div>
@@ -157,10 +159,9 @@ export default function Step7StandardsCompliance({ formData, onChange }) {
             <div style={styles.warningBox}>
               <AlertTriangle size={20} color="#856404" style={{ flexShrink: 0 }} />
               <div>
-                <strong>Warning: No Standardized Procedures</strong>
+                <strong>{t('projects.steps.step7.noStandardizedWarning')}</strong>
                 <p>
-                  Without standardized procedures, compliance requirements may be difficult to
-                  maintain consistently across the team, increasing audit risk.
+                  {t('projects.steps.step7.noStandardizedWarningDesc')}
                 </p>
               </div>
             </div>
@@ -173,10 +174,9 @@ export default function Step7StandardsCompliance({ formData, onChange }) {
         <div style={styles.successBox}>
           <CheckCircle size={20} color="#155724" style={{ flexShrink: 0 }} />
           <div>
-            <strong>No Regulatory Compliance Required</strong>
+            <strong>{t('projects.steps.step7.noComplianceTitle')}</strong>
             <p>
-              This project doesn't have specific compliance requirements. However, following
-              best practices for security and quality is still recommended.
+              {t('projects.steps.step7.noComplianceDesc')}
             </p>
           </div>
         </div>

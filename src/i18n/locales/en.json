@@ -6,54 +6,54 @@
     "other": "Other"
   },
   "riskVisualizationDemo": {
-      "title": "Risk Visualization Demo",
-      "subtitle": "Interactive demonstration of the React Flow risk visualization feature",
-      "about": {
-        "title": "About This Demo",
-        "item1": "This page shows sample risk data for a hypothetical project",
-        "item2Prefix": "Toggle between",
-        "visualMap": "Visual Map",
-        "item2Between": "and",
-        "statistics": "Statistics",
-        "item2Suffix": "views",
-        "item3": "Click on risk nodes in the flow map to see detailed information",
-        "item4": "Green checkmarks (✓) indicate risks that occurred",
-        "item5": "Gray crosses (✗) indicate risks that did not occur",
-        "item6": "Use zoom controls and drag to navigate the graph"
+    "title": "Risk Visualization Demo",
+    "subtitle": "Interactive demonstration of the React Flow risk visualization feature",
+    "about": {
+      "title": "About This Demo",
+      "item1": "This page shows sample risk data for a hypothetical project",
+      "item2Prefix": "Toggle between",
+      "visualMap": "Visual Map",
+      "item2Between": "and",
+      "statistics": "Statistics",
+      "item2Suffix": "views",
+      "item3": "Click on risk nodes in the flow map to see detailed information",
+      "item4": "Green checkmarks (✓) indicate risks that occurred",
+      "item5": "Gray crosses (✗) indicate risks that did not occur",
+      "item6": "Use zoom controls and drag to navigate the graph"
+    },
+    "stats": {
+      "totalRisks": "Total Risks:",
+      "occurred": "Occurred:",
+      "notOccurred": "Not Occurred:",
+      "unknown": "Unknown:"
+    },
+    "features": {
+      "title": "Key Features",
+      "visualHierarchy": {
+        "title": "Visual Hierarchy",
+        "desc": "Risks organized by category with clear parent-child relationships"
       },
-      "stats": {
-        "totalRisks": "Total Risks:",
-        "occurred": "Occurred:",
-        "notOccurred": "Not Occurred:",
-        "unknown": "Unknown:"
+      "colorCoded": {
+        "title": "Color-Coded Severity",
+        "desc": "Instant visual feedback: Red (Critical) → Orange (High) → Yellow (Medium) → Green (Low)"
       },
-      "features": {
-        "title": "Key Features",
-        "visualHierarchy": {
-          "title": "Visual Hierarchy",
-          "desc": "Risks organized by category with clear parent-child relationships"
-        },
-        "colorCoded": {
-          "title": "Color-Coded Severity",
-          "desc": "Instant visual feedback: Red (Critical) → Orange (High) → Yellow (Medium) → Green (Low)"
-        },
-        "realTime": {
-          "title": "Real-Time Statistics",
-          "desc": "Comprehensive overview with distribution charts and prediction accuracy"
-        },
-        "controls": {
-          "title": "Interactive Controls",
-          "desc": "Zoom, pan, click for details, and toggle between different view modes"
-        }
+      "realTime": {
+        "title": "Real-Time Statistics",
+        "desc": "Comprehensive overview with distribution charts and prediction accuracy"
       },
-      "technical": {
-        "title": "Technical Implementation",
-        "libraryLabel": "Library:",
-        "componentsLabel": "Components:",
-        "dataFlowLabel": "Data Flow:",
-        "featuresLabel": "Features:"
+      "controls": {
+        "title": "Interactive Controls",
+        "desc": "Zoom, pan, click for details, and toggle between different view modes"
       }
     },
+    "technical": {
+      "title": "Technical Implementation",
+      "libraryLabel": "Library:",
+      "componentsLabel": "Components:",
+      "dataFlowLabel": "Data Flow:",
+      "featuresLabel": "Features:"
+    }
+  },
   "app": {
     "name": "Sara"
   },
@@ -69,10 +69,15 @@
     "myOrganizations": "My Organizations",
     "aria": {
       "main": "Main navigation",
-      "navigateTo": "Navigate to {{label}}"
+      "navigateTo": "Navigate to {{label}}",
+      "goToHome": "Go to home",
+      "userMenu": "User menu",
+      "userMenuOptions": "User menu options"
     },
     "skipToMain": "Skip to main content",
-    "mainNavigation": "Main navigation"
+    "mainNavigation": "Main navigation",
+    "user": "User",
+    "admin": "Admin"
   },
   "auth": {
     "login": "Log in",
@@ -122,7 +127,8 @@
     "loadingProject": "Loading project...",
     "invalidCredentials": "Invalid credentials",
     "loginError": "Error logging in. Please try again.",
-    "oauthError": "Authentication error: {{detail}}. If the issue persists, complete your profile or contact support."
+    "oauthError": "Authentication error: {{detail}}. If the issue persists, complete your profile or contact support.",
+    "google": "Google"
   },
   "register": {
     "title": "Welcome!",
@@ -263,7 +269,8 @@
       "aria": {
         "refresh": "Refresh consent status",
         "reviewAndAccept": "Review and accept consent terms",
-        "revokeConsent": "Revoke data consent"
+        "revokeConsent": "Revoke data consent",
+        "revoke": "Revoke consent"
       }
     },
     "cvManagementSection": {
@@ -306,7 +313,9 @@
       "editProfile": "Edit profile",
       "cancelEditing": "Cancel editing",
       "saveChanges": "Save changes"
-    }
+    },
+    "saving": "Saving...",
+    "userAvatar": "User avatar"
   },
   "team": {
     "personalityFit": {
@@ -463,7 +472,12 @@
       "years_other": "{{count}} years",
       "totalProfessionalExperience": "Total Professional Experience",
       "relevantExperience_one": "{{count}} year of relevant experience",
-      "relevantExperience_other": "{{count}} years of relevant experience"
+      "relevantExperience_other": "{{count}} years of relevant experience",
+      "allSkillsTitle": "All Skills",
+      "matchedSkillsTitle": "Matched Skills",
+      "missingSkillsTitle": "Missing Skills",
+      "relevantExperience": "Relevant Experience",
+      "years": "{{count}} year"
     },
     "employeeDetail": {
       "tabs": {
@@ -481,7 +495,9 @@
         "skillsMatched_one": "{{count}} skill matched",
         "skillsMatched_other": "{{count}} skills matched",
         "skillsMissing_one": "{{count}} skill missing",
-        "skillsMissing_other": "{{count}} skills missing"
+        "skillsMissing_other": "{{count}} skills missing",
+        "skillsMatched": "{{count}} skill matched",
+        "skillsMissing": "{{count}} skill missing"
       },
       "matchScore": {
         "label": "Match score"
@@ -505,7 +521,8 @@
         "linkedin": "LinkedIn",
         "github": "GitHub",
         "portfolio": "Portfolio"
-      }
+      },
+      "fallbackName": "Team member"
     },
     "quickInsights": {
       "heroTitle": "Key Insights",
@@ -515,7 +532,8 @@
       "recommendationConfidence": "Recommendation Confidence:",
       "common": {
         "years_one": "{{count}} year",
-        "years_other": "{{count}} years"
+        "years_other": "{{count}} years",
+        "years": "{{count}} year"
       },
       "categories": {
         "skills": "Skills",
@@ -677,7 +695,27 @@
       },
       "labels": {
         "matchPercent": "{{percent}}% match"
-      }
+      },
+      "fallbackMemberName": "Team member",
+      "category": "Category:",
+      "source": "Source:",
+      "mitigationStrategy": "Mitigation Strategy",
+      "whatIf": "What If...",
+      "whatIfSubtitle": "See how adding these candidates would impact risks",
+      "calculatingScenarios": "Calculating scenarios...",
+      "ifYouAdd": "If you add: {{name}}",
+      "match": "Match: {{score}}%",
+      "riskLevel": "Risk Level:",
+      "improves": "(Improves)",
+      "worsens": "(Worsens)",
+      "noChange": "(No change)",
+      "skillCoverage": "Skill Coverage:",
+      "resolves": "Resolves: {{skills}}",
+      "newRisk": "New Risk:",
+      "noSignificantChanges": "No significant changes detected",
+      "addName": "Add {{name}}",
+      "assignSelected": "Assign Selected Team ({{count}})",
+      "score": "Score: {{score}}"
     },
     "riskAnalysisTab": {
       "loading": {
@@ -702,7 +740,9 @@
         "teamMembers_other": "{{count}} team members",
         "risksIdentified_one": "{{count}} risk identified",
         "risksIdentified_other": "{{count}} risks identified",
-        "overallRiskLevel": "Overall risk level: {{level}}"
+        "overallRiskLevel": "Overall risk level: {{level}}",
+        "risksIdentified": "{{count}} Risk identified",
+        "teamMembers": "{{count}} Team member"
       },
       "export": {
         "tooltip": "Export risk analysis data",
@@ -734,8 +774,31 @@
         "medium_one": "{{count}} medium risk",
         "medium_other": "{{count}} medium risks",
         "low_one": "{{count}} low risk",
-        "low_other": "{{count}} low risks"
-      }
+        "low_other": "{{count}} low risks",
+        "critical": "{{count}} Critical",
+        "high": "{{count}} High",
+        "low": "{{count}} Low",
+        "medium": "{{count}} Medium"
+      },
+      "interactiveVisualization": "Interactive risk visualization - Explore relationships between project risks",
+      "risksVisualized": "{{count}} risk(s) visualized. Use mouse wheel to zoom, click and drag to pan.",
+      "showingRisks": "Showing {{n}} of {{m}} risk(s)",
+      "noRisksMatch": "No risks match your current filters. Try adjusting your search or filters.",
+      "recommendations": "Recommendations",
+      "noDescription": "No description available",
+      "impact": "Impact:",
+      "mitigationStrategy": "Mitigation Strategy",
+      "relatedFactors": "Related Factors:",
+      "criticalDesc": "Critical severity - Requires immediate attention",
+      "highDesc": "High severity - Needs urgent attention",
+      "mediumDesc": "Medium severity - Should be monitored",
+      "lowDesc": "Low severity - Informational",
+      "unnamedRisk": "Unnamed Risk",
+      "csvName": "Name",
+      "csvSeverity": "Severity",
+      "csvType": "Type",
+      "csvDescription": "Description",
+      "csvMitigation": "Mitigation"
     },
     "projectSaved": "Project saved successfully",
     "backToProjects": "Back to Projects",
@@ -777,7 +840,13 @@
           "manual": "Manual"
         },
         "retry": "Retry"
-      }
+      },
+      "culturalDiversity": "Cultural Diversity",
+      "distributedExperience": "Distributed Experience",
+      "involvedCountries": "Involved Countries",
+      "technologies": "Technologies",
+      "workDistribution": "Work Distribution",
+      "workMode": "Work Mode"
     },
     "completionPage": {
       "title": "Finalize Project: {{name}}",
@@ -922,7 +991,57 @@
         "workMode": "Work Mode",
         "distributedWorkExperienceLevel": "Distributed Work Experience Level",
         "expectedTimeOverlap": "Expected Time Overlap",
-        "culturalDiversityLevel": "Cultural Diversity Level"
+        "culturalDiversityLevel": "Cultural Diversity Level",
+        "inherit": "Inherit from Organization",
+        "office": "Office Mode",
+        "officeFirst": "Office First",
+        "hybrid": "Office/Remote Mix",
+        "remoteFirst": "Remote First",
+        "remote": "Remote Mode",
+        "workModeDetails": "Work Mode Details",
+        "workModeDetailsPlaceholder": "Describe the work mode specifics (e.g., required office days, flexibility policies)...",
+        "noTimezoneWarning": "Warning: No Timezone Scheduling Policy",
+        "noTimezoneWarningDesc": "Remote projects without timezone management may face coordination challenges.",
+        "countriesHint": "(comma-separated, e.g., \"USA, Spain, India\")",
+        "currentCountries": "Current countries: {{countries}}",
+        "distributedExperience": "Distributed Work Experience Level",
+        "distributedExpLow": "Low - Little remote experience",
+        "distributedExpMedium": "Medium - Some remote experience",
+        "distributedExpHigh": "High - Extensive remote experience",
+        "timeOverlap": "Expected Time Overlap (hours per day)",
+        "hours": "hours",
+        "lowOverlapWarning": "Low time overlap with {{count}} countries may cause delays",
+        "culturalDiversity": "Cultural Diversity Level",
+        "culturalDivLow": "Low - Similar cultures",
+        "culturalDivMedium": "Medium - Some diversity",
+        "culturalDivHigh": "High - Very diverse team",
+        "coreHoursTitle": "Core Hours Configuration",
+        "coreHoursDescription": "Define overlapping working hours for all team members",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "timezone": "Timezone",
+        "timezonePlaceholder": "e.g., UTC, America/New_York",
+        "meetingRotation": "Has Meeting Rotation Policy",
+        "meetingRotationDesc": "Rotates meeting times to be fair to all timezones",
+        "timezoneConsiderations": "Timezone Considerations",
+        "timezoneConsiderationsPlaceholder": "Describe how you'll manage different timezones (max 1000 chars)...",
+        "asyncStrategy": "Async Communication Strategy",
+        "asyncStrategyPlaceholder": "Describe your asynchronous communication approach for distributed teams (max 1000 chars)...",
+        "offHoursReporting": "Requires Off-Hours Reporting/Updates",
+        "offHoursReportingDesc": "Team members may need to provide updates outside their working hours",
+        "workModeDetailsAria": "Work mode details",
+        "involvedCountriesAria": "Involved countries",
+        "distributedExperienceAria": "Distributed work experience level",
+        "timeOverlapAria": "Expected time overlap",
+        "culturalDiversityAria": "Cultural diversity level",
+        "coreHoursStartAria": "Core hours start time",
+        "coreHoursEndAria": "Core hours end time",
+        "coreHoursTimezoneAria": "Core hours timezone",
+        "timezoneConsiderationsAria": "Timezone considerations",
+        "asyncStrategyAria": "Async communication strategy",
+        "workModelTitle": "Work Model & Remote Configuration",
+        "workModelDescription": "Configure how the team will work together, especially for distributed teams",
+        "charCount": "{{current}}/{{max}} characters"
       },
       "step5": {
         "title": "Roles and Responsibilities",
@@ -942,11 +1061,14 @@
         "veryClear": "Very Clear",
         "noRolesMessage": "No roles added yet. Click 'Add Role' to start.",
         "criticalDependencies": "Critical Dependencies",
-        "dependenciesPlaceholder": "List critical dependencies (one per line)..."
+        "dependenciesPlaceholder": "List critical dependencies (one per line)...",
+        "criticalDependenciesPlaceholder": "Enter each dependency on a new line..."
       },
       "step6": {
         "title": "Availability Requirements",
         "description": "Define time commitment and availability needs",
+        "knowledgeTitle": "Knowledge Management",
+        "knowledgeDescription": "Configure how knowledge and documentation will be managed across the team",
         "weeklyHoursPerMember": "Weekly Hours per Member",
         "requiresAfterHoursAvailability": "Requires After-Hours Availability",
         "afterHoursYes": "Yes",
@@ -959,11 +1081,39 @@
         "periodDescriptionPlaceholder": "e.g., Product Launch Sprint",
         "startDate": "Start Date",
         "endDate": "End Date",
-        "noPeriodsMessage": "No high load periods defined."
+        "noPeriodsMessage": "No high load periods defined.",
+        "noToolsWarning": "Risk: No Knowledge Management Tools",
+        "noToolsWarningDesc": "Without proper knowledge management, your team may face:",
+        "risk1": "Information silos and communication gaps",
+        "risk2": "Repeated work and lost tribal knowledge",
+        "risk3": "Difficulty onboarding new team members",
+        "risk4": "Higher risk of project delays",
+        "knowledgeSystem": "Knowledge Management System",
+        "selectSystem": "Select a system...",
+        "knowledgeSystemAria": "Knowledge management system",
+        "tools": "Knowledge Management Tools",
+        "toolsHint": "(comma-separated)",
+        "toolsPlaceholder": "e.g., Confluence, Notion, SharePoint",
+        "toolsAria": "Knowledge management tools",
+        "currentTools": "Current tools: {{tools}}",
+        "documentationProcesses": "Documentation Processes",
+        "hasStandardization": "Has Documentation Standardization",
+        "usesTemplates": "Uses Templates",
+        "hasReviewProcess": "Has Review Process",
+        "selectAllApply": "Select all that apply to improve documentation quality",
+        "bestPractice": "Best Practice",
+        "bestPracticeDesc": "Effective knowledge management includes:",
+        "bp1": "Regular documentation updates",
+        "bp2": "Clear naming conventions",
+        "bp3": "Searchable knowledge base",
+        "bp4": "Version control for documents"
       },
       "step7": {
         "title": "Coordination and Management",
         "description": "Define how the project will be managed and coordinated",
+        "standardsTitle": "Standards & Compliance",
+        "standardsDescription": "Define regulatory compliance requirements and standardized procedures",
+        "charCount": "{{current}}/{{max}} characters",
         "managementMethod": "Management Method",
         "scrum": "Scrum",
         "kanban": "Kanban",
@@ -996,11 +1146,33 @@
         "codeReviewFrequency": "Code Review Frequency",
         "collaborationTools": "Collaboration Tools",
         "toolsPlaceholder": "Enter tools separated by commas (e.g., Jira, Trello, Asana)",
-        "documentationStandardization": "Documentation Standardization"
+        "documentationStandardization": "Documentation Standardization",
+        "requiresCompliance": "Requires Regulatory Compliance",
+        "yes": "Yes",
+        "no": "No",
+        "complianceStandards": "Compliance Standards",
+        "selectedStandards": "Selected: {{count}} standard(s)",
+        "hasStandardizedProcedures": "Has Standardized Procedures",
+        "standardizedHelp": "Standardized procedures help ensure compliance consistency",
+        "standardsDocumentation": "Standards Documentation",
+        "standardsDocPlaceholder": "Describe the standards, procedures, and compliance requirements (max 2000 chars)...",
+        "standardsDocAria": "Standards documentation",
+        "complianceConsiderations": "Compliance Considerations",
+        "gdpr": "GDPR: EU data protection regulation",
+        "hipaa": "HIPAA: US healthcare data security",
+        "soc2": "SOC2: Service organization controls",
+        "iso27001": "ISO27001: Information security management",
+        "pciDss": "PCI-DSS: Payment card industry standards",
+        "noStandardizedWarning": "Warning: No Standardized Procedures",
+        "noStandardizedWarningDesc": "Without standardized procedures, compliance requirements may be difficult to maintain consistently across the team, increasing audit risk.",
+        "noComplianceTitle": "No Regulatory Compliance Required",
+        "noComplianceDesc": "This project doesn't have specific compliance requirements. However, following best practices for security and quality is still recommended."
       },
       "step8": {
         "title": "Team Collaboration Intensity",
         "description": "Define how teams will collaborate and exchange information",
+        "availabilityTitle": "Availability Requirements",
+        "availabilityDescription": "Define time commitment and availability needs for team members",
         "involvedTeams": "Involved Teams",
         "addTeam": "+ Add Team",
         "team": "Team",
@@ -1023,7 +1195,32 @@
           "occasional": "Occasional - For emergencies",
           "yes": "Yes - Regular after-hours work"
         },
-        "afterHoursHelper": "After-hours availability can increase stress and reduce work-life balance"
+        "afterHoursHelper": "After-hours availability can increase stress and reduce work-life balance",
+        "flowBottomUp": "Bottom-Up",
+        "flowTopDown": "Top-Down",
+        "weeklyHours": "Weekly Hours per Member",
+        "standardFullTime": "Standard full-time is 40 hours per week",
+        "overtimeDetected": "Overtime Detected",
+        "overtimeDesc": "{{hours}} hours/week exceeds standard full-time. This may impact team morale and increase burnout risk.",
+        "partTimeTitle": "Part-Time Commitment",
+        "partTimeDesc": "{{hours}} hours/week is part-time. Ensure project timeline accounts for reduced availability.",
+        "requiresAfterHours": "Requires After-Hours Availability",
+        "afterHoursWarning": "High Risk: After-Hours Requirements",
+        "afterHoursWarningDesc": "Regular after-hours work significantly increases team burnout risk and may affect work quality and retention.",
+        "highLoadPeriods": "High Load Periods",
+        "highLoadDescription": "Define periods requiring extra effort or extended hours",
+        "addPeriod": "+ Add Period",
+        "period": "Period {{index}}",
+        "remove": "Remove",
+        "periodDescription": "Description",
+        "periodDescPlaceholder": "e.g., Product Launch Sprint, Year-End Release",
+        "startDate": "Start Date",
+        "endDate": "End Date",
+        "duration": "Duration: {{days}} days",
+        "multipleHighLoad": "Multiple High-Load Periods",
+        "multipleHighLoadDesc": "{{count}} high-load periods detected. Ensure adequate recovery time between periods to prevent team burnout.",
+        "noHighLoad": "No high-load periods defined",
+        "noHighLoadHint": "Add periods where the team needs to work extra hours or with higher intensity"
       },
       "step9": {
         "title": "Organizational Maturity",
@@ -1125,6 +1322,9 @@
       "viewDetails": "View Details",
       "edit": "Edit",
       "delete": "Delete"
+    },
+    "riskAnalysis": {
+      "loadError": "Error loading risk analysis"
     }
   },
   "validation": {
@@ -1479,7 +1679,16 @@
       "processedSuccessfully": "CV Processed Successfully",
       "percentComplete": "{{score}}% complete",
       "fieldsRemaining": "{{count}} fields remaining",
-      "profileComplete": "Your profile is complete! Redirecting to dashboard..."
+      "profileComplete": "Your profile is complete! Redirecting to dashboard...",
+      "invalidFormat": "Only PDF or TXT files are accepted",
+      "fileTooLarge": "File is too large. Maximum size is 10MB",
+      "dragHere": "Drag your CV here or click to select",
+      "fileFormats": "PDF or TXT (max. 10MB)",
+      "processing": "Processing...",
+      "uploadButton": "Upload CV",
+      "pageTitle": "Upload Your CV",
+      "pageSubtitle": "Upload your CV in PDF or TXT format to get started",
+      "errorFallback": "Error uploading CV. Please try again."
     },
     "search": {
       "title": "Search CVs",
@@ -1535,19 +1744,26 @@
     },
     "admin": {
       "allCVsCount": "All CVs ({{count}})",
-      "hideSearch": "Hide Search",
       "searchCVs": "Search CVs",
-      "resetFilters": "Reset Filters",
-      "noCVsFound": "No CVs Found",
-      "noCVsUploaded": "No CVs have been uploaded yet.",
-      "noMatchingCVs": "No CVs match your search criteria.",
+      "hideSearch": "Hide search",
+      "resetFilters": "Reset filters",
+      "noCVsFound": "No CVs found",
+      "noCVsUploaded": "No CVs have been uploaded yet",
+      "noMatchingCVs": "No CVs match your search criteria",
       "aria": {
-        "page": "Admin CV list page",
-        "showSearch": "Show CV search",
-        "hideSearch": "Hide CV search",
-        "resetFilters": "Reset CV filters",
+        "page": "CV administration",
+        "hideSearch": "Hide search filters",
+        "showSearch": "Show search filters",
+        "resetFilters": "Reset search filters",
         "refreshList": "Refresh CV list",
-        "cvList": "CV list"
+        "cvList": "List of CVs"
+      },
+      "detailPanel": {
+        "title": "CV Details",
+        "aria": {
+          "panel": "CV details panel",
+          "close": "Close CV details panel"
+        }
       }
     },
     "stats": {
@@ -1588,7 +1804,7 @@
     "personalDetails": "Personal Details",
     "workExperience": "Work Experience",
     "education": "Education",
-    "skills": "Skills",
+    "skills": "skills",
     "certifications": "Certifications",
     "languages": "Languages",
     "references": "References",
@@ -1605,7 +1821,8 @@
     "lastUpdated": "Last Updated",
     "loadingCV": "Loading CV...",
     "aria": {
-      "openUploadDialog": "Open CV upload dialog"
+      "openUploadDialog": "Open CV upload dialog",
+      "myCvPage": "My CV page"
     },
     "savingCV": "Saving CV...",
     "cvSaved": "CV saved successfully",
@@ -1659,7 +1876,6 @@
     },
     "noCVFound": "No CV Found",
     "uploadToGetStarted": "Upload your CV to get started",
-    "uploadCV": "Upload CV",
     "errorLoadingCV": "Error loading CV",
     "errorDeletingCV": "Error deleting CV",
     "errorUpdatingCV": "Error updating CV",
@@ -1670,37 +1886,11 @@
     "native": "Native",
     "bilingual": "Bilingual",
     "fluent": "Fluent",
-    "remove": "Remove",
     "addLanguage": "Add Language",
     "noEmail": "No email",
     "unnamed": "Unnamed",
-    "skills": "skills",
     "experiences": "experiences",
     "uploaded": "Uploaded",
-    "admin": {
-      "allCVsCount": "All CVs ({{count}})",
-      "searchCVs": "Search CVs",
-      "hideSearch": "Hide search",
-      "resetFilters": "Reset filters",
-      "noCVsFound": "No CVs found",
-      "noCVsUploaded": "No CVs have been uploaded yet",
-      "noMatchingCVs": "No CVs match your search criteria",
-      "aria": {
-        "page": "CV administration",
-        "hideSearch": "Hide search filters",
-        "showSearch": "Show search filters",
-        "resetFilters": "Reset search filters",
-        "refreshList": "Refresh CV list",
-        "cvList": "List of CVs"
-      },
-      "detailPanel": {
-        "title": "CV Details",
-        "aria": {
-          "panel": "CV details panel",
-          "close": "Close CV details panel"
-        }
-      }
-    },
     "consent": {
       "title": "Consent for AI CV Processing",
       "version": "Terms version",
@@ -1722,7 +1912,35 @@
       "aria": {
         "closeModal": "Close consent modal"
       }
-    }
+    },
+    "addMember": "Add Member",
+    "createFirstOrganization": "Create your first organization",
+    "createOrganization": "Create Organization",
+    "deleteOrganization": "Delete Organization",
+    "description": "Description",
+    "editOrganization": "Edit Organization",
+    "inviteMember": "Invite Member",
+    "joinOrganization": "Join Organization",
+    "joinedDate": "Joined",
+    "loadingOrganizations": "Loading organizations...",
+    "manageMembers": "Manage Members",
+    "member": "Member",
+    "members": "Members",
+    "noCVsSubmitted": "No CVs submitted yet",
+    "noOrganizations": "No organizations found",
+    "noOrganizationsDesc": "You are not yet part of any organization.",
+    "organizationDescription": "Organization Description",
+    "organizationDetails": "Organization Details",
+    "organizationName": "Organization Name",
+    "organizationSettings": "Organization Settings",
+    "owner": "Owner",
+    "removeMember": "Remove Member",
+    "role": "Role",
+    "searchMembers": "Search members",
+    "searchOrganizations": "Search organizations...",
+    "submittedCVs": "Submitted CVs",
+    "viewCVs": "View CVs",
+    "viewDetails": "View Details"
   },
   "organizations": {
     "title": "Organizations",
@@ -1745,7 +1963,19 @@
       "edtech": "Education technology",
       "ecommerce": "E-commerce",
       "saas": "Software as a Service",
-      "other": "Other"
+      "other": "Other",
+      "softwareDevelopment": "Software development",
+      "webDevelopment": "Web development",
+      "mobileDevelopment": "Mobile development",
+      "devOpsCloud": "DevOps & Cloud",
+      "dataScience": "Data science",
+      "aiMl": "AI & Machine Learning",
+      "gameDevelopment": "Game development",
+      "qaTesting": "QA & Testing",
+      "technologyConsulting": "Technology consulting",
+      "financialTechnology": "Financial technology",
+      "healthTechnology": "Health technology",
+      "educationTechnology": "Education technology"
     },
     "sizes": {
       "select": "Select size"
@@ -1849,6 +2079,54 @@
     },
     "aria": {
       "navigation": "Organization navigation"
+    },
+    "all": "All",
+    "eoNotificationsDesc": "You are up to date!",
+    "filter": "Filter",
+    "loadingNotifications": "Loading notifications...",
+    "manageNotifications": "Manage your notifications and stay up to date",
+    "newNotification": "New notification",
+    "next": "Next",
+    "notifications_plural": "notifications",
+    "of": "of",
+    "oldest": "Oldest",
+    "page": "Page",
+    "previous": "Previous",
+    "read": "Read",
+    "recent": "Most recent",
+    "showing": "Showing",
+    "sortBy": "Sort by",
+    "unread": "Unread",
+    "unreadNotifications": "Unread notifications",
+    "selectOrganization": "Select organization",
+    "overview": {
+      "title": "Organization Information",
+      "editOrganization": "Edit Organization",
+      "organizationName": "Organization Name",
+      "description": "Description",
+      "taxId": "Tax ID",
+      "email": "Email",
+      "phone": "Phone",
+      "website": "Website",
+      "streetAddress": "Street Address",
+      "street": "Street",
+      "city": "City",
+      "stateProvince": "State/Province",
+      "state": "State",
+      "postalCode": "Postal Code",
+      "country": "Country",
+      "industry": "Industry",
+      "companySize": "Company Size",
+      "address": "Address",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "saveChanges": "Save Changes",
+      "websitePlaceholder": "https://example.com",
+      "validation": {
+        "nameTooShort": "Organization name must be at least 2 characters",
+        "invalidEmail": "Contact email is not valid",
+        "invalidWebsite": "Website URL is not valid"
+      }
     }
   },
   "notifications": {
@@ -2093,7 +2371,7 @@
     "clear": "Clear",
     "apply": "Apply",
     "reset": "Reset",
-    "confirm": "Confirm",
+    "confirm": "Are you sure?",
     "close": "Close",
     "closed": "Closed",
     "back": "Back",
@@ -2128,15 +2406,13 @@
     "tryAgain": "Try again",
     "somethingWentWrong": "Something went wrong",
     "pleaseWait": "Please wait...",
-    "confirm": "Are you sure?",
     "confirmDelete": "Are you sure you want to delete this?",
-    "saving": "Saving...",
     "updating": "Updating...",
     "deleting": "Deleting...",
-    "loading": "Loading...",
     "status": "Status",
     "submitting": "Submitting...",
-    "continue": "Continue"
+    "na": "N/A",
+    "charCount": "{{current}}/{{max}} characters"
   },
   "errors": {
     "invalidEmail": "Invalid email address",
@@ -2156,12 +2432,18 @@
     "loadFailed": "Failed to load",
     "tokenNotProvided": "Token not provided",
     "invalidOrExpiredToken": "Invalid or expired token",
-    "localeNotSupported": "This locale is not supported by the server"
+    "localeNotSupported": "This locale is not supported by the server",
+    "invalidServerResponse": "Invalid server response"
   },
   "legal": {
     "couldNotLoadTerms": "Could not load terms.",
     "terms": "Terms",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "aria": {
+      "termsContent": "Terms and conditions content"
+    },
+    "lastUpdatedLabel": "Last updated",
+    "versionLabel": "Version"
   },
   "bfi44": {
     "title": "BFI-44 Personality Test",
@@ -2208,6 +2490,8 @@
     "progress": "Progress",
     "answeredCount": "{{answered}} of {{total}} answered",
     "questionnaireProgress": "Questionnaire progress",
+    "adminPanel": "Manage Team",
+    "goToAdminPanel": "Go to BFI-44 administration panel",
     "results": {
       "visualOverview": "Visual Overview",
       "visualSubtitle": "Your personality across five dimensions",
@@ -2406,7 +2690,8 @@
       "assigned_other": "✓ {{count}} people assigned",
       "assignErrorFallback": "Error assigning employees",
       "removedOne": "✓ 1 person removed",
-      "removeErrorFallback": "Error removing employee"
+      "removeErrorFallback": "Error removing employee",
+      "assigned": "{{name}} has been assigned"
     }
   },
   "teamConfig": {
@@ -2755,7 +3040,8 @@
       "mediumHigh": "Medium-High",
       "medium": "Medium",
       "low": "Low",
-      "emerging": "Emerging"
+      "emerging": "Emerging",
+      "label": "Severity"
     },
     "source": {
       "expertRules": "Expert Rules",
@@ -2933,7 +3219,8 @@
       "cancelSelection": "Cancel Selection",
       "acceptRisks": "Accept {{count}} Risk",
       "acceptRisks_plural": "Accept {{count}} Risks",
-      "accepting": "Accepting..."
+      "accepting": "Accepting...",
+      "unnamedRisk": "Unnamed risk"
     },
     "card": {
       "type": "Type:",
@@ -2952,7 +3239,8 @@
       "budgetOverrun": "Budget Overrun:",
       "qualityScore": "Quality Score:",
       "days": "{{count}} day",
-      "days_plural": "{{count}} days"
+      "days_plural": "{{count}} days",
+      "unnamedRisk": "Unnamed risk"
     }
   },
   "projectQuestionnaire": {
@@ -3028,9 +3316,7 @@
     },
     "aria": {
       "closeModal": "Close personality consent dialog"
-    },
-    "adminPanel": "Manage Team",
-    "goToAdminPanel": "Go to BFI-44 administration panel"
+    }
   },
   "bfi44Admin": {
     "title": "BFI-44 Management",
@@ -3060,5 +3346,28 @@
       "email": "Email",
       "actions": "Actions"
     }
+  },
+  "riskSummary": {
+    "source": {
+      "cbr": "CBR",
+      "expertRules": "Expert Rules"
+    }
+  },
+  "riskFlowMap": {
+    "ariaVisualization": "Risk visualization map",
+    "ariaFlowDiagram": "Interactive risk flow diagram",
+    "ariaFlowControls": "Flow controls",
+    "ariaMinimap": "Minimap overview",
+    "ariaLegend": "Risk severity legend",
+    "riskSeverity": "Risk Severity",
+    "critical": "Critical",
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low",
+    "tip": "Tip:",
+    "clickNode": "Click on any risk node for details",
+    "zoomHint": "Use mouse wheel to zoom • Drag to pan",
+    "severity": "Severity:",
+    "ariaCloseDetails": "Close risk details"
   }
 }
