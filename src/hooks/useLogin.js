@@ -47,6 +47,7 @@ export function useLogin() {
     } catch {
       // Silent fallback
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**

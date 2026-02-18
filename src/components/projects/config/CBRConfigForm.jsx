@@ -74,10 +74,6 @@ export default function CBRConfigForm({ config, onChange, errors = {}, projectId
     }
   };
 
-  const effectiveTopN = poolData
-    ? poolData.effectiveTopN
-    : (poolData?.teamSize || 0) * localMultiplier;
-
   const hasMultiplierChanged = poolData && localMultiplier !== poolData.candidatePoolMultiplier;
 
   const handleDimensionWeightChange = (dimension, value) => {

@@ -78,6 +78,7 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('user');
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
 
   const setSession = useCallback((tokenValue, userData) => {
