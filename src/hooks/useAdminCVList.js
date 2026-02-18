@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllCVs } from '../api/cv';
 import { AuthContext } from '../contexts/AuthContext';
+import i18n from '../i18n';
 
 /**
  * Custom hook for Admin CV List page business logic
@@ -20,7 +21,7 @@ export function useAdminCVList() {
 
   useEffect(() => {
     if (user?.role !== 'org_admin') {
-      setError('Unauthorized access. Admin privileges required.');
+      setError(i18n.t('cv.admin.unauthorized'));
       setLoading(false);
       return;
     }
@@ -40,7 +41,7 @@ export function useAdminCVList() {
       setCVs(cvsData);
       setFilteredCVs(cvsData);
     } catch (err) {
-      setError(err.response?.data?.error || 'Error loading CVs');
+      setError(err.response?.data?.error || i18n.t('cv.admin.loadError'));
     } finally {
       setLoading(false);
     }

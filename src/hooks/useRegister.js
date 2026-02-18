@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { register as apiRegister, resendConfirmation } from '../api/auth';
+import i18n from '../i18n';
 import {
   validateRegistrationStep1,
   validateRegistrationStep2,
@@ -109,9 +110,9 @@ export function useRegister() {
       
       const res = await apiRegister(payload);
       setRegistered(true);
-      setResendMessage(res.data?.message || 'Account created. Check your email to verify.');
+      setResendMessage(res.data?.message || i18n.t('auth.register.accountCreated'));
     } catch (err) {
-      setError(err.response?.data?.error || 'Error creating account');
+      setError(err.response?.data?.error || i18n.t('auth.register.createError'));
     } finally {
       setLoading(false);
     }
@@ -143,7 +144,7 @@ export function useRegister() {
     setResendMessage('');
     
     if (!formData.email) {
-      setResendMessage('Please provide an email address to resend.');
+      setResendMessage(i18n.t('auth.register.provideEmail'));
       return;
     }
     
@@ -154,9 +155,9 @@ export function useRegister() {
         name: formData.username,
         role: formData.role
       });
-      setResendMessage(res.data?.message || 'Verification email resent.');
+      setResendMessage(res.data?.message || i18n.t('auth.register.emailResent'));
     } catch (err) {
-      setResendMessage(err.response?.data?.error || 'Error resending the email.');
+      setResendMessage(err.response?.data?.error || i18n.t('auth.register.resendError'));
     } finally {
       setResendLoading(false);
     }

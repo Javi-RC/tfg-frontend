@@ -1,9 +1,11 @@
+import i18n from '../i18n';
+
 /**
  * Extracts a helpful user-facing message from an Axios error.
  * Falls back to status + a generic message when the API response
  * doesn't match the expected shape.
  */
-export function getApiErrorMessage(error, fallbackMessage = 'Request failed') {
+export function getApiErrorMessage(error, fallbackMessage = i18n.t('common.requestFailed')) {
   const status = error?.response?.status;
   const data = error?.response?.data;
 

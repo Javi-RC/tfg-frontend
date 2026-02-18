@@ -64,11 +64,11 @@ export default function DynamicTeamBuilder({
 
       // Validate required fields
       if (!organizationId) {
-        throw new Error('Organization ID is required');
+        throw new Error(t('projects.teamBuilder.orgIdRequired'));
       }
 
       if (!project) {
-        throw new Error('Project data is required');
+        throw new Error(t('projects.teamBuilder.projectDataRequired'));
       }
 
       // Ensure mainTechnologies is always an array

@@ -7,6 +7,7 @@ import {
 import { completeProject } from '../api/projects';
 import { submitProjectOutcome } from '../api/manualRisks';
 import { RISK_STATUS } from '../types/riskTypes';
+import i18n from '../i18n';
 
 /**
  * Custom hook for managing project risk monitoring and outcome submission
@@ -43,7 +44,7 @@ export function useRiskMonitoringAndOutcome(projectId) {
       const response = await getProjectRisksFiltered(projectId, filters);
       setRisks(response.data?.data?.risks || response.data?.risks || []);
     } catch (err) {
-      setError(err.response?.data?.error || 'Error loading risks');
+      setError(err.response?.data?.error || i18n.t('risks.monitoring.loadError'));
       console.error('Error loading risks:', err);
     } finally {
       setLoading(false);
@@ -100,7 +101,7 @@ export function useRiskMonitoringAndOutcome(projectId) {
       
       return true;
     } catch (err) {
-      setError(err.response?.data?.error || 'Error marking risk as occurred');
+      setError(err.response?.data?.error || i18n.t('risks.monitoring.markOccurredError'));
       console.error('Error marking risk as occurred:', err);
       return false;
     } finally {
@@ -121,7 +122,7 @@ export function useRiskMonitoringAndOutcome(projectId) {
       setOutcomeFormData(formData);
       return formData;
     } catch (err) {
-      setError(err.response?.data?.error || 'Error loading outcome form');
+      setError(err.response?.data?.error || i18n.t('risks.monitoring.loadOutcomeError'));
       console.error('Error loading outcome form:', err);
       return null;
     } finally {
@@ -197,13 +198,13 @@ export function useRiskMonitoringAndOutcome(projectId) {
 
       return data;
     } catch (err) {
-      const errorMsg = err.response?.data?.error || 'Error submitting outcome';
+      const errorMsg = err.response?.data?.error || i18n.t('risks.monitoring.submitOutcomeError');
       setError(errorMsg);
       console.error('Error submitting outcome:', err);
       
       // Handle specific error cases
       if (errorMsg.includes('completed first')) {
-        setError('Project must be marked as completed first. Please try again.');
+        setError(i18n.t('risks.monitoring.projectNotCompleted'));
       }
       
       return null;

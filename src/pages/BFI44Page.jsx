@@ -65,7 +65,7 @@ export default function BFI44Page() {
       }
     } catch (err) {
       console.error('Error loading BFI-44 data:', err);
-      setError(err.response?.data?.error || 'Error loading questionnaire');
+      setError(err.response?.data?.error || t('bfi44.errors.loadError'));
     } finally {
       setLoading(false);
     }
@@ -154,7 +154,7 @@ export default function BFI44Page() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
       console.error('Error reloading questionnaire:', err);
-      setError('Error reloading questionnaire');
+      setError(t('bfi44.errors.reloadError'));
     } finally {
       setLoading(false);
     }

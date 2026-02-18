@@ -86,14 +86,14 @@ export function useProfile() {
   const validateDraft = (data) => {
     const trimmedName = (data.name || '').trim();
     if (trimmedName.length < 2 || trimmedName.length > 50) {
-      return 'Name must be between 2 and 50 characters.';
+      return t('profile.validation.nameLength');
     }
 
     const tz = (data.timezone || '').trim();
     if (tz) {
       const ianaLike = /^[A-Za-z0-9._+-]+(?:\/[A-Za-z0-9._+-]+)+$/;
       if (!ianaLike.test(tz)) {
-        return 'Timezone must be a valid IANA value (e.g. Europe/Madrid).';
+        return t('profile.validation.timezoneInvalid');
       }
     }
 
@@ -101,11 +101,11 @@ export function useProfile() {
     const end = (data.preferredWorkingHours?.end || '').trim();
     const hhmm = /^([01]\d|2[0-3]):[0-5]\d$/;
     if ((start && !end) || (!start && end)) {
-      return 'Preferred working hours must include both start and end.';
+      return t('profile.validation.workHoursIncomplete');
     }
     if (start && end) {
       if (!hhmm.test(start) || !hhmm.test(end)) {
-        return 'Preferred working hours must be in HH:MM format.';
+        return t('profile.validation.workHoursFormat');
       }
     }
 
@@ -114,11 +114,11 @@ export function useProfile() {
 
   const extractApiErrorMessage = (err) => {
     const data = err?.response?.data;
-    if (!data) return 'Could not update profile. Please try again.';
+    if (!data) return t('profile.errors.updateFailed');
     if (typeof data === 'string') return data;
     if (data.message) return data.message;
     if (data.error) return data.error;
-    return 'Could not update profile. Please try again.';
+    return t('profile.errors.updateFailed');
   };
 
   /**
@@ -157,7 +157,7 @@ export function useProfile() {
       setConsentError(
         err?.response?.data?.error ||
         err?.response?.data?.message ||
-        'Could not load consent status.'
+        t('profile.errors.consentLoadFailed')
       );
     } finally {
       setConsentLoading(false);
@@ -389,7 +389,7 @@ export function useProfile() {
 
   const handleConsentAccepted = async () => {
     setShowConsentModal(false);
-    setConsentSuccess('Consent saved. You can now upload CVs.');
+    setConsentSuccess(t('profile.success.consentSaved'));
     await loadConsent();
   };
 
@@ -451,7 +451,7 @@ export function useProfile() {
       setPersonalityConsentError(
         err?.response?.data?.error ||
         err?.response?.data?.message ||
-        'Could not load personality consent status.'
+        t('profile.errors.personalityConsentLoadFailed')
       );
     } finally {
       setPersonalityConsentLoading(false);

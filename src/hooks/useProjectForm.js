@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { 
   createProject, 
   updateProject, 
@@ -116,6 +117,7 @@ export function useProjectForm() {
   const { id } = useParams();
   const isEditMode = Boolean(id);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState(getInitialFormData());
@@ -228,7 +230,7 @@ export function useProjectForm() {
         url: error?.config?.url,
         method: error?.config?.method
       });
-      alert(getApiErrorMessage(error, 'Error loading project'));
+      alert(getApiErrorMessage(error, t('projects.errors.loadFailed')));
       navigate('/projects');
     } finally {
       setLoading(false);
@@ -310,7 +312,7 @@ export function useProjectForm() {
    */
   const handleSubmit = async (shouldActivate = false) => {
     if (!selectedOrg) {
-      alert('Please select an organization');
+      alert(t('projects.errors.selectOrganization'));
       return;
     }
 
@@ -378,7 +380,7 @@ export function useProjectForm() {
         url: error?.config?.url,
         method: error?.config?.method
       });
-      alert(getApiErrorMessage(error, 'Error saving project'));
+      alert(getApiErrorMessage(error, t('projects.errors.saveFailed')));
     } finally {
       setLoading(false);
     }

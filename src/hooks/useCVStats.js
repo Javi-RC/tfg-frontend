@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getCVStats } from '../api/cv';
+import i18n from '../i18n';
 
 /**
  * Custom hook for CV Stats page business logic
@@ -26,7 +27,7 @@ export function useCVStats() {
       const statsData = response.data?.stats || response.data;
       setStats(statsData);
     } catch (err) {
-      setError(err.response?.data?.error || 'Error loading statistics');
+      setError(err.response?.data?.error || i18n.t('cv.stats.loadError'));
     } finally {
       setLoading(false);
     }

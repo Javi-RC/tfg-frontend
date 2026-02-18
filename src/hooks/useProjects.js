@@ -1,4 +1,5 @@
 import { useState, useEffect, useContext } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../contexts/AuthContext';
 import {
   getMyProjects,
@@ -14,6 +15,7 @@ import { getMyOrganizations } from '../api/organization';
  */
 export function useProjects() {
   const { user } = useContext(AuthContext);
+  const { t } = useTranslation();
   
   const [myProjects, setMyProjects] = useState([]);
   const [assignedProjects, setAssignedProjects] = useState([]);
@@ -161,7 +163,7 @@ export function useProjects() {
    * Delete a project
    */
   const handleDeleteProject = async (projectId) => {
-    if (!window.confirm('Are you sure you want to delete this project?')) {
+    if (!window.confirm(t('projects.confirmDelete'))) {
       return false;
     }
 

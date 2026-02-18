@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../contexts/AuthContext';
 import {
   getOrganizationById,
@@ -18,6 +19,7 @@ import {
  */
 export function useOrganization() {
   const { id } = useParams();
+  const { t } = useTranslation();
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   
@@ -66,7 +68,7 @@ export function useOrganization() {
         setOrganization(res.data);
       }
     } catch (err) {
-      setError(err.response?.data?.error || err.message || 'Error loading organization');
+      setError(err.response?.data?.error || err.message || t('organization.errors.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -93,7 +95,7 @@ export function useOrganization() {
       await loadOrganization();
       return true;
     } catch (err) {
-      setError(err.response?.data?.error || 'Error updating settings');
+      setError(err.response?.data?.error || t('organization.errors.updateSettingsFailed'));
       return false;
     }
   };
@@ -107,7 +109,7 @@ export function useOrganization() {
       await loadOrganization();
       return true;
     } catch (err) {
-      setError(err.response?.data?.error || 'Error updating organization');
+      setError(err.response?.data?.error || t('organization.errors.updateFailed'));
       return false;
     }
   };
@@ -121,7 +123,7 @@ export function useOrganization() {
       await loadOrganization();
       return true;
     } catch (err) {
-      setError(err.response?.data?.error || 'Error adding employee');
+      setError(err.response?.data?.error || t('organization.errors.addEmployeeFailed'));
       return false;
     }
   };
@@ -130,7 +132,7 @@ export function useOrganization() {
    * Remove employee from organization
    */
   const handleRemoveEmployee = async (employeeId) => {
-    if (!window.confirm('Are you sure you want to remove this employee?')) {
+    if (!window.confirm(t('organization.errors.confirmRemoveEmployee'))) {
       return false;
     }
 
@@ -139,7 +141,7 @@ export function useOrganization() {
       await loadOrganization();
       return true;
     } catch (err) {
-      setError(err.response?.data?.error || 'Error removing employee');
+      setError(err.response?.data?.error || t('organization.errors.removeEmployeeFailed'));
       return false;
     }
   };
@@ -153,7 +155,7 @@ export function useOrganization() {
       await loadOrganization();
       return true;
     } catch (err) {
-      setError(err.response?.data?.error || 'Error updating employee');
+      setError(err.response?.data?.error || t('organization.errors.updateEmployeeFailed'));
       return false;
     }
   };
@@ -167,7 +169,7 @@ export function useOrganization() {
       await loadOrganization();
       return true;
     } catch (err) {
-      setError(err.response?.data?.error || 'Error updating CV status');
+      setError(err.response?.data?.error || t('organization.errors.updateCvStatusFailed'));
       return false;
     }
   };

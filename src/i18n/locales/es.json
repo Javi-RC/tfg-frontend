@@ -83,7 +83,13 @@
     "login": "Iniciar sesión",
     "logout": "Cerrar sesión",
     "signup": "Registrarse",
-    "register": "Registrarse",
+    "register": {
+      "accountCreated": "Cuenta creada. Revisa tu correo para verificar.",
+      "createError": "Error al crear la cuenta",
+      "provideEmail": "Proporciona un correo electrónico para reenviar.",
+      "emailResent": "Correo de verificación reenviado.",
+      "resendError": "Error al reenviar el correo."
+    },
     "signInTitle": "Inicia sesión en tu cuenta",
     "dontHaveAccount": "¿No tienes una cuenta?",
     "alreadyHaveAccount": "¿Ya tienes una cuenta?",
@@ -128,7 +134,12 @@
     "invalidCredentials": "Credenciales inválidas",
     "loginError": "Error al iniciar sesión. Por favor, inténtalo de nuevo.",
     "oauthError": "Error de autenticación: {{detail}}. Si el problema persiste, completa tu perfil o contacta con soporte.",
-    "google": "Google"
+    "google": "Google",
+    "completeProfile": {
+      "invalidToken": "Token de autenticación inválido. Por favor, inicia sesión de nuevo.",
+      "serverError": "El servidor respondió {{status}}",
+      "saveFailed": "Error al guardar el perfil"
+    }
   },
   "register": {
     "title": "¡Bienvenido!",
@@ -315,7 +326,21 @@
       "saveChanges": "Guardar cambios"
     },
     "saving": "Guardando...",
-    "userAvatar": "Avatar del usuario"
+    "userAvatar": "Avatar del usuario",
+    "validation": {
+      "nameLength": "El nombre debe tener entre 2 y 50 caracteres.",
+      "timezoneInvalid": "La zona horaria debe ser un valor IANA válido (ej. Europe/Madrid).",
+      "workHoursIncomplete": "Las horas de trabajo preferidas deben incluir inicio y fin.",
+      "workHoursFormat": "Las horas de trabajo preferidas deben estar en formato HH:MM."
+    },
+    "errors": {
+      "updateFailed": "No se pudo actualizar el perfil. Inténtalo de nuevo.",
+      "consentLoadFailed": "No se pudo cargar el estado del consentimiento.",
+      "personalityConsentLoadFailed": "No se pudo cargar el estado del consentimiento de personalidad."
+    },
+    "success": {
+      "consentSaved": "Consentimiento guardado. Ya puedes subir CVs."
+    }
   },
   "team": {
     "personalityFit": {
@@ -716,7 +741,9 @@
       "noSignificantChanges": "No se detectaron cambios significativos",
       "addName": "Añadir {{name}}",
       "assignSelected": "Asignar Equipo Seleccionado ({{count}})",
-      "score": "Puntuación: {{score}}"
+      "score": "Puntuación: {{score}}",
+      "orgIdRequired": "El ID de la organización es obligatorio",
+      "projectDataRequired": "Los datos del proyecto son obligatorios"
     },
     "riskAnalysisTab": {
       "loading": {
@@ -798,8 +825,8 @@
       "csvName": "Nombre",
       "csvSeverity": "Severidad",
       "csvType": "Tipo",
-      "csvDescription": "Descripci\u00f3n",
-      "csvMitigation": "Mitigaci\u00f3n"
+      "csvDescription": "Descripción",
+      "csvMitigation": "Mitigación"
     },
     "backToProjects": "Volver a Proyectos",
     "viewDetails": "Ver Detalles",
@@ -1325,10 +1352,45 @@
     },
     "riskAnalysis": {
       "loadError": "Error al cargar el análisis de riesgos"
+    },
+    "errors": {
+      "loadFailed": "Error al cargar el proyecto",
+      "selectOrganization": "Por favor, selecciona una organización",
+      "saveFailed": "Error al guardar el proyecto",
+      "deleteFailed": "Error al eliminar el proyecto"
+    },
+    "teamConfig": {
+      "configNotLoaded": "Configuración no cargada"
     }
   },
   "validation": {
-    "completeRequiredFields": "Por favor, completa todos los campos obligatorios antes de continuar al siguiente paso."
+    "completeRequiredFields": "Por favor, completa todos los campos obligatorios antes de continuar al siguiente paso.",
+    "project": {
+      "nameMinLength": "El nombre del proyecto debe tener al menos 3 caracteres",
+      "nameMaxLength": "El nombre del proyecto no debe exceder 100 caracteres",
+      "descriptionMinLength": "La descripción debe tener al menos 10 caracteres",
+      "teamSizeRequired": "El tamaño del equipo es obligatorio",
+      "teamSizeRange": "El tamaño del equipo debe estar entre 1 y 100",
+      "startDateRequired": "La fecha de inicio es obligatoria",
+      "endDateRequired": "La fecha de fin es obligatoria",
+      "endDateAfterStart": "La fecha de fin debe ser posterior a la de inicio",
+      "selectOrganization": "Por favor, selecciona una organización",
+      "syncCommRequired": "Por favor, indica si se requiere comunicación sincrónica",
+      "realTimeCommRequired": "El nivel de comunicación en tiempo real es obligatorio",
+      "weeklyMeetingsRequired": "La cantidad de reuniones semanales es obligatoria",
+      "techRequired": "Se requiere al menos una tecnología",
+      "experienceLevelRequired": "El nivel de experiencia es obligatorio"
+    },
+    "auth": {
+      "emailRequired": "El correo electrónico es obligatorio",
+      "emailInvalid": "Por favor, introduce un correo electrónico válido",
+      "passwordRequired": "La contraseña es obligatoria",
+      "passwordMinLength": "La contraseña debe tener al menos {{min}} caracteres",
+      "usernameMinLength": "El nombre de usuario debe tener al menos {{min}} caracteres",
+      "userTypeRequired": "Por favor, indica qué tipo de usuario eres",
+      "passwordsDoNotMatch": "Las contraseñas no coinciden",
+      "passwordRequirements": "La contraseña no cumple los requisitos"
+    }
   },
   "organization": {
     "status": {
@@ -1442,6 +1504,22 @@
       "updateError": "Error al actualizar la configuración",
       "saving": "Guardando...",
       "saveSettings": "Guardar Configuración"
+    },
+    "errors": {
+      "nameRequired": "El nombre de la organización es obligatorio",
+      "nameMinLength": "El nombre de la organización debe tener al menos 2 caracteres",
+      "emailRequired": "El correo electrónico es obligatorio",
+      "emailInvalid": "El formato del correo electrónico no es válido",
+      "websiteInvalid": "La URL del sitio web no es válida",
+      "createFailed": "Error al crear la organización",
+      "loadFailed": "Error al cargar la organización",
+      "updateSettingsFailed": "Error al actualizar la configuración",
+      "updateFailed": "Error al actualizar la organización",
+      "addEmployeeFailed": "Error al añadir empleado",
+      "confirmRemoveEmployee": "¿Estás seguro de que deseas eliminar a este empleado?",
+      "removeEmployeeFailed": "Error al eliminar empleado",
+      "updateEmployeeFailed": "Error al actualizar empleado",
+      "updateCvStatusFailed": "Error al actualizar el estado del CV"
     }
   },
   "cv": {
@@ -1688,7 +1766,8 @@
       "uploadButton": "Subir CV",
       "pageTitle": "Sube tu CV",
       "pageSubtitle": "Sube tu CV en formato PDF o TXT para comenzar",
-      "errorFallback": "Error al subir el CV. Por favor, inténtalo de nuevo."
+      "errorFallback": "Error al subir el CV. Por favor, inténtalo de nuevo.",
+      "invalidResponseFormat": "Formato de respuesta inválido"
     },
     "search": {
       "title": "Buscar Currículos",
@@ -1764,7 +1843,9 @@
           "panel": "Panel de detalles del currículo",
           "close": "Cerrar panel de detalles del currículo"
         }
-      }
+      },
+      "unauthorized": "Acceso no autorizado. Se requieren privilegios de administrador.",
+      "loadError": "Error al cargar los CVs"
     },
     "stats": {
       "totalSkills": "Habilidades totales",
@@ -1788,7 +1869,8 @@
         "topSkillsRegion": "Principales habilidades",
         "lastUpdateInfo": "Información de última actualización",
         "statCard": "{{title}}: {{value}}. {{description}}"
-      }
+      },
+      "loadError": "Error al cargar las estadísticas"
     },
     "cvNotFound": "Currículo no encontrado",
     "errorLoadingStatistics": "Error al cargar estadísticas",
@@ -2412,7 +2494,9 @@
     "submitting": "Enviando...",
     "updating": "Actualizando...",
     "na": "N/D",
-    "charCount": "{{current}}/{{max}} caracteres"
+    "charCount": "{{current}}/{{max}} caracteres",
+    "unknownOrganization": "Organización desconocida",
+    "requestFailed": "La solicitud ha fallado"
   },
   "errors": {
     "invalidEmail": "Dirección de correo electrónico inválida",
@@ -2547,6 +2631,10 @@
           }
         }
       }
+    },
+    "errors": {
+      "loadFailed": "Error al cargar el cuestionario",
+      "reloadFailed": "Error al recargar el cuestionario"
     }
   },
   "form": {
@@ -3369,5 +3457,56 @@
     "zoomHint": "Usa la rueda del ratón para zoom • Arrastra para mover",
     "severity": "Severidad:",
     "ariaCloseDetails": "Cerrar detalles del riesgo"
+  },
+  "risks": {
+    "errors": {
+      "loadFailed": "Error al cargar los riesgos",
+      "projectIdRequired": "El ID del proyecto es obligatorio",
+      "addFailed": "Error al añadir el riesgo manual",
+      "updateFailed": "Error al actualizar el riesgo manual",
+      "deleteFailed": "Error al eliminar el riesgo manual",
+      "rePredictFailed": "Error al volver a predecir los riesgos",
+      "nameDescriptionRequired": "El nombre y la descripción del proyecto son obligatorios",
+      "predictionFailed": "Error al predecir los riesgos del proyecto"
+    },
+    "suggestions": {
+      "addProjectName": "Añade el nombre del proyecto",
+      "addDescription": "Añade la descripción del proyecto",
+      "addStartDate": "Añade la fecha de inicio",
+      "addEndDate": "Añade la fecha de fin",
+      "addTechnologies": "💡 Añade las tecnologías principales para mayor precisión",
+      "defineExperience": "💡 Define el nivel de experiencia requerido",
+      "addLanguages": "💡 Añade los idiomas requeridos",
+      "defineCountries": "💡 Define los países involucrados",
+      "configureWorkMode": "💡 Configura el modo de trabajo (remoto/híbrido/presencial)",
+      "addCoreHours": "💡 Añade las horas centrales para coordinación horaria",
+      "addKnowledgeTools": "💡 Especifica las herramientas de gestión del conocimiento",
+      "defineDocumentation": "💡 Define el nivel de documentación",
+      "indicateOrgChart": "💡 Indica si existe organigrama",
+      "specifyTaskTracking": "💡 Especifica el sistema de seguimiento de tareas",
+      "defineRoles": "💡 Define los roles y responsabilidades",
+      "indicateCompliance": "💡 Indica las necesidades de cumplimiento normativo",
+      "addWeeklyHours": "💡 Añade las horas semanales por miembro",
+      "defineManagement": "Define el método de gestión"
+    },
+    "completeness": {
+      "low": "Añade más datos para mejores predicciones de riesgo",
+      "medium": "¡Buen comienzo! Añade más detalles para mejorar la precisión",
+      "high": "¡Genial! Solo faltan unos campos para predicciones óptimas",
+      "excellent": "¡Excelente! Todos los datos disponibles para predicciones de alta confianza"
+    },
+    "workflow": {
+      "predictionComplete": "Predicción completada: {{warnings}} alertas de reglas, {{cbr}} riesgos CBR",
+      "predictionError": "Error al ejecutar la predicción de riesgos",
+      "risksAccepted": "{{count}} riesgos aceptados para seguimiento",
+      "acceptError": "Error al aceptar los riesgos"
+    },
+    "monitoring": {
+      "loadError": "Error al cargar los riesgos",
+      "markOccurredError": "Error al marcar el riesgo como ocurrido",
+      "loadOutcomeError": "Error al cargar el formulario de resultado",
+      "submitOutcomeError": "Error al enviar el resultado",
+      "projectNotCompleted": "El proyecto debe marcarse como completado primero. Inténtalo de nuevo."
+    }
   }
 }

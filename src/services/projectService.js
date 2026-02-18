@@ -2,6 +2,7 @@
  * Project Data Transformation Service
  * Handles normalization and transformation of project data
  */
+import i18n from '../i18n';
 
 /**
  * Normalize project manager data
@@ -12,7 +13,7 @@ export function normalizeProjectManager(projectManager) {
   if (!projectManager) return null;
   
   if (typeof projectManager === 'string') {
-    return { _id: projectManager, username: 'Unknown' };
+    return { _id: projectManager, username: i18n.t('common.unknown') };
   }
   
   return projectManager;
@@ -27,7 +28,7 @@ export function normalizeOrganization(organization) {
   if (!organization) return null;
   
   if (typeof organization === 'string') {
-    return { _id: organization, name: 'Unknown Organization' };
+    return { _id: organization, name: i18n.t('common.unknownOrganization') };
   }
   
   return organization;

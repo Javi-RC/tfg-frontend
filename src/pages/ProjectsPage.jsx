@@ -41,7 +41,7 @@ export default function ProjectsPage() {
       await handleDeleteProject(project._id);
       await reloadProjects();
     } catch (error) {
-      alert(error.response?.data?.error || 'Error deleting project');
+      alert(error.response?.data?.error || t('projects.errors.deleteFailed'));
     }
   };
 

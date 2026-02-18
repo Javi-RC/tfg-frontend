@@ -43,7 +43,7 @@ function CompleteProfile() {
         window.history.replaceState(null, '', url.toString());
       } catch (err) {
         console.error('[CompleteProfile] Error processing token from URL:', err);
-        setError('Invalid authentication token. Please try logging in again.');
+        setError(t('auth.completeProfile.invalidToken'));
       }
     }
   }, [searchParams, auth]);
@@ -99,7 +99,7 @@ function CompleteProfile() {
         ? JSON.stringify(err.response.data)
         : err?.response?.data;
 
-      const userMessage = backendMessage || (status ? `Server responded ${status}` : err.message) || 'Error saving profile';
+      const userMessage = backendMessage || (status ? t('auth.completeProfile.serverResponded', { status }) : err.message) || t('auth.completeProfile.saveFailed');
       setError(userMessage + (details ? ` — ${details}` : ''));
     } finally {
       setIsLoading(false);

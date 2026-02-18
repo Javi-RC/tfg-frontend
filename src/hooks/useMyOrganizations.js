@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../contexts/AuthContext';
 import { 
   getMyOrganizations, 
@@ -13,6 +14,7 @@ import {
 export function useMyOrganizations() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -147,23 +149,23 @@ export function useMyOrganizations() {
     const email = normalizeTrimmed(createForm.email);
 
     if (!name) {
-      setCreateError('Organization name is required');
+      setCreateError(t('organization.errors.nameRequired'));
       return false;
     }
     if (name.length < 2) {
-      setCreateError('Organization name must be at least 2 characters');
+      setCreateError(t('organization.errors.nameMinLength'));
       return false;
     }
     if (!email) {
-      setCreateError('Email is required');
+      setCreateError(t('organization.errors.emailRequired'));
       return false;
     }
     if (!isValidEmail(email)) {
-      setCreateError('Email format is not valid');
+      setCreateError(t('organization.errors.emailInvalid'));
       return false;
     }
     if (!isValidWebsite(createForm.website)) {
-      setCreateError('Website URL is not valid');
+      setCreateError(t('organization.errors.websiteInvalid'));
       return false;
     }
     setCreateError(null);
@@ -224,7 +226,7 @@ export function useMyOrganizations() {
 
       return true;
     } catch (error) {
-      setCreateError(error.response?.data?.error || 'Error creating organization');
+      setCreateError(error.response?.data?.error || t('organization.errors.createFailed'));
       return false;
     } finally {
       setCreating(false);

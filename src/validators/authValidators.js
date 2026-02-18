@@ -2,6 +2,7 @@
  * Authentication Form Validators
  * Pure functions for validating authentication-related forms
  */
+import i18n from '../i18n';
 
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const MIN_PASSWORD_LENGTH = 6;
@@ -14,11 +15,11 @@ export const MIN_USERNAME_LENGTH = 3;
  */
 export function validateEmail(email) {
   if (!email || !email.trim()) {
-    return { isValid: false, error: 'Email is required' };
+    return { isValid: false, error: i18n.t('validation.auth.emailRequired') };
   }
   
   if (!EMAIL_REGEX.test(email)) {
-    return { isValid: false, error: 'Please enter a valid email address' };
+    return { isValid: false, error: i18n.t('validation.auth.emailInvalid') };
   }
   
   return { isValid: true, error: null };
@@ -31,11 +32,11 @@ export function validateEmail(email) {
  */
 export function validatePassword(password) {
   if (!password) {
-    return { isValid: false, error: 'Password is required' };
+    return { isValid: false, error: i18n.t('validation.auth.passwordRequired') };
   }
   
   if (password.length < MIN_PASSWORD_LENGTH) {
-    return { isValid: false, error: `Password must be at least ${MIN_PASSWORD_LENGTH} characters` };
+    return { isValid: false, error: i18n.t('validation.auth.passwordMinLength', { min: MIN_PASSWORD_LENGTH }) };
   }
   
   return { isValid: true, error: null };
@@ -48,7 +49,7 @@ export function validatePassword(password) {
  */
 export function validateUsername(username) {
   if (!username || username.trim().length < MIN_USERNAME_LENGTH) {
-    return { isValid: false, error: `Username must be at least ${MIN_USERNAME_LENGTH} characters` };
+    return { isValid: false, error: i18n.t('validation.auth.usernameMinLength', { min: MIN_USERNAME_LENGTH }) };
   }
   
   return { isValid: true, error: null };
@@ -61,7 +62,7 @@ export function validateUsername(username) {
  */
 export function validateRole(role) {
   if (!role) {
-    return { isValid: false, error: 'Please indicate what type of user you are' };
+    return { isValid: false, error: i18n.t('validation.auth.userTypeRequired') };
   }
   
   return { isValid: true, error: null };
@@ -119,7 +120,7 @@ export function isPasswordStrong(password) {
  */
 export function validatePasswordConfirmation(password, confirmPassword) {
   if (password !== confirmPassword) {
-    return { isValid: false, error: 'The passwords do not match' };
+    return { isValid: false, error: i18n.t('validation.auth.passwordsDoNotMatch') };
   }
   
   return { isValid: true, error: null };
@@ -151,7 +152,7 @@ export function validateRegistrationStep1(formData) {
  */
 export function validateRegistrationStep2(formData) {
   if (!isPasswordStrong(formData.password)) {
-    return { isValid: false, error: 'The password does not meet the requirements' };
+    return { isValid: false, error: i18n.t('validation.auth.passwordRequirements') };
   }
   
   const confirmValidation = validatePasswordConfirmation(formData.password, formData.confirm);

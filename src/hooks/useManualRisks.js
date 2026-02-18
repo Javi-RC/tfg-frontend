@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import i18n from '../i18n';
 import {
   addManualRisk,
   getAllProjectRisks,
@@ -42,7 +43,7 @@ export function useManualRisks(projectId) {
       
       setManualRisks(Array.isArray(risksData) ? risksData : []);
     } catch (err) {
-      const errorMessage = err.response?.data?.error || err.message || 'Failed to load risks';
+      const errorMessage = err.response?.data?.error || err.message || i18n.t('risks.errors.loadFailed');
       console.error('❌ Error loading risks:', err);
       console.error('❌ Error response:', err.response?.data);
       setError(errorMessage);
@@ -57,7 +58,7 @@ export function useManualRisks(projectId) {
    */
   const addRisk = useCallback(async (riskData) => {
     if (!projectId) {
-      setError('Project ID is required');
+      setError(i18n.t('risks.errors.projectIdRequired'));
       return null;
     }
 
@@ -72,7 +73,7 @@ export function useManualRisks(projectId) {
 
       return newRisk;
     } catch (err) {
-      const errorMessage = err.response?.data?.error || err.message || 'Failed to add manual risk';
+      const errorMessage = err.response?.data?.error || err.message || i18n.t('risks.errors.addFailed');
       setError(errorMessage);
       return null;
     } finally {
@@ -85,7 +86,7 @@ export function useManualRisks(projectId) {
    */
   const updateRisk = useCallback(async (riskId, updateData) => {
     if (!projectId) {
-      setError('Project ID is required');
+      setError(i18n.t('risks.errors.projectIdRequired'));
       return null;
     }
 
@@ -101,7 +102,7 @@ export function useManualRisks(projectId) {
 
       return updatedRisk;
     } catch (err) {
-      const errorMessage = err.response?.data?.error || err.message || 'Failed to update manual risk';
+      const errorMessage = err.response?.data?.error || err.message || i18n.t('risks.errors.updateFailed');
       setError(errorMessage);
       return null;
     } finally {
@@ -114,7 +115,7 @@ export function useManualRisks(projectId) {
    */
   const deleteRisk = useCallback(async (riskId) => {
     if (!projectId) {
-      setError('Project ID is required');
+      setError(i18n.t('risks.errors.projectIdRequired'));
       return false;
     }
 
@@ -127,7 +128,7 @@ export function useManualRisks(projectId) {
 
       return true;
     } catch (err) {
-      const errorMessage = err.response?.data?.error || err.message || 'Failed to delete manual risk';
+      const errorMessage = err.response?.data?.error || err.message || i18n.t('risks.errors.deleteFailed');
       setError(errorMessage);
       return false;
     } finally {
@@ -141,7 +142,7 @@ export function useManualRisks(projectId) {
    */
   const repredictRisks = useCallback(async () => {
     if (!projectId) {
-      setError('Project ID is required');
+      setError(i18n.t('risks.errors.projectIdRequired'));
       return false;
     }
 
@@ -160,7 +161,7 @@ export function useManualRisks(projectId) {
       
       return true;
     } catch (err) {
-      const errorMessage = err.response?.data?.error || err.message || 'Failed to re-predict risks';
+      const errorMessage = err.response?.data?.error || err.message || i18n.t('risks.errors.rePredictFailed');
       console.error('❌ Error re-predicting risks:', err);
       console.error('❌ Error response:', err.response?.data);
       setError(errorMessage);

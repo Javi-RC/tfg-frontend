@@ -161,7 +161,7 @@ export default function TeamConfigModal({ projectId, onClose, onSave }) {
       setErrors({});
 
       if (!config) {
-        setValidationMessage({ type: 'error', text: 'Configuration not loaded' });
+        setValidationMessage({ type: 'error', text: t('projects.teamConfig.configNotLoaded') });
         setSaving(false);
         return;
       }

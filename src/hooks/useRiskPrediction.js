@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { predictProjectRisks } from '../api/projects';
+import i18n from '../i18n';
 
 /**
  * Custom hook for managing project risk predictions
@@ -22,79 +23,79 @@ export function useRiskPrediction() {
 
     // Basic required fields (always needed)
     if (!project.projectName) {
-      suggestions.push('Add project name');
+      suggestions.push(i18n.t('risks.suggestions.addProjectName'));
     } else {
       completedFields++;
     }
 
     if (!project.briefDescription) {
-      suggestions.push('Add project description');
+      suggestions.push(i18n.t('risks.suggestions.addDescription'));
     } else {
       completedFields++;
     }
 
     if (!project.estimatedStartDate) {
-      suggestions.push('Add start date');
+      suggestions.push(i18n.t('risks.suggestions.addStartDate'));
     } else {
       completedFields++;
     }
 
     if (!project.estimatedEndDate) {
-      suggestions.push('Add end date');
+      suggestions.push(i18n.t('risks.suggestions.addEndDate'));
     } else {
       completedFields++;
     }
 
     // Technical fields (improve prediction quality)
     if (project.mainTechnologies?.length) completedFields++;
-    else suggestions.push('💡 Add main technologies for better accuracy');
+    else suggestions.push(i18n.t('risks.suggestions.addTechnologies'));
 
     if (project.requiredExperienceLevel) completedFields++;
-    else suggestions.push('💡 Define required experience level');
+    else suggestions.push(i18n.t('risks.suggestions.defineExperience'));
 
     // Communication fields
     if (project.requiredLanguages?.length) completedFields++;
-    else suggestions.push('💡 Add required languages');
+    else suggestions.push(i18n.t('risks.suggestions.addLanguages'));
 
     if (project.involvedCountries?.length) completedFields++;
-    else suggestions.push('💡 Define involved countries');
+    else suggestions.push(i18n.t('risks.suggestions.defineCountries'));
 
     // Work model fields
     if (project.workMode) completedFields++;
-    else suggestions.push('💡 Configure work mode (remote/hybrid/on-site)');
+    else suggestions.push(i18n.t('risks.suggestions.configureWorkMode'));
 
     if (project.coreHours?.start && project.coreHours?.end) completedFields++;
-    else suggestions.push('💡 Add core hours for timezone coordination');
+    else suggestions.push(i18n.t('risks.suggestions.addCoreHours'));
 
     // Knowledge Management
     if (project.knowledgeManagementTools?.length) completedFields++;
-    else suggestions.push('💡 Specify knowledge management tools');
+    else suggestions.push(i18n.t('risks.suggestions.specifyKnowledgeTools'));
 
     if (project.documentationLevel) completedFields++;
-    else suggestions.push('💡 Define documentation level');
+    else suggestions.push(i18n.t('risks.suggestions.defineDocumentation'));
 
     // Organizational structure
     if (project.hasOrganizationalChart !== undefined) completedFields++;
-    else suggestions.push('💡 Indicate if organizational chart exists');
+    else suggestions.push(i18n.t('risks.suggestions.indicateOrgChart'));
 
     if (project.taskTrackingSystem) completedFields++;
-    else suggestions.push('💡 Specify task tracking system');
+    else suggestions.push(i18n.t('risks.suggestions.specifyTaskTracking'));
 
     // Roles and responsibilities
     if (project.rolesAndResponsibilities?.length) completedFields++;
-    else suggestions.push('💡 Define roles and responsibilities');
+    else suggestions.push(i18n.t('risks.suggestions.defineRoles'));
 
     // Compliance
     if (project.requiresRegulatoryCompliance !== undefined) completedFields++;
-    else suggestions.push('💡 Indicate regulatory compliance needs');
+    else suggestions.push(i18n.t('risks.suggestions.indicateCompliance'));
 
     // Team size
     if (project.weeklyHoursPerMember) completedFields++;
-    else suggestions.push('💡 Add weekly hours per member');
+    else suggestions.push(i18n.t('risks.suggestions.addWeeklyHours'));
 
     // Management
     if (project.managementMethod) completedFields++;
-    else suggestions.push('Define management method');
+    else suggestions.push(i18n.t('risks.suggestions.defineManagement'));
 
     const completeness = (completedFields / totalFields) * 100;
 
@@ -105,12 +106,12 @@ export function useRiskPrediction() {
       totalFields,
       suggestions: suggestions.slice(0, 5), // Max 5 suggestions
       message: completeness < 30 
-        ? 'Add more data for better risk predictions'
+        ? i18n.t('risks.completeness.low')
         : completeness < 60
-        ? 'Good start! Add more details to improve accuracy'
+        ? i18n.t('risks.completeness.medium')
         : completeness < 90
-        ? 'Great! Just a few more fields for optimal predictions'
-        : 'Excellent! All data available for high-confidence predictions'
+        ? i18n.t('risks.completeness.high')
+        : i18n.t('risks.completeness.excellent')
     };
   };
 
@@ -131,7 +132,7 @@ export function useRiskPrediction() {
       if (!project.projectName || !project.briefDescription) {
         setError({
           type: 'validation',
-          message: 'Project name and description are required'
+          message: i18n.t('risks.errors.nameDescriptionRequired')
         });
         setLoading(false);
         return null;
@@ -160,7 +161,7 @@ export function useRiskPrediction() {
       return { success: true, data: enrichedData };
 
     } catch (err) {
-      const errorMessage = err.response?.data?.error || 'Error predicting project risks';
+      const errorMessage = err.response?.data?.error || i18n.t('risks.errors.predictionFailed');
       setError({
         type: 'api',
         message: errorMessage

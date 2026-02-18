@@ -4,6 +4,7 @@ import {
   acceptRisksForMonitoring
 } from '../api/riskService';
 import { useNotifications } from '../contexts/useNotifications';
+import i18n from '../i18n';
 
 /**
  * Hook for managing three-layer risk prediction workflow
@@ -50,11 +51,11 @@ export function useRiskPredictionWorkflow(projectId) {
 
         showNotification({
           type: 'success',
-          message: `Prediction complete: ${dt?.length || 0} expert-rule warnings, ${cbr?.length || 0} CBR risks`
+          message: i18n.t('risks.workflow.predictionComplete', { warnings: dt?.length || 0, cbr: cbr?.length || 0 })
         });
       }
     } catch (err) {
-      const message = err.response?.data?.message || 'Error running risk prediction';
+      const message = err.response?.data?.message || i18n.t('risks.workflow.predictionError');
       setError(message);
       showNotification({ type: 'error', message });
     } finally {
@@ -113,7 +114,7 @@ export function useRiskPredictionWorkflow(projectId) {
       if (response.data?.success) {
         showNotification({
           type: 'success',
-          message: `${selectedRiskIds.length} risks accepted for monitoring`
+          message: i18n.t('risks.workflow.risksAccepted', { count: selectedRiskIds.length })
         });
 
         // Clear selection after acceptance
@@ -122,7 +123,7 @@ export function useRiskPredictionWorkflow(projectId) {
         return response.data;
       }
     } catch (err) {
-      const message = err.response?.data?.message || 'Error accepting risks';
+      const message = err.response?.data?.message || i18n.t('risks.workflow.acceptError');
       setAcceptanceError(message);
       showNotification({ type: 'error', message });
     } finally {

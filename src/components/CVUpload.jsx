@@ -164,7 +164,7 @@ export default function CVUpload({ onUploadSuccess, onCancel }) {
         return;
       }
 
-      throw new Error('Invalid response format');
+      throw new Error(t('cv.upload.invalidResponseFormat'));
     } catch (err) {
       if (err?.response?.status === 403) {
         setHasConsent(false);

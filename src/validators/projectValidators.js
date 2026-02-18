@@ -2,6 +2,7 @@
  * Project Form Validators
  * Pure functions for validating project-related forms
  */
+import i18n from '../i18n';
 
 /**
  * Validates project name
@@ -10,11 +11,11 @@
  */
 export function validateProjectName(projectName) {
   if (!projectName || projectName.trim().length < 3) {
-    return { isValid: false, error: 'Project name must be at least 3 characters' };
+    return { isValid: false, error: i18n.t('validation.project.nameMinLength') };
   }
   
   if (projectName.length > 100) {
-    return { isValid: false, error: 'Project name must not exceed 100 characters' };
+    return { isValid: false, error: i18n.t('validation.project.nameMaxLength') };
   }
   
   return { isValid: true, error: null };
@@ -27,7 +28,7 @@ export function validateProjectName(projectName) {
  */
 export function validateProjectDescription(description) {
   if (!description || description.trim().length < 10) {
-    return { isValid: false, error: 'Description must be at least 10 characters' };
+    return { isValid: false, error: i18n.t('validation.project.descriptionMinLength') };
   }
   
   return { isValid: true, error: null };
@@ -42,11 +43,11 @@ export function validateTeamSize(teamSize) {
   const size = Number(teamSize);
   
   if (teamSize === null || teamSize === undefined || teamSize === '' || isNaN(size)) {
-    return { isValid: false, error: 'Team size is required' };
+    return { isValid: false, error: i18n.t('validation.project.teamSizeRequired') };
   }
   
   if (size < 1 || size > 100) {
-    return { isValid: false, error: 'Team size must be between 1 and 100' };
+    return { isValid: false, error: i18n.t('validation.project.teamSizeRange') };
   }
   
   return { isValid: true, error: null };
@@ -60,18 +61,18 @@ export function validateTeamSize(teamSize) {
  */
 export function validateDateRange(startDate, endDate) {
   if (!startDate) {
-    return { isValid: false, error: 'Start date is required' };
+    return { isValid: false, error: i18n.t('validation.project.startDateRequired') };
   }
   
   if (!endDate) {
-    return { isValid: false, error: 'End date is required' };
+    return { isValid: false, error: i18n.t('validation.project.endDateRequired') };
   }
   
   const start = new Date(startDate);
   const end = new Date(endDate);
   
   if (start >= end) {
-    return { isValid: false, error: 'End date must be after start date' };
+    return { isValid: false, error: i18n.t('validation.project.endDateAfterStart') };
   }
   
   return { isValid: true, error: null };
@@ -84,7 +85,7 @@ export function validateDateRange(startDate, endDate) {
  */
 export function validateOrganization(organizationId) {
   if (!organizationId) {
-    return { isValid: false, error: 'Please select an organization' };
+    return { isValid: false, error: i18n.t('validation.project.selectOrganization') };
   }
   
   return { isValid: true, error: null };
@@ -133,15 +134,15 @@ export function validateStep2(formData) {
   const errors = {};
   
   if (!formData.requiresSynchronousCommunication) {
-    errors.requiresSynchronousCommunication = 'Please select if synchronous communication is required';
+    errors.requiresSynchronousCommunication = i18n.t('validation.project.syncCommRequired');
   }
   
   if (!formData.realTimeCommunicationLevel) {
-    errors.realTimeCommunicationLevel = 'Real-time communication level is required';
+    errors.realTimeCommunicationLevel = i18n.t('validation.project.realTimeCommRequired');
   }
   
   if (formData.weeklyMeetingsCount === null || formData.weeklyMeetingsCount === undefined) {
-    errors.weeklyMeetingsCount = 'Weekly meetings count is required';
+    errors.weeklyMeetingsCount = i18n.t('validation.project.weeklyMeetingsRequired');
   }
   
   // Languages are optional, no validation needed
@@ -161,11 +162,11 @@ export function validateStep3(formData) {
   const errors = {};
   
   if (!formData.mainTechnologies || formData.mainTechnologies.length === 0) {
-    errors.mainTechnologies = 'At least one technology is required';
+    errors.mainTechnologies = i18n.t('validation.project.techRequired');
   }
   
   if (!formData.requiredExperienceLevel) {
-    errors.requiredExperienceLevel = 'Experience level is required';
+    errors.requiredExperienceLevel = i18n.t('validation.project.experienceLevelRequired');
   }
   
   return {

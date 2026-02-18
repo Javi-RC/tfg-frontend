@@ -83,7 +83,13 @@
     "login": "Log in",
     "logout": "Log out",
     "signup": "Sign up",
-    "register": "Register",
+    "register": {
+      "accountCreated": "Account created. Check your email to verify.",
+      "createError": "Error creating account",
+      "provideEmail": "Please provide an email address to resend.",
+      "emailResent": "Verification email resent.",
+      "resendError": "Error resending the email."
+    },
     "signInTitle": "Sign in to your account",
     "dontHaveAccount": "Don't have an account?",
     "alreadyHaveAccount": "Already have an account?",
@@ -128,7 +134,12 @@
     "invalidCredentials": "Invalid credentials",
     "loginError": "Error logging in. Please try again.",
     "oauthError": "Authentication error: {{detail}}. If the issue persists, complete your profile or contact support.",
-    "google": "Google"
+    "google": "Google",
+    "completeProfile": {
+      "invalidToken": "Invalid authentication token. Please try logging in again.",
+      "serverError": "Server responded {{status}}",
+      "saveFailed": "Error saving profile"
+    }
   },
   "register": {
     "title": "Welcome!",
@@ -315,7 +326,21 @@
       "saveChanges": "Save changes"
     },
     "saving": "Saving...",
-    "userAvatar": "User avatar"
+    "userAvatar": "User avatar",
+    "validation": {
+      "nameLength": "Name must be between 2 and 50 characters.",
+      "timezoneInvalid": "Timezone must be a valid IANA value (e.g. Europe/Madrid).",
+      "workHoursIncomplete": "Preferred working hours must include both start and end.",
+      "workHoursFormat": "Preferred working hours must be in HH:MM format."
+    },
+    "errors": {
+      "updateFailed": "Could not update profile. Please try again.",
+      "consentLoadFailed": "Could not load consent status.",
+      "personalityConsentLoadFailed": "Could not load personality consent status."
+    },
+    "success": {
+      "consentSaved": "Consent saved. You can now upload CVs."
+    }
   },
   "team": {
     "personalityFit": {
@@ -715,7 +740,9 @@
       "noSignificantChanges": "No significant changes detected",
       "addName": "Add {{name}}",
       "assignSelected": "Assign Selected Team ({{count}})",
-      "score": "Score: {{score}}"
+      "score": "Score: {{score}}",
+      "orgIdRequired": "Organization ID is required",
+      "projectDataRequired": "Project data is required"
     },
     "riskAnalysisTab": {
       "loading": {
@@ -1325,10 +1352,45 @@
     },
     "riskAnalysis": {
       "loadError": "Error loading risk analysis"
+    },
+    "errors": {
+      "loadFailed": "Error loading project",
+      "selectOrganization": "Please select an organization",
+      "saveFailed": "Error saving project",
+      "deleteFailed": "Error deleting project"
+    },
+    "teamConfig": {
+      "configNotLoaded": "Configuration not loaded"
     }
   },
   "validation": {
-    "completeRequiredFields": "Please complete all required fields before continuing to the next step."
+    "completeRequiredFields": "Please complete all required fields before continuing to the next step.",
+    "project": {
+      "nameMinLength": "Project name must be at least 3 characters",
+      "nameMaxLength": "Project name must not exceed 100 characters",
+      "descriptionMinLength": "Description must be at least 10 characters",
+      "teamSizeRequired": "Team size is required",
+      "teamSizeRange": "Team size must be between 1 and 100",
+      "startDateRequired": "Start date is required",
+      "endDateRequired": "End date is required",
+      "endDateAfterStart": "End date must be after start date",
+      "selectOrganization": "Please select an organization",
+      "syncCommRequired": "Please select if synchronous communication is required",
+      "realTimeCommRequired": "Real-time communication level is required",
+      "weeklyMeetingsRequired": "Weekly meetings count is required",
+      "techRequired": "At least one technology is required",
+      "experienceLevelRequired": "Experience level is required"
+    },
+    "auth": {
+      "emailRequired": "Email is required",
+      "emailInvalid": "Please enter a valid email address",
+      "passwordRequired": "Password is required",
+      "passwordMinLength": "Password must be at least {{min}} characters",
+      "usernameMinLength": "Username must be at least {{min}} characters",
+      "userTypeRequired": "Please indicate what type of user you are",
+      "passwordsDoNotMatch": "The passwords do not match",
+      "passwordRequirements": "The password does not meet the requirements"
+    }
   },
   "organization": {
     "status": {
@@ -1442,6 +1504,22 @@
       "updateError": "Error updating settings",
       "saving": "Saving...",
       "saveSettings": "Save Settings"
+    },
+    "errors": {
+      "nameRequired": "Organization name is required",
+      "nameMinLength": "Organization name must be at least 2 characters",
+      "emailRequired": "Email is required",
+      "emailInvalid": "Email format is not valid",
+      "websiteInvalid": "Website URL is not valid",
+      "createFailed": "Error creating organization",
+      "loadFailed": "Error loading organization",
+      "updateSettingsFailed": "Error updating settings",
+      "updateFailed": "Error updating organization",
+      "addEmployeeFailed": "Error adding employee",
+      "confirmRemoveEmployee": "Are you sure you want to remove this employee?",
+      "removeEmployeeFailed": "Error removing employee",
+      "updateEmployeeFailed": "Error updating employee",
+      "updateCvStatusFailed": "Error updating CV status"
     }
   },
   "cv": {
@@ -1688,7 +1766,8 @@
       "uploadButton": "Upload CV",
       "pageTitle": "Upload Your CV",
       "pageSubtitle": "Upload your CV in PDF or TXT format to get started",
-      "errorFallback": "Error uploading CV. Please try again."
+      "errorFallback": "Error uploading CV. Please try again.",
+      "invalidResponseFormat": "Invalid response format"
     },
     "search": {
       "title": "Search CVs",
@@ -1764,7 +1843,9 @@
           "panel": "CV details panel",
           "close": "Close CV details panel"
         }
-      }
+      },
+      "unauthorized": "Unauthorized access. Admin privileges required.",
+      "loadError": "Error loading CVs"
     },
     "stats": {
       "totalSkills": "Total Skills",
@@ -1788,7 +1869,8 @@
         "topSkillsRegion": "Top skills",
         "lastUpdateInfo": "Last update information",
         "statCard": "{{title}}: {{value}}. {{description}}"
-      }
+      },
+      "loadError": "Error loading statistics"
     },
     "cvNotFound": "CV Not Found",
     "errorLoadingStatistics": "Error Loading Statistics",
@@ -2412,7 +2494,9 @@
     "status": "Status",
     "submitting": "Submitting...",
     "na": "N/A",
-    "charCount": "{{current}}/{{max}} characters"
+    "charCount": "{{current}}/{{max}} characters",
+    "unknownOrganization": "Unknown Organization",
+    "requestFailed": "Request failed"
   },
   "errors": {
     "invalidEmail": "Invalid email address",
@@ -2547,6 +2631,10 @@
           }
         }
       }
+    },
+    "errors": {
+      "loadFailed": "Error loading questionnaire",
+      "reloadFailed": "Error reloading questionnaire"
     }
   },
   "form": {
@@ -3369,5 +3457,56 @@
     "zoomHint": "Use mouse wheel to zoom • Drag to pan",
     "severity": "Severity:",
     "ariaCloseDetails": "Close risk details"
+  },
+  "risks": {
+    "errors": {
+      "loadFailed": "Failed to load risks",
+      "projectIdRequired": "Project ID is required",
+      "addFailed": "Failed to add manual risk",
+      "updateFailed": "Failed to update manual risk",
+      "deleteFailed": "Failed to delete manual risk",
+      "rePredictFailed": "Failed to re-predict risks",
+      "nameDescriptionRequired": "Project name and description are required",
+      "predictionFailed": "Error predicting project risks"
+    },
+    "suggestions": {
+      "addProjectName": "Add project name",
+      "addDescription": "Add project description",
+      "addStartDate": "Add start date",
+      "addEndDate": "Add end date",
+      "addTechnologies": "💡 Add main technologies for better accuracy",
+      "defineExperience": "💡 Define required experience level",
+      "addLanguages": "💡 Add required languages",
+      "defineCountries": "💡 Define involved countries",
+      "configureWorkMode": "💡 Configure work mode (remote/hybrid/on-site)",
+      "addCoreHours": "💡 Add core hours for timezone coordination",
+      "addKnowledgeTools": "💡 Specify knowledge management tools",
+      "defineDocumentation": "💡 Define documentation level",
+      "indicateOrgChart": "💡 Indicate if organizational chart exists",
+      "specifyTaskTracking": "💡 Specify task tracking system",
+      "defineRoles": "💡 Define roles and responsibilities",
+      "indicateCompliance": "💡 Indicate regulatory compliance needs",
+      "addWeeklyHours": "💡 Add weekly hours per member",
+      "defineManagement": "Define management method"
+    },
+    "completeness": {
+      "low": "Add more data for better risk predictions",
+      "medium": "Good start! Add more details to improve accuracy",
+      "high": "Great! Just a few more fields for optimal predictions",
+      "excellent": "Excellent! All data available for high-confidence predictions"
+    },
+    "workflow": {
+      "predictionComplete": "Prediction complete: {{warnings}} expert-rule warnings, {{cbr}} CBR risks",
+      "predictionError": "Error running risk prediction",
+      "risksAccepted": "{{count}} risks accepted for monitoring",
+      "acceptError": "Error accepting risks"
+    },
+    "monitoring": {
+      "loadError": "Error loading risks",
+      "markOccurredError": "Error marking risk as occurred",
+      "loadOutcomeError": "Error loading outcome form",
+      "submitOutcomeError": "Error submitting outcome",
+      "projectNotCompleted": "Project must be marked as completed first. Please try again."
+    }
   }
 }
