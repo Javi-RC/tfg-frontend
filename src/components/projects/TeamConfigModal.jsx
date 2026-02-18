@@ -347,6 +347,7 @@ export default function TeamConfigModal({ projectId, onClose, onSave }) {
               config={config.cbr}
               onChange={handleCBRChange}
               errors={errors.cbr || {}}
+              projectId={projectId}
             />
           )}
           

@@ -1,10 +1,12 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import CVConsentModal from '../components/cv/CVConsentModal';
+import PersonalityConsentModal from '../components/personality/PersonalityConsentModal';
 import { useProfile } from '../hooks/useProfile';
 import { 
   ProfileHeader, 
   ConsentSection, 
+  PersonalityConsentSection,
   PreferencesSection, 
   CVManagementSection 
 } from '../components/profile';
@@ -42,7 +44,19 @@ export default function Profile() {
     navigateToCV,
     navigateToCVStats,
     navigateToAdminCVs,
-    loadConsent
+    loadConsent,
+    // Personality consent
+    personalityConsentLoading,
+    personalityConsentError,
+    personalityConsentSuccess,
+    personalityConsentData,
+    hasPersonalityConsent,
+    showPersonalityConsentModal,
+    loadPersonalityConsent,
+    openPersonalityConsentModal,
+    closePersonalityConsentModal,
+    handlePersonalityConsentAccepted,
+    revokePersonalityConsent
   } = useProfile();
 
   const role = profileUser?.role || authUser?.role;
@@ -144,6 +158,17 @@ export default function Profile() {
             onRevokeConsent={revokeConsent}
           />
 
+          <PersonalityConsentSection
+            loading={personalityConsentLoading}
+            error={personalityConsentError}
+            success={personalityConsentSuccess}
+            hasConsent={hasPersonalityConsent}
+            consentData={personalityConsentData}
+            onRefresh={loadPersonalityConsent}
+            onOpenConsentModal={openPersonalityConsentModal}
+            onRevokeConsent={revokePersonalityConsent}
+          />
+
           <CVManagementSection
             isAdmin={isAdmin}
             onNavigateToCV={navigateToCV}
@@ -158,6 +183,12 @@ export default function Profile() {
           show={showConsentModal}
           onClose={closeConsentModal}
           onAccepted={handleConsentAccepted}
+        />
+
+        <PersonalityConsentModal
+          show={showPersonalityConsentModal}
+          onClose={closePersonalityConsentModal}
+          onAccepted={handlePersonalityConsentAccepted}
         />
       </div>
     </div>

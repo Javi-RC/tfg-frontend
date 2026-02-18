@@ -1,5 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { AuthContext } from '../contexts/AuthContext';
 import { validateLoginForm } from '../validators/authValidators';
 
@@ -9,6 +10,7 @@ import { validateLoginForm } from '../validators/authValidators';
  */
 export function useLogin() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { login, loginWithOAuth } = useContext(AuthContext);
   
   const [form, setForm] = useState({ email: '', password: '' });
@@ -33,7 +35,7 @@ export function useLogin() {
         }
         
         setError(
-          `Authentication error: ${decoded}. If the issue persists, complete your profile or contact support.`
+          t('auth.oauthError', { detail: decoded })
         );
 
         // Clean URL
@@ -65,7 +67,11 @@ export function useLogin() {
       await login(form);
       navigate('/', { replace: true });
     } catch (err) {
-      setError(err.response?.data?.error || 'Error logging in. Please try again.');
+      const backendError = err.response?.data?.error;
+      const errorMap = {
+        'Invalid credentials': t('auth.invalidCredentials'),
+      };
+      setError(errorMap[backendError] || backendError || t('auth.loginError'));
     } finally {
       setIsLoading(false);
     }

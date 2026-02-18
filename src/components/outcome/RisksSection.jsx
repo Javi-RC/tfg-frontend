@@ -26,6 +26,10 @@ export default function RisksSection({ formData, setFormData, predictedRisks = [
       quality_degradation: t('outcome.risks.types.qualityDegradation'),
       vendor_issue: t('outcome.risks.types.vendorIssue'),
       resource_unavailability: t('outcome.risks.types.resourceUnavailability'),
+      timezone_scheduling_gap: t('outcome.risks.types.timezoneSchedulingGap'),
+      social_isolation: t('outcome.risks.types.socialIsolation'),
+      team_autonomy_risk: t('outcome.risks.types.teamAutonomyRisk'),
+      travel_availability_risk: t('outcome.risks.types.travelAvailabilityRisk'),
       other: t('outcome.risks.types.other')
     };
     return labels[type] || type;
@@ -35,10 +39,20 @@ export default function RisksSection({ formData, setFormData, predictedRisks = [
     const colors = {
       critical: '#DC2626',
       high: '#F59E0B',
+      'medium-high': '#F59E0B',
       medium: '#EAB308',
       low: '#10B981'
     };
     return colors[severity] || '#6B7280';
+  };
+
+  const normalizeSeverity = (severity) => {
+    // Normalize severity keys for translation
+    const normalized = {
+      'medium-high': 'mediumHigh',
+      'medium_high': 'mediumHigh'
+    };
+    return normalized[severity] || severity;
   };
 
   const actualizedById = useMemo(() => {
@@ -189,7 +203,7 @@ export default function RisksSection({ formData, setFormData, predictedRisks = [
                     background: getSeverityColor(riskMeta.severity)
                   }}
                 >
-                  {t(`risk.severity.${riskMeta.severity || 'medium'}`).toUpperCase()}
+                  {t(`risk.severity.${normalizeSeverity(riskMeta.severity || 'medium')}`).toUpperCase()}
                 </span>
                 <span style={styles.metaSeparator}>|</span>
                 <span style={styles.riskType}>{getRiskTypeLabel(riskMeta.type)}</span>

@@ -47,10 +47,12 @@ export function useProjectDetail() {
 
   /**
    * Load project data
+   * @param {Object} options
+   * @param {boolean} [options.silent=false] - When true, skips setting loading state (used for background refreshes)
    */
-  const loadProject = async () => {
+  const loadProject = async ({ silent = false } = {}) => {
     try {
-      setLoading(true);
+      if (!silent) setLoading(true);
       const res = await getProjectById(id, true);
       const data = res.data?.success ? res.data.data : res.data;
       
@@ -83,9 +85,11 @@ export function useProjectDetail() {
       
       setProject(data);
       
-      // Set default tab to 'teamAnalysis' for Draft projects
+      // Set default tab based on project status
       if (data.status === PROJECT_STATUS.DRAFT && activeTab === 'overview') {
         setActiveTab('teamAnalysis');
+      } else if (data.status !== PROJECT_STATUS.DRAFT && activeTab === 'teamAnalysis') {
+        setActiveTab('overview');
       }
     } catch (error) {
       alert(error.response?.data?.error || t('projects.messages.errorLoading'));
@@ -119,7 +123,7 @@ export function useProjectDetail() {
     try {
       await activateProject(id);
       alert(t('projects.projectActivated'));
-      await loadProject();
+      await loadProject({ silent: true });
     } catch (error) {
       alert(error.response?.data?.error || t('projects.messages.errorActivating'));
     }
@@ -136,7 +140,7 @@ export function useProjectDetail() {
     try {
       await completeProject(id);
       alert(t('projects.projectCompleted'));
-      await loadProject();
+      await loadProject({ silent: true });
     } catch (error) {
       alert(error.response?.data?.error || t('projects.messages.errorCompleting'));
     }
@@ -153,7 +157,7 @@ export function useProjectDetail() {
     try {
       await cancelProject(id);
       alert(t('projects.projectCancelled'));
-      await loadProject();
+      await loadProject({ silent: true });
     } catch (error) {
       alert(error.response?.data?.error || t('projects.messages.errorCancelling'));
     }
@@ -165,7 +169,7 @@ export function useProjectDetail() {
   const handleAssignEmployee = async (employeeId) => {
     try {
       await assignEmployeeToProject(id, employeeId);
-      await loadProject();
+      await loadProject({ silent: true });
       setShowAssignModal(false);
     } catch (error) {
       alert(error.response?.data?.error || t('projects.messages.errorAssigning'));
@@ -182,7 +186,7 @@ export function useProjectDetail() {
 
     try {
       await removeEmployeeFromProject(id, employeeId);
-      await loadProject();
+      await loadProject({ silent: true });
     } catch (error) {
       alert(error.response?.data?.error || t('projects.messages.errorRemoving'));
     }

@@ -201,7 +201,7 @@ export default function MyCVPage() {
           onSuccess={() => {
             toggleSubmitToOrgModal();
             clearError();
-            alert('CV submitted successfully to organization!');
+            alert(t('cv.cvSubmittedSuccess'));
           }}
         />
       )}

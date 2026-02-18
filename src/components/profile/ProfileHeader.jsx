@@ -117,7 +117,7 @@ export default function ProfileHeader({
               letterSpacing: '0.5px'
             }}>
               <Shield size={13} />
-              {role || '—'}
+              {role === 'org_admin' ? t('profile.organizationAdmin') : role === 'employee' ? t('profile.employee') : (role || '—')}
             </div>
           </div>
         </div>

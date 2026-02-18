@@ -172,10 +172,10 @@ const NotificationsPage = () => {
               aria-label={t('notifications.aria.previousPage')}
             >
               <ChevronLeft size={16} style={{ marginRight: '6px' }} />
-              Previous
+              {t('notifications.previous')}
             </button>
             <span className="pagination-info">
-              Page {currentPage} of {pagination.pages}
+              {t('notifications.page')} {currentPage} {t('notifications.of')} {pagination.pages}
             </span>
             <button 
               className="pagination-btn"
@@ -183,7 +183,7 @@ const NotificationsPage = () => {
               disabled={currentPage === pagination.pages}
               aria-label={t('notifications.aria.nextPage')}
             >
-              Next
+              {t('notifications.next')}
               <ChevronRight size={16} style={{ marginLeft: '6px' }} />
             </button>
           </div>

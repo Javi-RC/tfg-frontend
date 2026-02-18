@@ -17,7 +17,7 @@ export default function ManualRisksList({
   onRefresh,
   canManage = false
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [expandedRiskId, setExpandedRiskId] = useState(null);
   const [deletingRiskId, setDeletingRiskId] = useState(null);
 
@@ -290,7 +290,7 @@ export default function ManualRisksList({
                 {risk.createdAt && (
                   <div style={styles.detailFooter}>
                     <small style={styles.detailFooterText}>
-                      {t('risk.manual.addedOn', { date: new Date(risk.createdAt).toLocaleDateString() })}
+                      {t('risk.manual.addedOn', { date: new Date(risk.createdAt).toLocaleDateString(i18n.language) })}
                     </small>
                   </div>
                 )}

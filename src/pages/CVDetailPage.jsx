@@ -163,7 +163,7 @@ export default function CVDetailPage() {
                   cv.organizationStatus === 'rejected' ? '#c62828' :
                   cv.organizationStatus === 'reviewed' ? '#1565c0' : '#f57c00'
               }}>
-                {cv.organizationStatus}
+                {t(`cv.status.${cv.organizationStatus}`)}
               </span>
             )}
             <SecondaryButton onClick={() => navigate(-1)}>

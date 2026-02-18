@@ -7,7 +7,7 @@ import { ClipboardList, MapPin, Globe, Briefcase } from 'lucide-react';
  * Displays a processed CV summary in a selectable card.
  */
 export default function AdminCVCard({ cv, onClick, isSelected }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const email = cv.contact?.email || t('cv.noEmail');
   const location = cv.contact?.location?.city || '';
   const skillsCount = cv.skills?.technical?.length || 0;
@@ -95,7 +95,7 @@ export default function AdminCVCard({ cv, onClick, isSelected }) {
             fontWeight: '500'
           }}
         >
-          processed
+          {t('cv.status.processed')}
         </div>
       </div>
 
@@ -121,7 +121,7 @@ export default function AdminCVCard({ cv, onClick, isSelected }) {
       </div>
 
       <p style={{ fontSize: '12px', color: '#999' }}>
-        {t('cv.uploaded')}: {cv.processingDate ? new Date(cv.processingDate).toLocaleDateString() : '—'}
+        {t('cv.uploaded')}: {cv.processingDate ? new Date(cv.processingDate).toLocaleDateString(i18n.language) : '—'}
       </p>
     </div>
   );

@@ -2,6 +2,18 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import SynergyBadge from './SynergyBadge';
 
+jest.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key, params) => {
+      const translations = {
+        'team.synergy.badge.notAvailable': 'N/A',
+        'team.synergy.badge.label': `Synergy: ${params?.score ?? ''}`,
+      };
+      return translations[key] || key;
+    },
+  }),
+}));
+
 describe('SynergyBadge', () => {
   it('renders with score and label', () => {
     render(<SynergyBadge score={85} />);

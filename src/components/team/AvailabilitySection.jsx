@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Zap, Calendar, Plane, MapPin, Clock, Moon, Phone } from 'lucide-react';
+import i18n from '../../i18n';
 
 /**
  * AvailabilitySection - Employee availability (from CV)
@@ -101,9 +102,9 @@ function formatDateValue(dateStr, t) {
   if (Number.isNaN(date.getTime())) return t('team.availability.cv.unknown', { defaultValue: 'Unknown' });
 
   try {
-    return new Intl.DateTimeFormat(undefined, { year: 'numeric', month: 'short', day: '2-digit' }).format(date);
+    return new Intl.DateTimeFormat(i18n.language, { year: 'numeric', month: 'short', day: '2-digit' }).format(date);
   } catch {
-    return date.toLocaleDateString();
+    return date.toLocaleDateString(i18n.language);
   }
 }
 

@@ -1,4 +1,5 @@
 import api from './axios';
+import i18n from '../i18n';
 
 /**
  * BFI-44 API Service
@@ -6,17 +7,44 @@ import api from './axios';
  */
 
 /**
+ * Get current language from i18n
+ * @returns {string} Current language code ('en' or 'es')
+ */
+const getCurrentLanguage = () => {
+  const rawLanguage = i18n.language || 'en';
+  return rawLanguage.split('-')[0]; // Extract base language
+};
+
+/**
  * Get all 44 questions with the Likert scale
+ * @param {string} language - Language preference ('en' or 'es'). Defaults to current i18n language
  * @returns {Promise} Response with questions and scale
  */
-export const getQuestions = () => api.get('/api/bfi-44/questions');
+export const getQuestions = (language = null) => {
+  const effectiveLanguage = language || getCurrentLanguage();
+  
+  return api.get('/api/bfi-44/questions', {
+    params: {
+      language: effectiveLanguage
+    }
+  });
+};
 
 /**
  * Submit responses for the BFI-44 questionnaire
  * @param {Object} responses - Object with question IDs as keys and values 1-5
+ * @param {string} language - Language preference ('en' or 'es'). Defaults to current i18n language
  * @returns {Promise} Response with calculated results
  */
-export const submitResponses = (responses) => api.post('/api/bfi-44/submit', { responses });
+export const submitResponses = (responses, language = null) => {
+  const effectiveLanguage = language || getCurrentLanguage();
+  
+  return api.post('/api/bfi-44/submit', { responses }, {
+    params: {
+      language: effectiveLanguage
+    }
+  });
+};
 
 /**
  * Get the authenticated user's BFI-44 profile

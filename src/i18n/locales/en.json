@@ -119,7 +119,10 @@
     "accountVerificationFailed": "Account verification failed",
     "invalidVerificationToken": "Invalid or expired verification token",
     "returnToLogin": "Return to Login",
-    "loadingProject": "Loading project..."
+    "loadingProject": "Loading project...",
+    "invalidCredentials": "Invalid credentials",
+    "loginError": "Error logging in. Please try again.",
+    "oauthError": "Authentication error: {{detail}}. If the issue persists, complete your profile or contact support."
   },
   "register": {
     "title": "Welcome!",
@@ -179,6 +182,7 @@
     "profileCompletion": "Profile Completion",
     "loadingProfile": "Loading profile...",
     "noProfileFound": "Profile not found",
+    "updateSuccess": "Profile updated successfully.",
     "organization": "Organization",
     "preferences": "Preferences",
     "cvManagement": "CV Management",
@@ -187,6 +191,8 @@
     "revokeConsent": "Revoke Consent",
     "consentGranted": "Data consent granted",
     "consentRevoked": "Data consent revoked",
+    "consentRevokedDetail": "Consent revoked. You cannot upload CVs until you accept again.",
+    "consentRevokeError": "Could not revoke consent.",
     "viewMyCV": "View my CV",
     "viewCVStats": "View CV Statistics",
     "manageAllCVs": "Manage All CVs",
@@ -272,6 +278,29 @@
         "viewAllCvsAdmin": "View all CVs (administrator)"
       }
     },
+    "personalityConsent": {
+      "title": "Personality Profiling Consent",
+      "description": "Manage consent for personality profiling via the BFI-44 questionnaire.",
+      "labels": {
+        "status": "Personality profiling consent",
+        "acceptedAt": "Accepted at"
+      },
+      "status": {
+        "accepted": "Accepted",
+        "notAccepted": "Not accepted"
+      },
+      "reviewAndAccept": "Review & Accept",
+      "revoke": "Revoke Consent",
+      "revokeConfirm": "Are you sure you want to revoke your personality profiling consent? Your existing results will be retained but you won't be able to retake the questionnaire.",
+      "granted": "Personality profiling consent granted.",
+      "revoked": "Personality profiling consent revoked.",
+      "revokeError": "Could not revoke personality consent.",
+      "aria": {
+        "refresh": "Refresh personality consent status",
+        "reviewAndAccept": "Review and accept personality profiling terms",
+        "revoke": "Revoke personality profiling consent"
+      }
+    },
     "aria": {
       "avatar": "User avatar",
       "editProfile": "Edit profile",
@@ -301,13 +330,19 @@
       "topRecommendations": "Top recommendations",
       "noPersonalityData": "No personality data available",
       "synergy": "synergy",
+      "excellentImpact": "Excellent addition - significantly improves team synergy",
       "positiveImpact": "Good addition - improves team synergy",
       "neutralImpact": "Neutral addition - maintains current synergy level",
+      "slightNegativeImpact": "Slight negative impact on team synergy",
       "negativeImpact": "May impact team synergy negatively",
       "metrics": {
         "roleDiversity": "Role diversity",
         "projectFit": "Project fit",
         "previousCollaborations": "Previous collaborations"
+      },
+      "badge": {
+        "notAvailable": "N/A",
+        "label": "Synergy: {{score}}"
       },
       "level": {
         "excellent": "Excellent",
@@ -1098,7 +1133,8 @@
   "organization": {
     "status": {
       "active": "Active",
-      "inactive": "Inactive"
+      "inactive": "Inactive",
+      "pending": "Pending"
     },
     "card": {
       "industry": "Industry",
@@ -1439,7 +1475,11 @@
         "fileTooLarge": "File size must be less than 5MB",
         "consentRequired": "You must accept the AI CV processing consent before uploading.",
         "uploadFailed": "Error uploading CV. Please try again."
-      }
+      },
+      "processedSuccessfully": "CV Processed Successfully",
+      "percentComplete": "{{score}}% complete",
+      "fieldsRemaining": "{{count}} fields remaining",
+      "profileComplete": "Your profile is complete! Redirecting to dashboard..."
     },
     "search": {
       "title": "Search CVs",
@@ -1608,6 +1648,14 @@
     "noCVsDesc": "No curriculum vitae available yet.",
     "couldNotVerifyConsent": "Could not verify consent status. Please try again.",
     "errorSubmittingCV": "Error submitting CV",
+    "cvSubmittedSuccess": "CV submitted successfully to organization!",
+    "status": {
+      "processed": "Processed",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "rejected": "Rejected",
+      "reviewed": "Reviewed"
+    },
     "noCVFound": "No CV Found",
     "uploadToGetStarted": "Upload your CV to get started",
     "uploadCV": "Upload CV",
@@ -1794,6 +1842,7 @@
     "deleteNotification": "Delete notification",
     "noNotifications": "No notifications",
     "noNotificationsDesc": "You're all caught up!",
+    "noUnread": "No unread notifications",
     "newNotification": "New notification",
     "unreadNotifications": "Unread notifications",
     "manageNotifications": "Manage your notifications and stay up to date",
@@ -1810,7 +1859,9 @@
     "page": "Page",
     "previous": "Previous",
     "next": "Next",
+    "loading": "Loading notifications...",
     "loadingNotifications": "Loading notifications...",
+    "viewAll": "View all notifications",
     "priority": {
       "urgent": "Urgent",
       "high": "High",
@@ -1818,6 +1869,7 @@
       "low": "Low"
     },
     "aria": {
+      "bell": "Notifications",
       "previousPage": "Previous page",
       "nextPage": "Next page",
       "unread": "Unread",
@@ -2056,6 +2108,7 @@
     "selectAll": "Select all",
     "deselectAll": "Deselect all",
     "noResults": "No results found",
+    "unknown": "Unknown",
     "tryAgain": "Try again",
     "somethingWentWrong": "Something went wrong",
     "pleaseWait": "Please wait...",
@@ -2138,7 +2191,63 @@
     "submittingQuestionnaire": "Submitting questionnaire",
     "progress": "Progress",
     "answeredCount": "{{answered}} of {{total}} answered",
-    "questionnaireProgress": "Questionnaire progress"
+    "questionnaireProgress": "Questionnaire progress",
+    "results": {
+      "visualOverview": "Visual Overview",
+      "visualSubtitle": "Your personality across five dimensions",
+      "yourScore": "Your Score",
+      "score": "Score",
+      "radarLegend": "Larger area = Higher scores across traits",
+      "retakeAssessment": "Retake Assessment",
+      "backToProfile": "Back to Profile",
+      "factors": {
+        "Extraversion": {
+          "name": "Extraversion",
+          "description": "Sociability, assertiveness, positive emotions",
+          "interpretation": {
+            "low": "Introverted, reserved, prefers solitude",
+            "medium": "Balanced social engagement",
+            "high": "Extroverted, sociable, enjoys interaction"
+          }
+        },
+        "Agreeableness": {
+          "name": "Agreeableness",
+          "description": "Cooperation, trust, empathy",
+          "interpretation": {
+            "low": "Independent, competitive, critical",
+            "medium": "Balanced interpersonal approach",
+            "high": "Cooperative, empathetic, altruistic"
+          }
+        },
+        "Conscientiousness": {
+          "name": "Conscientiousness",
+          "description": "Organization, dependability, self-discipline",
+          "interpretation": {
+            "low": "Spontaneous, disorganized, flexible",
+            "medium": "Balanced approach to structure",
+            "high": "Organized, disciplined, reliable"
+          }
+        },
+        "Neuroticism": {
+          "name": "Neuroticism",
+          "description": "Emotional instability, anxiety, moodiness",
+          "interpretation": {
+            "low": "Emotionally stable, resilient",
+            "medium": "Balanced emotional responsiveness",
+            "high": "Prone to anxiety, emotional reactivity"
+          }
+        },
+        "Openness": {
+          "name": "Openness",
+          "description": "Creativity, curiosity, openness to experience",
+          "interpretation": {
+            "low": "Practical, traditional, conventional",
+            "medium": "Balanced openness to experience",
+            "high": "Creative, curious, intellectually adventurous"
+          }
+        }
+      }
+    }
   },
   "form": {
     "required": "Required",
@@ -2331,7 +2440,20 @@
       "k": "Number of Similar Cases (K)",
       "similarityThreshold": "Similarity Threshold",
       "successWeight": "Success Factor Weight",
-      "info": "CBR learns from past project outcomes."
+      "info": "CBR learns from past project outcomes.",
+      "candidatePool": {
+        "title": "Candidate Pool Size",
+        "description": "Controls how many candidates from Phase 1 (technical match) advance to Phase 2 (personality optimization). A higher multiplier allows evaluating more candidates for better team synergy.",
+        "multiplierLabel": "Pool multiplier",
+        "multiplierHint": "Value between 1 and 10. Multiplied by team size to determine how many candidates to evaluate.",
+        "teamSize": "Team size",
+        "effectiveTopN": "Evaluated candidates (Top N)",
+        "effectiveDescription": "From employees evaluated in Phase 1, the top {{topN}} are selected for Phase 2 personality optimization.",
+        "loading": "Loading pool configuration...",
+        "error": "Error loading candidate pool configuration",
+        "saveSuccess": "Pool multiplier updated successfully",
+        "saveError": "Error updating pool multiplier"
+      }
     },
     "decisionTree": {
       "title": "Expert Rules Configuration (29 Thresholds)",
@@ -2576,6 +2698,14 @@
     "back": "Back"
   },
   "questionnaire": {
+    "modal": {
+      "title": "Complete Your Profile!",
+      "cvProgress": "Your CV is {{percent}}% complete.",
+      "description": "Answer these quick questions to get better recommendations.",
+      "estimatedTime": "5-10 minutes",
+      "phases": "{{count}} phases",
+      "completeLater": "Complete Later"
+    },
     "array": {
       "addItem": "Add item",
       "placeholder": "Add item...",
@@ -2592,16 +2722,6 @@
     "next": "Next",
     "phase": "Phase {{current}} of {{total}}",
     "percentComplete": "{{percent}}% Complete"
-  },
-  "notifications": {
-    "title": "Notifications",
-    "markAllAsRead": "Mark all as read",
-    "noUnread": "No unread notifications",
-    "all": "All",
-    "unread": "Unread",
-    "loading": "Loading notifications...",
-    "noNotifications": "You don't have any {{type}}notifications",
-    "viewAll": "View all notifications"
   },
   "risk": {
     "phases": {
@@ -2858,6 +2978,69 @@
       "action": "Complete feedback questionnaire",
       "completed": "Feedback submitted",
       "completedDescription": "Thank you for sharing your experience on this project."
+    }
+  },
+  "personalityConsent": {
+    "title": "Personality Data Consent",
+    "version": "Version",
+    "description": "Before taking the BFI-44 personality questionnaire, we need your consent to process your personality data. This data will be used to generate a personality profile based on the Big Five model.",
+    "whatWeCollect": "What we collect",
+    "collect1": "Your responses to the 44 BFI questionnaire items",
+    "collect2": "Calculated scores for five personality dimensions (Extraversion, Agreeableness, Conscientiousness, Neuroticism, Openness)",
+    "collect3": "Timestamp and metadata of your assessment",
+    "purpose": "Purpose of processing",
+    "purpose1": "Generate your personality profile for team compatibility analysis",
+    "purpose2": "Provide insights for project risk assessment and team composition",
+    "purpose3": "Improve team collaboration recommendations",
+    "specificConsent": "Your consent",
+    "acceptProfiling": "I accept personality profiling based on the BFI-44 questionnaire",
+    "acceptRetention": "I accept long-term retention of my personality data",
+    "required": "Required",
+    "optional": "Optional",
+    "terms": "Privacy Policy",
+    "acceptContinue": "Accept & Continue",
+    "mustAcceptProfiling": "You must accept personality profiling to continue.",
+    "errorSaving": "Could not save consent. Please try again.",
+    "consentRequiredToSubmit": "Personality consent is required before submitting the questionnaire. Please review and accept the consent terms.",
+    "consentNeededDescription": "You need to accept the personality profiling consent before starting the questionnaire.",
+    "mustAcceptBeforeQuestionnaire": "To start the BFI-44 personality questionnaire, you must first review and accept the personality data processing consent.",
+    "reviewAndAccept": "Review & Accept Consent",
+    "statusBadge": {
+      "active": "Consent active",
+      "inactive": "Consent required",
+      "grantConsent": "Grant personality profiling consent"
+    },
+    "aria": {
+      "closeModal": "Close personality consent dialog"
+    }
+  },
+  "bfi44Admin": {
+    "title": "BFI-44 Management",
+    "subtitle": "Monitor and manage personality assessment completion across your organization",
+    "loading": "Loading BFI-44 data...",
+    "errorLoading": "Could not load BFI-44 administration data.",
+    "unauthorized": "You do not have permission to access this page.",
+    "stats": {
+      "totalEmployees": "Total Employees",
+      "completed": "Tests Completed",
+      "pending": "Tests Pending",
+      "completionRate": "Completion Rate"
+    },
+    "completionProgress": "Completion Progress",
+    "pendingEmployees": "Employees Without Test",
+    "notifyAll": "Notify All",
+    "sending": "Sending...",
+    "allCompleted": "All employees have completed the BFI-44 test!",
+    "employeesNotified": "{{count}} employee(s) notified successfully.",
+    "employeeNotified": "{{name}} has been notified.",
+    "employeeAlreadyCompleted": "This employee has already completed the test.",
+    "notify": "Notify",
+    "notifyOne": "Send notification to {{name}}",
+    "errorNotifying": "Could not send notifications. Please try again.",
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "actions": "Actions"
     }
   }
 }

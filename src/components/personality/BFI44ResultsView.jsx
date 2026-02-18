@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Tooltip, ResponsiveContainer } from 'recharts';
 import { RefreshCcw, BarChart3, ArrowLeft } from 'lucide-react';
 import PrimaryButton from '../PrimaryButton';
@@ -8,36 +9,36 @@ import FactorCard, { FACTOR_CONFIG } from './FactorCard';
 /**
  * Prepare data for radar chart visualization
  */
-const prepareRadarData = (results) => {
+const prepareRadarData = (results, t) => {
   if (!results) return [];
   
   return [
     {
-      factor: 'Extraversion',
+      factor: t('bfi44.results.factors.Extraversion.name'),
       value: results.Extraversion || 0,
       maxScore: 40,
       fill: '#3b82f6'
     },
     {
-      factor: 'Agreeableness',
+      factor: t('bfi44.results.factors.Agreeableness.name'),
       value: results.Agreeableness || 0,
       maxScore: 45,
       fill: '#10b981'
     },
     {
-      factor: 'Conscientiousness',
+      factor: t('bfi44.results.factors.Conscientiousness.name'),
       value: results.Conscientiousness || 0,
       maxScore: 45,
       fill: '#8b5cf6'
     },
     {
-      factor: 'Neuroticism',
+      factor: t('bfi44.results.factors.Neuroticism.name'),
       value: results.Neuroticism || 0,
       maxScore: 40,
       fill: '#ef4444'
     },
     {
-      factor: 'Openness',
+      factor: t('bfi44.results.factors.Openness.name'),
       value: results.Openness || 0,
       maxScore: 50,
       fill: '#f59e0b'
@@ -54,7 +55,8 @@ const prepareRadarData = (results) => {
  * @param {Function} onNavigateBack - Callback to navigate back
  */
 export default function BFI44ResultsView({ results, onRetake, onNavigateBack }) {
-  const radarData = prepareRadarData(results);
+  const { t } = useTranslation();
+  const radarData = prepareRadarData(results, t);
 
   return (
     <>
@@ -72,9 +74,9 @@ export default function BFI44ResultsView({ results, onRetake, onNavigateBack }) 
           <div style={styles.radarCard}>
             <h2 style={{...styles.radarTitle, display: 'flex', alignItems: 'center', gap: '8px'}}>
               <BarChart3 size={24} aria-hidden="true" />
-              Visual Overview
+              {t('bfi44.results.visualOverview')}
             </h2>
-            <p style={styles.radarSubtitle}>Your personality across five dimensions</p>
+            <p style={styles.radarSubtitle}>{t('bfi44.results.visualSubtitle')}</p>
             <div style={styles.radarContainer}>
               <ResponsiveContainer width="100%" height={500}>
                 <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="70%">
@@ -91,7 +93,7 @@ export default function BFI44ResultsView({ results, onRetake, onNavigateBack }) 
                     axisLine={false}
                   />
                   <Radar 
-                    name="Your Score" 
+                    name={t('bfi44.results.yourScore')} 
                     dataKey="value" 
                     stroke="#3b82f6" 
                     strokeWidth={3}
@@ -108,7 +110,7 @@ export default function BFI44ResultsView({ results, onRetake, onNavigateBack }) 
                     }}
                     formatter={(value, name, props) => {
                       const maxScore = props.payload.maxScore;
-                      return [`${value} / ${maxScore}`, 'Score'];
+                      return [`${value} / ${maxScore}`, t('bfi44.results.score')];
                     }}
                   />
                 </RadarChart>
@@ -117,7 +119,7 @@ export default function BFI44ResultsView({ results, onRetake, onNavigateBack }) 
             <div style={styles.radarLegend}>
               <div style={styles.legendItem}>
                 <div style={styles.legendDot} aria-hidden="true" />
-                <span style={styles.legendText}>Larger area = Higher scores across traits</span>
+                <span style={styles.legendText}>{t('bfi44.results.radarLegend')}</span>
               </div>
             </div>
           </div>
@@ -126,16 +128,16 @@ export default function BFI44ResultsView({ results, onRetake, onNavigateBack }) 
 
       {/* Actions */}
       <div style={styles.actionsRow}>
-        <PrimaryButton onClick={onRetake} style={{ minWidth: '200px' }} aria-label="Retake personality assessment">
+        <PrimaryButton onClick={onRetake} style={{ minWidth: '200px' }} aria-label={t('bfi44.results.retakeAssessment')}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
             <RefreshCcw size={16} aria-hidden="true" />
-            Retake Assessment
+            {t('bfi44.results.retakeAssessment')}
           </span>
         </PrimaryButton>
-        <SecondaryButton onClick={onNavigateBack} style={{ minWidth: '200px' }} aria-label="Back to profile">
+        <SecondaryButton onClick={onNavigateBack} style={{ minWidth: '200px' }} aria-label={t('bfi44.results.backToProfile')}>
           <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
             <ArrowLeft size={16} aria-hidden="true" />
-            Back to Profile
+            {t('bfi44.results.backToProfile')}
           </span>
         </SecondaryButton>
       </div>

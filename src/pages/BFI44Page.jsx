@@ -3,7 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Sparkles, CheckCircle } from 'lucide-react';
 import { getQuestions, submitResponses, getMyProfile, hasProfile } from '../api/bfi44';
-import { ProgressIndicator, BFI44ResultsView, BFI44QuestionnaireView } from '../components/personality';
+import { getBFI44ConsentStatus } from '../api/personalityConsent';
+import { ProgressIndicator, BFI44ResultsView, BFI44QuestionnaireView, ConsentStatusBadge } from '../components/personality';
+import PersonalityConsentModal from '../components/personality/PersonalityConsentModal';
 
 
 
@@ -12,7 +14,7 @@ import { ProgressIndicator, BFI44ResultsView, BFI44QuestionnaireView } from '../
  * Displays the Big Five Inventory questionnaire and results
  */
 export default function BFI44Page() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -23,6 +25,8 @@ export default function BFI44Page() {
   const [hasExistingProfile, setHasExistingProfile] = useState(false);
   const [currentPage, setCurrentPage] = useState(0);
   const [completedAt, setCompletedAt] = useState(null);
+  const [hasConsent, setHasConsent] = useState(null);
+  const [showConsentModal, setShowConsentModal] = useState(false);
 
   const QUESTIONS_PER_PAGE = 11;
   const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
@@ -36,6 +40,11 @@ export default function BFI44Page() {
       setLoading(true);
       setError(null);
 
+      // Check personality consent status via BFI-44 consent endpoint
+      const consentRes = await getBFI44ConsentStatus();
+      const consentData = consentRes?.data;
+      setHasConsent(consentData?.hasConsent === true);
+
       // Check if user already has a profile
       const profileCheck = await hasProfile();
       const userHasProfile = profileCheck.data?.hasProfile;
@@ -46,8 +55,8 @@ export default function BFI44Page() {
         const profileRes = await getMyProfile();
         setResults(profileRes.data?.results || profileRes.data);
         setCompletedAt(profileRes.data?.completedAt);
-      } else {
-        // Load questions for new questionnaire
+      } else if (consentData?.hasConsent) {
+        // Load questions only if consent is granted
         const questionsRes = await getQuestions();
         setQuestions(questionsRes.data?.questions || []);
       }
@@ -85,7 +94,14 @@ export default function BFI44Page() {
       setHasExistingProfile(true);
     } catch (err) {
       console.error('Error submitting BFI-44:', err);
-      setError(err.response?.data?.error || t('bfi44.errorSubmittingQuestionnaire'));
+      const errorMsg = err.response?.data?.error;
+      if (errorMsg === 'PERSONALITY_CONSENT_REQUIRED') {
+        setHasConsent(false);
+        setShowConsentModal(true);
+        setError(t('personalityConsent.consentRequiredToSubmit'));
+      } else {
+        setError(err.response?.data?.error || t('bfi44.errorSubmittingQuestionnaire'));
+      }
     } finally {
       setSubmitting(false);
     }
@@ -102,6 +118,22 @@ export default function BFI44Page() {
     if (currentPage > 0) {
       setCurrentPage(prev => prev - 1);
       window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleConsentAccepted = async () => {
+    setShowConsentModal(false);
+    setHasConsent(true);
+    setError(null);
+
+    if (!hasExistingProfile && questions.length === 0) {
+      try {
+        const questionsRes = await getQuestions();
+        setQuestions(questionsRes.data?.questions || []);
+      } catch (err) {
+        console.error('Error loading questions after consent:', err);
+        setError(t('bfi44.errorLoadingQuestionnaire'));
+      }
     }
   };
 
@@ -139,6 +171,42 @@ export default function BFI44Page() {
     );
   }
 
+  // Consent required — show consent gate
+  if (hasConsent === false && !hasExistingProfile) {
+    return (
+      <div style={styles.container}>
+        <div style={styles.content}>
+          <div style={styles.headerCard}>
+            <h1 style={styles.title}>{t('bfi44.bigFiveInventory')}</h1>
+            <p style={styles.subtitle}>{t('personalityConsent.consentNeededDescription')}</p>
+            <div style={{ marginTop: '16px' }}>
+              <ConsentStatusBadge hasConsent={false} onClick={() => setShowConsentModal(true)} />
+            </div>
+          </div>
+
+          <div style={styles.consentGateCard}>
+            <p style={styles.consentGateText}>
+              {t('personalityConsent.mustAcceptBeforeQuestionnaire')}
+            </p>
+            <button
+              type="button"
+              onClick={() => setShowConsentModal(true)}
+              style={styles.consentGateButton}
+            >
+              {t('personalityConsent.reviewAndAccept')}
+            </button>
+          </div>
+        </div>
+
+        <PersonalityConsentModal
+          show={showConsentModal}
+          onClose={() => setShowConsentModal(false)}
+          onAccepted={handleConsentAccepted}
+        />
+      </div>
+    );
+  }
+
   // Results view
   if (results && hasExistingProfile) {
     return (
@@ -146,15 +214,18 @@ export default function BFI44Page() {
         <div style={styles.contentWide}>
           {/* Header */}
           <div style={styles.headerCard}>
-            <h1 style={{...styles.title, display: 'flex', alignItems: 'center', gap: '8px'}}>
-              <Sparkles size={32} />
-              {t('bfi44.yourProfile')}
-            </h1>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <h1 style={{...styles.title, display: 'flex', alignItems: 'center', gap: '8px'}}>
+                <Sparkles size={32} />
+                {t('bfi44.yourProfile')}
+              </h1>
+              <ConsentStatusBadge hasConsent={hasConsent} />
+            </div>
             <p style={styles.subtitle}>{t('bfi44.resultsSubtitle')}</p>
             {completedAt && (
               <p style={{...styles.completedDate, display: 'flex', alignItems: 'center', gap: '6px'}}>
                 <CheckCircle size={16} />
-                {t('bfi44.completedOn')} {new Date(completedAt).toLocaleDateString('en-US', { 
+                {t('bfi44.completedOn')} {new Date(completedAt).toLocaleDateString(i18n.language, { 
                   year: 'numeric', 
                   month: 'long', 
                   day: 'numeric' 
@@ -178,7 +249,10 @@ export default function BFI44Page() {
     <div style={styles.container}>
       <div style={styles.content}>
         <div style={styles.headerCard}>
-          <h1 style={styles.title}>{t('bfi44.bigFiveInventory')}</h1>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <h1 style={styles.title}>{t('bfi44.bigFiveInventory')}</h1>
+            <ConsentStatusBadge hasConsent={hasConsent} onClick={() => setShowConsentModal(true)} />
+          </div>
           <p style={styles.subtitle}>
             {t('bfi44.rateStatements')}
           </p>
@@ -202,6 +276,12 @@ export default function BFI44Page() {
           questionsPerPage={QUESTIONS_PER_PAGE}
         />
       </div>
+
+      <PersonalityConsentModal
+        show={showConsentModal}
+        onClose={() => setShowConsentModal(false)}
+        onAccepted={handleConsentAccepted}
+      />
     </div>
   );
 }
@@ -269,6 +349,31 @@ const styles = {
     borderTop: '1px solid rgba(255, 255, 255, 0.2)',
     margin: 0,
     fontWeight: '500'
+  },
+  consentGateCard: {
+    background: 'white',
+    borderRadius: '12px',
+    padding: '40px',
+    textAlign: 'center',
+    boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
+    border: '1px solid #E5E7EB'
+  },
+  consentGateText: {
+    fontSize: '16px',
+    color: '#4a5568',
+    marginBottom: '24px',
+    lineHeight: '1.6'
+  },
+  consentGateButton: {
+    background: '#111',
+    color: 'white',
+    borderRadius: '32px',
+    padding: '14px 40px',
+    fontWeight: '600',
+    fontSize: '15px',
+    border: 'none',
+    cursor: 'pointer',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
   }
 };
 

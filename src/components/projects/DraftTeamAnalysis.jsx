@@ -12,6 +12,7 @@ import { getOrganizationEmployees } from '../../api/organization';
 import TeamBuilderTab from './team/TeamBuilderTab';
 import RiskAnalysisTab from './team/RiskAnalysisTab';
 import TeamConfigModal from './TeamConfigModal';
+import i18n from '../../i18n';
 
 /**
  * Safely formats a date string to locale date string
@@ -22,7 +23,7 @@ import TeamConfigModal from './TeamConfigModal';
 const formatDate = (dateStr, fallback) => {
   if (!dateStr) return fallback;
   const date = new Date(dateStr);
-  return isNaN(date.getTime()) ? fallback : date.toLocaleDateString();
+  return isNaN(date.getTime()) ? fallback : date.toLocaleDateString(i18n.language);
 };
 
 /**

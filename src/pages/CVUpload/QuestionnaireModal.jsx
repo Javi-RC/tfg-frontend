@@ -1,5 +1,6 @@
 import React from 'react';
 import { Target, Clock, ClipboardList } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import CVQuestionnaire from '../../components/questionnaire/CVQuestionnaire';
 import { QuestionnaireProvider } from '../../components/questionnaire/QuestionnaireContext';
 import './QuestionnaireModal.css';
@@ -8,27 +9,29 @@ import './QuestionnaireModal.css';
  * QuestionnaireModal - Modal wrapper for the questionnaire
  */
 const QuestionnaireModal = ({ initialData, onComplete, onSkip }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="questionnaire-modal-overlay">
       <div className="questionnaire-modal">
         <div className="modal-header">
           <h2>
             <Target size={24} className="title-icon" />
-            Complete Your Profile!
+            {t('questionnaire.modal.title')}
           </h2>
           <p className="modal-description">
-            Your CV is {initialData.currentPhase ? '45' : '0'}% complete.
+            {t('questionnaire.modal.cvProgress', { percent: initialData.currentPhase ? '45' : '0' })}
             <br />
-            Answer these quick questions to get better recommendations.
+            {t('questionnaire.modal.description')}
           </p>
           <div className="modal-stats">
             <span className="stat-item">
               <Clock size={18} className="stat-icon" />
-              {initialData.estimatedTime || '5-10 minutes'}
+              {initialData.estimatedTime || t('questionnaire.modal.estimatedTime')}
             </span>
             <span className="stat-item">
               <ClipboardList size={18} className="stat-icon" />
-              {initialData.totalPhases || 5} phases
+              {t('questionnaire.modal.phases', { count: initialData.totalPhases || 5 })}
             </span>
           </div>
         </div>
@@ -41,7 +44,7 @@ const QuestionnaireModal = ({ initialData, onComplete, onSkip }) => {
 
         <div className="modal-footer">
           <button onClick={onSkip} className="btn-skip">
-            Complete Later
+            {t('questionnaire.modal.completeLater')}
           </button>
         </div>
       </div>

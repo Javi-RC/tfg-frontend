@@ -5,6 +5,7 @@ import ManualRisksList from './ManualRisksList';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
+    i18n: { language: 'en' },
     t: (key, params) => {
       const translations = {
         'risk.manual.title': `Manual Risks (${params?.count || 0})`,

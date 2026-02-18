@@ -89,22 +89,24 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
         )}
 
         <div style={styles.searchSection}>
-          <Search size={18} color="#666" style={{
-            position: 'absolute',
-            left: '16px',
-            top: '50%',
-            transform: 'translateY(-50%)',
-            pointerEvents: 'none',
-            zIndex: 1
-          }} />
-          <input
-            type="text"
-            placeholder={t('organizations.searchOrganizations')}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{...styles.searchInput, paddingLeft: '48px'}}
-            aria-label={t('organizations.searchOrganizations')}
-          />
+          <div style={{ position: 'relative' }}>
+            <Search size={18} color="#666" style={{
+              position: 'absolute',
+              left: '14px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              pointerEvents: 'none',
+              zIndex: 1
+            }} />
+            <input
+              type="text"
+              placeholder={t('organizations.searchOrganizations')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{...styles.searchInput, paddingLeft: '42px'}}
+              aria-label={t('organizations.searchOrganizations')}
+            />
+          </div>
         </div>
 
         <div style={styles.listSection}>
@@ -222,8 +224,7 @@ const styles = {
   },
   searchSection: {
     padding: '16px 24px',
-    borderBottom: '1px solid #eee',
-    position: 'relative'
+    borderBottom: '1px solid #eee'
   },
   searchInput: {
     width: '100%',
@@ -233,7 +234,8 @@ const styles = {
     fontSize: '14px',
     fontFamily: 'inherit',
     outline: 'none',
-    transition: 'border-color 0.2s'
+    transition: 'border-color 0.2s',
+    boxSizing: 'border-box'
   },
   listSection: {
     flex: 1,

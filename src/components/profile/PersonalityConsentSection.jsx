@@ -1,19 +1,19 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
+import PrimaryButton from '../PrimaryButton';
 
 /**
- * ConsentSection Component
- * Displays CV AI processing consent status and actions
+ * PersonalityConsentSection Component
+ * Displays personality profiling consent status and revoke/grant actions in the profile page.
  */
-export default function ConsentSection({
-  consentLoading,
-  consentError,
-  consentSuccess,
+export default function PersonalityConsentSection({
+  loading,
+  error,
+  success,
   hasConsent,
   consentData,
-  onLoadConsent,
+  onRefresh,
   onOpenConsentModal,
   onRevokeConsent
 }) {
@@ -28,8 +28,6 @@ export default function ConsentSection({
     textTransform: 'uppercase',
     letterSpacing: '0.5px'
   };
-
-  const formatText = (value) => (typeof value === 'string' && value.trim() ? value : '—');
 
   const formatDateTime = (value) => {
     if (!value) return '—';
@@ -50,18 +48,18 @@ export default function ConsentSection({
           color: '#1a202c',
           marginBottom: '8px'
         }}>
-          {t('profile.dataConsent')}
+          {t('profile.personalityConsent.title')}
         </h2>
         <p style={{
           fontSize: '14px',
           color: '#718096',
           lineHeight: '1.6'
         }}>
-          {t('profile.consentSection.description')}
+          {t('profile.personalityConsent.description')}
         </p>
       </div>
 
-      {consentError && (
+      {error && (
         <div style={{
           padding: '12px 16px',
           background: '#fee',
@@ -71,11 +69,11 @@ export default function ConsentSection({
           fontSize: '14px',
           marginBottom: '16px'
         }} role="alert" aria-live="assertive">
-          {consentError}
+          {error}
         </div>
       )}
 
-      {consentSuccess && (
+      {success && (
         <div style={{
           padding: '12px 16px',
           background: '#D1FAE5',
@@ -85,7 +83,7 @@ export default function ConsentSection({
           fontSize: '14px',
           marginBottom: '16px'
         }} role="status" aria-live="polite">
-          {consentSuccess}
+          {success}
         </div>
       )}
 
@@ -96,36 +94,29 @@ export default function ConsentSection({
         marginBottom: '16px'
       }}>
         <div>
-          <div style={labelStyle}>{t('profile.consentSection.labels.cvAiProcessingConsent')}</div>
+          <div style={labelStyle}>{t('profile.personalityConsent.labels.status')}</div>
           <p style={{ fontSize: '15px', color: hasConsent ? '#065f46' : '#9a3412', lineHeight: '1.6' }}>
-            {consentLoading
+            {loading
               ? t('common.loading')
               : hasConsent
-                ? t('profile.consentSection.status.accepted')
-                : t('profile.consentSection.status.notAccepted')}
+                ? t('profile.personalityConsent.status.accepted')
+                : t('profile.personalityConsent.status.notAccepted')}
           </p>
         </div>
 
         <div>
-          <div style={labelStyle}>{t('profile.consentSection.labels.acceptedAt')}</div>
+          <div style={labelStyle}>{t('profile.personalityConsent.labels.acceptedAt')}</div>
           <p style={{ fontSize: '15px', color: '#2d3748', lineHeight: '1.6' }}>
             {formatDateTime(consentData?.acceptedAt)}
-          </p>
-        </div>
-
-        <div>
-          <div style={labelStyle}>{t('profile.consentSection.labels.termsVersion')}</div>
-          <p style={{ fontSize: '15px', color: '#2d3748', lineHeight: '1.6' }}>
-            {formatText(consentData?.version)}
           </p>
         </div>
       </div>
 
       <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
         <SecondaryButton
-          onClick={onLoadConsent}
-          disabled={consentLoading}
-          aria-label={t('profile.consentSection.aria.refresh')}
+          onClick={onRefresh}
+          disabled={loading}
+          aria-label={t('profile.personalityConsent.aria.refresh')}
         >
           {t('common.refresh')}
         </SecondaryButton>
@@ -133,25 +124,24 @@ export default function ConsentSection({
         {!hasConsent ? (
           <PrimaryButton
             onClick={onOpenConsentModal}
-            disabled={consentLoading}
-            aria-label={t('profile.consentSection.aria.reviewAndAccept')}
+            disabled={loading}
+            aria-label={t('profile.personalityConsent.aria.reviewAndAccept')}
           >
-            {t('profile.consentSection.reviewAndAccept')}
+            {t('profile.personalityConsent.reviewAndAccept')}
           </PrimaryButton>
         ) : (
           <SecondaryButton
             onClick={async () => {
               const confirmed = window.confirm(
-                t('profile.consentSection.revokeConfirm')
+                t('profile.personalityConsent.revokeConfirm')
               );
               if (!confirmed) return;
-
               await onRevokeConsent();
             }}
-            disabled={consentLoading}
-            aria-label={t('profile.consentSection.aria.revoke')}
+            disabled={loading}
+            aria-label={t('profile.personalityConsent.aria.revoke')}
           >
-            {t('profile.revokeConsent')}
+            {t('profile.personalityConsent.revoke')}
           </SecondaryButton>
         )}
       </div>

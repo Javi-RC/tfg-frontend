@@ -1,9 +1,19 @@
 import api from './axios';
+import i18n from '../i18n';
 
 /**
  * Projects API service
  * Handles all project-related operations following RESTful principles
  */
+
+/**
+ * Get current language from i18n
+ * @returns {string} Current language code ('en' or 'es')
+ */
+const getCurrentLanguage = () => {
+  const rawLanguage = i18n.language || 'en';
+  return rawLanguage.split('-')[0]; // Extract base language
+};
 
 // ==================== Project Management ====================
 
@@ -150,16 +160,20 @@ export const updateProjectManagerRole = (orgId, employeeId, isProjectManager) =>
  * @param {string} id - Project ID
  * @returns {Promise} API response with team analysis
  */
-export const getTeamAnalysis = (id) => 
-  api.get(`/api/projects/${id}/team-analysis`);
+export const getTeamAnalysis = (id) => {
+  const lang = getCurrentLanguage();
+  return api.get(`/api/projects/${id}/team-analysis?lang=${lang}`);
+};
 
 /**
  * Get detailed team synergy analysis
  * @param {string} id - Project ID
  * @returns {Promise} API response with synergy analysis
  */
-export const getTeamSynergy = (id) =>
-  api.get(`/api/projects/${id}/team-synergy`);
+export const getTeamSynergy = (id) => {
+  const lang = getCurrentLanguage();
+  return api.get(`/api/projects/${id}/team-synergy?lang=${lang}`);
+};
 
 /**
  * Suggest optimal team for project requirements (without creating project)
@@ -167,8 +181,10 @@ export const getTeamSynergy = (id) =>
  * @param {Object} data - { projectRequirements, organizationId, teamSize, enablePersonalityOptimization }
  * @returns {Promise} API response with team suggestions
  */
-export const suggestTeam = (data) => 
-  api.post('/api/projects/suggest-team', data);
+export const suggestTeam = (data) => {
+  const lang = getCurrentLanguage();
+  return api.post(`/api/projects/suggest-team?lang=${lang}`, data);
+};
 
 /**
  * Predict project risks using Expert Rules + CBR + Team Analysis
@@ -261,21 +277,58 @@ export const resetTeamConfig = (projectId) =>
 export const getTeamConfigSummary = (projectId) => 
   api.get(`/api/projects/${projectId}/team-config/summary`);
 
+// ==================== Candidate Pool Size ====================
+
+/**
+ * Get candidate pool size configuration for a project
+ * Returns the current multiplier, team size, and effective top N
+ * @param {string} projectId - Project ID
+ * @returns {Promise} API response with { teamSize, candidatePoolMultiplier, effectiveTopN, description }
+ */
+export const getCandidatePoolSize = (projectId) =>
+  api.get(`/api/projects/${projectId}/candidate-pool-size`);
+
+/**
+ * Update candidate pool multiplier for a project
+ * effectiveTopN = teamSize × candidatePoolMultiplier
+ * @param {string} projectId - Project ID
+ * @param {number} candidatePoolMultiplier - Multiplier value (1-10)
+ * @returns {Promise} API response with updated pool size data
+ */
+export const updateCandidatePoolSize = (projectId, candidatePoolMultiplier) =>
+  api.patch(`/api/projects/${projectId}/candidate-pool-size`, { candidatePoolMultiplier });
+
 // ==================== Project Completion Questionnaire ====================
 
 /**
  * Check if project has a pending completion questionnaire
  * @param {string} projectId - Project ID
+ * @param {string} language - Language preference ('en' or 'es'). Defaults to current i18n language
  * @returns {Promise} API response with { pending: boolean, questionnaire?: object }
  */
-export const getCompletionQuestionnaire = (projectId) => 
-  api.get(`/api/projects/${projectId}/completion-questionnaire`);
+export const getCompletionQuestionnaire = (projectId, language = null) => {
+  const effectiveLanguage = language || getCurrentLanguage();
+  
+  return api.get(`/api/projects/${projectId}/completion-questionnaire`, {
+    params: {
+      language: effectiveLanguage
+    }
+  });
+};
 
 /**
  * Submit project completion questionnaire responses
  * @param {string} projectId - Project ID
  * @param {Object} responses - Questionnaire responses
+ * @param {string} language - Language preference ('en' or 'es'). Defaults to current i18n language
  * @returns {Promise} API response
  */
-export const submitCompletionQuestionnaire = (projectId, responses) => 
-  api.post(`/api/projects/${projectId}/completion-questionnaire`, responses);
+export const submitCompletionQuestionnaire = (projectId, responses, language = null) => {
+  const effectiveLanguage = language || getCurrentLanguage();
+  
+  return api.post(`/api/projects/${projectId}/completion-questionnaire`, responses, {
+    params: {
+      language: effectiveLanguage
+    }
+  });
+};

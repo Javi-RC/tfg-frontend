@@ -60,13 +60,13 @@
   "navigation": {
     "changeLanguage": "Cambiar idioma",
     "projects": "Proyectos",
-    "organizations": "Organizaciones",
+    "organizations": "Empresas",
     "profile": "Perfil",
-    "myCv": "Mi CV",
-    "cvStats": "Estadísticas del CV",
-    "adminCvs": "CVs de Administrador",
+    "myCv": "Mi Currículo",
+    "cvStats": "Estadísticas del Currículo",
+    "adminCvs": "Currículos de Administrador",
     "notifications": "Notificaciones",
-    "myOrganizations": "Mis Organizaciones",
+    "myOrganizations": "Mis Empresas",
     "aria": {
       "main": "Navegación principal",
       "navigateTo": "Navegar a {{label}}"
@@ -119,7 +119,10 @@
     "accountVerificationFailed": "Falló la verificación de la cuenta",
     "invalidVerificationToken": "Token de verificación inválido o expirado",
     "returnToLogin": "Volver al inicio de sesión",
-    "loadingProject": "Cargando proyecto..."
+    "loadingProject": "Cargando proyecto...",
+    "invalidCredentials": "Credenciales inválidas",
+    "loginError": "Error al iniciar sesión. Por favor, inténtalo de nuevo.",
+    "oauthError": "Error de autenticación: {{detail}}. Si el problema persiste, completa tu perfil o contacta con soporte."
   },
   "register": {
     "title": "¡Bienvenido!",
@@ -134,7 +137,7 @@
     "passwordPlaceholder": "Ingresa tu contraseña",
     "confirmPasswordPlaceholder": "Confirma tu contraseña",
     "roleQuestion": "¿Qué tipo de usuario eres?",
-    "organizationAdmin": "Administrador de Organización",
+    "organizationAdmin": "Administrador de Empresa",
     "employee": "Empleado",
     "next": "Siguiente",
     "back": "Atrás",
@@ -179,19 +182,22 @@
     "profileCompletion": "Completitud del Perfil",
     "loadingProfile": "Cargando perfil...",
     "noProfileFound": "Perfil no encontrado",
-    "organization": "Organización",
+    "updateSuccess": "Perfil actualizado correctamente.",
+    "organization": "Empresa",
     "preferences": "Preferencias",
-    "cvManagement": "Gestión de CV",
+    "cvManagement": "Gestión de Currículo",
     "dataConsent": "Consentimiento de Datos",
     "grantConsent": "Otorgar Consentimiento de Datos",
     "revokeConsent": "Revocar Consentimiento",
     "consentGranted": "Consentimiento de datos otorgado",
     "consentRevoked": "Consentimiento de datos revocado",
-    "viewMyCV": "Ver mi CV",
-    "viewCVStats": "Ver Estadísticas del CV",
-    "manageAllCVs": "Gestionar Todos los CVs",
+    "consentRevokedDetail": "Consentimiento revocado. No podrás subir currículos hasta que lo aceptes de nuevo.",
+    "consentRevokeError": "No se pudo revocar el consentimiento.",
+    "viewMyCV": "Ver mi Currículo",
+    "viewCVStats": "Ver Estadísticas del Currículo",
+    "manageAllCVs": "Gestionar Todos los Currículos",
     "role": "Rol",
-    "organizationAdmin": "Administrador de Organización",
+    "organizationAdmin": "Administrador de Empresa",
     "employee": "Empleado",
     "loading": "Cargando…",
     "notSpecified": "No especificado",
@@ -242,9 +248,9 @@
       }
     },
     "consentSection": {
-      "description": "Gestiona el consentimiento para el procesamiento de tu CV con IA.",
+      "description": "Gestiona el consentimiento para el procesamiento de tu currículo con IA.",
       "labels": {
-        "cvAiProcessingConsent": "Consentimiento para procesamiento IA del CV",
+        "cvAiProcessingConsent": "Consentimiento para procesamiento IA del currículo",
         "acceptedAt": "Aceptado el",
         "termsVersion": "Versión de términos"
       },
@@ -253,7 +259,7 @@
         "notAccepted": "No aceptado"
       },
       "reviewAndAccept": "Revisar y Aceptar",
-      "revokeConfirm": "¿Estás seguro de que quieres revocar tu consentimiento? Esto deshabilitará el procesamiento IA de tu CV.",
+      "revokeConfirm": "¿Estás seguro de que quieres revocar tu consentimiento? Esto deshabilitará el procesamiento IA de tu currículo.",
       "aria": {
         "refresh": "Actualizar estado del consentimiento",
         "reviewAndAccept": "Revisar y aceptar términos de consentimiento",
@@ -261,15 +267,38 @@
       }
     },
     "cvManagementSection": {
-      "description": "Accede rápidamente a tu CV y estadísticas.",
+      "description": "Accede rápidamente a tu currículo y estadísticas.",
       "viewStatistics": "Ver Estadísticas",
       "adminPanelTitle": "Panel de Administrador",
-      "adminDescription": "Como administrador de organización, puedes ver y gestionar todos los CVs.",
-      "viewAllCvs": "Ver Todos los CVs",
+      "adminDescription": "Como administrador de empresa, puedes ver y gestionar todos los currículos.",
+      "viewAllCvs": "Ver Todos los Currículos",
       "aria": {
-        "goToMyCv": "Ir a mi CV",
-        "viewCvStatistics": "Ver estadísticas del CV",
-        "viewAllCvsAdmin": "Ver todos los CVs (administrador)"
+        "goToMyCv": "Ir a mi currículo",
+        "viewCvStatistics": "Ver estadísticas del currículo",
+        "viewAllCvsAdmin": "Ver todos los currículos (administrador)"
+      }
+    },
+    "personalityConsent": {
+      "title": "Consentimiento de Perfilado de Personalidad",
+      "description": "Gestiona el consentimiento para el perfilado de personalidad mediante el cuestionario BFI-44.",
+      "labels": {
+        "status": "Consentimiento de perfilado de personalidad",
+        "acceptedAt": "Aceptado el"
+      },
+      "status": {
+        "accepted": "Aceptado",
+        "notAccepted": "No aceptado"
+      },
+      "reviewAndAccept": "Revisar y Aceptar",
+      "revoke": "Revocar Consentimiento",
+      "revokeConfirm": "¿Estás seguro de que quieres revocar tu consentimiento de perfilado de personalidad? Tus resultados existentes se conservarán pero no podrás volver a realizar el cuestionario.",
+      "granted": "Consentimiento de perfilado de personalidad otorgado.",
+      "revoked": "Consentimiento de perfilado de personalidad revocado.",
+      "revokeError": "No se pudo revocar el consentimiento de personalidad.",
+      "aria": {
+        "refresh": "Actualizar estado del consentimiento de personalidad",
+        "reviewAndAccept": "Revisar y aceptar términos de perfilado de personalidad",
+        "revoke": "Revocar consentimiento de perfilado de personalidad"
       }
     },
     "aria": {
@@ -301,13 +330,19 @@
       "topRecommendations": "Principales recomendaciones",
       "noPersonalityData": "No hay datos de personalidad disponibles",
       "synergy": "sinergia",
+      "excellentImpact": "Excelente adición - mejora significativamente la sinergia del equipo",
       "positiveImpact": "Buena adición - mejora la sinergia del equipo",
       "neutralImpact": "Adición neutral - mantiene el nivel de sinergia actual",
+      "slightNegativeImpact": "Leve impacto negativo en la sinergia del equipo",
       "negativeImpact": "Puede impactar negativamente la sinergia del equipo",
       "metrics": {
         "roleDiversity": "Diversidad de roles",
         "projectFit": "Ajuste al proyecto",
         "previousCollaborations": "Colaboraciones previas"
+      },
+      "badge": {
+        "notAvailable": "N/D",
+        "label": "Sinergia: {{score}}"
       },
       "level": {
         "excellent": "Excelente",
@@ -340,8 +375,8 @@
       "timezoneFlexibility": "Flexibilidad entre husos horarios",
       "remoteTools": "Herramientas remotas:",
       "cv": {
-        "title": "Disponibilidad del CV",
-        "noData": "No hay datos de disponibilidad en este CV.",
+        "title": "Disponibilidad del currículo",
+        "noData": "No hay datos de disponibilidad en este currículo.",
         "yes": "Sí",
         "no": "No",
         "unknown": "Desconocida",
@@ -407,7 +442,7 @@
       "noRequirementsTitle": "No hay requisitos del proyecto definidos",
       "noRequirementsDescription": "Este proyecto aún no tiene requisitos técnicos definidos.",
       "employeeSkillsTitle": "Habilidades del empleado",
-      "employeeSkillsEmpty": "No se encontraron habilidades en el CV del empleado.",
+      "employeeSkillsEmpty": "No se encontraron habilidades en el currículo del empleado.",
       "noComparisonTitle": "No hay comparación disponible",
       "noComparisonDescription": "No hay suficientes datos para comparar a este empleado con los requisitos del proyecto.",
       "stats": {
@@ -604,17 +639,17 @@
     "loadingProject": "Cargando proyecto...",
     "manageTrackProjects": "Gestiona y rastrea tus proyectos",
     "filterByStatus": "Filtrar por estado",
-    "filterByOrganization": "Filtrar por organización",
+    "filterByOrganization": "Filtrar por empresa",
     "allStatuses": "Todos los estados",
-    "allOrganizations": "Todas las organizaciones",
+    "allOrganizations": "Todas las empresas",
     "projectManager": "Gestor de Proyectos",
-    "organization": "Organización",
-    "selectOrganization": "Seleccionar organización",
+    "organization": "Empresa",
+    "selectOrganization": "Seleccionar empresa",
     "requiredField": "Este campo es obligatorio",
     "nameRequired": "El nombre del proyecto es obligatorio",
     "descriptionRequired": "La descripción es obligatoria",
     "startDateRequired": "La fecha de inicio es obligatoria",
-    "organizationRequired": "La organización es obligatoria",
+    "organizationRequired": "La empresa es obligatoria",
     "savingProject": "Guardando proyecto...",
     "projectSaved": "Proyecto guardado exitosamente",
     "assignTeamForRisk": "Asigna miembros del equipo primero para analizar riesgos potenciales del proyecto",
@@ -748,7 +783,7 @@
       "title": "Finalizar proyecto: {{name}}",
       "subtitle": "Captura el resultado real para que el sistema aprenda y mejore las predicciones futuras",
       "whyImportantTitle": "¿Por qué es importante?",
-      "whyImportantText": "Al capturar el resultado real de este proyecto, el sistema CBR aprenderá de esta experiencia y mejorará las predicciones de riesgos para proyectos futuros similares en tu organización.",
+      "whyImportantText": "Al capturar el resultado real de este proyecto, el sistema CBR aprenderá de esta experiencia y mejorará las predicciones de riesgos para proyectos futuros similares en tu empresa.",
       "steps": {
         "generalOutcome": "Resultado general",
         "risks": "Riesgos",
@@ -788,7 +823,7 @@
       "hours": "Horas"
     },
     "workMode": {
-      "inherit": "Hereda de la organización",
+      "inherit": "Hereda de la empresa",
       "officeMode": "Presencial",
       "officeFirst": "Presencial primero",
       "officeMix": "Mixto presencial/remoto",
@@ -992,7 +1027,7 @@
       },
       "step9": {
         "title": "Madurez Organizacional",
-        "description": "Evalúa la madurez de desarrollo de tu organización",
+        "description": "Evalúa la madurez de desarrollo de tu empresa",
         "hasOnboardingProcesses": "Tiene Procesos de Incorporación",
         "hasVersionControlAndCICD": "Tiene Control de Versiones y CI/CD",
         "internalToolsFragmentation": "Fragmentación de Herramientas Internas",
@@ -1037,7 +1072,7 @@
       },
       "step11": {
         "title": "Madurez Organizacional",
-        "description": "Evalúa la madurez de desarrollo de tu organización (Opcional)",
+        "description": "Evalúa la madurez de desarrollo de tu empresa (Opcional)",
         "finalStep": "Paso Final",
         "finalStepDescription": "Esta evaluación opcional ayuda a predecir riesgos relacionados con los procesos organizacionales",
         "hasOnboardingProcesses": "Tiene Procesos de Incorporación",
@@ -1053,7 +1088,7 @@
         "internalToolsFragmentation": "Fragmentación de Herramientas Internas",
         "fragmentationHelp": "La fragmentación de herramientas puede aumentar la carga y reducir la productividad",
         "maturityScore": "Puntuación de Madurez",
-        "excellent": "¡Excelente! Tu organización tiene procesos sólidos implementados.",
+        "excellent": "¡Excelente! Tu empresa tiene procesos sólidos implementados.",
         "good": "Buena base. Considera mejorar CI/CD e incorporación.",
         "needsImprovement": "Considera invertir en mejoras de procesos para reducir riesgos del proyecto.",
         "formComplete": "¡Formulario Completo!",
@@ -1070,7 +1105,7 @@
     "form": {
       "createNew": "Crear Nuevo Proyecto",
       "editProject": "Editar Proyecto",
-      "selectOrganization": "Seleccionar Organización",
+      "selectOrganization": "Seleccionar Empresa",
       "stepOfTotal": "Paso {{current}} de {{total}}",
       "previous": "Anterior",
       "next": "Siguiente",
@@ -1098,7 +1133,8 @@
   "organization": {
     "status": {
       "active": "Activa",
-      "inactive": "Inactiva"
+      "inactive": "Inactiva",
+      "pending": "Pendiente"
     },
     "card": {
       "industry": "Industria",
@@ -1110,8 +1146,8 @@
       "employee": "Empleado"
     },
     "create": {
-      "title": "Crear Organización",
-      "name": "Nombre de la Organización",
+      "title": "Crear Empresa",
+      "name": "Nombre de la Empresa",
       "description": "Descripción",
       "taxId": "CIF/NIF",
       "taxIdPlaceholder": "ej., B87654321",
@@ -1130,7 +1166,7 @@
       "size": "Tamaño de la Empresa",
       "selectSize": "Seleccione un tamaño",
       "creating": "Creando...",
-      "createButton": "Crear Organización"
+      "createButton": "Crear Empresa"
     },
     "industries": {
       "software_development": "Desarrollo de software",
@@ -1159,19 +1195,19 @@
       "remove": "Eliminar"
     },
     "cvs": {
-      "title": "CVs Recibidos",
-      "loading": "Cargando CVs...",
-      "errorUpdating": "Error al actualizar el estado del CV",
+      "title": "Currículos Recibidos",
+      "loading": "Cargando currículos...",
+      "errorUpdating": "Error al actualizar el estado del currículo",
       "pending": "Pendiente",
       "reviewed": "Revisado",
       "accepted": "Aceptado",
       "rejected": "Rechazado",
-      "noCVs": "No se encontraron CVs",
+      "noCVs": "No se encontraron currículos",
       "skills": "Habilidades",
       "languages": "Idiomas",
       "submitted": "Enviado",
       "notes": "Notas",
-      "viewFull": "Ver CV Completo",
+      "viewFull": "Ver Currículo Completo",
       "markReviewed": "Marcar como Revisado",
       "addNotesOptional": "Añadir notas (opcional):",
       "accept": "Aceptar",
@@ -1185,7 +1221,7 @@
       "active": "Activos",
       "completed": "Completados",
       "teamMembers": "Miembros del Equipo",
-      "noProjects": "No se encontraron proyectos para esta organización",
+      "noProjects": "No se encontraron proyectos para esta empresa",
       "pm": "PM",
       "team": "Equipo",
       "members": "miembros",
@@ -1193,15 +1229,15 @@
       "viewDetails": "Ver Detalles"
     },
     "settings": {
-      "title": "Configuración de la Organización",
-      "allowPublicSubmission": "Permitir Envío Público de CVs",
-      "allowPublicSubmissionDesc": "Permitir a cualquiera enviar su CV a esta organización",
+      "title": "Configuración de la Empresa",
+      "allowPublicSubmission": "Permitir Envío Público de Currículos",
+      "allowPublicSubmissionDesc": "Permitir a cualquiera enviar su currículo a esta empresa",
       "requireApproval": "Requerir Aprobación de Empleados",
       "requireApprovalDesc": "Los nuevos empleados necesitan aprobación del administrador antes de estar activos",
-      "notifyOnCVSubmission": "Notificar al Recibir CVs",
-      "notifyOnCVSubmissionDesc": "Recibir notificaciones cuando se envíe un nuevo CV",
-      "autoProcessCVs": "Procesar CVs Automáticamente con IA",
-      "autoProcessCVsDesc": "Analizar y categorizar automáticamente los CVs enviados",
+      "notifyOnCVSubmission": "Notificar al Recibir Currículos",
+      "notifyOnCVSubmissionDesc": "Recibir notificaciones cuando se envíe un nuevo currículo",
+      "autoProcessCVs": "Procesar Currículos Automáticamente con IA",
+      "autoProcessCVsDesc": "Analizar y categorizar automáticamente los currículos enviados",
       "updateSuccess": "Configuración actualizada correctamente",
       "updateError": "Error al actualizar la configuración",
       "saving": "Guardando...",
@@ -1239,12 +1275,12 @@
       "header": {
         "uploadNew": "Subir nuevo",
         "aria": {
-          "edit": "Editar la información del CV",
-          "upload": "Subir un nuevo CV",
-          "submitToOrg": "Enviar el CV a la organización",
-          "delete": "Eliminar el CV actual",
+          "edit": "Editar la información del currículo",
+          "upload": "Subir un nuevo currículo",
+          "submitToOrg": "Enviar el currículo a la empresa",
+          "delete": "Eliminar el currículo actual",
           "cancelEdit": "Cancelar la edición",
-          "save": "Guardar cambios del CV"
+          "save": "Guardar cambios del currículo"
         }
       },
       "sectionHeader": {
@@ -1413,36 +1449,40 @@
       }
     },
     "upload": {
-      "title": "Subir tu CV",
-      "description": "Sube tu CV en formato PDF o Word (máx. 5MB)",
-      "dragDrop": "Arrastra y suelta tu CV aquí",
+      "title": "Subir tu Currículo",
+      "description": "Sube tu currículo en formato PDF o Word (máx. 5MB)",
+      "dragDrop": "Arrastra y suelta tu currículo aquí",
       "orClickToBrowse": "o haz clic para buscar",
       "checkingConsent": "Comprobando estado del consentimiento...",
-      "consentWarning": "Debes aceptar el consentimiento de procesamiento de CV con IA antes de subir.",
+      "consentWarning": "Debes aceptar el consentimiento de procesamiento de currículo con IA antes de subir.",
       "reviewConsent": "Revisar consentimiento",
       "removeFile": "Eliminar archivo",
       "cancel": "Cancelar",
-      "button": "Subir CV",
+      "button": "Subir Currículo",
       "uploading": "Subiendo...",
       "aria": {
-        "form": "Formulario de subida de CV",
-        "dragDrop": "Haz clic para seleccionar archivo o arrastra y suelta el CV aquí",
-        "selectFile": "Seleccionar archivo de CV para subir",
+        "form": "Formulario de subida de currículo",
+        "dragDrop": "Haz clic para seleccionar archivo o arrastra y suelta el currículo aquí",
+        "selectFile": "Seleccionar archivo de currículo para subir",
         "removeFile": "Eliminar archivo seleccionado: {{fileName}}",
-        "cancel": "Cancelar subida de CV",
-        "upload": "Subir archivo de CV seleccionado",
-        "uploading": "Subiendo archivo de CV"
+        "cancel": "Cancelar subida de currículo",
+        "upload": "Subir archivo de currículo seleccionado",
+        "uploading": "Subiendo archivo de currículo"
       },
       "errors": {
         "noFileSelected": "Por favor selecciona un archivo",
         "invalidFileType": "Solo se permiten documentos PDF y Word",
         "fileTooLarge": "El tamaño del archivo debe ser menor a 5MB",
-        "consentRequired": "Debes aceptar el consentimiento de procesamiento de CV con IA antes de subir.",
-        "uploadFailed": "Error al subir el CV. Por favor inténtalo de nuevo."
-      }
+        "consentRequired": "Debes aceptar el consentimiento de procesamiento de currículo con IA antes de subir.",
+        "uploadFailed": "Error al subir el currículo. Por favor inténtalo de nuevo."
+      },
+      "processedSuccessfully": "Currículo Procesado Correctamente",
+      "percentComplete": "{{score}}% completo",
+      "fieldsRemaining": "{{count}} campos restantes",
+      "profileComplete": "¡Tu perfil está completo! Redirigiendo al panel..."
     },
     "search": {
-      "title": "Buscar CVs",
+      "title": "Buscar Currículos",
       "skillsLabel": "Habilidades (separadas por comas)",
       "skillsPlaceholder": "ej: React, Node.js, Python",
       "skillsHint": "Ingresa habilidades separadas por comas",
@@ -1454,7 +1494,7 @@
       "searching": "Buscando...",
       "results": {
         "title": "Resultados de búsqueda:",
-        "found": "{{count}} de {{total}} CVs encontrados",
+        "found": "{{count}} de {{total}} currículos encontrados",
         "skills": "Habilidades:",
         "languages": "Idiomas:"
       },
@@ -1462,57 +1502,57 @@
         "title": "Consejos de búsqueda",
         "tip1": "La búsqueda no distingue mayúsculas de minúsculas",
         "tip2": "Usa comas para separar múltiples términos de búsqueda",
-        "tip3": "Los resultados incluirán CVs que coincidan con CUALQUIERA de las habilidades o idiomas especificados",
+        "tip3": "Los resultados incluirán currículos que coincidan con CUALQUIERA de las habilidades o idiomas especificados",
         "tip4": "Deja un campo vacío para buscar solo por el otro campo",
         "aria": "Consejos de búsqueda"
       },
       "aria": {
-        "panel": "Panel de búsqueda de CVs",
+        "panel": "Panel de búsqueda de currículos",
         "clear": "Limpiar campos de búsqueda",
-        "search": "Buscar CVs por habilidades e idiomas",
-        "searching": "Buscando CVs"
+        "search": "Buscar currículos por habilidades e idiomas",
+        "searching": "Buscando currículos"
       },
       "errors": {
         "emptySearch": "Por favor ingresa al menos una habilidad o idioma para buscar",
-        "searchFailed": "Error al buscar CVs"
+        "searchFailed": "Error al buscar currículos"
       }
     },
     "detailPage": {
       "aria": {
-        "page": "Página de detalle del CV"
+        "page": "Página de detalle del currículo"
       },
       "errors": {
-        "loadFailed": "Error al cargar el CV"
+        "loadFailed": "Error al cargar el currículo"
       },
-      "notFoundDescription": "El CV que buscas no existe o no tienes acceso.",
+      "notFoundDescription": "El currículo que buscas no existe o no tienes acceso.",
       "goBack": "Volver",
       "backToList": "Volver a la lista",
       "refresh": "Actualizar",
-      "candidateCv": "CV del candidato",
+      "candidateCv": "Currículo del candidato",
       "noEmailProvided": "No se ha proporcionado email",
       "submittedOn": "Enviado el {{date}}",
-      "organizationNotes": "Notas de la organización"
+      "organizationNotes": "Notas de la empresa"
     },
     "admin": {
-      "allCVsCount": "Todos los CVs ({{count}})",
+      "allCVsCount": "Todos los Currículos ({{count}})",
       "hideSearch": "Ocultar búsqueda",
-      "searchCVs": "Buscar CVs",
+      "searchCVs": "Buscar Currículos",
       "resetFilters": "Restablecer filtros",
-      "noCVsFound": "No se encontraron CVs",
-      "noCVsUploaded": "Aún no se ha subido ningún CV.",
-      "noMatchingCVs": "Ningún CV coincide con tu búsqueda.",
+      "noCVsFound": "No se encontraron currículos",
+      "noCVsUploaded": "Aún no se ha subido ningún currículo.",
+      "noMatchingCVs": "Ningún currículo coincide con tu búsqueda.",
       "aria": {
-        "page": "Página de CVs de administrador",
-        "showSearch": "Mostrar búsqueda de CVs",
-        "hideSearch": "Ocultar búsqueda de CVs",
-        "resetFilters": "Restablecer filtros de CV",
-        "refreshList": "Actualizar lista de CVs",
-        "cvList": "Lista de CVs"
+        "page": "Página de currículos de administrador",
+        "showSearch": "Mostrar búsqueda de currículos",
+        "hideSearch": "Ocultar búsqueda de currículos",
+        "resetFilters": "Restablecer filtros de currículo",
+        "refreshList": "Actualizar lista de currículos",
+        "cvList": "Lista de Currículos"
       }
     },
     "stats": {
       "totalSkills": "Habilidades totales",
-      "technicalSkills": "Habilidades técnicas en tu CV",
+      "technicalSkills": "Habilidades técnicas en tu currículo",
       "education": "Educación",
       "academicDegrees": "Títulos académicos listados",
       "experience": "Experiencia",
@@ -1526,25 +1566,25 @@
       "topSkills": "Principales habilidades",
       "lastUpdatedLabel": "Última actualización",
       "aria": {
-        "page": "Página de estadísticas del CV",
-        "refresh": "Actualizar estadísticas del CV",
-        "summary": "Resumen de estadísticas del CV",
+        "page": "Página de estadísticas del currículo",
+        "refresh": "Actualizar estadísticas del currículo",
+        "summary": "Resumen de estadísticas del currículo",
         "topSkillsRegion": "Principales habilidades",
         "lastUpdateInfo": "Información de última actualización",
         "statCard": "{{title}}: {{value}}. {{description}}"
       }
     },
-    "cvNotFound": "CV no encontrado",
+    "cvNotFound": "Currículo no encontrado",
     "errorLoadingStatistics": "Error al cargar estadísticas",
     "noStatisticsAvailable": "No hay estadísticas disponibles",
     "loadingStatistics": "Cargando estadísticas...",
-    "loadingCVs": "Cargando CVs...",
+    "loadingCVs": "Cargando currículos...",
     "title": "Currículum Vitae",
-    "myCV": "Mi CV",
-    "uploadCV": "Subir CV",
-    "downloadCV": "Descargar CV",
-    "editCV": "Editar CV",
-    "deleteCV": "Eliminar CV",
+    "myCV": "Mi currículo",
+    "uploadCV": "Subir currículo",
+    "downloadCV": "Descargar currículo",
+    "editCV": "Editar currículo",
+    "deleteCV": "Eliminar currículo",
     "personalDetails": "Datos Personales",
     "workExperience": "Experiencia Laboral",
     "education": "Educación",
@@ -1554,38 +1594,38 @@
     "references": "Referencias",
     "addSection": "Agregar Sección",
     "removeSection": "Eliminar Sección",
-    "noCV": "No hay CV cargado aún",
-    "uploadFirstCV": "Sube tu primer CV",
+    "noCV": "No hay currículo cargado aún",
+    "uploadFirstCV": "Sube tu primer currículo",
     "contact": "Contacto",
     "summary": "Resumen",
     "experience": "Experiencia",
-    "cvStatistics": "Estadísticas del CV",
+    "cvStatistics": "Estadísticas del currículo",
     "totalViews": "Visitas Totales",
     "downloads": "Descargas",
     "lastUpdated": "Última Actualización",
-    "loadingCV": "Cargando CV...",
+    "loadingCV": "Cargando currículo...",
     "aria": {
-      "openUploadDialog": "Abrir el diálogo de subida de CV"
+      "openUploadDialog": "Abrir el diálogo de subida de currículo"
     },
-    "savingCV": "Guardando CV...",
-    "cvSaved": "CV guardado exitosamente",
+    "savingCV": "Guardando currículo...",
+    "cvSaved": "Currículo guardado exitosamente",
     "jobTitle": "Puesto de Trabajo",
     "company": "Empresa",
-    "createOrganization": "Crear Organización",
-    "editOrganization": "Editar Organización",
-    "deleteOrganization": "Eliminar Organización",
-    "organizationDetails": "Detalles de la Organización",
-    "organizationName": "Nombre de la Organización",
-    "organizationDescription": "Descripción de la Organización",
+    "createOrganization": "Crear Empresa",
+    "editOrganization": "Editar Empresa",
+    "deleteOrganization": "Eliminar Empresa",
+    "organizationDetails": "Detalles de la Empresa",
+    "organizationName": "Nombre de la Empresa",
+    "organizationDescription": "Descripción de la Empresa",
     "description": "Descripción",
     "members": "Miembros",
     "addMember": "Agregar Miembro",
     "removeMember": "Eliminar Miembro",
-    "noOrganizations": "No se encontraron organizaciones",
-    "noOrganizationsDesc": "Aún no eres parte de ninguna organización.",
-    "createFirstOrganization": "Crea tu primera organización",
-    "joinOrganization": "Unirse a Organización",
-    "loadingOrganizations": "Cargando organizaciones...",
+    "noOrganizations": "No se encontraron empresas",
+    "noOrganizationsDesc": "Aún no eres parte de ninguna empresa.",
+    "createFirstOrganization": "Crea tu primera empresa",
+    "joinOrganization": "Unirse a Empresa",
+    "loadingOrganizations": "Cargando empresas...",
     "owner": "Propietario",
     "admin": "Administrador",
     "member": "Miembro",
@@ -1593,13 +1633,13 @@
     "joinedDate": "Unido",
     "inviteMember": "Invitar Miembro",
     "manageMembers": "Gestionar Miembros",
-    "organizationSettings": "Configuración de la Organización",
+    "organizationSettings": "Configuración de la Empresa",
     "viewDetails": "Ver Detalles",
-    "submittedCVs": "CVs Enviados",
-    "viewCVs": "Ver CVs",
-    "noCVsSubmitted": "No se han enviado CVs aún",
+    "submittedCVs": "Currículos Enviados",
+    "viewCVs": "Ver Currículos",
+    "noCVsSubmitted": "No se han enviado currículos aún",
     "searchMembers": "Buscar miembros",
-    "searchOrganizations": "Buscar organizaciones...",
+    "searchOrganizations": "Buscar empresas...",
     "intermediate": "Intermedio",
     "advanced": "Avanzado",
     "expert": "Experto",
@@ -1616,24 +1656,32 @@
     "grantConsent": "Otorgar Consentimiento",
     "consentGrantedSuccess": "Consentimiento otorgado exitosamente",
     "viewConsent": "Ver Detalles del Consentimiento",
-    "submitToOrg": "Enviar a Organización",
+    "submitToOrg": "Enviar a Empresa",
     "submitted": "Enviado",
     "notSubmitted": "No enviado",
-    "searchCVs": "Buscar CVs",
+    "searchCVs": "Buscar Currículos",
     "filterResults": "Filtrar resultados",
-    "totalCVs": "CVs Totales",
-    "noCVsFound": "No se encontraron CVs",
+    "totalCVs": "Currículos Totales",
+    "noCVsFound": "No se encontraron currículos",
     "noCVsDesc": "No hay currículums disponibles aún.",
     "couldNotVerifyConsent": "No se pudo verificar el estado del consentimiento. Por favor, intenta de nuevo.",
-    "errorSubmittingCV": "Error al enviar el CV",
-    "noCVFound": "No hay CV encontrado",
-    "uploadToGetStarted": "Sube tu CV para empezar",
-    "uploadCV": "Subir CV",
-    "errorLoadingCV": "Error al cargar el CV",
-    "errorDeletingCV": "Error al eliminar el CV",
-    "errorUpdatingCV": "Error al actualizar el CV",
-    "confirmDeleteCV": "¿Estás seguro de que quieres eliminar tu CV? Esta acción no se puede deshacer.",
-    "noCVFoundUploadOne": "No se encontró ningún CV. Por favor, sube uno.",
+    "errorSubmittingCV": "Error al enviar el currículo",
+    "cvSubmittedSuccess": "¡Currículo enviado correctamente a la empresa!",
+    "status": {
+      "processed": "Procesado",
+      "pending": "Pendiente",
+      "accepted": "Aceptado",
+      "rejected": "Rechazado",
+      "reviewed": "Revisado"
+    },
+    "noCVFound": "No hay currículo encontrado",
+    "uploadToGetStarted": "Sube tu currículo para empezar",
+    "uploadCV": "Subir currículo",
+    "errorLoadingCV": "Error al cargar el currículo",
+    "errorDeletingCV": "Error al eliminar el currículo",
+    "errorUpdatingCV": "Error al actualizar el currículo",
+    "confirmDeleteCV": "¿Estás seguro de que quieres eliminar tu currículo? Esta acción no se puede deshacer.",
+    "noCVFoundUploadOne": "No se encontró ningún currículo. Por favor, sube uno.",
     "backToDashboard": "Volver al panel",
     "level": "Nivel",
     "native": "Nativo/Nativa",
@@ -1648,24 +1696,24 @@
     "uploaded": "Subido",
     "admin": {
       "detailPanel": {
-        "title": "Detalles del CV",
+        "title": "Detalles del currículo",
         "aria": {
-          "panel": "Panel de detalles del CV",
-          "close": "Cerrar panel de detalles del CV"
+          "panel": "Panel de detalles del currículo",
+          "close": "Cerrar panel de detalles del currículo"
         }
       }
     },
     "consent": {
-      "title": "Consentimiento para Procesamiento de CV con IA",
+      "title": "Consentimiento para Procesamiento de currículo con IA",
       "version": "Versión de términos",
-      "description": "Para procesar tu CV y extraer información relevante, usamos un servicio de IA de terceros (Google Gemini API). Esto significa que el texto de tu CV será enviado a Google para su análisis.",
+      "description": "Para procesar tu currículo y extraer información relevante, usamos un servicio de IA de terceros (Google Gemini API). Esto significa que el texto de tu currículo será enviado a Google para su análisis.",
       "implications": "¿Qué implica esto?",
-      "implication1": "El texto de tu CV será enviado a Google para análisis",
+      "implication1": "El texto de tu currículo será enviado a Google para análisis",
       "implication2": "Google procesará la información bajo sus términos de servicio",
       "implication3": "Los datos extraídos se almacenarán en nuestra base de datos",
       "implication4": "Puedes revocar este consentimiento en cualquier momento desde tu perfil",
       "specificConsent": "Consentimiento específico",
-      "acceptAI": "Acepto el procesamiento de mi CV con IA",
+      "acceptAI": "Acepto el procesamiento de mi currículo con IA",
       "acceptSharing": "Acepto compartir mi información con Google Gemini API",
       "acceptRetention": "Acepto la retención de datos procesados en la base de datos",
       "terms": "Términos",
@@ -1679,8 +1727,8 @@
     }
   },
   "organizations": {
-    "title": "Organizaciones",
-    "myOrganizations": "Mis Organizaciones",
+    "title": "Empresas",
+    "myOrganizations": "Mis Empresas",
     "industries": {
       "select": "Seleccionar industria",
       "software_development": "Desarrollo de software",
@@ -1704,10 +1752,10 @@
     "sizes": {
       "select": "Seleccionar tamaño"
     },
-    "newOrganization": "Nueva Organización",
-    "createOrganization": "Crear Organización",
-    "noOrganizationsDesc": "Aún no eres parte de ninguna organización.",
-    "loadingOrganizations": "Cargando organizaciones...",
+    "newOrganization": "Nueva Empresa",
+    "createOrganization": "Crear Empresa",
+    "noOrganizationsDesc": "Aún no eres parte de ninguna empresa.",
+    "loadingOrganizations": "Cargando empresas...",
     "owner": "Propietario",
     "member": "Miembro",
     "eoNotificationsDesc": "¡Estás al día!",
@@ -1728,18 +1776,18 @@
     "previous": "Anterior",
     "next": "Siguiente",
     "loadingNotifications": "Cargando notificaciones...",
-    "organizationDetails": "Detalles de la Organización",
-    "organizationName": "Nombre de la Organización",
-    "organizationDescription": "Descripción de la Organización",
+    "organizationDetails": "Detalles de la Empresa",
+    "organizationName": "Nombre de la Empresa",
+    "organizationDescription": "Descripción de la Empresa",
     "members": "Miembros",
     "addMember": "Agregar Miembro",
     "removeMember": "Eliminar Miembro",
-    "noOrganizations": "No se encontraron organizaciones",
-    "createFirstOrganization": "Crea tu primera organización",
-    "joinOrganization": "Unirse a Organización",
-    "loadingOrganization": "Cargando organización...",
-    "organizationNotFound": "Organización no encontrada",
-    "backToOrganizations": "Volver a Organizaciones",
+    "noOrganizations": "No se encontraron empresas",
+    "createFirstOrganization": "Crea tu primera empresa",
+    "joinOrganization": "Unirse a Empresa",
+    "loadingOrganization": "Cargando empresa...",
+    "organizationNotFound": "Empresa no encontrada",
+    "backToOrganizations": "Volver a Empresas",
     "back": "Volver",
     "employeesCount": "{{count}} empleados",
     "stats": {
@@ -1752,7 +1800,7 @@
       "overview": "Resumen",
       "employees": "Empleados",
       "projects": "Proyectos",
-      "cvs": "CVs",
+      "cvs": "Currículos",
       "settings": "Configuración"
     },
     "employees": {
@@ -1804,22 +1852,23 @@
       }
     },
     "aria": {
-      "navigation": "Navegación de organización"
+      "navigation": "Navegación de empresa"
     }
   },
   "notifications": {
     "title": "Notificaciones",
     "markAsRead": "Marcar como leído",
-    "markAllAsRead": "Marcar todo como leído",
+    "markAllAsRead": "Marcar todas como leídas",
     "deleteNotification": "Eliminar notificación",
     "noNotifications": "No hay notificaciones",
     "noNotificationsDesc": "¡Estás al día!",
+    "noUnread": "No hay notificaciones sin leer",
     "newNotification": "Nueva notificación",
     "unreadNotifications": "Notificaciones no leídas",
     "manageNotifications": "Gestiona tus notificaciones y mantente actualizado",
     "filter": "Filtrar",
     "all": "Todas",
-    "unread": "No leídas",
+    "unread": "Sin leer",
     "read": "Leídas",
     "sortBy": "Ordenar por",
     "recent": "Más recientes",
@@ -1830,7 +1879,9 @@
     "page": "Página",
     "previous": "Anterior",
     "next": "Siguiente",
+    "loading": "Cargando notificaciones...",
     "loadingNotifications": "Cargando notificaciones...",
+    "viewAll": "Ver todas las notificaciones",
     "priority": {
       "urgent": "Urgente",
       "high": "Alta",
@@ -1838,6 +1889,7 @@
       "low": "Baja"
     },
     "aria": {
+      "bell": "Notificaciones",
       "previousPage": "Página anterior",
       "nextPage": "Página siguiente",
       "unread": "No leído",
@@ -1847,7 +1899,7 @@
   },
   "accountDeletion": {
     "dangerZoneTitle": "Zona de peligro",
-    "dangerZoneDescription": "Eliminar tu cuenta es permanente. Perderás acceso a tu perfil, CV y datos guardados.",
+    "dangerZoneDescription": "Eliminar tu cuenta es permanente. Perderás acceso a tu perfil, currículo y datos guardados.",
     "pageTitle": "Eliminar tu cuenta",
     "pageDescription": "Antes de continuar, debemos confirmar que no haya bloqueos. Si todo está en orden, podrás confirmar la eliminación con tu contraseña.",
     "prerequisites": {
@@ -2015,7 +2067,7 @@
       "caseAdded": "Caso añadido a la base de conocimiento:",
       "completed": "Completado",
       "confidenceIncrease": "Aumento esperado de confianza:",
-      "realCases": "Casos reales en la organización:",
+      "realCases": "Casos reales en la empresa:",
       "keyLearnings": "Aprendizajes Clave",
       "strengthenedBeliefs": "Creencias Reforzadas",
       "newInsights": "Nuevos Descubrimientos",
@@ -2076,6 +2128,7 @@
     "selectAll": "Seleccionar todo",
     "deselectAll": "Deseleccionar todo",
     "noResults": "No se encontraron resultados",
+    "unknown": "Desconocido",
     "tryAgain": "Intentar de nuevo",
     "somethingWentWrong": "Algo salió mal",
     "pleaseWait": "Por favor espera..."
@@ -2149,7 +2202,63 @@
     "submittingQuestionnaire": "Enviando cuestionario",
     "progress": "Progreso",
     "answeredCount": "{{answered}} de {{total}} preguntas respondidas",
-    "questionnaireProgress": "Progreso del cuestionario"
+    "questionnaireProgress": "Progreso del cuestionario",
+    "results": {
+      "visualOverview": "Vista General Visual",
+      "visualSubtitle": "Tu personalidad en cinco dimensiones",
+      "yourScore": "Tu Puntuación",
+      "score": "Puntuación",
+      "radarLegend": "Área más grande = Puntuaciones más altas en los rasgos",
+      "retakeAssessment": "Volver a Realizar la Evaluación",
+      "backToProfile": "Volver al Perfil",
+      "factors": {
+        "Extraversion": {
+          "name": "Extraversión",
+          "description": "Sociabilidad, asertividad, emociones positivas",
+          "interpretation": {
+            "low": "Introvertido/a, reservado/a, prefiere la soledad",
+            "medium": "Compromiso social equilibrado",
+            "high": "Extrovertido/a, sociable, disfruta la interacción"
+          }
+        },
+        "Agreeableness": {
+          "name": "Amabilidad",
+          "description": "Cooperación, confianza, empatía",
+          "interpretation": {
+            "low": "Independiente, competitivo/a, crítico/a",
+            "medium": "Enfoque interpersonal equilibrado",
+            "high": "Cooperativo/a, empático/a, altruista"
+          }
+        },
+        "Conscientiousness": {
+          "name": "Responsabilidad",
+          "description": "Organización, confiabilidad, autodisciplina",
+          "interpretation": {
+            "low": "Espontáneo/a, desorganizado/a, flexible",
+            "medium": "Enfoque equilibrado hacia la estructura",
+            "high": "Organizado/a, disciplinado/a, confiable"
+          }
+        },
+        "Neuroticism": {
+          "name": "Neuroticismo",
+          "description": "Inestabilidad emocional, ansiedad, cambios de humor",
+          "interpretation": {
+            "low": "Emocionalmente estable, resiliente",
+            "medium": "Respuesta emocional equilibrada",
+            "high": "Propenso/a a la ansiedad, reactividad emocional"
+          }
+        },
+        "Openness": {
+          "name": "Apertura",
+          "description": "Creatividad, curiosidad, apertura a la experiencia",
+          "interpretation": {
+            "low": "Práctico/a, tradicional, convencional",
+            "medium": "Apertura equilibrada a la experiencia",
+            "high": "Creativo/a, curioso/a, intelectualmente aventurero/a"
+          }
+        }
+      }
+    }
   },
   "form": {
     "required": "Requerido",
@@ -2182,14 +2291,14 @@
     "userType": "¿Qué tipo de usuario eres?",
     "employee": "Empleado",
     "employeeDesc": "Busco oportunidades laborales y quiero gestionar mi carrera",
-    "orgAdmin": "Administrador de Organización",
-    "orgAdminDesc": "Represento una organización y quiero gestionar empleados"
+    "orgAdmin": "Administrador de Empresa",
+    "orgAdminDesc": "Represento una empresa y quiero gestionar empleados"
   },
   "projectFilters": {
     "status": "Estado",
     "all": "Todos",
-    "organization": "Organización",
-    "allOrganizations": "Todas las Organizaciones"
+    "organization": "Empresa",
+    "allOrganizations": "Todas las Empresas"
   },
   "projectStatus": {
     "draft": "Borrador",
@@ -2230,8 +2339,8 @@
     "noRecommendations": "No hay recomendaciones disponibles",
     "tryAdjusting": "Intenta ajustar los requisitos del proyecto",
     "toUseTeamBuilder": "Para usar el constructor de equipos:",
-    "addEmployees": "Añade empleados a tu organización",
-    "ensureCVs": "Asegúrate de que los empleados hayan subido sus CVs",
+    "addEmployees": "Añade empleados a tu empresa",
+    "ensureCVs": "Asegúrate de que los empleados hayan subido sus currículos",
     "completeProfiles": "Verifica que los perfiles de empleados estén completos",
     "selectMembers": "Selecciona miembros del equipo para ver riesgos predichos",
     "analyzingRisks": "Analizando riesgos...",
@@ -2342,7 +2451,20 @@
       "k": "Número de Casos Similares (K)",
       "similarityThreshold": "Umbral de similitud",
       "successWeight": "Peso del factor de éxito",
-      "info": "El CBR aprende de resultados de proyectos anteriores para sugerir mejores composiciones de equipo según lo que ha funcionado antes."
+      "info": "El CBR aprende de resultados de proyectos anteriores para sugerir mejores composiciones de equipo según lo que ha funcionado antes.",
+      "candidatePool": {
+        "title": "Tamaño del Pool de Candidatos",
+        "description": "Controla cuántos candidatos de la Fase 1 (ajuste técnico) pasan a la Fase 2 (optimización de personalidad). Un multiplicador mayor permite evaluar más candidatos para una mejor sinergia de equipo.",
+        "multiplierLabel": "Multiplicador del pool",
+        "multiplierHint": "Valor entre 1 y 10. Se multiplica por el tamaño del equipo para determinar cuántos candidatos evaluar.",
+        "teamSize": "Tamaño del equipo",
+        "effectiveTopN": "Candidatos evaluados (Top N)",
+        "effectiveDescription": "De los empleados evaluados en la Fase 1, se seleccionan los {{topN}} mejores para la Fase 2 de optimización por personalidad.",
+        "loading": "Cargando configuración del pool...",
+        "error": "Error al cargar la configuración del pool de candidatos",
+        "saveSuccess": "Multiplicador del pool actualizado correctamente",
+        "saveError": "Error al actualizar el multiplicador del pool"
+      }
     },
     "decisionTree": {
       "title": "Configuración de Reglas de Expertos (29 Umbrales)",
@@ -2430,7 +2552,7 @@
         "agreeablenessVarianceHigh": "Varianza de amabilidad > esto = riesgo de conflicto de equipo",
         "neuroticismHigh": "Neuroticismo promedio > esto = riesgo de agotamiento"
       },
-      "info": "El sistema de reglas de expertos analiza 29 umbrales configurables para detectar riesgos. Ajústalos según la tolerancia al riesgo de tu organización y el contexto del proyecto."
+      "info": "El sistema de reglas de expertos analiza 29 umbrales configurables para detectar riesgos. Ajústalos según la tolerancia al riesgo de tu empresa y el contexto del proyecto."
     },
     "validation": {
       "success": "La configuración es válida",
@@ -2587,6 +2709,14 @@
     "back": "Atrás"
   },
   "questionnaire": {
+    "modal": {
+      "title": "¡Completa tu Perfil!",
+      "cvProgress": "Tu currículo está {{percent}}% completo.",
+      "description": "Responde estas preguntas rápidas para obtener mejores recomendaciones.",
+      "estimatedTime": "5-10 minutos",
+      "phases": "{{count}} fases",
+      "completeLater": "Completar más tarde"
+    },
     "array": {
       "addItem": "Añadir elemento",
       "placeholder": "Añadir elemento...",
@@ -2596,23 +2726,13 @@
       "add": "+ Añadir"
     },
     "completed": "¡Perfil Completado!",
-    "completedDesc": "Tu CV está ahora 100% completo",
+    "completedDesc": "Tu currículo está ahora 100% completo",
     "loadingNext": "Cargando siguiente fase...",
     "submitting": "Enviando...",
     "finish": "Finalizar",
     "next": "Siguiente",
     "phase": "Fase {{current}} de {{total}}",
     "percentComplete": "{{percent}}% Completo"
-  },
-  "notifications": {
-    "title": "Notificaciones",
-    "markAllAsRead": "Marcar todas como leídas",
-    "noUnread": "No hay notificaciones sin leer",
-    "all": "Todas",
-    "unread": "Sin leer",
-    "loading": "Cargando notificaciones...",
-    "noNotifications": "No tienes {{type}}notificaciones",
-    "viewAll": "Ver todas las notificaciones"
   },
   "risk": {
     "phases": {
@@ -2723,15 +2843,15 @@
     "cbr": {
       "learning": "Aprendiendo de proyectos similares...",
       "noLearnedRisks": "Sin Riesgos Aprendidos",
-      "noLearnedRisksDescription": "El sistema aprenderá de proyectos similares a medida que tu organización acumule datos de casos.",
+      "noLearnedRisksDescription": "El sistema aprenderá de proyectos similares a medida que tu empresa acumule datos de casos.",
       "title": "Riesgos Aprendidos (Basados en Proyectos Similares)",
       "identified": "{{count}} identificados",
-      "description": "Estos riesgos fueron identificados en proyectos similares de la base de casos de la organización. La probabilidad representa con qué frecuencia ocurrió este riesgo en proyectos con características similares.",
+      "description": "Estos riesgos fueron identificados en proyectos similares de la base de casos de la empresa. La probabilidad representa con qué frecuencia ocurrió este riesgo en proyectos con características similares.",
       "basedOn": "Basado en {{count}} proyecto similar",
       "basedOn_plural": "Basado en {{count}} proyectos similares",
       "similarityBreakdown": "Desglose de Similitud",
       "recommendations": "Recomendaciones",
-      "learningBadge": "Este riesgo fue aprendido del historial de proyectos de tu organización.",
+      "learningBadge": "Este riesgo fue aprendido del historial de proyectos de tu empresa.",
       "tip": "Consejo",
       "tipText": "Puedes seleccionar riesgos de esta lista para monitorearlos activamente a lo largo del ciclo de vida de tu proyecto."
     },
@@ -2783,7 +2903,7 @@
       "noRisksTitle": "No se Detectaron Riesgos",
       "noRisksDescription": "El sistema aún no ha identificado ningún riesgo para este proyecto.",
       "cbrTitle": "Riesgos Aprendidos por CBR",
-      "cbrDescription": "Estos riesgos fueron aprendidos de proyectos similares en la base de casos de la organización.",
+      "cbrDescription": "Estos riesgos fueron aprendidos de proyectos similares en la base de casos de la empresa.",
       "expertRulesTitle": "Riesgos de Reglas Expertas",
       "expertRulesDescription": "Estos riesgos fueron detectados por reglas expertas basadas en la configuración del proyecto. Representan patrones que el conocimiento experto ha identificado como potencialmente problemáticos.",
       "cbrFooterLabel": "CBR (Razonamiento Basado en Casos):",
@@ -2869,6 +2989,69 @@
       "action": "Completar cuestionario de feedback",
       "completed": "Feedback enviado",
       "completedDescription": "Gracias por compartir tu experiencia en este proyecto."
+    }
+  },
+  "personalityConsent": {
+    "title": "Consentimiento de Datos de Personalidad",
+    "version": "Versión",
+    "description": "Antes de realizar el cuestionario de personalidad BFI-44, necesitamos tu consentimiento para procesar tus datos de personalidad. Estos datos se utilizarán para generar un perfil de personalidad basado en el modelo de los Cinco Grandes.",
+    "whatWeCollect": "Qué recopilamos",
+    "collect1": "Tus respuestas a los 44 ítems del cuestionario BFI",
+    "collect2": "Puntuaciones calculadas para cinco dimensiones de personalidad (Extraversión, Amabilidad, Responsabilidad, Neuroticismo, Apertura)",
+    "collect3": "Fecha y metadatos de tu evaluación",
+    "purpose": "Finalidad del tratamiento",
+    "purpose1": "Generar tu perfil de personalidad para análisis de compatibilidad de equipo",
+    "purpose2": "Proporcionar información para la evaluación de riesgos del proyecto y composición del equipo",
+    "purpose3": "Mejorar las recomendaciones de colaboración en equipo",
+    "specificConsent": "Tu consentimiento",
+    "acceptProfiling": "Acepto el perfilado de personalidad basado en el cuestionario BFI-44",
+    "acceptRetention": "Acepto la retención a largo plazo de mis datos de personalidad",
+    "required": "Obligatorio",
+    "optional": "Opcional",
+    "terms": "Política de Privacidad",
+    "acceptContinue": "Aceptar y Continuar",
+    "mustAcceptProfiling": "Debes aceptar el perfilado de personalidad para continuar.",
+    "errorSaving": "No se pudo guardar el consentimiento. Inténtalo de nuevo.",
+    "consentRequiredToSubmit": "Se requiere el consentimiento de personalidad antes de enviar el cuestionario. Por favor revisa y acepta los términos de consentimiento.",
+    "consentNeededDescription": "Necesitas aceptar el consentimiento de perfilado de personalidad antes de iniciar el cuestionario.",
+    "mustAcceptBeforeQuestionnaire": "Para iniciar el cuestionario de personalidad BFI-44, primero debes revisar y aceptar el consentimiento de tratamiento de datos de personalidad.",
+    "reviewAndAccept": "Revisar y Aceptar Consentimiento",
+    "statusBadge": {
+      "active": "Consentimiento activo",
+      "inactive": "Consentimiento requerido",
+      "grantConsent": "Otorgar consentimiento de perfilado de personalidad"
+    },
+    "aria": {
+      "closeModal": "Cerrar diálogo de consentimiento de personalidad"
+    }
+  },
+  "bfi44Admin": {
+    "title": "Gestión BFI-44",
+    "subtitle": "Monitoriza y gestiona la completación de evaluaciones de personalidad en tu organización",
+    "loading": "Cargando datos BFI-44...",
+    "errorLoading": "No se pudieron cargar los datos de administración BFI-44.",
+    "unauthorized": "No tienes permisos para acceder a esta página.",
+    "stats": {
+      "totalEmployees": "Total Empleados",
+      "completed": "Tests Completados",
+      "pending": "Tests Pendientes",
+      "completionRate": "Tasa de Completación"
+    },
+    "completionProgress": "Progreso de Completación",
+    "pendingEmployees": "Empleados sin Test",
+    "notifyAll": "Notificar a Todos",
+    "sending": "Enviando...",
+    "allCompleted": "¡Todos los empleados han completado el test BFI-44!",
+    "employeesNotified": "{{count}} empleado(s) notificado(s) con éxito.",
+    "employeeNotified": "{{name}} ha sido notificado/a.",
+    "employeeAlreadyCompleted": "Este empleado ya completó el test.",
+    "notify": "Notificar",
+    "notifyOne": "Enviar notificación a {{name}}",
+    "errorNotifying": "No se pudieron enviar las notificaciones. Inténtalo de nuevo.",
+    "table": {
+      "name": "Nombre",
+      "email": "Email",
+      "actions": "Acciones"
     }
   }
 }

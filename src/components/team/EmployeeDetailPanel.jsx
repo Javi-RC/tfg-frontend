@@ -10,6 +10,7 @@ import PersonalityFitSection from './PersonalityFitSection';
 import AvailabilitySection from './AvailabilitySection';
 import QuickInsightsSection from './QuickInsightsSection';
 import './EmployeeDetailPanel.css';
+import i18n from '../../i18n';
 
 /**
  * Safely formats a date string to locale date string
@@ -19,7 +20,7 @@ import './EmployeeDetailPanel.css';
 const formatDate = (dateStr, fallback = 'N/A') => {
   if (!dateStr) return fallback;
   const date = new Date(dateStr);
-  return isNaN(date.getTime()) ? fallback : date.toLocaleDateString();
+  return isNaN(date.getTime()) ? fallback : date.toLocaleDateString(i18n.language);
 };
 
 /**

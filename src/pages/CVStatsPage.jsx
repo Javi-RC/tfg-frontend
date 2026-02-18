@@ -9,7 +9,7 @@ import SecondaryButton from '../components/SecondaryButton';
  * Displays statistics about the user's CV
  */
 export default function CVStatsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { stats, loading, error, loadStats } = useCVStats();
 
   const totalSkillsTitle = t('cv.stats.totalSkills');
@@ -250,7 +250,7 @@ export default function CVStatsPage() {
               fontSize: '14px',
               color: '#666'
             }}>
-              {t('cv.stats.lastUpdatedLabel')}: <strong>{new Date(stats.lastUpdated).toLocaleString()}</strong>
+              {t('cv.stats.lastUpdatedLabel')}: <strong>{new Date(stats.lastUpdated).toLocaleString(i18n.language)}</strong>
             </p>
           </div>
         )}

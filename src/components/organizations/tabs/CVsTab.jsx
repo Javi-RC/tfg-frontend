@@ -9,7 +9,7 @@ import { getOrganizationCVs, updateCVStatus } from '../../../api/organization';
  * CVsTab (Admin only)
  */
 export default function CVsTab({ organizationId, onUpdate, styles }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [cvs, setCvs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('pending');
@@ -112,7 +112,7 @@ export default function CVsTab({ organizationId, onUpdate, styles }) {
             <div key={cv._id} style={styles.cvCard}>
               <div style={styles.cvHeader}>
                 <div>
-                  <h3 style={styles.cvName}>{cv.userId?.name || cv.userId?.username || 'Unknown'}</h3>
+                  <h3 style={styles.cvName}>{cv.userId?.name || cv.userId?.username || t('common.unknown')}</h3>
                   <p style={styles.cvEmail}>{cv.userId?.email}</p>
                 </div>
                 <span
@@ -136,7 +136,7 @@ export default function CVsTab({ organizationId, onUpdate, styles }) {
                             : '#f57c00'
                   }}
                 >
-                  {cv.organizationStatus}
+                  {t(`organization.cvs.${cv.organizationStatus}`)}
                 </span>
               </div>
 
@@ -149,7 +149,7 @@ export default function CVsTab({ organizationId, onUpdate, styles }) {
                 </div>
                 <div>
                   <strong>{t('organization.cvs.submitted')}:</strong>{' '}
-                  {cv.submittedToOrganizationAt ? new Date(cv.submittedToOrganizationAt).toLocaleDateString() : 'N/A'}
+                  {cv.submittedToOrganizationAt ? new Date(cv.submittedToOrganizationAt).toLocaleDateString(i18n.language) : 'N/A'}
                 </div>
               </div>
 

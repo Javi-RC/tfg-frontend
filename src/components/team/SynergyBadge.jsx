@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Star } from 'lucide-react';
 
 /**
@@ -8,11 +9,13 @@ import { Star } from 'lucide-react';
  * @param {boolean} [props.showLabel=true]
  */
 export default function SynergyBadge({ score, showLabel = true }) {
+  const { t } = useTranslation();
+
   if (score === null || score === undefined) {
     return (
       <span style={{ ...styles.badgeBase, ...styles.badgeNA }}>
         <Star size={12} />
-        {showLabel ? 'N/A' : ''}
+        {showLabel ? t('team.synergy.badge.notAvailable') : ''}
       </span>
     );
   }
@@ -20,7 +23,7 @@ export default function SynergyBadge({ score, showLabel = true }) {
   return (
     <span style={{ ...styles.badgeBase, ...getVariant(score) }}>
       <Star size={12} />
-      {showLabel ? `Synergy: ${score}` : score}
+      {showLabel ? t('team.synergy.badge.label', { score }) : score}
     </span>
   );
 }

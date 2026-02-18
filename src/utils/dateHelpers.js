@@ -1,6 +1,13 @@
 /**
  * Date and Time Formatting Utilities
  */
+import i18n from '../i18n';
+
+/**
+ * Get current locale from i18n
+ * @returns {string} Current language locale
+ */
+const getLocale = () => i18n.language || 'en';
 
 /**
  * Format date to localized string
@@ -15,7 +22,7 @@ export const formatDate = (value, options = {}) => {
     const date = value instanceof Date ? value : new Date(value);
     if (isNaN(date.getTime())) return '—';
     
-    return date.toLocaleDateString('en-US', options);
+    return date.toLocaleDateString(getLocale(), options);
   } catch {
     return '—';
   }
@@ -39,7 +46,7 @@ export const formatTime = (value, options = {}) => {
     const date = value instanceof Date ? value : new Date(value);
     if (isNaN(date.getTime())) return '—';
     
-    return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', ...options });
+    return date.toLocaleTimeString(getLocale(), { hour: '2-digit', minute: '2-digit', ...options });
   } catch {
     return '—';
   }
@@ -57,7 +64,7 @@ export const formatDateTime = (value) => {
     const date = value instanceof Date ? value : new Date(value);
     if (isNaN(date.getTime())) return '—';
     
-    return date.toLocaleString('en-US', {
+    return date.toLocaleString(getLocale(), {
       year: 'numeric',
       month: 'short',
       day: 'numeric',

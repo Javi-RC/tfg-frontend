@@ -12,7 +12,7 @@ export default function EmployeeListItem({
   onStatusChange, 
   onRemove 
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   
   const handleStatusChange = (newStatus) => {
     if (onStatusChange) {
@@ -36,7 +36,7 @@ export default function EmployeeListItem({
           {employee.position && <span style={styles.detail}>{employee.position}</span>}
           {employee.department && <span style={styles.detail}>{employee.department}</span>}
           <span style={styles.detail}>
-            {t('organization.employee.joined')}: {new Date(employee.joinedAt).toLocaleDateString()}
+            {t('organization.employee.joined')}: {new Date(employee.joinedAt).toLocaleDateString(i18n.language)}
           </span>
         </div>
       </div>

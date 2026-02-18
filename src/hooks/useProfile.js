@@ -1,8 +1,10 @@
 import { useState, useEffect, useContext, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getProfile } from '../api/auth';
 import { AuthContext } from '../contexts/AuthContext';
 import { getCVConsent, updateCVConsent } from '../api/cvConsent';
+import { getPersonalityConsent, updatePersonalityConsent } from '../api/personalityConsent';
 import { normalizeConsentResponse } from '../utils/consent';
 import { getMyOrganizations, getOrganizationById } from '../api/organization';
 
@@ -12,6 +14,7 @@ import { getMyOrganizations, getOrganizationById } from '../api/organization';
  */
 export function useProfile() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user: authUser, updateProfile: updateAuthProfile } = useContext(AuthContext);
   
   const [profile, setProfile] = useState(null);
@@ -27,6 +30,14 @@ export function useProfile() {
   const [consentData, setConsentData] = useState(null);
   const [hasConsent, setHasConsent] = useState(false);
   const [showConsentModal, setShowConsentModal] = useState(false);
+
+  // Personality consent state
+  const [personalityConsentLoading, setPersonalityConsentLoading] = useState(false);
+  const [personalityConsentError, setPersonalityConsentError] = useState(null);
+  const [personalityConsentSuccess, setPersonalityConsentSuccess] = useState(null);
+  const [personalityConsentData, setPersonalityConsentData] = useState(null);
+  const [hasPersonalityConsent, setHasPersonalityConsent] = useState(false);
+  const [showPersonalityConsentModal, setShowPersonalityConsentModal] = useState(false);
 
   const [resolvedOrganizationName, setResolvedOrganizationName] = useState(null);
   const [resolvingOrganization, setResolvingOrganization] = useState(false);
@@ -46,6 +57,10 @@ export function useProfile() {
 
   useEffect(() => {
     loadConsent();
+  }, []);
+
+  useEffect(() => {
+    loadPersonalityConsent();
   }, []);
 
   const buildDraftFromUser = (u) => {
@@ -352,7 +367,7 @@ export function useProfile() {
       const refreshed = await getProfile();
       setProfile(refreshed.data);
       setEditMode(false);
-      setSaveSuccess('Profile updated successfully.');
+      setSaveSuccess(t('profile.updateSuccess'));
       return true;
     } catch (err) {
       setSaveError(extractApiErrorMessage(err));
@@ -389,15 +404,14 @@ export function useProfile() {
       setHasConsent(normalized.hasConsent);
       setConsentData(normalized.consent);
       setConsentSuccess(
-        res?.data?.message ||
-          'Consent revoked. You cannot upload CVs until you accept again.'
+        t('profile.consentRevokedDetail')
       );
       return true;
     } catch (err) {
       setConsentError(
         err?.response?.data?.error ||
           err?.response?.data?.message ||
-          'Could not revoke consent.'
+          t('profile.consentRevokeError')
       );
       return false;
     } finally {
@@ -418,6 +432,77 @@ export function useProfile() {
 
   const navigateToAdminCVs = () => {
     navigate('/admin/cvs');
+  };
+
+  /**
+   * Load personality consent status
+   */
+  const loadPersonalityConsent = async () => {
+    setPersonalityConsentLoading(true);
+    setPersonalityConsentError(null);
+
+    try {
+      const res = await getPersonalityConsent();
+      const normalized = normalizeConsentResponse(res?.data);
+      setHasPersonalityConsent(normalized.hasConsent);
+      setPersonalityConsentData(normalized.consent);
+    } catch (err) {
+      // Only log error, don't reset consent state — preserves optimistic updates
+      setPersonalityConsentError(
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        'Could not load personality consent status.'
+      );
+    } finally {
+      setPersonalityConsentLoading(false);
+    }
+  };
+
+  const openPersonalityConsentModal = () => {
+    setPersonalityConsentError(null);
+    setPersonalityConsentSuccess(null);
+    setShowPersonalityConsentModal(true);
+  };
+
+  const closePersonalityConsentModal = () => {
+    setShowPersonalityConsentModal(false);
+  };
+
+  const handlePersonalityConsentAccepted = async (responseData) => {
+    setShowPersonalityConsentModal(false);
+    const normalized = normalizeConsentResponse(responseData);
+    setHasPersonalityConsent(normalized.hasConsent || true);
+    setPersonalityConsentData(normalized.consent || null);
+    setPersonalityConsentSuccess(t('profile.personalityConsent.granted'));
+
+    try {
+      await loadPersonalityConsent();
+    } catch {
+      // Keep the optimistic update even if refresh fails
+    }
+  };
+
+  const revokePersonalityConsent = async () => {
+    setPersonalityConsentError(null);
+    setPersonalityConsentSuccess(null);
+    setPersonalityConsentLoading(true);
+
+    try {
+      await updatePersonalityConsent({ accepted: false });
+      setHasPersonalityConsent(false);
+      setPersonalityConsentData(null);
+      setPersonalityConsentSuccess(t('profile.personalityConsent.revoked'));
+      return true;
+    } catch (err) {
+      setPersonalityConsentError(
+        err?.response?.data?.error ||
+          err?.response?.data?.message ||
+          t('profile.personalityConsent.revokeError')
+      );
+      return false;
+    } finally {
+      setPersonalityConsentLoading(false);
+    }
   };
 
   return {
@@ -458,6 +543,21 @@ export function useProfile() {
     navigateToCVStats,
     navigateToAdminCVs,
     loadProfile,
-    loadConsent
+    loadConsent,
+
+    // Personality consent state
+    personalityConsentLoading,
+    personalityConsentError,
+    personalityConsentSuccess,
+    personalityConsentData,
+    hasPersonalityConsent,
+    showPersonalityConsentModal,
+
+    // Personality consent actions
+    loadPersonalityConsent,
+    openPersonalityConsentModal,
+    closePersonalityConsentModal,
+    handlePersonalityConsentAccepted,
+    revokePersonalityConsent
   };
 }

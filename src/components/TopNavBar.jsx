@@ -65,7 +65,7 @@ export default function TopNavBar() {
         gap: '12px'
       }}>
         <button
-          onClick={() => navigate('/projects')}
+          onClick={() => navigate('/')}
           onMouseEnter={() => setLogoHovered(true)}
           onMouseLeave={() => setLogoHovered(false)}
           style={{

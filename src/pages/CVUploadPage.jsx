@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import FileUploader from './CVUpload/FileUploader';
 import QuestionnaireModal from './CVUpload/QuestionnaireModal';
 import { uploadCV } from '../api/cv';
@@ -10,6 +11,7 @@ import './CVUploadPage.css';
  */
 const CVUploadPage = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [uploadResponse, setUploadResponse] = useState(null);
   const [showQuestionnaire, setShowQuestionnaire] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -22,7 +24,7 @@ const CVUploadPage = () => {
     
     try {
       console.log('CVUploadPage - Calling uploadCV API...');
-      const response = await uploadCV(file, 'en'); // or 'es' based on user preference
+      const response = await uploadCV(file); // Uses current i18n language automatically
       const data = response.data;
       
       console.log('========== BACKEND RESPONSE ==========');
@@ -92,16 +94,16 @@ const CVUploadPage = () => {
         {uploadResponse?.completeness && !showQuestionnaire && (
           <div className="upload-result">
             <div className="success-icon">✓</div>
-            <h3>CV Processed Successfully</h3>
+            <h3>{t('cv.upload.processedSuccessfully')}</h3>
             <div className="completeness-badge">
-              {uploadResponse.completeness.score}% complete
+              {t('cv.upload.percentComplete', { score: uploadResponse.completeness.score })}
             </div>
             {uploadResponse.completeness.missingFieldsCount > 0 ? (
               <p>
-                {uploadResponse.completeness.missingFieldsCount} fields remaining
+                {t('cv.upload.fieldsRemaining', { count: uploadResponse.completeness.missingFieldsCount })}
               </p>
             ) : (
-              <p>Your profile is complete! Redirecting to dashboard...</p>
+              <p>{t('cv.upload.profileComplete')}</p>
             )}
           </div>
         )}

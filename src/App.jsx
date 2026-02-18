@@ -22,6 +22,7 @@ import MyOrganizationsPage from './pages/MyOrganizationsPage'
 import OrganizationDetailPage from './pages/OrganizationDetailPage'
 import CVDetailPage from './pages/CVDetailPage'
 import BFI44Page from './pages/BFI44Page'
+import BFI44AdminPage from './pages/BFI44AdminPage'
 import ProjectsPage from './pages/ProjectsPage'
 import ProjectFormPage from './pages/ProjectFormPage'
 import ProjectDetailPage from './pages/ProjectDetailPage'
@@ -54,6 +55,7 @@ function AppRoutes() {
         <Route path="/oauth-success" element={<OAuthSuccess />} />
         <Route path="/complete-profile" element={<CompleteProfile />} />
         <Route path="/bfi-44" element={<ProtectedRoute><BFI44Page /></ProtectedRoute>} />
+        <Route path="/bfi-44/admin" element={<ProtectedRoute><BFI44AdminPage /></ProtectedRoute>} />
         <Route path="/bfi-44/:testId" element={<ProtectedRoute><BFI44Page /></ProtectedRoute>} />
         <Route path="/" element={<ProtectedRoute><Profile/></ProtectedRoute>} />
         <Route path="/my-cv" element={<ProtectedRoute><MyCVPage/></ProtectedRoute>} />

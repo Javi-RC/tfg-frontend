@@ -1,75 +1,42 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Users, Handshake, Target, Frown, Sparkles, BarChart3, Lightbulb } from 'lucide-react';
 
 /**
- * Factor display configuration
+ * Factor display configuration (colors and icons only)
  */
 export const FACTOR_CONFIG = {
   Extraversion: { 
     color: '#3b82f6', 
-    icon: 'Users', 
-    description: 'Sociability, assertiveness, positive emotions',
-    interpretation: {
-      low: 'Introverted, reserved, prefers solitude',
-      medium: 'Balanced social engagement',
-      high: 'Extroverted, sociable, enjoys interaction'
-    }
+    icon: 'Users'
   },
   Agreeableness: { 
     color: '#10b981', 
-    icon: 'Handshake', 
-    description: 'Cooperation, trust, empathy',
-    interpretation: {
-      low: 'Independent, competitive, critical',
-      medium: 'Balanced interpersonal approach',
-      high: 'Cooperative, empathetic, altruistic'
-    }
+    icon: 'Handshake'
   },
   Conscientiousness: { 
     color: '#8b5cf6', 
-    icon: 'Target', 
-    description: 'Organization, dependability, self-discipline',
-    interpretation: {
-      low: 'Spontaneous, disorganized, flexible',
-      medium: 'Balanced approach to structure',
-      high: 'Organized, disciplined, reliable'
-    }
+    icon: 'Target'
   },
   Neuroticism: { 
     color: '#ef4444', 
-    icon: 'Frown', 
-    description: 'Emotional instability, anxiety, moodiness',
-    interpretation: {
-      low: 'Emotionally stable, resilient',
-      medium: 'Balanced emotional responsiveness',
-      high: 'Prone to anxiety, emotional reactivity'
-    }
+    icon: 'Frown'
   },
   Openness: { 
     color: '#f59e0b', 
-    icon: 'Sparkles', 
-    description: 'Creativity, curiosity, openness to experience',
-    interpretation: {
-      low: 'Practical, traditional, conventional',
-      medium: 'Balanced openness to experience',
-      high: 'Creative, curious, intellectually adventurous'
-    }
+    icon: 'Sparkles'
   }
 };
 
 /**
  * Get interpretation based on score and factor
  */
-const getInterpretation = (factor, score) => {
-  const config = FACTOR_CONFIG[factor];
-  if (!config) return '';
-  
+const getInterpretation = (factor, score, t) => {
   const maxScore = factor === 'Openness' ? 50 : (factor === 'Extraversion' || factor === 'Neuroticism' ? 40 : 45);
   const percentage = score / maxScore;
   
-  if (percentage < 0.4) return config.interpretation.low;
-  if (percentage > 0.65) return config.interpretation.high;
-  return config.interpretation.medium;
+  const level = percentage < 0.4 ? 'low' : percentage > 0.65 ? 'high' : 'medium';
+  return t(`bfi44.results.factors.${factor}.interpretation.${level}`);
 };
 
 /**
@@ -81,10 +48,13 @@ const getInterpretation = (factor, score) => {
  * @param {number} index - Animation delay index
  */
 export default function FactorCard({ factor, score, index = 0 }) {
-  const config = FACTOR_CONFIG[factor] || { color: '#666', icon: 'BarChart3', description: '', interpretation: {} };
+  const { t } = useTranslation();
+  const config = FACTOR_CONFIG[factor] || { color: '#666', icon: 'BarChart3' };
   const maxScore = factor === 'Openness' ? 50 : (factor === 'Extraversion' || factor === 'Neuroticism' ? 40 : 45);
   const percentage = Math.round((score / maxScore) * 100);
-  const interpretation = getInterpretation(factor, score);
+  const interpretation = getInterpretation(factor, score, t);
+  const factorName = t(`bfi44.results.factors.${factor}.name`);
+  const factorDescription = t(`bfi44.results.factors.${factor}.description`);
   
   // Map icon string to Lucide component
   const IconComponent = {
@@ -112,8 +82,8 @@ export default function FactorCard({ factor, score, index = 0 }) {
           <IconComponent size={32} color={config.color} />
         </span>
         <div style={{ flex: 1 }}>
-          <h3 style={{...styles.factorName, color: config.color}}>{factor}</h3>
-          <p style={styles.factorDescription}>{config.description}</p>
+          <h3 style={{...styles.factorName, color: config.color}}>{factorName}</h3>
+          <p style={styles.factorDescription}>{factorDescription}</p>
         </div>
       </div>
       

@@ -40,11 +40,8 @@ export default function SynergyImpactIndicator({ validation }) {
       ? styles.neutral
       : styles.negative;
 
-  // Provide default message when backend doesn't send one
-  const displayMessage = validation.message || 
-    (isPositive ? t('team.synergy.positiveImpact') :
-     isNeutral ? t('team.synergy.neutralImpact') :
-     t('team.synergy.negativeImpact'));
+  // Always use frontend translations for consistent i18n
+  const displayMessage = getImpactMessage(impact, t);
 
   return (
     <div style={styles.container}>
@@ -57,6 +54,20 @@ export default function SynergyImpactIndicator({ validation }) {
       <span style={styles.message}>{displayMessage}</span>
     </div>
   );
+}
+
+/**
+ * Returns the appropriate i18n impact message based on the synergy impact value.
+ * @param {number} impact - Synergy impact value
+ * @param {Function} t - i18n translation function
+ * @returns {string} Translated impact message
+ */
+function getImpactMessage(impact, t) {
+  if (impact >= 5) return t('team.synergy.excellentImpact');
+  if (impact > 0) return t('team.synergy.positiveImpact');
+  if (impact === 0) return t('team.synergy.neutralImpact');
+  if (impact > -5) return t('team.synergy.slightNegativeImpact');
+  return t('team.synergy.negativeImpact');
 }
 
 const styles = {

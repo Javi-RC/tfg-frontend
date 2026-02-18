@@ -10,14 +10,14 @@ import ProjectStatusBadge from './ProjectStatusBadge';
  */
 export default function ProjectCard({ project, onEdit, onDelete, showActions = true }) {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const handleCardClick = () => {
     navigate(`/projects/${project._id}`);
   };
 
   const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('es-ES', {
+    return new Date(date).toLocaleDateString(i18n.language, {
       year: 'numeric',
       month: 'short',
       day: 'numeric'

@@ -9,6 +9,9 @@ import {
 } from './bfi44';
 
 jest.mock('./axios');
+jest.mock('../i18n', () => ({
+  language: 'en'
+}));
 
 describe('bfi44 API', () => {
   afterEach(() => {
@@ -30,7 +33,9 @@ describe('bfi44 API', () => {
 
       const result = await getQuestions();
 
-      expect(api.get).toHaveBeenCalledWith('/api/bfi-44/questions');
+      expect(api.get).toHaveBeenCalledWith('/api/bfi-44/questions', {
+        params: { language: 'en' }
+      });
       expect(result).toEqual(mockResponse);
     });
 
@@ -77,7 +82,9 @@ describe('bfi44 API', () => {
 
       const result = await submitResponses(responses);
 
-      expect(api.post).toHaveBeenCalledWith('/api/bfi-44/submit', { responses });
+      expect(api.post).toHaveBeenCalledWith('/api/bfi-44/submit', { responses }, {
+        params: { language: 'en' }
+      });
       expect(result).toEqual(mockResponse);
     });
 
@@ -98,7 +105,9 @@ describe('bfi44 API', () => {
 
       await submitResponses(responses);
 
-      expect(api.post).toHaveBeenCalledWith('/api/bfi-44/submit', { responses });
+      expect(api.post).toHaveBeenCalledWith('/api/bfi-44/submit', { responses }, {
+        params: { language: 'en' }
+      });
     });
 
     it('handles empty responses', async () => {

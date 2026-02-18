@@ -14,79 +14,73 @@ export const AuthProvider = ({ children }) => {
   const isLoadingProfile = useRef(false);
 
   useEffect(() => {
-    console.log('[AuthContext useEffect] Triggered - token:', token ? 'present' : 'missing', 'user:', user ? 'present' : 'missing');
-    console.log('[AuthContext useEffect] Current path:', window.location.pathname);
-    console.log('[AuthContext useEffect] Is public route:', isPublicRoute(window.location.pathname));
-    
-    // No intentar cargar perfil si estamos en páginas públicas
+    // Skip profile loading on public pages
     if (isPublicRoute(window.location.pathname)) {
-      console.log('[AuthContext useEffect] Skipping profile load - public route');
       return;
     }
-    
-    // Don't fetch profile if we already have user data
+
+    if (!token) return;
+
+    // Normalize roles coming from the backend to avoid invalid enum values
+    const ALLOWED_ROLES = ['employee', 'org_admin', 'unassigned'];
+    const normalizeRole = (r) => (ALLOWED_ROLES.includes(r) ? r : 'unassigned');
+
+    // If user already present from localStorage, do a background refresh
+    // to pick up new fields (e.g. organization) without blocking the UI
     if (user) {
-      console.log('[AuthContext useEffect] Skipping profile load - user already present');
+      getProfile().then(res => {
+        const rawUser = res?.data?.data?.user || res?.data?.user || res?.data || null;
+        if (rawUser) {
+          const refreshed = { ...rawUser, role: normalizeRole(rawUser.role) };
+          const merged = { ...user, ...refreshed };
+          setUser(merged);
+          localStorage.setItem('user', JSON.stringify(merged));
+        }
+      }).catch(() => {
+        // Background refresh failed — non-blocking
+      });
       return;
     }
     
-    if (token && !user && !isLoadingProfile.current) {
-      console.log('[AuthContext useEffect] Starting profile load');
+    if (!user && !isLoadingProfile.current) {
       isLoadingProfile.current = true;
       try {
         const decoded = jwtDecode(token);
-        console.log('[AuthContext useEffect] Decoded token:', decoded);
-        
-        // Verificar si el token ha expirado
         const currentTime = Date.now() / 1000;
         if (decoded.exp && decoded.exp < currentTime) {
-          console.log('[AuthContext useEffect] Token expired, clearing session');
           isLoadingProfile.current = false;
-          // Token expirado, limpiar y no redirigir (ProtectedRoute se encargará)
           setToken(null);
           setUser(null);
           localStorage.removeItem('token');
           localStorage.removeItem('user');
           return;
         }
-        
-        // Normalize roles coming from the backend to avoid invalid enum values
-        const ALLOWED_ROLES = ['employee', 'org_admin', 'unassigned'];
-        const normalizeRole = (r) => (ALLOWED_ROLES.includes(r) ? r : 'unassigned');
 
-        console.log('[AuthContext useEffect] Fetching profile from API');
         getProfile().then(res => {
-          console.log('[AuthContext useEffect] Profile fetched successfully');
-          const rawUser = (res && res.data && (res.data.user || res.data)) || null;
+          const rawUser = res?.data?.data?.user || res?.data?.user || res?.data || null;
           const normalized = rawUser ? { ...rawUser, role: normalizeRole(rawUser.role) } : null;
           setUser(normalized);
           localStorage.setItem('user', JSON.stringify(normalized));
           isLoadingProfile.current = false;
-        }).catch(err => {
-          console.error('[AuthContext useEffect] Profile fetch failed:', err);
+        }).catch(() => {
           isLoadingProfile.current = false;
-          // Limpiar datos inválidos sin redirigir (ProtectedRoute se encargará)
           setToken(null);
           setUser(null);
           localStorage.removeItem('token');
           localStorage.removeItem('user');
         });
-      } catch (err) {
-        console.error('[AuthContext useEffect] Error decoding token:', err);
+      } catch {
+        // Invalid token
         isLoadingProfile.current = false;
-        // Token inválido o corrupto, limpiar sin redirigir
         setToken(null);
         setUser(null);
         localStorage.removeItem('token');
         localStorage.removeItem('user');
       }
     }
-  }, [token, user]);
+  }, [token]);
 
   const setSession = useCallback((tokenValue, userData) => {
-    console.log('[AuthContext] Setting session with token:', tokenValue ? 'present' : 'missing');
-    console.log('[AuthContext] User data:', userData);
-    
     setToken(tokenValue);
     // Ensure role is normalized before storing
     const ALLOWED_ROLES = ['employee', 'org_admin', 'unassigned'];
@@ -95,8 +89,6 @@ export const AuthProvider = ({ children }) => {
     setUser(normalizedUser);
     localStorage.setItem('token', tokenValue);
     localStorage.setItem('user', JSON.stringify(normalizedUser));
-    
-    console.log('[AuthContext] Token stored in localStorage:', localStorage.getItem('token') ? 'yes' : 'no');
   }, []);
 
   const login = async (credentials) => {
@@ -106,25 +98,22 @@ export const AuthProvider = ({ children }) => {
   };
 
   const loginWithOAuth = async (provider) => {
-    // Use import.meta.env instead of process.env for Vite
-    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const apiUrl = import.meta.env.VITE_API_URL;
+    if (!apiUrl) {
+      console.error('VITE_API_URL is not configured. OAuth login will not work.');
+      return;
+    }
     window.location.href = `${apiUrl}/auth/${provider}`;
   };
 
   const updateProfile = async (profileData) => {
-    console.log('[AuthContext updateProfile] Called with data:', profileData);
-    console.log('[AuthContext updateProfile] Token in localStorage:', localStorage.getItem('token') ? 'present' : 'missing');
-    console.log('[AuthContext updateProfile] Current user state:', user);
-    
     // Normalize role before sending to API to avoid backend enum validation errors
     const ALLOWED_ROLES = ['employee', 'org_admin', 'unassigned'];
     const normalizeRole = (r) => (ALLOWED_ROLES.includes(r) ? r : 'unassigned');
     const payload = { ...profileData };
     if (payload.role) payload.role = normalizeRole(payload.role);
 
-    console.log('[AuthContext updateProfile] Calling apiPatchProfile with payload:', payload);
     const res = await apiPatchProfile(payload);
-    console.log('[AuthContext updateProfile] Response received:', res);
     const rawUser = (res && res.data && (res.data.user || res.data)) || {};
     const updatedUser = { ...rawUser, role: normalizeRole(rawUser?.role) };
     setUser(updatedUser);
@@ -133,28 +122,41 @@ export const AuthProvider = ({ children }) => {
   };
 
   const completeOAuthProfile = async (profileData) => {
-    console.log('[AuthContext completeOAuthProfile] Called with data:', profileData);
-    console.log('[AuthContext completeOAuthProfile] Token in localStorage:', localStorage.getItem('token') ? 'present' : 'missing');
-    
-    // El backend espera 'employee' o 'org_admin' exactamente
+    // Backend expects 'employee' or 'org_admin' exactly
     const allowedRoles = ['employee', 'org_admin'];
     const backendRole = allowedRoles.includes(profileData.role) ? profileData.role : 'employee';
     const payload = { ...profileData, role: backendRole };
     
-    console.log('[AuthContext completeOAuthProfile] Calling apiCompleteProfile with payload:', payload);
     const res = await apiCompleteProfile(payload);
-    console.log('[AuthContext completeOAuthProfile] Response received:', res);
-    
+
     // Backend returns new token with updated role
     if (res.data.token) {
-      const newToken = res.data.token;
-      const userData = res.data.user;
-      console.log('[AuthContext completeOAuthProfile] Updating session with new token');
-      setSession(newToken, userData);
+      setSession(res.data.token, res.data.user);
     }
     
     return res.data;
   };
+
+  /**
+   * Force-refresh the user profile from the API.
+   * Useful when the backend adds new fields (e.g. organization).
+   */
+  const refreshProfile = useCallback(async () => {
+    if (!token) return null;
+    const ALLOWED_ROLES = ['employee', 'org_admin', 'unassigned'];
+    const normalizeRole = (r) => (ALLOWED_ROLES.includes(r) ? r : 'unassigned');
+
+    const res = await getProfile();
+    const rawUser = (res && res.data && (res.data.user || res.data)) || null;
+    if (rawUser) {
+      const refreshed = { ...rawUser, role: normalizeRole(rawUser.role) };
+      const merged = { ...user, ...refreshed };
+      setUser(merged);
+      localStorage.setItem('user', JSON.stringify(merged));
+      return merged;
+    }
+    return user;
+  }, [token, user]);
 
   const logout = () => {
     setToken(null);
@@ -173,7 +175,8 @@ export const AuthProvider = ({ children }) => {
       setSession,
       loginWithOAuth,
       updateProfile,
-      completeOAuthProfile
+      completeOAuthProfile,
+      refreshProfile
     }}>
       {children}
     </AuthContext.Provider>

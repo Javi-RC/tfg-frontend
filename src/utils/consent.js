@@ -25,6 +25,8 @@ export const normalizeConsentResponse = (responseData) => {
     root?.data?.consent ??
     root?.cvProcessingConsent ??
     root?.user?.cvProcessingConsent ??
+    root?.personalityConsent ??
+    root?.data?.personalityConsent ??
     null;
 
   const hasConsent =

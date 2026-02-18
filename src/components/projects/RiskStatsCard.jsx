@@ -8,7 +8,7 @@ import { getStrategyLabel, usesDT, usesCBR } from '../../utils/strategyHelpers';
  * Displays overall statistics for risk predictions
  */
 export default function RiskStatsCard({ prediction, loading }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   if (loading || !prediction) {
     return null;
   }
@@ -31,7 +31,7 @@ export default function RiskStatsCard({ prediction, loading }) {
           {t('riskStats.title')}
         </h3>
         <div style={styles.date}>
-          {new Date(metadata?.predictionDate).toLocaleDateString('en-US', {
+          {new Date(metadata?.predictionDate).toLocaleDateString(i18n.language, {
             day: 'numeric',
             month: 'short',
             year: 'numeric',

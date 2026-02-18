@@ -2,6 +2,9 @@ import api from './axios';
 import { uploadCV, getMyCV, getCVStats } from './cv';
 
 jest.mock('./axios');
+jest.mock('../i18n', () => ({
+  language: 'en'
+}));
 
 describe('cv API', () => {
   afterEach(() => {
