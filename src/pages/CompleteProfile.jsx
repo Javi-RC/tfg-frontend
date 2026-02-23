@@ -46,7 +46,7 @@ function CompleteProfile() {
         setError(t('auth.completeProfile.invalidToken'));
       }
     }
-  }, [searchParams, auth]);
+  }, [searchParams, auth, t]);
 
   // Debug: Check localStorage on component mount
   useEffect(() => {

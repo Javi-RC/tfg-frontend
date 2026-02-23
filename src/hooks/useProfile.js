@@ -56,11 +56,12 @@ export function useProfile() {
   }, []);
 
   useEffect(() => {
-    loadConsent();
+    loadConsent(); // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
-    loadPersonalityConsent();
+    
+    loadPersonalityConsent(); // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const buildDraftFromUser = (u) => {

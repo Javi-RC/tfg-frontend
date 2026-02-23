@@ -35,7 +35,7 @@ export default function BFI44Page() {
   const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
 
   useEffect(() => {
-    loadInitialData();
+    loadInitialData(); // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadInitialData = async () => {
