@@ -33,7 +33,7 @@ jobs:
 
       # Run tests con coverage
       - name: Run tests with coverage
-        run: npm run test:coverage -- --watch=false
+        run: npm test
 
       # Security audit
       - name: Security audit
