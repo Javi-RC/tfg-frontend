@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FolderOpen } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import Pagination from '../../common/Pagination';
 
 /**
  * ProjectsTab
@@ -12,31 +13,28 @@ export default function ProjectsTab({ organizationId, isAdmin, styles }) {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+  const [pagination, setPagination] = useState(null);
 
-  useEffect(() => {
-    loadProjects();
-    if (isAdmin) {
-      loadStats();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [organizationId]);
-
-  const loadProjects = async () => {
+  const loadProjects = useCallback(async () => {
     try {
       setLoading(true);
       const { getOrganizationProjects } = await import('../../../api/projects');
-      const res = await getOrganizationProjects(organizationId);
+      const res = await getOrganizationProjects(organizationId, { page, limit });
       const data = res.data?.success ? res.data.data : res.data;
       setProjects(data || []);
+      if (res.data?.pagination) setPagination(res.data.pagination);
     } catch (err) {
       console.error('Error loading projects:', err);
       setProjects([]);
+      setPagination(null);
     } finally {
       setLoading(false);
     }
-  };
+  }, [organizationId, page, limit]);
 
-  const loadStats = async () => {
+  const loadStats = useCallback(async () => {
     try {
       const { getOrganizationProjectStats } = await import('../../../api/projects');
       const res = await getOrganizationProjectStats(organizationId);
@@ -45,7 +43,12 @@ export default function ProjectsTab({ organizationId, isAdmin, styles }) {
     } catch (err) {
       console.error('Error loading project stats:', err);
     }
-  };
+  }, [organizationId]);
+
+  useEffect(() => {
+    loadProjects();
+    if (isAdmin) loadStats();
+  }, [loadProjects, isAdmin, loadStats]);
 
   if (loading) {
     return <p style={styles.loadingText}>{t('organization.projects.loading')}</p>;
@@ -81,7 +84,7 @@ export default function ProjectsTab({ organizationId, isAdmin, styles }) {
 
       {projects.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-          <FolderOpen size={48} color="#999" style={{ marginBottom: '16px', opacity: 0.5 }} />
+          <FolderOpen size={48} color="#6B7280" style={{ marginBottom: '16px', opacity: 0.5 }} />
           <p style={styles.emptyText}>{t('organization.projects.noProjects')}</p>
         </div>
       ) : (
@@ -114,7 +117,7 @@ export default function ProjectsTab({ organizationId, isAdmin, styles }) {
                           ? '#6b7280'
                           : project.status === 'completed'
                             ? '#1976d2'
-                            : '#c62828'
+                            : '#c62828',
                   }}
                 >
                   {project.status}
@@ -122,23 +125,39 @@ export default function ProjectsTab({ organizationId, isAdmin, styles }) {
               </div>
               <div style={styles.projectInfo}>
                 <div>
-                  <strong>{t('organization.projects.pm')}:</strong> {project.projectManager?.name || 'N/A'}
+                  <strong>{t('organization.projects.pm')}:</strong>{' '}
+                  {project.projectManager?.name || t('common.notAvailable')}
                 </div>
                 <div>
-                  <strong>{t('organization.projects.team')}:</strong> {project.assignedEmployeesCount || 0} {t('organization.projects.members')}
+                  <strong>{t('organization.projects.team')}:</strong>{' '}
+                  {project.assignedEmployeesCount || 0} {t('organization.projects.members')}
                 </div>
                 <div>
                   <strong>{t('organization.projects.riskScore')}:</strong> {project.riskScore || 0}
                 </div>
               </div>
               <div style={styles.projectActions}>
-                <button style={styles.actionButton} onClick={() => navigate(`/projects/${project._id}`)}>
+                <button type="button"
+                  style={styles.actionButton}
+                  onClick={() => navigate(`/projects/${project._id}`)}
+                >
                   {t('organization.projects.viewDetails')}
                 </button>
               </div>
             </div>
           ))}
         </div>
+      )}
+
+      {pagination && pagination.pages > 1 && (
+        <Pagination
+          currentPage={page}
+          totalPages={pagination.pages}
+          onPageChange={setPage}
+          limit={limit}
+          onLimitChange={(l) => { setLimit(l); setPage(1); }}
+          label={t('navigation.aria.projectsPagination')}
+        />
       )}
     </div>
   );

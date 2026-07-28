@@ -24,13 +24,13 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
 
     const skillsArray = skills
       .split(',')
-      .map(s => s.trim())
-      .filter(s => s.length > 0);
+      .map((s) => s.trim())
+      .filter((s) => s.length > 0);
 
     const languagesArray = languages
       .split(',')
-      .map(l => l.trim())
-      .filter(l => l.length > 0);
+      .map((l) => l.trim())
+      .filter((l) => l.length > 0);
 
     if (skillsArray.length === 0 && languagesArray.length === 0) {
       setError(t('cv.search.errors.emptySearch'));
@@ -41,17 +41,17 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
     try {
       const response = await searchCVs({
         skills: skillsArray,
-        languages: languagesArray
+        languages: languagesArray,
       });
 
       // Backend response: { success: true, count: 5, cvs: [...] }
       const results = response.data?.cvs || response.data;
       const count = response.data?.count || results.length;
-      
+
       setLastSearchResults({
         count: count,
         skills: skillsArray,
-        languages: languagesArray
+        languages: languagesArray,
       });
 
       if (onSearchResults) {
@@ -78,31 +78,38 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
   };
 
   return (
-    <div style={{
-      background: 'white',
-      borderRadius: '16px',
-      padding: '32px 28px',
-      boxShadow: '0 2px 12px rgba(0,0,0,0.08)'
-    }} role="region" aria-label={t('cv.search.aria.panel')}>
-      <h3 style={{
-        fontSize: '18px',
-        fontWeight: '600',
-        marginBottom: '20px',
-        color: '#1a1a1a',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px'
-      }}>
+    <section
+      style={{
+        background: 'white',
+        borderRadius: '16px',
+        padding: '32px 28px',
+        boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+      }}
+      aria-label={t('cv.search.aria.panel')}
+    >
+      <h3
+        style={{
+          fontSize: '18px',
+          fontWeight: '600',
+          marginBottom: '20px',
+          color: 'var(--color-text-primary)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px',
+        }}
+      >
         <Search size={20} />
         {t('cv.search.title')}
       </h3>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: '20px',
-        marginBottom: '20px'
-      }}>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: '1fr 1fr',
+          gap: '20px',
+          marginBottom: '20px',
+        }}
+      >
         <div>
           <label
             htmlFor="skills-input"
@@ -110,8 +117,8 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
               display: 'block',
               fontSize: '14px',
               fontWeight: '500',
-              color: '#333',
-              marginBottom: '8px'
+              color: 'var(--color-text-body)',
+              marginBottom: '8px',
             }}
           >
             {t('cv.search.skillsLabel')}
@@ -121,7 +128,7 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
             type="text"
             value={skills}
             onChange={(e) => setSkills(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             placeholder={t('cv.search.skillsPlaceholder')}
             style={{
               width: '100%',
@@ -130,16 +137,18 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
               borderRadius: '10px',
               fontSize: '14px',
               outline: 'none',
-              transition: 'border-color 0.2s'
+              transition: 'border-color 0.2s',
             }}
-            onFocus={(e) => e.target.style.borderColor = '#111'}
-            onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
+            onFocus={(e) => (e.target.style.borderColor = '#111')}
+            onBlur={(e) => (e.target.style.borderColor = '#e0e0e0')}
           />
-          <p style={{
-            fontSize: '12px',
-            color: '#999',
-            marginTop: '6px'
-          }}>
+          <p
+            style={{
+              fontSize: '12px',
+              color: 'var(--color-text-muted)',
+              marginTop: '6px',
+            }}
+          >
             {t('cv.search.skillsHint')}
           </p>
         </div>
@@ -151,8 +160,8 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
               display: 'block',
               fontSize: '14px',
               fontWeight: '500',
-              color: '#333',
-              marginBottom: '8px'
+              color: 'var(--color-text-body)',
+              marginBottom: '8px',
             }}
           >
             {t('cv.search.languagesLabel')}
@@ -162,7 +171,7 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
             type="text"
             value={languages}
             onChange={(e) => setLanguages(e.target.value)}
-            onKeyPress={handleKeyPress}
+            onKeyDown={handleKeyPress}
             placeholder={t('cv.search.languagesPlaceholder')}
             style={{
               width: '100%',
@@ -171,46 +180,57 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
               borderRadius: '10px',
               fontSize: '14px',
               outline: 'none',
-              transition: 'border-color 0.2s'
+              transition: 'border-color 0.2s',
             }}
-            onFocus={(e) => e.target.style.borderColor = '#111'}
-            onBlur={(e) => e.target.style.borderColor = '#e0e0e0'}
+            onFocus={(e) => (e.target.style.borderColor = '#111')}
+            onBlur={(e) => (e.target.style.borderColor = '#e0e0e0')}
           />
-          <p style={{
-            fontSize: '12px',
-            color: '#999',
-            marginTop: '6px'
-          }}>
+          <p
+            style={{
+              fontSize: '12px',
+              color: 'var(--color-text-muted)',
+              marginTop: '6px',
+            }}
+          >
             {t('cv.search.languagesHint')}
           </p>
         </div>
       </div>
 
       {error && (
-        <div style={{
-          padding: '12px 16px',
-          background: '#fee',
-          border: '1px solid #fcc',
-          borderRadius: '8px',
-          color: '#c0392b',
-          fontSize: '14px',
-          marginBottom: '16px'
-        }} role="alert" aria-live="assertive">
+        <div
+          style={{
+            padding: '12px 16px',
+            background: 'var(--color-danger-bg)',
+            border: '1px solid #fcc',
+            borderRadius: '8px',
+            color: 'var(--color-error)',
+            fontSize: '14px',
+            marginBottom: '16px',
+          }}
+          role="alert"
+          aria-live="assertive"
+        >
           {error}
         </div>
       )}
 
       {lastSearchResults && (
-        <div style={{
-          padding: '12px 16px',
-          background: '#e8f4f8',
-          border: '1px solid #b3d9e8',
-          borderRadius: '8px',
-          fontSize: '14px',
-          marginBottom: '16px',
-          color: '#0066cc'
-        }} role="status" aria-live="polite">
-          <strong>{t('cv.search.results.title')}</strong> {t('cv.search.results.found', { count: lastSearchResults.count, total: totalCVs })}
+        <div
+          style={{
+            padding: '12px 16px',
+            background: '#e8f4f8',
+            border: '1px solid #b3d9e8',
+            borderRadius: '8px',
+            fontSize: '14px',
+            marginBottom: '16px',
+            color: '#0066cc',
+          }}
+          role="status"
+          aria-live="polite"
+        >
+          <strong>{t('cv.search.results.title')}</strong>{' '}
+          {t('cv.search.results.found', { count: lastSearchResults.count, total: totalCVs })}
           {lastSearchResults.skills.length > 0 && (
             <div style={{ marginTop: '4px' }}>
               {t('cv.search.results.skills')} {lastSearchResults.skills.join(', ')}
@@ -224,11 +244,13 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
         </div>
       )}
 
-      <div style={{
-        display: 'flex',
-        gap: '12px',
-        justifyContent: 'flex-end'
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          gap: '12px',
+          justifyContent: 'flex-end',
+        }}
+      >
         <SecondaryButton
           onClick={handleClear}
           disabled={searching}
@@ -245,39 +267,38 @@ export default function CVSearchPanel({ onSearchResults, totalCVs }) {
         </PrimaryButton>
       </div>
 
-      <div style={{
-        marginTop: '24px',
-        paddingTop: '24px',
-        borderTop: '1px solid #f0f0f0'
-      }} role="complementary" aria-label={t('cv.search.tips.aria')}>
-        <h4 style={{
-          fontSize: '14px',
-          fontWeight: '600',
-          marginBottom: '8px',
-          color: '#666'
-        }}>
+      <aside
+        style={{
+          marginTop: '24px',
+          paddingTop: '24px',
+          borderTop: '1px solid var(--color-border)',
+        }}
+        aria-label={t('cv.search.tips.aria')}
+      >
+        <h4
+          style={{
+            fontSize: '14px',
+            fontWeight: '600',
+            marginBottom: '8px',
+            color: 'var(--color-text-muted)',
+          }}
+        >
           {t('cv.search.tips.title')}
         </h4>
-        <ul style={{
-          fontSize: '13px',
-          color: '#999',
-          paddingLeft: '20px',
-          margin: 0
-        }}>
-          <li style={{ marginBottom: '4px' }}>
-            {t('cv.search.tips.tip1')}
-          </li>
-          <li style={{ marginBottom: '4px' }}>
-            {t('cv.search.tips.tip2')}
-          </li>
-          <li style={{ marginBottom: '4px' }}>
-            {t('cv.search.tips.tip3')}
-          </li>
-          <li>
-            {t('cv.search.tips.tip4')}
-          </li>
+        <ul
+          style={{
+            fontSize: '13px',
+            color: 'var(--color-text-muted)',
+            paddingLeft: '20px',
+            margin: 0,
+          }}
+        >
+          <li style={{ marginBottom: '4px' }}>{t('cv.search.tips.tip1')}</li>
+          <li style={{ marginBottom: '4px' }}>{t('cv.search.tips.tip2')}</li>
+          <li style={{ marginBottom: '4px' }}>{t('cv.search.tips.tip3')}</li>
+          <li>{t('cv.search.tips.tip4')}</li>
         </ul>
-      </div>
-    </div>
+      </aside>
+    </section>
   );
 }

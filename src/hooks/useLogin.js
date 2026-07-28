@@ -1,7 +1,7 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { validateLoginForm } from '../validators/authValidators';
 
 /**
@@ -11,8 +11,8 @@ import { validateLoginForm } from '../validators/authValidators';
 export function useLogin() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { login, loginWithOAuth } = useContext(AuthContext);
-  
+  const { login, loginWithOAuth } = useAuth();
+
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -25,7 +25,7 @@ export function useLogin() {
     try {
       const params = new URLSearchParams(window.location.search);
       const oauthError = params.get('oauth_error') || params.get('error');
-      
+
       if (oauthError) {
         let decoded;
         try {
@@ -33,10 +33,8 @@ export function useLogin() {
         } catch {
           decoded = oauthError;
         }
-        
-        setError(
-          t('auth.oauthError', { detail: decoded })
-        );
+
+        setError(t('auth.oauthError', { detail: decoded }));
 
         // Clean URL
         const url = new URL(window.location.href);
@@ -47,7 +45,7 @@ export function useLogin() {
     } catch {
       // Silent fallback
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   /**
@@ -82,7 +80,7 @@ export function useLogin() {
    * Update form field
    */
   const updateField = (field, value) => {
-    setForm(prev => ({ ...prev, [field]: value }));
+    setForm((prev) => ({ ...prev, [field]: value }));
     if (error) setError(null);
   };
 
@@ -90,7 +88,7 @@ export function useLogin() {
    * Toggle password visibility
    */
   const togglePasswordVisibility = () => {
-    setShowPassword(prev => !prev);
+    setShowPassword((prev) => !prev);
   };
 
   /**
@@ -122,13 +120,13 @@ export function useLogin() {
     error,
     isLoading,
     showPassword,
-    
+
     // Actions
     handleSubmit,
     updateField,
     togglePasswordVisibility,
     handleOAuthLogin,
     navigateToRegister,
-    navigateToHome
+    navigateToHome,
   };
 }

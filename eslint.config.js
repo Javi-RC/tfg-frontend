@@ -2,6 +2,7 @@ import js from '@eslint/js'
 import globals from 'globals'
 import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
+import prettier from 'eslint-config-prettier'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
@@ -14,6 +15,7 @@ export default defineConfig([
       reactHooks.configs['recommended-latest'],
       reactRefresh.configs.vite,
     ],
+    ...prettier,
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
@@ -25,6 +27,7 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
     },
   },
   {
@@ -43,6 +46,17 @@ export default defineConfig([
     },
     rules: {
       'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'react-refresh/only-export-components': 'off',
+    },
+  },
+  {
+    files: ['src/test-utils.jsx', 'src/**/test-utils.jsx'],
+    languageOptions: {
+      globals: {
+        ...globals.jest,
+      },
+    },
+    rules: {
       'react-refresh/only-export-components': 'off',
     },
   },

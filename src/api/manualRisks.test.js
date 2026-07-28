@@ -16,7 +16,7 @@ describe('Manual Risks API', () => {
     category: 'technical',
     rootCause: 'No SLA agreement',
     indicators: ['No SLA', 'Previous downtime incidents'],
-    recommendations: ['Implement caching', 'Research alternatives']
+    recommendations: ['Implement caching', 'Research alternatives'],
   };
 
   afterEach(() => {
@@ -28,8 +28,8 @@ describe('Manual Risks API', () => {
       const mockResponse = {
         data: {
           success: true,
-          data: { ...mockRiskData, _id: riskId }
-        }
+          data: { ...mockRiskData, _id: riskId },
+        },
       };
 
       api.post.mockResolvedValueOnce(mockResponse);
@@ -47,9 +47,9 @@ describe('Manual Risks API', () => {
       const error = new Error('Network error');
       api.post.mockRejectedValueOnce(error);
 
-      await expect(
-        manualRisksApi.addManualRisk(projectId, mockRiskData)
-      ).rejects.toThrow('Network error');
+      await expect(manualRisksApi.addManualRisk(projectId, mockRiskData)).rejects.toThrow(
+        'Network error'
+      );
     });
   });
 
@@ -59,11 +59,9 @@ describe('Manual Risks API', () => {
         data: {
           success: true,
           data: {
-            risks: [
-              { ...mockRiskData, _id: riskId }
-            ]
-          }
-        }
+            risks: [{ ...mockRiskData, _id: riskId }],
+          },
+        },
       };
 
       api.get.mockResolvedValueOnce(mockResponse);
@@ -78,29 +76,9 @@ describe('Manual Risks API', () => {
       const error = new Error('Network error');
       api.get.mockRejectedValueOnce(error);
 
-      await expect(
-        manualRisksApi.getProjectManualRisks(projectId)
-      ).rejects.toThrow('Network error');
-    });
-  });
-
-  describe('getManualRisk', () => {
-    it('should GET a specific manual risk', async () => {
-      const mockResponse = {
-        data: {
-          success: true,
-          data: { ...mockRiskData, _id: riskId }
-        }
-      };
-
-      api.get.mockResolvedValueOnce(mockResponse);
-
-      const result = await manualRisksApi.getManualRisk(projectId, riskId);
-
-      expect(api.get).toHaveBeenCalledWith(
-        `/api/projects/${projectId}/risks/${riskId}`
+      await expect(manualRisksApi.getProjectManualRisks(projectId)).rejects.toThrow(
+        'Network error'
       );
-      expect(result).toEqual(mockResponse);
     });
   });
 
@@ -110,17 +88,13 @@ describe('Manual Risks API', () => {
       const mockResponse = {
         data: {
           success: true,
-          data: { ...mockRiskData, ...updateData, _id: riskId }
-        }
+          data: { ...mockRiskData, ...updateData, _id: riskId },
+        },
       };
 
       api.put.mockResolvedValueOnce(mockResponse);
 
-      const result = await manualRisksApi.updateManualRisk(
-        projectId,
-        riskId,
-        updateData
-      );
+      const result = await manualRisksApi.updateManualRisk(projectId, riskId, updateData);
 
       expect(api.put).toHaveBeenCalledWith(
         `/api/projects/${projectId}/risks/${riskId}`,
@@ -133,9 +107,9 @@ describe('Manual Risks API', () => {
       const error = new Error('Not found');
       api.put.mockRejectedValueOnce(error);
 
-      await expect(
-        manualRisksApi.updateManualRisk(projectId, riskId, {})
-      ).rejects.toThrow('Not found');
+      await expect(manualRisksApi.updateManualRisk(projectId, riskId, {})).rejects.toThrow(
+        'Not found'
+      );
     });
   });
 
@@ -144,17 +118,15 @@ describe('Manual Risks API', () => {
       const mockResponse = {
         data: {
           success: true,
-          message: 'Risk deleted successfully'
-        }
+          message: 'Risk deleted successfully',
+        },
       };
 
       api.delete.mockResolvedValueOnce(mockResponse);
 
       const result = await manualRisksApi.deleteManualRisk(projectId, riskId);
 
-      expect(api.delete).toHaveBeenCalledWith(
-        `/api/projects/${projectId}/risks/${riskId}`
-      );
+      expect(api.delete).toHaveBeenCalledWith(`/api/projects/${projectId}/risks/${riskId}`);
       expect(result).toEqual(mockResponse);
     });
 
@@ -162,9 +134,9 @@ describe('Manual Risks API', () => {
       const error = new Error('Cannot delete');
       api.delete.mockRejectedValueOnce(error);
 
-      await expect(
-        manualRisksApi.deleteManualRisk(projectId, riskId)
-      ).rejects.toThrow('Cannot delete');
+      await expect(manualRisksApi.deleteManualRisk(projectId, riskId)).rejects.toThrow(
+        'Cannot delete'
+      );
     });
   });
 
@@ -177,9 +149,9 @@ describe('Manual Risks API', () => {
           {
             type: 'vendor_lock_in',
             occurred: true,
-            severity: 'high'
-          }
-        ]
+            severity: 'high',
+          },
+        ],
       };
 
       const mockResponse = {
@@ -188,23 +160,17 @@ describe('Manual Risks API', () => {
           data: {
             case: {
               id: '507f...',
-              addedToKnowledgeBase: true
-            }
-          }
-        }
+              addedToKnowledgeBase: true,
+            },
+          },
+        },
       };
 
       api.post.mockResolvedValueOnce(mockResponse);
 
-      const result = await manualRisksApi.submitProjectOutcome(
-        projectId,
-        outcomeData
-      );
+      const result = await manualRisksApi.submitProjectOutcome(projectId, outcomeData);
 
-      expect(api.post).toHaveBeenCalledWith(
-        `/api/projects/${projectId}/outcome`,
-        outcomeData
-      );
+      expect(api.post).toHaveBeenCalledWith(`/api/projects/${projectId}/outcome`, outcomeData);
       expect(result).toEqual(mockResponse);
     });
   });

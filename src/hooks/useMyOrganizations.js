@@ -1,21 +1,46 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { AuthContext } from '../contexts/AuthContext';
-import { 
-  getMyOrganizations, 
-  createOrganization
-} from '../api/organization';
+import { useAuth } from '../hooks/useAuth';
+import { getMyOrganizations, createOrganization } from '../api/organization';
+
+const normalizeTrimmed = (rawValue) => {
+  const value = rawValue?.trim();
+  return value ?? '';
+};
+
+const normalizeWebsite = (rawValue) => {
+  const value = rawValue?.trim();
+  if (!value) {
+    return undefined;
+  }
+  return /^https?:\/\//i.test(value) ? value : `https://${value}`;
+};
+
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+const isValidWebsite = (rawValue) => {
+  const normalized = normalizeWebsite(rawValue);
+  if (!normalized) {
+    return true;
+  }
+  try {
+    const url = new URL(normalized);
+    return Boolean(url);
+  } catch {
+    return false;
+  }
+};
 
 /**
  * Custom hook for My Organizations page business logic
  * Manages loading organizations and creating new ones
  */
 export function useMyOrganizations() {
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  
+
   const [organizations, setOrganizations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -28,46 +53,18 @@ export function useMyOrganizations() {
       city: '',
       state: '',
       postalCode: '',
-      country: ''
+      country: '',
     },
     email: '',
     phone: '',
     website: '',
     industry: '',
-    size: ''
+    size: '',
   });
   const [createError, setCreateError] = useState(null);
   const [creating, setCreating] = useState(false);
 
   const isOrgAdmin = user?.role === 'org_admin';
-
-  const normalizeTrimmed = (rawValue) => {
-    const value = rawValue?.trim();
-    return value ?? '';
-  };
-
-  const normalizeWebsite = (rawValue) => {
-    const value = rawValue?.trim();
-    if (!value) {
-      return undefined;
-    }
-    return /^https?:\/\//i.test(value) ? value : `https://${value}`;
-  };
-
-  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-
-  const isValidWebsite = (rawValue) => {
-    const normalized = normalizeWebsite(rawValue);
-    if (!normalized) {
-      return true;
-    }
-    try {
-      const url = new URL(normalized);
-      return Boolean(url);
-    } catch {
-      return false;
-    }
-  };
 
   useEffect(() => {
     loadOrganizations();
@@ -80,7 +77,7 @@ export function useMyOrganizations() {
     try {
       setLoading(true);
       const res = await getMyOrganizations();
-      
+
       if (res.data?.success && Array.isArray(res.data.data)) {
         setOrganizations(res.data.data);
       } else if (Array.isArray(res.data)) {
@@ -100,15 +97,15 @@ export function useMyOrganizations() {
    * Update create form field
    */
   const updateCreateForm = (field, value) => {
-    setCreateForm(prev => {
+    setCreateForm((prev) => {
       if (field.startsWith('address.')) {
         const addressField = field.slice('address.'.length);
         return {
           ...prev,
           address: {
             ...prev.address,
-            [addressField]: value
-          }
+            [addressField]: value,
+          },
         };
       }
 
@@ -130,13 +127,13 @@ export function useMyOrganizations() {
         city: '',
         state: '',
         postalCode: '',
-        country: ''
+        country: '',
       },
       email: '',
       phone: '',
       website: '',
       industry: '',
-      size: ''
+      size: '',
     });
     setCreateError(null);
   };
@@ -194,7 +191,7 @@ export function useMyOrganizations() {
         city: toOptionalTrimmed(createForm.address?.city),
         state: toOptionalTrimmed(createForm.address?.state),
         postalCode: toOptionalTrimmed(createForm.address?.postalCode),
-        country: toOptionalTrimmed(createForm.address?.country)
+        country: toOptionalTrimmed(createForm.address?.country),
       };
 
       const hasAddress = Object.values(address).some(Boolean);
@@ -202,7 +199,7 @@ export function useMyOrganizations() {
       const contact = {
         email: normalizeTrimmed(createForm.email),
         phone: toOptionalTrimmed(createForm.phone),
-        website: normalizeWebsite(createForm.website)
+        website: normalizeWebsite(createForm.website),
       };
 
       const organizationData = {
@@ -212,14 +209,14 @@ export function useMyOrganizations() {
         contact,
         industry: createForm.industry || undefined,
         size: createForm.size || undefined,
-        ...(hasAddress ? { address } : {})
+        ...(hasAddress ? { address } : {}),
       };
-      
+
       await createOrganization(organizationData);
-      
+
       // Reload organizations after creating
       await loadOrganizations();
-      
+
       // Close modal and reset form
       setShowCreateModal(false);
       resetCreateForm();
@@ -244,7 +241,7 @@ export function useMyOrganizations() {
    * Toggle create modal
    */
   const toggleCreateModal = () => {
-    setShowCreateModal(prev => !prev);
+    setShowCreateModal((prev) => !prev);
     if (showCreateModal) {
       resetCreateForm();
     }
@@ -259,7 +256,7 @@ export function useMyOrganizations() {
     createError,
     creating,
     isOrgAdmin,
-    
+
     // Actions
     setShowCreateModal,
     loadOrganizations,
@@ -267,6 +264,6 @@ export function useMyOrganizations() {
     resetCreateForm,
     handleCreateOrganization,
     navigateToOrganization,
-    toggleCreateModal
+    toggleCreateModal,
   };
 }

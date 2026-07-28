@@ -1,62 +1,42 @@
 import React from 'react';
-import { AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { AlertCircle, RefreshCw } from 'lucide-react';
+import './ErrorState.css';
 
 /**
  * ErrorState Component
  * Display error messages with optional action
  */
-export default function ErrorState({
-  message = 'An error occurred',
-  action,
-  centered = true,
-  variant = 'default'
-}) {
-  const variantStyles = {
-    default: {
-      background: 'white',
-      padding: '40px 20px'
-    },
-    inline: {
-      background: 'rgba(192,57,43,0.08)',
-      padding: '12px 16px',
-      border: '1px solid rgba(192,57,43,0.2)',
-      borderRadius: '10px'
-    }
-  };
 
+export default function ErrorState({
+  message,
+  action,
+  onRetry,
+  centered = true,
+  variant = 'default',
+}) {
+  const { t } = useTranslation();
+  const displayMessage = message ?? t('common.errorOccurred');
   return (
     <div
-      style={{
-        ...styles.container,
-        ...variantStyles[variant],
-        ...(centered ? styles.centered : {})
-      }}
+      className={`errorstate-container ${centered ? 'errorstate-container--centered' : ''} errorstate-container--${variant}`}
     >
       {variant === 'default' && (
-        <AlertCircle size={48} color="#c0392b" style={{ marginBottom: '16px' }} />
+        <AlertCircle size={48} color="#c0392b" className="errorstate-icon" />
       )}
-      <p style={styles.message}>{message}</p>
-      {action && <div style={styles.action}>{action}</div>}
+      <p className="errorstate-message">{displayMessage}</p>
+      {action && <div className="errorstate-action">{action}</div>}
+      {!action && onRetry && (
+        <button
+          type="button"
+          onClick={onRetry}
+          className="errorstate-retry-btn"
+        >
+          <RefreshCw size={14} />
+          {t('common.retry')}
+        </button>
+      )}
     </div>
   );
 }
 
-const styles = {
-  container: {
-    width: '100%'
-  },
-  centered: {
-    textAlign: 'center',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
-  },
-  message: {
-    color: '#c0392b',
-    fontSize: '14px',
-    margin: 0
-  },
-  action: {
-    marginTop: '16px'
-  }
-};

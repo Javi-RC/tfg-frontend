@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 /**
  * ProgressIndicator Component
  * Displays progress bar and count for BFI-44 questionnaire completion
- * 
+ *
  * @param {number} answeredCount - Number of questions answered
  * @param {number} totalQuestions - Total number of questions (default 44)
  */
@@ -13,44 +13,52 @@ export default function ProgressIndicator({ answeredCount, totalQuestions = 44 }
   const percentage = Math.round((answeredCount / totalQuestions) * 100);
 
   return (
-    <div style={styles.progressSection} role="region" aria-label={t('bfi44.questionnaireProgress')}>
+    <section style={styles.progressSection} aria-label={t('bfi44.questionnaireProgress')}>
       <div style={styles.progressInfo}>
-        <span>{t('bfi44.progress')}: {percentage}%</span>
+        <span>
+          {t('bfi44.progress')}: {percentage}%
+        </span>
         <span>{t('bfi44.answeredCount', { answered: answeredCount, total: totalQuestions })}</span>
       </div>
-      <div style={styles.mainProgressBar} role="progressbar" aria-valuenow={percentage} aria-valuemin="0" aria-valuemax="100">
+      <div
+        style={styles.mainProgressBar}
+        role="progressbar"
+        aria-valuenow={percentage}
+        aria-valuemin="0"
+        aria-valuemax="100"
+      >
         <div
           style={{
             ...styles.mainProgressFill,
-            width: `${percentage}%`
+            width: `${percentage}%`,
           }}
         />
       </div>
-    </div>
+    </section>
   );
 }
 
 const styles = {
   progressSection: {
-    marginTop: '16px'
+    marginTop: '16px',
   },
   progressInfo: {
     display: 'flex',
     justifyContent: 'space-between',
     fontSize: '14px',
     color: 'rgba(255, 255, 255, 0.95)',
-    marginBottom: '8px'
+    marginBottom: '8px',
   },
   mainProgressBar: {
     height: '8px',
     background: 'rgba(255, 255, 255, 0.2)',
     borderRadius: '4px',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   mainProgressFill: {
     height: '100%',
-    background: 'linear-gradient(90deg, #3b82f6, #8b5cf6)',
+    background: 'linear-gradient(90deg, #ffffff 0%, #efe9ff 100%)',
     borderRadius: '4px',
-    transition: 'width 0.3s ease'
-  }
+    transition: 'width 0.3s ease',
+  },
 };

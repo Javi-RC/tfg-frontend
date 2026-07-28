@@ -11,16 +11,15 @@ const ArrayQuestion = ({ question, value = [], onChange }) => {
   const [phoneType, setPhoneType] = useState('mobile');
   const inputId = `${question.field || 'array'}-input`;
   const selectId = `${question.field || 'array'}-type`;
-  const labelText = question.label || question.question || question.field || t('questionnaire.array.addItem');
+  const labelText =
+    question.label || question.question || question.field || t('questionnaire.array.addItem');
 
   const isPhoneField = question.field?.includes('phone');
 
   const handleAdd = () => {
     if (inputValue.trim()) {
-      const newItem = isPhoneField 
-        ? { number: inputValue, type: phoneType }
-        : inputValue;
-      
+      const newItem = isPhoneField ? { number: inputValue, type: phoneType } : inputValue;
+
       onChange([...value, newItem]);
       setInputValue('');
     }
@@ -45,16 +44,16 @@ const ArrayQuestion = ({ question, value = [], onChange }) => {
           id={inputId}
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          onKeyPress={handleKeyPress}
+          onKeyDown={handleKeyPress}
           placeholder={question.placeholder || t('questionnaire.array.placeholder')}
           className="form-input"
           aria-label={labelText}
         />
-        
+
         {isPhoneField && (
-          <select 
+          <select
             id={selectId}
-            value={phoneType} 
+            value={phoneType}
             onChange={(e) => setPhoneType(e.target.value)}
             className="phone-type-select"
             aria-label={`${labelText} type`}
@@ -64,8 +63,13 @@ const ArrayQuestion = ({ question, value = [], onChange }) => {
             <option value="work">{t('questionnaire.array.work')}</option>
           </select>
         )}
-        
-        <button type="button" onClick={handleAdd} className="btn-add" aria-label={`Add ${labelText}`}>
+
+        <button
+          type="button"
+          onClick={handleAdd}
+          className="btn-add"
+          aria-label={`Add ${labelText}`}
+        >
           {t('questionnaire.array.add')}
         </button>
       </div>
@@ -73,13 +77,13 @@ const ArrayQuestion = ({ question, value = [], onChange }) => {
       {value.length > 0 && (
         <div className="array-items">
           {value.map((item, index) => (
-            <div key={index} className="array-item">
+            <div key={typeof item === 'object' ? item.number : item} className="array-item">
               <span>
-                {typeof item === 'object' 
+                {typeof item === 'object'
                   ? `${item.number || JSON.stringify(item)} ${item.type ? `(${item.type})` : ''}`
                   : item}
               </span>
-              <button 
+              <button
                 type="button"
                 onClick={() => handleRemove(index)}
                 className="btn-remove"

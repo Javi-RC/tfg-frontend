@@ -1,9 +1,5 @@
 import { useState, useCallback } from 'react';
-import {
-  getProjectRisksFiltered,
-  markRiskAsOccurred,
-  getOutcomeFormData
-} from '../api/riskService';
+import { getProjectRisksFiltered, getOutcomeFormData } from '../api/riskService';
 import { completeProject } from '../api/projects';
 import { submitProjectOutcome } from '../api/manualRisks';
 import { RISK_STATUS } from '../types/riskTypes';
@@ -12,10 +8,10 @@ import i18n from '../i18n';
 /**
  * Custom hook for managing project risk monitoring and outcome submission
  * Handles the complete workflow: monitoring → marking risks → completion → outcome
- * 
+ *
  * @param {string} projectId - Project ID
  * @returns {Object} Risk monitoring and outcome functions with state
- * 
+ *
  * @example
  * const {
  *   risks,
@@ -37,19 +33,21 @@ export function useRiskMonitoringAndOutcome(projectId) {
    * @param {string} filters.status - Filter by status
    * @param {boolean} filters.occurred - Filter by occurred status
    */
-  const loadRisks = useCallback(async (filters = {}) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const response = await getProjectRisksFiltered(projectId, filters);
-      setRisks(response.data?.data?.risks || response.data?.risks || []);
-    } catch (err) {
-      setError(err.response?.data?.error || i18n.t('risks.monitoring.loadError'));
-      console.error('Error loading risks:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [projectId]);
+  const loadRisks = useCallback(
+    async (filters = {}) => {
+      try {
+        setLoading(true);
+        setError(null);
+        const response = await getProjectRisksFiltered(projectId, filters);
+        setRisks(response.data?.data?.risks || response.data?.risks || []);
+      } catch (err) {
+        setError(err.response?.data?.error || i18n.t('risks.monitoring.loadError'));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [projectId]
+  );
 
   /**
    * Get predicted risks (for monitoring during project execution)
@@ -58,7 +56,7 @@ export function useRiskMonitoringAndOutcome(projectId) {
    */
   const loadMonitoringRisks = useCallback(async () => {
     return loadRisks({
-      status: RISK_STATUS.PREDICTED
+      status: RISK_STATUS.PREDICTED,
     });
   }, [loadRisks]);
 
@@ -67,46 +65,6 @@ export function useRiskMonitoringAndOutcome(projectId) {
    */
   const loadOccurredRisks = useCallback(async () => {
     return loadRisks({ occurred: true });
-  }, [loadRisks]);
-
-  /**
-   * Mark a predicted risk as occurred
-   * @deprecated - As of January 2026, risks are NOT marked as occurred during execution.
-   * They are marked in the project retrospective (outcome form) when project is COMPLETED.
-   * This function is kept for backward compatibility but should not be used.
-   * 
-   * @param {string} riskId - Risk ID
-   * @param {Object} occurrenceData - Occurrence details
-   * @param {string} occurrenceData.actualSeverity - Actual severity
-   * @param {Object} occurrenceData.actualImpact - Impact details
-   * @param {string} occurrenceData.rootCause - Root cause
-   * @param {string} [occurrenceData.mitigatedAt] - Mitigation date
-   * @returns {Promise<boolean>} Success status
-   */
-  const markAsOccurred = useCallback(async (riskId, occurrenceData) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const data = {
-        occurred: true,
-        detectedAt: new Date().toISOString(),
-        ...occurrenceData
-      };
-
-      await markRiskAsOccurred(riskId, data);
-      
-      // Refresh risks list
-      await loadRisks();
-      
-      return true;
-    } catch (err) {
-      setError(err.response?.data?.error || i18n.t('risks.monitoring.markOccurredError'));
-      console.error('Error marking risk as occurred:', err);
-      return false;
-    } finally {
-      setLoading(false);
-    }
   }, [loadRisks]);
 
   /**
@@ -123,7 +81,6 @@ export function useRiskMonitoringAndOutcome(projectId) {
       return formData;
     } catch (err) {
       setError(err.response?.data?.error || i18n.t('risks.monitoring.loadOutcomeError'));
-      console.error('Error loading outcome form:', err);
       return null;
     } finally {
       setLoading(false);
@@ -135,7 +92,7 @@ export function useRiskMonitoringAndOutcome(projectId) {
    * Executes both steps in correct order:
    * 1. Mark project as completed
    * 2. Submit outcome data
-   * 
+   *
    * @param {Object} outcomeData - Complete outcome data
    * @param {boolean} outcomeData.completed - Completion status
    * @param {string} outcomeData.actualCompletedDate - Completion date
@@ -150,9 +107,9 @@ export function useRiskMonitoringAndOutcome(projectId) {
    * @param {Array} outcomeData.unsuccessfulPractices - Unsuccessful practices
    * @param {Array} outcomeData.recommendations - Recommendations
    * @param {Object} outcomeData.metrics - Additional metrics
-   * 
+   *
    * @returns {Promise<Object|null>} Response with CBR case info or null if error
-   * 
+   *
    * @example
    * const result = await submitOutcome({
    *   completed: true,
@@ -172,64 +129,64 @@ export function useRiskMonitoringAndOutcome(projectId) {
    *   recommendations: ['Use video standups'],
    *   metrics: { velocityAvg: 45 }
    * });
-   * 
+   *
    * if (result?.case?.addedToKnowledgeBase) {
    *   console.log('System learned from this project!');
    * }
    */
-  const submitOutcome = useCallback(async (outcomeData) => {
-    try {
-      setLoading(true);
-      setError(null);
+  const submitOutcome = useCallback(
+    async (outcomeData) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      // Step 1: Mark project as completed
-      await completeProject(projectId);
+        // Step 1: Mark project as completed
+        await completeProject(projectId);
 
-      // Step 2: Submit outcome (creates CBR case)
-      const response = await submitProjectOutcome(projectId, outcomeData);
-      const data = response.data?.data || response.data;
+        // Step 2: Submit outcome (creates CBR case)
+        const response = await submitProjectOutcome(projectId, outcomeData);
+        const data = response.data?.data || response.data;
 
-      // Log learning results
-      if (data.case?.addedToKnowledgeBase) {
-        console.log('✅ CBR Case created successfully');
-        console.log('Prediction Accuracy:', data.predictionAccuracy);
-        console.log('Learning Report:', data.learningReport);
+        return data;
+      } catch (err) {
+        const errorMsg = err.response?.data?.error || i18n.t('risks.monitoring.submitOutcomeError');
+        setError(errorMsg);
+
+        // Handle specific error cases
+        if (errorMsg.includes('completed first')) {
+          setError(i18n.t('risks.monitoring.projectNotCompleted'));
+        }
+
+        return null;
+      } finally {
+        setLoading(false);
       }
-
-      return data;
-    } catch (err) {
-      const errorMsg = err.response?.data?.error || i18n.t('risks.monitoring.submitOutcomeError');
-      setError(errorMsg);
-      console.error('Error submitting outcome:', err);
-      
-      // Handle specific error cases
-      if (errorMsg.includes('completed first')) {
-        setError(i18n.t('risks.monitoring.projectNotCompleted'));
-      }
-      
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, [projectId]);
+    },
+    [projectId]
+  );
 
   /**
    * Helper to create actualized risks array from current risks
    * Useful for pre-filling the outcome form
-   * 
+   *
    * @param {Array<Object>} currentRisks - Current project risks
    * @returns {Array<Object>} Actualized risks ready for outcome submission
    */
-  const prepareActualizedRisks = useCallback((currentRisks = risks) => {
-    return currentRisks.map(risk => ({
-      type: risk.type,
-      occurred: risk.occurred !== null ? risk.occurred : null,
-      severity: risk.occurred ? risk.actualSeverity || risk.severity : undefined,
-      scheduleDelayDays: risk.actualImpact?.scheduleDelayDays || 0,
-      budgetOverrunPercent: risk.actualImpact?.budgetOverrunPercent || 0,
-      description: risk.actualImpact?.description || risk.description
-    })).filter(risk => risk.occurred !== null); // Only include decided risks
-  }, [risks]);
+  const prepareActualizedRisks = useCallback(
+    (currentRisks = risks) => {
+      return currentRisks
+        .map((risk) => ({
+          type: risk.type,
+          occurred: risk.occurred !== null ? risk.occurred : null,
+          severity: risk.occurred ? risk.actualSeverity || risk.severity : undefined,
+          scheduleDelayDays: risk.actualImpact?.scheduleDelayDays || 0,
+          budgetOverrunPercent: risk.actualImpact?.budgetOverrunPercent || 0,
+          description: risk.actualImpact?.description || risk.description,
+        }))
+        .filter((risk) => risk.occurred !== null); // Only include decided risks
+    },
+    [risks]
+  );
 
   return {
     // State
@@ -242,14 +199,13 @@ export function useRiskMonitoringAndOutcome(projectId) {
     loadRisks,
     loadMonitoringRisks,
     loadOccurredRisks,
-    markAsOccurred,
     loadOutcomeForm,
     submitOutcome,
-    
+
     // Helpers
     prepareActualizedRisks,
 
     // Refresh
-    refreshRisks: loadRisks
+    refreshRisks: loadRisks,
   };
 }

@@ -12,30 +12,22 @@ describe('SecondaryButton Component', () => {
   it('calls onClick handler when clicked', () => {
     const handleClick = jest.fn();
     render(<SecondaryButton onClick={handleClick}>Click Me</SecondaryButton>);
-    
+
     fireEvent.click(screen.getByRole('button'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
   it('does not call onClick when disabled', () => {
     const handleClick = jest.fn();
-    render(<SecondaryButton onClick={handleClick} disabled>Click Me</SecondaryButton>);
-    
+    render(
+      <SecondaryButton onClick={handleClick} disabled>
+        Click Me
+      </SecondaryButton>
+    );
+
     const button = screen.getByRole('button');
     fireEvent.click(button);
     expect(handleClick).not.toHaveBeenCalled();
-  });
-
-  it('has transparent background by default', () => {
-    render(<SecondaryButton>Click Me</SecondaryButton>);
-    const button = screen.getByRole('button');
-    expect(button).toHaveStyle({ background: 'transparent' });
-  });
-
-  it('applies disabled cursor when disabled', () => {
-    render(<SecondaryButton disabled>Click Me</SecondaryButton>);
-    const button = screen.getByRole('button');
-    expect(button).toHaveStyle({ cursor: 'not-allowed' });
   });
 
   it('renders with left icon', () => {

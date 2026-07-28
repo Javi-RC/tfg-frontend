@@ -48,8 +48,8 @@ const styles = {
     whiteSpace: 'nowrap',
   },
   badgeNA: {
-    backgroundColor: '#f6f8fa',
-    color: '#57606a',
+    backgroundColor: 'var(--color-bg-muted)',
+    color: 'var(--color-text-secondary)',
     borderColor: '#d0d7de',
   },
   badgeExcellent: {

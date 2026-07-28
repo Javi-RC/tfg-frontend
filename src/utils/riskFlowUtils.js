@@ -19,7 +19,7 @@ export const getRiskCategory = (type) => {
     quality_degradation: 'riskCategories.technical',
     scope_creep: 'riskCategories.management',
     process_mismatch: 'riskCategories.management',
-    other: 'riskCategories.other'
+    other: 'riskCategories.other',
   };
   const key = categories[type] || 'riskCategories.other';
   return i18n.t(key);
@@ -33,10 +33,12 @@ export const getRiskTypeLabel = (type) => {
   const translated = i18n.t(key);
   if (translated && translated !== key) return translated;
 
-  return String(type || '')
-    .replace(/_/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase())
-    .trim() || i18n.t('riskTypes.other');
+  return (
+    String(type || '')
+      .replace(/_/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase())
+      .trim() || i18n.t('riskTypes.other')
+  );
 };
 
 const getRiskStableId = (risk, index) => {
@@ -49,7 +51,12 @@ const getRiskStableId = (risk, index) => {
 /**
  * Transform risks array into React Flow nodes and edges
  */
-export const transformRisksToFlow = (predictedRisks = [], actualizedRisks = [], projectName = 'Project') => {
+export const transformRisksToFlow = (
+  predictedRisks = [],
+  actualizedRisks = [],
+  projectName
+) => {
+  const displayName = projectName || i18n.t('common.project');
   const nodes = [];
   const edges = [];
 
@@ -59,14 +66,14 @@ export const transformRisksToFlow = (predictedRisks = [], actualizedRisks = [], 
     type: 'risk',
     position: { x: 800, y: 50 },
     data: {
-      label: projectName,
-      isRoot: true
-    }
+      label: displayName,
+      isRoot: true,
+    },
   });
 
   // 2. Group risks by category
   const risksByCategory = {};
-  predictedRisks.forEach(risk => {
+  predictedRisks.forEach((risk) => {
     const category = getRiskCategory(risk.type);
     if (!risksByCategory[category]) {
       risksByCategory[category] = [];
@@ -79,15 +86,15 @@ export const transformRisksToFlow = (predictedRisks = [], actualizedRisks = [], 
   // 3. Create category nodes
   categories.forEach((category) => {
     const categoryId = `cat-${category.toLowerCase().replace(/\s+/g, '-')}`;
-    
+
     nodes.push({
       id: categoryId,
       type: 'risk',
       position: { x: 0, y: 0 }, // Will be set by Dagre
       data: {
         label: category,
-        isCategory: true
-      }
+        isCategory: true,
+      },
     });
 
     // Edge from root to category
@@ -97,19 +104,19 @@ export const transformRisksToFlow = (predictedRisks = [], actualizedRisks = [], 
       target: categoryId,
       type: 'smoothstep',
       animated: false,
-      style: { stroke: '#9CA3AF', strokeWidth: 3 }
+      style: { stroke: '#9CA3AF', strokeWidth: 3 },
     });
 
     // 4. Create risk nodes for this category
     const risks = risksByCategory[category];
-    
+
     risks.forEach((risk, riskIndex) => {
       // Find if this risk has been actualized
       const stableRiskId = getRiskStableId(risk, riskIndex);
-      const actualized = actualizedRisks.find(ar => String(ar.riskId) === stableRiskId);
+      const actualized = actualizedRisks.find((ar) => String(ar.riskId) === stableRiskId);
 
       const riskNodeId = `risk-${stableRiskId}`;
-      
+
       nodes.push({
         id: riskNodeId,
         type: 'risk',
@@ -121,8 +128,8 @@ export const transformRisksToFlow = (predictedRisks = [], actualizedRisks = [], 
           type: risk.type,
           probability: risk.probability,
           riskData: risk,
-          onClick: () => {} // Will be handled by parent
-        }
+          onClick: () => {}, // Will be handled by parent
+        },
       });
 
       // Edge from category to risk
@@ -132,11 +139,15 @@ export const transformRisksToFlow = (predictedRisks = [], actualizedRisks = [], 
         target: riskNodeId,
         type: 'smoothstep',
         animated: actualized?.occurred === true,
-        style: { 
-          stroke: actualized?.occurred === true ? '#10B981' : 
-                 actualized?.occurred === false ? '#D1D5DB' : '#9CA3AF',
-          strokeWidth: actualized?.occurred === true ? 3 : 2
-        }
+        style: {
+          stroke:
+            actualized?.occurred === true
+              ? '#10B981'
+              : actualized?.occurred === false
+                ? '#D1D5DB'
+                : '#9CA3AF',
+          strokeWidth: actualized?.occurred === true ? 3 : 2,
+        },
       });
     });
   });
@@ -152,27 +163,27 @@ export const transformRisksToFlow = (predictedRisks = [], actualizedRisks = [], 
 export const applyDagreLayout = (nodes, edges) => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
-  
+
   // Configure layout
-  dagreGraph.setGraph({ 
+  dagreGraph.setGraph({
     rankdir: 'TB', // Top to Bottom
     nodesep: 120, // Horizontal spacing between nodes
     ranksep: 150, // Vertical spacing between ranks
     marginx: 50,
-    marginy: 50
+    marginy: 50,
   });
 
   // Add nodes to dagre graph
-  nodes.forEach(node => {
+  nodes.forEach((node) => {
     // Set node dimensions (approximate size of risk nodes)
     const width = node.data.isRoot ? 200 : node.data.isCategory ? 220 : 180;
     const height = node.data.isRoot ? 60 : node.data.isCategory ? 50 : 120;
-    
+
     dagreGraph.setNode(node.id, { width, height });
   });
 
   // Add edges to dagre graph
-  edges.forEach(edge => {
+  edges.forEach((edge) => {
     dagreGraph.setEdge(edge.source, edge.target);
   });
 
@@ -180,14 +191,14 @@ export const applyDagreLayout = (nodes, edges) => {
   dagre.layout(dagreGraph);
 
   // Apply calculated positions to nodes
-  const layoutedNodes = nodes.map(node => {
+  const layoutedNodes = nodes.map((node) => {
     const nodeWithPosition = dagreGraph.node(node.id);
     return {
       ...node,
       position: {
-        x: nodeWithPosition.x - (nodeWithPosition.width / 2),
-        y: nodeWithPosition.y - (nodeWithPosition.height / 2)
-      }
+        x: nodeWithPosition.x - nodeWithPosition.width / 2,
+        y: nodeWithPosition.y - nodeWithPosition.height / 2,
+      },
     };
   });
 

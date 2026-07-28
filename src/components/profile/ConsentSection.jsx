@@ -1,11 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import PrimaryButton from '../PrimaryButton';
-import SecondaryButton from '../SecondaryButton';
+import { ShieldCheck } from 'lucide-react';
+
+const formatText = (value) => (typeof value === 'string' && value.trim() ? value : '—');
 
 /**
  * ConsentSection Component
- * Displays CV AI processing consent status and actions
+ * Displays CV AI processing consent status and actions.
  */
 export default function ConsentSection({
   consentLoading,
@@ -15,21 +16,9 @@ export default function ConsentSection({
   consentData,
   onLoadConsent,
   onOpenConsentModal,
-  onRevokeConsent
+  onRevokeConsent,
 }) {
   const { t, i18n } = useTranslation();
-
-  const labelStyle = {
-    display: 'block',
-    fontSize: '12px',
-    fontWeight: '600',
-    color: '#4a5568',
-    marginBottom: '8px',
-    textTransform: 'uppercase',
-    letterSpacing: '0.5px'
-  };
-
-  const formatText = (value) => (typeof value === 'string' && value.trim() ? value : '—');
 
   const formatDateTime = (value) => {
     if (!value) return '—';
@@ -39,122 +28,87 @@ export default function ConsentSection({
   };
 
   return (
-    <div style={{
-      padding: '32px 40px',
-      borderBottom: '1px solid #e2e8f0'
-    }}>
-      <div style={{ marginBottom: '24px' }}>
-        <h2 style={{
-          fontSize: '20px',
-          fontWeight: '700',
-          color: '#1a202c',
-          marginBottom: '8px'
-        }}>
-          {t('profile.dataConsent')}
-        </h2>
-        <p style={{
-          fontSize: '14px',
-          color: '#718096',
-          lineHeight: '1.6'
-        }}>
-          {t('profile.consentSection.description')}
-        </p>
+    <section className="sara-card sara-card-pad">
+      <div className="sara-card-head">
+        <span className="sara-card-head-icon"><ShieldCheck size={19} aria-hidden="true" /></span>
+        <span className="sara-card-title">{t('profile.dataConsent')}</span>
       </div>
+      <p className="sara-card-desc">{t('profile.consentSection.description')}</p>
 
       {consentError && (
-        <div style={{
-          padding: '12px 16px',
-          background: '#fee',
-          border: '1px solid #fcc',
-          borderRadius: '8px',
-          color: '#c0392b',
-          fontSize: '14px',
-          marginBottom: '16px'
-        }} role="alert" aria-live="assertive">
+        <div className="sara-alert error" role="alert" aria-live="assertive">
           {consentError}
         </div>
       )}
-
       {consentSuccess && (
-        <div style={{
-          padding: '12px 16px',
-          background: '#D1FAE5',
-          border: '1px solid #10B981',
-          borderRadius: '8px',
-          color: '#065f46',
-          fontSize: '14px',
-          marginBottom: '16px'
-        }} role="status" aria-live="polite">
+        <div className="sara-alert success" role="status" aria-live="polite">
           {consentSuccess}
         </div>
       )}
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-        gap: '16px',
-        marginBottom: '16px'
-      }}>
+      <div className="sara-consent-meta">
         <div>
-          <div style={labelStyle}>{t('profile.consentSection.labels.cvAiProcessingConsent')}</div>
-          <p style={{ fontSize: '15px', color: hasConsent ? '#065f46' : '#9a3412', lineHeight: '1.6' }}>
+          <div className="sara-info-label">
+            {t('profile.consentSection.labels.cvAiProcessingConsent')}
+          </div>
+          <span className={`sara-status-badge ${hasConsent ? 'ok' : 'no'}`}>
+            <span className="sara-status-dot" />
             {consentLoading
               ? t('common.loading')
               : hasConsent
                 ? t('profile.consentSection.status.accepted')
                 : t('profile.consentSection.status.notAccepted')}
-          </p>
+          </span>
         </div>
 
         <div>
-          <div style={labelStyle}>{t('profile.consentSection.labels.acceptedAt')}</div>
-          <p style={{ fontSize: '15px', color: '#2d3748', lineHeight: '1.6' }}>
-            {formatDateTime(consentData?.acceptedAt)}
-          </p>
+          <div className="sara-info-label">{t('profile.consentSection.labels.acceptedAt')}</div>
+          <div className="sara-info-value">{formatDateTime(consentData?.acceptedAt)}</div>
         </div>
 
         <div>
-          <div style={labelStyle}>{t('profile.consentSection.labels.termsVersion')}</div>
-          <p style={{ fontSize: '15px', color: '#2d3748', lineHeight: '1.6' }}>
-            {formatText(consentData?.version)}
-          </p>
+          <div className="sara-info-label">{t('profile.consentSection.labels.termsVersion')}</div>
+          <div className="sara-info-value">{formatText(consentData?.version)}</div>
         </div>
       </div>
 
-      <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', flexWrap: 'wrap' }}>
-        <SecondaryButton
+      <div className="sara-card-actions">
+        <button
+          type="button"
+          className="sara-btn-outline"
           onClick={onLoadConsent}
           disabled={consentLoading}
           aria-label={t('profile.consentSection.aria.refresh')}
         >
           {t('common.refresh')}
-        </SecondaryButton>
+        </button>
 
         {!hasConsent ? (
-          <PrimaryButton
+          <button
+            type="button"
+            className="sara-btn-primary"
             onClick={onOpenConsentModal}
             disabled={consentLoading}
             aria-label={t('profile.consentSection.aria.reviewAndAccept')}
           >
             {t('profile.consentSection.reviewAndAccept')}
-          </PrimaryButton>
+          </button>
         ) : (
-          <SecondaryButton
+          <button
+            type="button"
+            className="sara-btn-outline"
             onClick={async () => {
-              const confirmed = window.confirm(
-                t('profile.consentSection.revokeConfirm')
-              );
+              const confirmed = window.confirm(t('profile.consentSection.revokeConfirm'));
               if (!confirmed) return;
-
               await onRevokeConsent();
             }}
             disabled={consentLoading}
             aria-label={t('profile.consentSection.aria.revoke')}
           >
             {t('profile.revokeConsent')}
-          </SecondaryButton>
+          </button>
         )}
       </div>
-    </div>
+    </section>
   );
 }

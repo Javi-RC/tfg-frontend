@@ -1,7 +1,20 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Zap, Calendar, Plane, MapPin, Clock, Moon, Phone } from 'lucide-react';
 import i18n from '../../i18n';
+
+function useDateFormatter() {
+  const { i18n: hookI18n } = useTranslation();
+  return useMemo(
+    () =>
+      new Intl.DateTimeFormat(hookI18n.language, {
+        year: 'numeric',
+        month: 'short',
+        day: '2-digit',
+      }),
+    [hookI18n.language]
+  );
+}
 
 /**
  * AvailabilitySection - Employee availability (from CV)
@@ -13,6 +26,7 @@ import i18n from '../../i18n';
  */
 export default function AvailabilitySection({ employee }) {
   const { t } = useTranslation();
+  const dateFormatter = useDateFormatter();
   const cvAvailability = employee?.cv?.availability;
 
   return (
@@ -29,48 +43,72 @@ export default function AvailabilitySection({ employee }) {
               <AvailabilityField
                 icon={<Calendar size={16} color="#3b82f6" />}
                 label={t('team.availability.cv.startDate', { defaultValue: 'Start date' })}
-                value={formatDateValue(cvAvailability.startDate, t)}
+                value={formatDateValue(cvAvailability.startDate, t, dateFormatter)}
               />
               <AvailabilityField
                 icon={<Plane size={16} color="#8b5cf6" />}
-                label={t('team.availability.cv.willingToTravel', { defaultValue: 'Willing to travel' })}
+                label={t('team.availability.cv.willingToTravel', {
+                  defaultValue: 'Willing to travel',
+                })}
                 value={formatBoolean(t, cvAvailability.willingToTravel)}
               />
               <AvailabilityField
                 icon={<Plane size={16} color="#8b5cf6" />}
-                label={t('team.availability.cv.travelFrequency', { defaultValue: 'Travel frequency' })}
-                value={formatEnum(t, 'team.availability.cv.travelFrequencyValues', cvAvailability.travelFrequency)}
+                label={t('team.availability.cv.travelFrequency', {
+                  defaultValue: 'Travel frequency',
+                })}
+                value={formatEnum(
+                  t,
+                  'team.availability.cv.travelFrequencyValues',
+                  cvAvailability.travelFrequency
+                )}
               />
               <AvailabilityField
                 icon={<MapPin size={16} color="#f59e0b" />}
-                label={t('team.availability.cv.willingToRelocate', { defaultValue: 'Willing to relocate' })}
+                label={t('team.availability.cv.willingToRelocate', {
+                  defaultValue: 'Willing to relocate',
+                })}
                 value={formatBoolean(t, cvAvailability.willingToRelocate)}
               />
               <AvailabilityField
                 icon={<Clock size={16} color="#6366f1" />}
-                label={t('team.availability.cv.willingToWorkOffHours', { defaultValue: 'Willing to work off-hours' })}
+                label={t('team.availability.cv.willingToWorkOffHours', {
+                  defaultValue: 'Willing to work off-hours',
+                })}
                 value={formatBoolean(t, cvAvailability.willingToWorkOffHours)}
               />
               <AvailabilityField
                 icon={<Clock size={16} color="#6366f1" />}
-                label={t('team.availability.cv.overtimeAvailability', { defaultValue: 'Overtime availability' })}
-                value={formatEnum(t, 'team.availability.cv.overtimeAvailabilityValues', cvAvailability.overtimeAvailability)}
+                label={t('team.availability.cv.overtimeAvailability', {
+                  defaultValue: 'Overtime availability',
+                })}
+                value={formatEnum(
+                  t,
+                  'team.availability.cv.overtimeAvailabilityValues',
+                  cvAvailability.overtimeAvailability
+                )}
               />
               <AvailabilityField
                 icon={<Moon size={16} color="#6b7280" />}
-                label={t('team.availability.cv.weekendAvailability', { defaultValue: 'Weekend availability' })}
+                label={t('team.availability.cv.weekendAvailability', {
+                  defaultValue: 'Weekend availability',
+                })}
                 value={formatBoolean(t, cvAvailability.weekendAvailability)}
               />
               <AvailabilityField
                 icon={<Phone size={16} color="#ef4444" />}
-                label={t('team.availability.cv.onCallAvailability', { defaultValue: 'On-call availability' })}
+                label={t('team.availability.cv.onCallAvailability', {
+                  defaultValue: 'On-call availability',
+                })}
                 value={formatBoolean(t, cvAvailability.onCallAvailability)}
               />
             </div>
           </div>
         ) : (
           <div style={styles.emptyCard}>
-            {t('team.availability.cv.noData', { defaultValue: 'No availability data found in this CV.' })}
+            {t('team.availability.cv.noData', {
+              defaultValue: 'No availability data found in this CV.',
+            })}
           </div>
         )}
       </div>
@@ -96,13 +134,14 @@ function formatBoolean(t, value) {
   return t('team.availability.cv.unknown', { defaultValue: 'Unknown' });
 }
 
-function formatDateValue(dateStr, t) {
+function formatDateValue(dateStr, t, dateFormatter) {
   if (!dateStr) return t('team.availability.cv.unknown', { defaultValue: 'Unknown' });
   const date = new Date(dateStr);
-  if (Number.isNaN(date.getTime())) return t('team.availability.cv.unknown', { defaultValue: 'Unknown' });
+  if (Number.isNaN(date.getTime()))
+    return t('team.availability.cv.unknown', { defaultValue: 'Unknown' });
 
   try {
-    return new Intl.DateTimeFormat(i18n.language, { year: 'numeric', month: 'short', day: '2-digit' }).format(date);
+    return dateFormatter.format(date);
   } catch {
     return date.toLocaleDateString(i18n.language);
   }
@@ -132,7 +171,7 @@ const styles = {
     margin: '0 0 12px 0',
     fontSize: '15px',
     fontWeight: '600',
-    color: '#24292e',
+    color: 'var(--color-text-primary)',
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
@@ -141,9 +180,9 @@ const styles = {
   // CV Availability
   cvAvailabilityCard: {
     padding: '16px',
-    backgroundColor: '#f6f8fa',
+    backgroundColor: 'var(--color-bg-muted)',
     borderRadius: '8px',
-    border: '1px solid #e1e4e8',
+    border: '1px solid var(--color-border)',
   },
   cvAvailabilityGrid: {
     display: 'grid',
@@ -153,7 +192,7 @@ const styles = {
   cvAvailabilityItem: {
     padding: '12px',
     backgroundColor: '#fff',
-    border: '1px solid #e1e4e8',
+    border: '1px solid var(--color-border)',
     borderRadius: '8px',
   },
   cvAvailabilityHeader: {
@@ -164,7 +203,7 @@ const styles = {
   },
   cvAvailabilityLabel: {
     fontSize: '11px',
-    color: '#586069',
+    color: 'var(--color-text-secondary)',
     textTransform: 'uppercase',
     letterSpacing: '0.4px',
     fontWeight: '600',
@@ -172,15 +211,15 @@ const styles = {
   cvAvailabilityValue: {
     fontSize: '13px',
     fontWeight: '600',
-    color: '#24292e',
+    color: 'var(--color-text-primary)',
   },
 
   emptyCard: {
     padding: '12px 14px',
-    backgroundColor: '#f6f8fa',
+    backgroundColor: 'var(--color-bg-muted)',
     borderRadius: '8px',
     border: '1px dashed #d0d7de',
-    color: '#586069',
+    color: 'var(--color-text-secondary)',
     fontSize: '13px',
   },
 };

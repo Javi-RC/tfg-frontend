@@ -1,18 +1,19 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * Form Input Component
  */
-export function FormInput({ 
-  label, 
-  name, 
-  value, 
-  onChange, 
-  required = false, 
+export function FormInput({
+  label,
+  name,
+  value,
+  onChange,
+  required = false,
   type = 'text',
   placeholder = '',
   error = '',
-  ...props 
+  ...props
 }) {
   const inputId = props.id || name;
   const errorId = error ? `${inputId}-error` : undefined;
@@ -22,7 +23,9 @@ export function FormInput({
         <span style={styles.labelLeft}>
           {label}
           {required && (
-            <span style={styles.required} aria-hidden="true">*</span>
+            <span style={styles.required} aria-hidden="true">
+              *
+            </span>
           )}
         </span>
       </label>
@@ -37,7 +40,7 @@ export function FormInput({
         aria-describedby={errorId}
         style={{
           ...styles.input,
-          ...(error && styles.inputError)
+          ...(error && styles.inputError),
         }}
         {...props}
       />
@@ -53,17 +56,17 @@ export function FormInput({
 /**
  * Form Textarea Component
  */
-export function FormTextarea({ 
-  label, 
-  name, 
-  value, 
-  onChange, 
+export function FormTextarea({
+  label,
+  name,
+  value,
+  onChange,
   required = false,
   placeholder = '',
   rows = 4,
   maxLength,
   error = '',
-  ...props 
+  ...props
 }) {
   const inputId = props.id || name;
   const errorId = error ? `${inputId}-error` : undefined;
@@ -73,10 +76,12 @@ export function FormTextarea({
         <span style={styles.labelLeft}>
           {label}
           {required && (
-            <span style={styles.required} aria-hidden="true">*</span>
+            <span style={styles.required} aria-hidden="true">
+              *
+            </span>
           )}
         </span>
-        {maxLength && (
+        {maxLength != null && maxLength > 0 && (
           <span style={styles.charCount}>
             {value?.length || 0} / {maxLength}
           </span>
@@ -94,7 +99,7 @@ export function FormTextarea({
         aria-describedby={errorId}
         style={{
           ...styles.textarea,
-          ...(error && styles.inputError)
+          ...(error && styles.inputError),
         }}
         {...props}
       />
@@ -110,17 +115,19 @@ export function FormTextarea({
 /**
  * Form Select Component
  */
-export function FormSelect({ 
-  label, 
-  name, 
-  value, 
-  onChange, 
+export function FormSelect({
+  label,
+  name,
+  value,
+  onChange,
   required = false,
   options = [],
-  placeholder = 'Select...',
+  placeholder,
   error = '',
-  ...props 
+  ...props
 }) {
+  const { t } = useTranslation();
+  const displayPlaceholder = placeholder ?? t('common.selectDefault');
   const inputId = props.id || name;
   const errorId = error ? `${inputId}-error` : undefined;
   return (
@@ -129,7 +136,9 @@ export function FormSelect({
         <span style={styles.labelLeft}>
           {label}
           {required && (
-            <span style={styles.required} aria-hidden="true">*</span>
+            <span style={styles.required} aria-hidden="true">
+              *
+            </span>
           )}
         </span>
       </label>
@@ -142,12 +151,12 @@ export function FormSelect({
         aria-describedby={errorId}
         style={{
           ...styles.select,
-          ...(error && styles.inputError)
+          ...(error && styles.inputError),
         }}
         {...props}
       >
-        {placeholder && <option value="">{placeholder}</option>}
-        {options.map(opt => (
+        {displayPlaceholder && <option value="">{displayPlaceholder}</option>}
+        {options.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}
           </option>
@@ -165,16 +174,16 @@ export function FormSelect({
 /**
  * Form Number Input Component
  */
-export function FormNumber({ 
-  label, 
-  name, 
-  value, 
-  onChange, 
+export function FormNumber({
+  label,
+  name,
+  value,
+  onChange,
   required = false,
   min,
   max,
   error = '',
-  ...props 
+  ...props
 }) {
   const inputId = props.id || name;
   const errorId = error ? `${inputId}-error` : undefined;
@@ -184,7 +193,9 @@ export function FormNumber({
         <span style={styles.labelLeft}>
           {label}
           {required && (
-            <span style={styles.required} aria-hidden="true">*</span>
+            <span style={styles.required} aria-hidden="true">
+              *
+            </span>
           )}
         </span>
       </label>
@@ -200,7 +211,7 @@ export function FormNumber({
         aria-describedby={errorId}
         style={{
           ...styles.input,
-          ...(error && styles.inputError)
+          ...(error && styles.inputError),
         }}
         {...props}
       />
@@ -216,13 +227,7 @@ export function FormNumber({
 /**
  * Form Checkbox Component
  */
-export function FormCheckbox({ 
-  label, 
-  name, 
-  checked, 
-  onChange,
-  ...props 
-}) {
+export function FormCheckbox({ label, name, checked, onChange, ...props }) {
   return (
     <div style={styles.checkboxField}>
       <input
@@ -241,117 +246,105 @@ export function FormCheckbox({
   );
 }
 
-/**
- * Form Section Title Component
- */
-export function FormSection({ title, description }) {
-  return (
-    <div style={styles.section}>
-      <h3 style={styles.sectionTitle}>{title}</h3>
-      {description && <p style={styles.sectionDescription}>{description}</p>}
-    </div>
-  );
-}
-
 const styles = {
   field: {
     display: 'flex',
     flexDirection: 'column',
     gap: '8px',
-    marginBottom: '20px'
+    marginBottom: '20px',
   },
   label: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#111',
+    color: 'var(--color-text-primary)',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   labelLeft: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '4px',
-    minWidth: 0
+    minWidth: 0,
   },
   required: {
-    color: '#EF4444',
+    color: 'var(--color-danger-icon)',
     fontWeight: '700',
-    lineHeight: 1
+    lineHeight: 1,
   },
   charCount: {
     fontSize: '12px',
-    color: '#9CA3AF',
-    fontWeight: '400'
+    color: 'var(--color-text-muted)',
+    fontWeight: '400',
   },
   input: {
     padding: '12px 16px',
-    border: '2px solid #E5E7EB',
-    borderRadius: '10px',
-    fontSize: '15px',
-    outline: 'none',
-    transition: 'border-color 0.2s',
-    fontFamily: 'inherit'
-  },
-  textarea: {
-    padding: '12px 16px',
-    border: '2px solid #E5E7EB',
+    border: '2px solid var(--color-border)',
     borderRadius: '10px',
     fontSize: '15px',
     outline: 'none',
     transition: 'border-color 0.2s',
     fontFamily: 'inherit',
-    resize: 'vertical'
+  },
+  textarea: {
+    padding: '12px 16px',
+    border: '2px solid var(--color-border)',
+    borderRadius: '10px',
+    fontSize: '15px',
+    outline: 'none',
+    transition: 'border-color 0.2s',
+    fontFamily: 'inherit',
+    resize: 'vertical',
   },
   select: {
     padding: '12px 16px',
-    border: '2px solid #E5E7EB',
+    border: '2px solid var(--color-border)',
     borderRadius: '10px',
     fontSize: '15px',
     outline: 'none',
     cursor: 'pointer',
     background: 'white',
-    fontFamily: 'inherit'
+    fontFamily: 'inherit',
   },
   inputError: {
-    borderColor: '#EF4444'
+    borderColor: 'var(--color-danger-icon)',
   },
   errorText: {
     fontSize: '13px',
-    color: '#EF4444',
-    marginTop: '-4px'
+    color: 'var(--color-danger-icon)',
+    marginTop: '-4px',
   },
   checkboxField: {
     display: 'flex',
     alignItems: 'center',
     gap: '10px',
-    marginBottom: '16px'
+    marginBottom: '16px',
   },
   checkbox: {
     width: '18px',
     height: '18px',
-    cursor: 'pointer'
+    cursor: 'pointer',
   },
   checkboxLabel: {
     fontSize: '14px',
-    color: '#111',
+    color: 'var(--color-text-primary)',
     cursor: 'pointer',
-    userSelect: 'none'
+    userSelect: 'none',
   },
   section: {
     marginBottom: '32px',
     paddingBottom: '24px',
-    borderBottom: '1px solid #E5E7EB'
+    borderBottom: '1px solid var(--color-border)',
   },
   sectionTitle: {
     fontSize: '18px',
     fontWeight: '700',
-    color: '#111',
-    margin: '0 0 8px 0'
+    color: 'var(--color-text-primary)',
+    margin: '0 0 8px 0',
   },
   sectionDescription: {
     fontSize: '14px',
-    color: '#6B7280',
-    margin: 0
-  }
+    color: 'var(--color-text-muted)',
+    margin: 0,
+  },
 };

@@ -3,7 +3,7 @@ import { uploadCV, getMyCV, getCVStats } from './cv';
 
 jest.mock('./axios');
 jest.mock('../i18n', () => ({
-  language: 'en'
+  language: 'en',
 }));
 
 describe('cv API', () => {
@@ -18,22 +18,18 @@ describe('cv API', () => {
       const mockResponse = {
         data: {
           cv: { id: 1, filename: 'resume.pdf' },
-          questionnaire: null
-        }
+          questionnaire: null,
+        },
       };
       api.post.mockResolvedValue(mockResponse);
 
       const result = await uploadCV(mockFile, language);
 
-      expect(api.post).toHaveBeenCalledWith(
-        '/api/cv/upload',
-        expect.any(FormData),
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        }
-      );
+      expect(api.post).toHaveBeenCalledWith('/api/cv/upload', expect.any(FormData), {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
 
       // Verify FormData contains correct data
       const callArgs = api.post.mock.calls[0];
@@ -90,9 +86,9 @@ describe('cv API', () => {
         data: {
           cv: { id: 1 },
           questionnaire: {
-            questions: ['Q1', 'Q2']
-          }
-        }
+            questions: ['Q1', 'Q2'],
+          },
+        },
       };
       api.post.mockResolvedValue(mockResponse);
 
@@ -110,9 +106,9 @@ describe('cv API', () => {
           cv: {
             id: 1,
             filename: 'my-resume.pdf',
-            skills: ['JavaScript', 'React']
-          }
-        }
+            skills: ['JavaScript', 'React'],
+          },
+        },
       };
       api.get.mockResolvedValue(mockResponse);
 
@@ -142,7 +138,7 @@ describe('cv API', () => {
         filename: 'resume.pdf',
         skills: ['React', 'Node.js'],
         experience: ['Developer at Company A'],
-        education: ['CS Degree']
+        education: ['CS Degree'],
       };
       const mockResponse = { data: { cv: mockCV } };
       api.get.mockResolvedValue(mockResponse);
@@ -161,8 +157,8 @@ describe('cv API', () => {
         data: {
           total: 100,
           processed: 95,
-          pending: 5
-        }
+          pending: 5,
+        },
       };
       api.get.mockResolvedValue(mockStats);
 
@@ -186,9 +182,9 @@ describe('cv API', () => {
           byStatus: {
             pending: 10,
             reviewed: 30,
-            rejected: 10
-          }
-        }
+            rejected: 10,
+          },
+        },
       };
       api.get.mockResolvedValue(mockStats);
 

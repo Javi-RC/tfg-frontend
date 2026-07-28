@@ -1,0 +1,123 @@
+/* ========================================
+   DESIGN TOKENS
+   Centralized design system variables
+   ======================================== */
+
+:root {
+  /* ---- Colors: Text ---- */
+  --color-text-primary: #1a1a1a;
+  --color-text-body: #2d3748;
+  --color-text-strong: #374151;
+  --color-text-secondary: #4a5568;
+  --color-text-muted: #6B7280;
+  --color-text-disabled: #9CA3AF;
+  --color-text-heading: #111827;
+  --color-text-inverse: #ffffff;
+
+  /* ---- Colors: Background ---- */
+  --color-bg-page: #f7f6fb;
+  --color-bg-muted: #f9fafb;
+  --color-bg-subtle: #F3F4F6;
+  --color-bg-white: #ffffff;
+  --color-bg-hover: #f7f5ff;
+  --color-bg-active: #f3f0ff;
+
+  /* ---- Colors: Border ---- */
+  --color-border: #E5E7EB;
+  --color-border-strong: #D1D5DB;
+  --color-border-input: rgba(102, 102, 102, 0.25);
+  --color-border-focus: #111;
+
+  /* ---- Colors: Primary (Sara purple) ---- */
+  --color-primary: #7c5cff;
+  --color-primary-hover: #6a45f0;
+  --color-primary-light: #f3f0ff;
+  --color-primary-track: #e6e1f7;
+  --color-primary-ring: rgba(124, 92, 255, 0.2);
+
+  /* ---- Gradients ---- */
+  --gradient-primary: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+  --gradient-primary-h: linear-gradient(90deg, var(--color-primary) 0%, var(--color-primary-hover) 100%);
+  --gradient-page: linear-gradient(135deg, var(--color-bg-page) 0%, var(--color-primary-light) 100%);
+
+  /* ---- Colors: Semantic ---- */
+  --color-success: #10B981;
+  --color-success-dark: #065f46;
+  --color-success-bg: #d1fae5;
+  --color-success-light: rgba(16, 185, 129, 0.1);
+  --color-error: #c0392b;
+  --color-error-light: rgba(192, 57, 43, 0.08);
+  --color-error-border: rgba(192, 57, 43, 0.2);
+  --color-danger: #dc2626;
+  --color-danger-hover: #b91c1c;
+  --color-danger-strong: #991b1b;
+  --color-danger-icon: #ef4444;
+  --color-danger-bg: #fee2e2;
+  --color-warning: #F59E0B;
+  --color-warning-dark: #92400e;
+  --color-warning-bg: #fef3c7;
+  --color-warning-light: rgba(245, 158, 11, 0.1);
+
+  /* ---- Colors: Accent ---- */
+  --color-accent-purple: #8B5CF6;
+  --color-accent-gradient-start: #667eea;
+  --color-accent-gradient-end: #764ba2;
+
+  /* ---- Spacing ---- */
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 60px;
+
+  /* ---- Border Radius ---- */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* ---- Font Sizes ---- */
+  --font-size-xs: 11px;
+  --font-size-sm: 14px;
+  --font-size-base: 15px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 20px;
+  --font-size-3xl: 28px;
+
+  /* ---- Font Weights ---- */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ---- Shadows ---- */
+  --shadow-sm: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  --shadow-primary: 0 10px 30px rgba(124, 92, 255, 0.28);
+  --shadow-primary-sm: 0 4px 14px rgba(124, 92, 255, 0.3);
+
+  /* ---- Layout ---- */
+  --height-nav: 64px;
+  --max-width-content: 1200px;
+
+  /* ---- Transitions ---- */
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.2s ease;
+  --transition-slow: 0.3s ease;
+
+  /* ---- Focus ---- */
+  --focus-color: var(--color-primary);
+  --focus-outline-width: 3px;
+  --focus-outline-offset: 2px;
+
+  /* ---- Z-Index ---- */
+  --z-nav: 1000;
+  --z-dropdown: 1001;
+  --z-modal-backdrop: 1050;
+  --z-modal: 1060;
+  --z-toast: 1070;
+}

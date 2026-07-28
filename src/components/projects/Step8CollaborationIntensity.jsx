@@ -21,10 +21,14 @@ export default function Step8CollaborationIntensity({ formData, onChange }) {
   };
 
   const addTeam = () => {
-    const newTeams = [...(formData.involvedTeams || []), { 
-      teamName: '', 
-      dependencyLevel: 'medium' 
-    }];
+    const newTeams = [
+      ...(formData.involvedTeams || []),
+      {
+        _key: `team-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+        teamName: '',
+        dependencyLevel: 'medium',
+      },
+    ];
     onChange({ involvedTeams: newTeams });
   };
 
@@ -35,16 +39,17 @@ export default function Step8CollaborationIntensity({ formData, onChange }) {
 
   const handleExchangesChange = (e) => {
     const value = e.target.value;
-    const exchanges = value.split('\n').map(ex => ex.trim()).filter(ex => ex);
+    const exchanges = value
+      .split('\n')
+      .map((ex) => ex.trim())
+      .filter((ex) => ex);
     onChange({ criticalExchanges: exchanges });
   };
 
   return (
     <div>
       <h2 style={styles.stepTitle}>{t('projects.steps.step8.title')}</h2>
-      <p style={styles.stepDescription}>
-        {t('projects.steps.step8.description')}
-      </p>
+      <p style={styles.stepDescription}>{t('projects.steps.step8.description')}</p>
 
       <div style={styles.section}>
         <div style={styles.sectionHeader}>
@@ -54,13 +59,12 @@ export default function Step8CollaborationIntensity({ formData, onChange }) {
 
         {formData.involvedTeams && formData.involvedTeams.length > 0 ? (
           formData.involvedTeams.map((team, index) => (
-            <div key={index} style={styles.teamCard}>
+            <div key={team._key} style={styles.teamCard}>
               <div style={styles.teamHeader}>
-                <span style={styles.teamNumber}>{t('projects.steps.step8.team')} {index + 1}</span>
-                <button
-                  style={styles.removeButton}
-                  onClick={() => removeTeam(index)}
-                >
+                <span style={styles.teamNumber}>
+                  {t('projects.steps.step8.team')} {index + 1}
+                </span>
+                <button type="button" style={styles.removeButton} onClick={() => removeTeam(index)}>
                   {t('projects.steps.step5.remove')}
                 </button>
               </div>
@@ -81,9 +85,18 @@ export default function Step8CollaborationIntensity({ formData, onChange }) {
                   value={team.dependencyLevel || 'medium'}
                   onChange={(e) => handleTeamChange(index, 'dependencyLevel', e.target.value)}
                   options={[
-                    { value: DEPENDENCY_LEVELS.LOW, label: t('projects.steps.step8.dependencyLow') },
-                    { value: DEPENDENCY_LEVELS.MEDIUM, label: t('projects.steps.step8.dependencyMedium') },
-                    { value: DEPENDENCY_LEVELS.HIGH, label: t('projects.steps.step8.dependencyHigh') }
+                    {
+                      value: DEPENDENCY_LEVELS.LOW,
+                      label: t('projects.steps.step8.dependencyLow'),
+                    },
+                    {
+                      value: DEPENDENCY_LEVELS.MEDIUM,
+                      label: t('projects.steps.step8.dependencyMedium'),
+                    },
+                    {
+                      value: DEPENDENCY_LEVELS.HIGH,
+                      label: t('projects.steps.step8.dependencyHigh'),
+                    },
                   ]}
                 />
               </div>
@@ -100,9 +113,15 @@ export default function Step8CollaborationIntensity({ formData, onChange }) {
         value={formData.informationFlow || 'bidirectional'}
         onChange={handleChange}
         options={[
-          { value: INFORMATION_FLOW.UNIDIRECTIONAL, label: t('projects.steps.step8.flowUnidirectional') },
-          { value: INFORMATION_FLOW.BIDIRECTIONAL, label: t('projects.steps.step8.flowBidirectional') },
-          { value: INFORMATION_FLOW.MULTIPLE, label: t('projects.steps.step8.flowMultiple') }
+          {
+            value: INFORMATION_FLOW.UNIDIRECTIONAL,
+            label: t('projects.steps.step8.flowUnidirectional'),
+          },
+          {
+            value: INFORMATION_FLOW.BIDIRECTIONAL,
+            label: t('projects.steps.step8.flowBidirectional'),
+          },
+          { value: INFORMATION_FLOW.MULTIPLE, label: t('projects.steps.step8.flowMultiple') },
         ]}
       />
 
@@ -122,46 +141,46 @@ const styles = {
   stepTitle: {
     fontSize: '28px',
     fontWeight: '700',
-    color: '#111',
-    margin: '0 0 8px 0'
+    color: 'var(--color-text-primary)',
+    margin: '0 0 8px 0',
   },
   stepDescription: {
     fontSize: '15px',
-    color: '#6B7280',
-    marginBottom: '32px'
+    color: 'var(--color-text-muted)',
+    marginBottom: '32px',
   },
   section: {
-    marginBottom: '32px'
+    marginBottom: '32px',
   },
   sectionHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '20px'
+    marginBottom: '20px',
   },
   sectionTitle: {
     fontSize: '18px',
     fontWeight: '600',
-    color: '#111',
-    margin: 0
+    color: 'var(--color-text-primary)',
+    margin: 0,
   },
   teamCard: {
     padding: '20px',
-    background: '#F9FAFB',
+    background: 'var(--color-bg-muted)',
     borderRadius: '12px',
     marginBottom: '16px',
-    border: '1px solid #E5E7EB'
+    border: '1px solid var(--color-border)',
   },
   teamHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '16px'
+    marginBottom: '16px',
   },
   teamNumber: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#6B7280'
+    color: 'var(--color-text-muted)',
   },
   removeButton: {
     padding: '6px 12px',
@@ -170,20 +189,20 @@ const styles = {
     fontSize: '13px',
     fontWeight: '600',
     cursor: 'pointer',
-    background: '#FEE2E2',
-    color: '#DC2626',
-    transition: 'all 0.2s'
+    background: 'var(--color-danger-bg)',
+    color: 'var(--color-danger)',
+    transition: 'all 0.2s',
   },
   row: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    gap: '16px'
+    gap: '16px',
   },
   emptyText: {
     textAlign: 'center',
-    color: '#9CA3AF',
+    color: 'var(--color-text-muted)',
     padding: '40px',
-    background: '#F9FAFB',
-    borderRadius: '12px'
-  }
+    background: 'var(--color-bg-muted)',
+    borderRadius: '12px',
+  },
 };

@@ -38,7 +38,7 @@ export default function ProjectFormPage() {
     prevStep,
     goToStep,
     saveDraft,
-    submitAndActivate
+    submitAndActivate,
   } = useProjectForm();
 
   // All business logic now handled by useProjectForm hook
@@ -54,77 +54,25 @@ export default function ProjectFormPage() {
   const renderStepContent = () => {
     switch (currentStep) {
       case 1:
-        return (
-          <Step1GeneralInfo
-            formData={formData}
-            onChange={updateField}
-            errors={errors}
-          />
-        );
+        return <Step1GeneralInfo formData={formData} onChange={updateField} errors={errors} />;
       case 2:
-        return (
-          <Step2Collaboration
-            formData={formData}
-            onChange={updateField}
-            errors={errors}
-          />
-        );
+        return <Step2Collaboration formData={formData} onChange={updateField} errors={errors} />;
       case 3:
-        return (
-          <Step3Technical
-            formData={formData}
-            onChange={updateField}
-            errors={errors}
-          />
-        );
+        return <Step3Technical formData={formData} onChange={updateField} errors={errors} />;
       case 4:
-        return (
-          <Step4Geographic
-            formData={formData}
-            onChange={updateField}
-            errors={errors}
-          />
-        );
+        return <Step4Geographic formData={formData} onChange={updateField} errors={errors} />;
       case 5:
-        return (
-          <Step5Roles
-            formData={formData}
-            onChange={updateField}
-            errors={errors}
-          />
-        );
+        return <Step5Roles formData={formData} onChange={updateField} errors={errors} />;
       case 6:
-        return (
-          <Step6Availability
-            formData={formData}
-            onChange={updateField}
-            errors={errors}
-          />
-        );
+        return <Step6Availability formData={formData} onChange={updateField} errors={errors} />;
       case 7:
-        return (
-          <Step7Coordination
-            formData={formData}
-            onChange={updateField}
-            errors={errors}
-          />
-        );
+        return <Step7Coordination formData={formData} onChange={updateField} errors={errors} />;
       case 8:
         return (
-          <Step8CollaborationIntensity
-            formData={formData}
-            onChange={updateField}
-            errors={errors}
-          />
+          <Step8CollaborationIntensity formData={formData} onChange={updateField} errors={errors} />
         );
       case 9:
-        return (
-          <Step9Maturity
-            formData={formData}
-            onChange={updateField}
-            errors={errors}
-          />
-        );
+        return <Step9Maturity formData={formData} onChange={updateField} errors={errors} />;
       default:
         return null;
     }
@@ -135,7 +83,7 @@ export default function ProjectFormPage() {
       <div style={styles.content}>
         {/* Header */}
         <div style={styles.header}>
-          <button style={styles.backButton} onClick={() => navigate('/projects')}>
+          <button type="button" style={styles.backButton} onClick={() => navigate('/projects')}>
             <ArrowLeft size={18} style={{ marginRight: '8px' }} />
             {t('projects.backToProjects')}
           </button>
@@ -147,16 +95,19 @@ export default function ProjectFormPage() {
         {/* Organization Selector */}
         {!isEditMode && (
           <div style={styles.orgSelector}>
-            <label style={styles.label}>
+            <label htmlFor="project-org-select" style={styles.label}>
               {t('projects.form.selectOrganization')} <span style={styles.required}>*</span>
             </label>
             <select
+              id="project-org-select"
               value={selectedOrg}
               onChange={(e) => setSelectedOrg(e.target.value)}
               style={styles.select}
             >
-              {organizations.map(org => (
-                <option key={org._id} value={org._id}>{org.name}</option>
+              {organizations.map((org) => (
+                <option key={org._id} value={org._id}>
+                  {org.name}
+                </option>
               ))}
             </select>
           </div>
@@ -165,10 +116,10 @@ export default function ProjectFormPage() {
         {/* Progress Indicator */}
         <div style={styles.progress}>
           <div style={styles.progressBar}>
-            <div 
+            <div
               style={{
                 ...styles.progressFill,
-                width: `${(currentStep / FORM_STEPS.length) * 100}%`
+                width: `${(currentStep / FORM_STEPS.length) * 100}%`,
               }}
             />
           </div>
@@ -178,19 +129,29 @@ export default function ProjectFormPage() {
         </div>
 
         {/* Steps Navigator */}
-        <div style={styles.stepsNav}>
+        <div style={styles.stepsNav} role="tablist" aria-label={t('projects.formSteps', { defaultValue: 'Form steps' })}>
           {FORM_STEPS.map((step, idx) => (
-            <div
+            <button
               key={step.id}
+              type="button"
+              role="tab"
+              tabIndex={0}
+              aria-label={t('projects.stepNumber', { step: idx + 1, defaultValue: `Step ${idx + 1}` })}
+              aria-selected={currentStep === idx + 1}
+              aria-current={currentStep === idx + 1 ? 'step' : undefined}
               style={{
                 ...styles.stepDot,
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                padding: 0,
                 ...(idx + 1 === currentStep && styles.stepDotActive),
-                ...(idx + 1 < currentStep && styles.stepDotCompleted)
+                ...(idx + 1 < currentStep && styles.stepDotCompleted),
               }}
               onClick={() => goToStep(idx + 1)}
             >
               {idx + 1}
-            </div>
+            </button>
           ))}
         </div>
 
@@ -206,7 +167,7 @@ export default function ProjectFormPage() {
               </div>
             </div>
           )}
-          
+
           {renderStepContent()}
         </div>
 
@@ -219,32 +180,34 @@ export default function ProjectFormPage() {
               </SecondaryButton>
             )}
           </div>
-          
+
           <div style={styles.rightActions}>
             <SecondaryButton onClick={saveDraft} disabled={loading} leftIcon={<Save size={16} />}>
               {t('projects.form.saveAsDraft')}
             </SecondaryButton>
-            
+
             {currentStep < FORM_STEPS.length ? (
               <PrimaryButton onClick={nextStep} rightIcon={<ArrowRight size={16} />}>
                 {t('projects.form.next')}
               </PrimaryButton>
             ) : (
               <>
-                <PrimaryButton 
+                <PrimaryButton
                   onClick={() => submitAndActivate(false)}
                   disabled={loading}
                   leftIcon={<CheckCircle size={18} />}
                 >
                   {isEditMode ? t('projects.form.updateProject') : t('projects.form.createProject')}
                 </PrimaryButton>
-                <PrimaryButton 
+                <PrimaryButton
                   onClick={() => submitAndActivate(true)}
                   disabled={loading}
-                  style={{ background: '#10B981' }}
+                  style={{ background: 'var(--color-success)' }}
                   leftIcon={<CheckCircle size={18} />}
                 >
-                  {isEditMode ? t('projects.form.updateAndActivate') : t('projects.form.createAndActivate')}
+                  {isEditMode
+                    ? t('projects.form.updateAndActivate')
+                    : t('projects.form.createAndActivate')}
                 </PrimaryButton>
               </>
             )}
@@ -259,117 +222,117 @@ const styles = {
   container: {
     maxWidth: '900px',
     margin: '0 auto',
-    padding: '100px 20px 40px 20px'
+    padding: '100px 20px 40px 20px',
   },
   content: {
     background: 'white',
     borderRadius: '20px',
     padding: '40px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
   },
   header: {
-    marginBottom: '32px'
+    marginBottom: '32px',
   },
   backButton: {
     display: 'inline-flex',
     alignItems: 'center',
     background: 'none',
     border: 'none',
-    color: '#6B7280',
+    color: 'var(--color-text-muted)',
     fontSize: '14px',
     fontWeight: '600',
     cursor: 'pointer',
     marginBottom: '16px',
     padding: '8px 12px 8px 0',
-    transition: 'color 0.2s, transform 0.2s'
+    transition: 'color 0.2s, transform 0.2s',
   },
   title: {
     fontSize: '32px',
     fontWeight: '700',
-    color: '#111',
-    margin: 0
+    color: 'var(--color-text-primary)',
+    margin: 0,
   },
   orgSelector: {
     marginBottom: '32px',
     padding: '20px',
-    background: '#F9FAFB',
-    borderRadius: '12px'
+    background: 'var(--color-bg-muted)',
+    borderRadius: '12px',
   },
   label: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#111',
+    color: 'var(--color-text-primary)',
     marginBottom: '8px',
-    display: 'block'
+    display: 'block',
   },
   required: {
-    color: '#EF4444'
+    color: 'var(--color-danger-icon)',
   },
   select: {
     width: '100%',
     padding: '12px 16px',
-    border: '2px solid #E5E7EB',
+    border: '2px solid var(--color-border)',
     borderRadius: '10px',
     fontSize: '15px',
     outline: 'none',
     cursor: 'pointer',
-    background: 'white'
+    background: 'white',
   },
   progress: {
-    marginBottom: '24px'
+    marginBottom: '24px',
   },
   progressBar: {
     width: '100%',
     height: '8px',
-    background: '#E5E7EB',
+    background: 'var(--color-border)',
     borderRadius: '4px',
     overflow: 'hidden',
-    marginBottom: '8px'
+    marginBottom: '8px',
   },
   progressFill: {
     height: '100%',
-    background: '#111',
-    transition: 'width 0.3s ease'
+    background: 'var(--color-primary)',
+    transition: 'width 0.3s ease',
   },
   progressText: {
     fontSize: '13px',
-    color: '#6B7280',
+    color: 'var(--color-text-muted)',
     fontWeight: '600',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   stepsNav: {
     display: 'flex',
     justifyContent: 'center',
     gap: '12px',
     marginBottom: '40px',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   stepDot: {
     width: '36px',
     height: '36px',
     borderRadius: '50%',
-    border: '2px solid #E5E7EB',
+    border: '2px solid var(--color-border)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: '14px',
     fontWeight: '600',
-    color: '#9CA3AF',
+    color: 'var(--color-text-muted)',
     cursor: 'pointer',
-    transition: 'all 0.2s'
+    transition: 'all 0.2s',
   },
   stepDotActive: {
-    borderColor: '#111',
-    background: '#111',
-    color: 'white'
+    borderColor: 'var(--color-text-primary)',
+    background: 'var(--color-primary)',
+    color: 'white',
   },
   stepDotCompleted: {
-    borderColor: '#10B981',
-    background: '#10B981',
-    color: 'white'
+    borderColor: 'var(--color-success)',
+    background: 'var(--color-success)',
+    color: 'white',
   },
   formContent: {
-    marginBottom: '40px'
+    marginBottom: '40px',
   },
   validationAlert: {
     display: 'flex',
@@ -379,37 +342,37 @@ const styles = {
     background: '#FEF2F2',
     border: '2px solid #FCA5A5',
     borderRadius: '12px',
-    marginBottom: '24px'
+    marginBottom: '24px',
   },
   alertTitle: {
     display: 'block',
     fontSize: '15px',
     fontWeight: '700',
-    color: '#991B1B',
-    marginBottom: '4px'
+    color: 'var(--color-danger-strong)',
+    marginBottom: '4px',
   },
   alertMessage: {
     fontSize: '14px',
     color: '#7F1D1D',
     margin: 0,
-    lineHeight: '1.5'
+    lineHeight: '1.5',
   },
   simplifiedStep: {
     padding: '40px',
-    background: '#F9FAFB',
+    background: 'var(--color-bg-muted)',
     borderRadius: '12px',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   stepTitle: {
     fontSize: '24px',
     fontWeight: '700',
-    color: '#111',
-    marginBottom: '12px'
+    color: 'var(--color-text-primary)',
+    marginBottom: '12px',
   },
   infoText: {
     fontSize: '15px',
-    color: '#6B7280',
-    lineHeight: '1.6'
+    color: 'var(--color-text-muted)',
+    lineHeight: '1.6',
   },
   actions: {
     display: 'flex',
@@ -417,20 +380,20 @@ const styles = {
     alignItems: 'center',
     gap: '16px',
     paddingTop: '32px',
-    borderTop: '2px solid #E5E7EB'
+    borderTop: '2px solid var(--color-border)',
   },
   leftActions: {
     display: 'flex',
-    gap: '12px'
+    gap: '12px',
   },
   rightActions: {
     display: 'flex',
     gap: '12px',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   loadingText: {
     textAlign: 'center',
-    color: '#6B7280',
-    padding: '60px'
-  }
+    color: 'var(--color-text-muted)',
+    padding: '60px',
+  },
 };

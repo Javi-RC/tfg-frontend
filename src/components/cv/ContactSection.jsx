@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Mail, Phone, MapPin, Linkedin, Github, Globe } from 'lucide-react';
 import SectionHeader from './SectionHeader';
 import Field from './Field';
 
@@ -7,23 +8,94 @@ import Field from './Field';
  * ContactSection Component
  * Contact information section with grid layout
  */
-export default function ContactSection({ 
-  cv, 
-  editData, 
-  editMode, 
+export default function ContactSection({
+  cv,
+  editData,
+  editMode,
   onContactChange,
   onContactLocationChange,
   onContactLinksChange,
   onContactPhoneChange,
-  onContactPhoneTypeChange
+  onContactPhoneTypeChange,
 }) {
   const { t } = useTranslation();
   const contact = editMode ? editData?.contact : cv?.contact;
 
+  if (!contact) return null;
+
+  if (!editMode) {
+    const items = [
+      { icon: Mail, label: t('cv.email'), value: contact.email, href: contact.email ? `mailto:${contact.email}` : null },
+      { icon: Phone, label: t('cv.phone'), value: contact.phones?.[0]?.number, href: contact.phones?.[0]?.number ? `tel:${contact.phones[0].number}` : null },
+      { icon: MapPin, label: t('cv.editor.contact.fields.city.label'), value: [contact.location?.city, contact.location?.country].filter(Boolean).join(', ') },
+      { icon: Linkedin, label: 'LinkedIn', value: contact.links?.linkedin, href: contact.links?.linkedin },
+      { icon: Github, label: 'GitHub', value: contact.links?.github, href: contact.links?.github },
+      { icon: Globe, label: t('cv.editor.contact.fields.portfolio.label'), value: contact.links?.portfolio, href: contact.links?.portfolio },
+    ].filter(item => item.value);
+
+    if (items.length === 0) return null;
+
+    return (
+      <section style={{ marginBottom: '48px' }} aria-labelledby="contact-heading">
+        <SectionHeader id="contact-heading" title={t('cv.editor.contact.sectionTitle')} />
+        <div style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '12px',
+          background: 'var(--color-bg-muted)',
+          borderRadius: '12px',
+          padding: '16px 20px',
+          border: '1px solid var(--color-border)',
+        }}>
+          {items.map((item, i) => (
+            <div key={i} style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '8px',
+              padding: '4px 4px 4px 0',
+              fontSize: '14px',
+              color: 'var(--color-text-body)',
+            }}>
+              <span style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                width: '32px',
+                height: '32px',
+                borderRadius: '8px',
+                background: 'var(--color-primary-light)',
+                color: 'var(--color-primary)',
+                flexShrink: 0,
+              }}>
+                <item.icon size={15} />
+              </span>
+              {item.href ? (
+                <a href={item.href}
+                  target={item.href.startsWith('http') ? '_blank' : undefined}
+                  rel={item.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  style={{
+                    color: 'var(--color-primary)',
+                    textDecoration: 'none',
+                    fontWeight: 500,
+                    lineHeight: '1.3',
+                  }}
+                >
+                  {item.value}
+                </a>
+              ) : (
+                <span style={{ lineHeight: '1.3' }}>{item.value}</span>
+              )}
+            </div>
+          ))}
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <section style={{ marginBottom: '56px' }} role="region" aria-labelledby="contact-heading">
+    <section style={{ marginBottom: '48px' }} aria-labelledby="contact-heading">
       <SectionHeader id="contact-heading" title={t('cv.editor.contact.sectionTitle')} />
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '28px 32px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
         <Field
           editable={editMode}
           label={t('cv.email')}
@@ -51,7 +123,7 @@ export default function ContactSection({
               options={[
                 { value: 'mobile', label: t('cv.editor.contact.phoneTypes.mobile') },
                 { value: 'home', label: t('cv.editor.contact.phoneTypes.home') },
-                { value: 'work', label: t('cv.editor.contact.phoneTypes.work') }
+                { value: 'work', label: t('cv.editor.contact.phoneTypes.work') },
               ]}
             />
           )}

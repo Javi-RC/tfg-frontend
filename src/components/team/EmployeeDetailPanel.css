@@ -26,7 +26,7 @@
 }
 
 .employee-detail-panel a:hover {
-  background-color: #f6f8fa;
+  background-color: var(--color-bg-muted);
   transform: translateY(-1px);
 }
 
@@ -37,8 +37,8 @@
 
 /* Close button hover */
 .close-button:hover {
-  background-color: #e1e4e8 !important;
-  color: #24292e !important;
+  background-color: var(--color-border) !important;
+  color: var(--color-text-primary) !important;
 }
 
 /* View details button hover */

@@ -20,14 +20,14 @@
 .cv-upload-page h1 {
   font-size: 2rem;
   font-weight: 700;
-  color: #1a202c;
+  color: var(--color-text-body);
   margin-bottom: 0.5rem;
   text-align: center;
 }
 
 .cv-upload-page .subtitle {
   font-size: 1rem;
-  color: #718096;
+  color: var(--color-text-muted);
   text-align: center;
   margin-bottom: 2rem;
 }
@@ -40,18 +40,18 @@
 }
 
 .error-banner {
-  background: #fee;
+  background: var(--color-danger-bg);
   color: #c53030;
   padding: 1rem;
   border-radius: 8px;
-  border-left: 4px solid #e53e3e;
+  border-left: 4px solid var(--color-danger);
   margin-top: 1rem;
 }
 
 .upload-result {
   margin-top: 2rem;
   padding: 2rem;
-  background: #f7fafc;
+  background: var(--color-bg-muted);
   border-radius: 12px;
   text-align: center;
   animation: slideUp 0.4s ease-out;
@@ -83,14 +83,14 @@
 
 .upload-result h3 {
   font-size: 1.5rem;
-  color: #1a202c;
+  color: var(--color-text-body);
   margin-bottom: 1rem;
 }
 
 .upload-result .completeness-badge {
   display: inline-block;
   padding: 0.5rem 1.5rem;
-  background: #3b82f6;
+  background: var(--color-primary);
   color: white;
   border-radius: 20px;
   font-weight: 600;
@@ -99,7 +99,7 @@
 }
 
 .upload-result p {
-  color: #718096;
+  color: var(--color-text-muted);
   font-size: 0.95rem;
 }
 

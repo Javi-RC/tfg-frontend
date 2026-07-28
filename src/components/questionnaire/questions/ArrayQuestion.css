@@ -18,7 +18,7 @@
 
 .phone-type-select {
   padding: 0.75rem;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--color-border);
   border-radius: 6px;
   font-size: 1rem;
   background: white;
@@ -29,13 +29,13 @@
 
 .phone-type-select:focus {
   outline: none;
-  border-color: #3b82f6;
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
 .btn-add {
   padding: 0.75rem 1.25rem;
-  background: #10b981;
+  background: var(--color-success);
   color: white;
   border: none;
   border-radius: 6px;
@@ -63,7 +63,7 @@
   align-items: center;
   padding: 0.75rem 1rem;
   background: white;
-  border: 2px solid #e2e8f0;
+  border: 2px solid var(--color-border);
   border-radius: 6px;
   transition: all 0.2s;
   animation: slideIn 0.2s ease-out;
@@ -81,18 +81,18 @@
 }
 
 .array-item:hover {
-  border-color: #cbd5e0;
-  background: #f7fafc;
+  border-color: var(--color-border-strong);
+  background: var(--color-bg-muted);
 }
 
 .array-item span {
-  color: #2d3748;
+  color: var(--color-text-body);
   font-size: 0.95rem;
   word-break: break-word;
 }
 
 .array-item .btn-remove {
-  background: #fee;
+  background: var(--color-danger-bg);
   color: #c53030;
   border: none;
   border-radius: 50%;

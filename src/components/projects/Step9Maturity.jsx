@@ -16,16 +16,17 @@ export default function Step9Maturity({ formData, onChange }) {
 
   const handleComplianceChange = (e) => {
     const value = e.target.value;
-    const standards = value.split(',').map(s => s.trim()).filter(s => s);
+    const standards = value
+      .split(',')
+      .map((s) => s.trim())
+      .filter((s) => s);
     onChange({ complianceStandardsText: value, complianceStandards: standards });
   };
 
   return (
     <div>
       <h2 style={styles.stepTitle}>{t('projects.steps.step9.title')}</h2>
-      <p style={styles.stepDescription}>
-        {t('projects.steps.step9.description')}
-      </p>
+      <p style={styles.stepDescription}>{t('projects.steps.step9.description')}</p>
 
       <FormSelect
         label={t('projects.steps.step9.hasOnboardingProcesses')}
@@ -35,7 +36,7 @@ export default function Step9Maturity({ formData, onChange }) {
         options={[
           { value: YES_NO_PARTIAL.YES, label: t('projects.yesNoPartial.yes') },
           { value: YES_NO_PARTIAL.NO, label: t('projects.yesNoPartial.no') },
-          { value: YES_NO_PARTIAL.PARTIAL, label: t('projects.yesNoPartial.partial') }
+          { value: YES_NO_PARTIAL.PARTIAL, label: t('projects.yesNoPartial.partial') },
         ]}
       />
 
@@ -47,7 +48,7 @@ export default function Step9Maturity({ formData, onChange }) {
         options={[
           { value: YES_NO_PARTIAL.YES, label: t('projects.yesNoPartial.yes') },
           { value: YES_NO_PARTIAL.NO, label: t('projects.yesNoPartial.no') },
-          { value: YES_NO_PARTIAL.PARTIAL, label: t('projects.yesNoPartial.partial') }
+          { value: YES_NO_PARTIAL.PARTIAL, label: t('projects.yesNoPartial.partial') },
         ]}
       />
 
@@ -59,7 +60,7 @@ export default function Step9Maturity({ formData, onChange }) {
         options={[
           { value: COMPLEXITY_LEVELS.LOW, label: t('projects.steps.step9.wellIntegrated') },
           { value: COMPLEXITY_LEVELS.MEDIUM, label: t('projects.steps.step9.someFragmentation') },
-          { value: COMPLEXITY_LEVELS.HIGH, label: t('projects.steps.step9.highlyFragmented') }
+          { value: COMPLEXITY_LEVELS.HIGH, label: t('projects.steps.step9.highlyFragmented') },
         ]}
       />
 
@@ -91,7 +92,7 @@ export default function Step9Maturity({ formData, onChange }) {
 
       <div style={styles.section}>
         <h3 style={styles.sectionTitle}>{t('projects.steps.step9.complianceTitle')}</h3>
-        
+
         <label style={styles.checkboxLabel} htmlFor="requiresRegulatoryCompliance">
           <input
             type="checkbox"
@@ -109,7 +110,9 @@ export default function Step9Maturity({ formData, onChange }) {
             <FormTextarea
               label={t('projects.steps.step9.complianceStandards')}
               name="complianceStandards"
-              value={formData.complianceStandardsText ?? formData.complianceStandards?.join(', ') ?? ''}
+              value={
+                formData.complianceStandardsText ?? formData.complianceStandards?.join(', ') ?? ''
+              }
               onChange={handleComplianceChange}
               placeholder={t('projects.steps.step9.complianceStandardsPlaceholder')}
               rows={2}
@@ -129,11 +132,11 @@ export default function Step9Maturity({ formData, onChange }) {
       </div>
 
       <div style={styles.completionCard}>
-        <div style={styles.completionIcon}><CheckCircle size={48} color="#10b981" /></div>
+        <div style={styles.completionIcon}>
+          <CheckCircle size={48} color="#10b981" />
+        </div>
         <h3 style={styles.completionTitle}>{t('projects.steps.step9.formComplete')}</h3>
-        <p style={styles.completionText}>
-          {t('projects.steps.step9.formCompleteDesc')}
-        </p>
+        <p style={styles.completionText}>{t('projects.steps.step9.formCompleteDesc')}</p>
       </div>
     </div>
   );
@@ -143,65 +146,65 @@ const styles = {
   stepTitle: {
     fontSize: '28px',
     fontWeight: '700',
-    color: '#111',
-    margin: '0 0 8px 0'
+    color: 'var(--color-text-primary)',
+    margin: '0 0 8px 0',
   },
   stepDescription: {
     fontSize: '15px',
-    color: '#6B7280',
-    marginBottom: '32px'
+    color: 'var(--color-text-muted)',
+    marginBottom: '32px',
   },
   completionCard: {
     marginTop: '40px',
     padding: '32px',
-    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    background: 'linear-gradient(135deg, var(--color-accent-gradient-start) 0%, var(--color-accent-gradient-end) 100%)',
     borderRadius: '16px',
     textAlign: 'center',
-    color: 'white'
+    color: 'white',
   },
   completionIcon: {
     fontSize: '48px',
-    marginBottom: '16px'
+    marginBottom: '16px',
   },
   completionTitle: {
     fontSize: '24px',
     fontWeight: '700',
-    marginBottom: '12px'
+    marginBottom: '12px',
   },
   completionText: {
     fontSize: '15px',
     lineHeight: '1.6',
-    opacity: 0.95
+    opacity: 0.95,
   },
   section: {
     marginTop: '32px',
     padding: '24px',
-    background: '#F9FAFB',
-    borderRadius: '12px'
+    background: 'var(--color-bg-muted)',
+    borderRadius: '12px',
   },
   sectionTitle: {
     fontSize: '18px',
     fontWeight: '600',
-    color: '#111',
-    marginBottom: '20px'
+    color: 'var(--color-text-primary)',
+    marginBottom: '20px',
   },
   checkboxSection: {
     display: 'flex',
     flexDirection: 'column',
     gap: '12px',
-    marginTop: '24px'
+    marginTop: '24px',
   },
   checkboxLabel: {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
     fontSize: '14px',
-    color: '#374151',
-    cursor: 'pointer'
+    color: 'var(--color-text-strong)',
+    cursor: 'pointer',
   },
   checkbox: {
     width: '18px',
     height: '18px',
-    cursor: 'pointer'
-  }
+    cursor: 'pointer',
+  },
 };

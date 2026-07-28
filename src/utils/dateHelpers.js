@@ -17,11 +17,11 @@ const getLocale = () => i18n.language || 'en';
  */
 export const formatDate = (value, options = {}) => {
   if (!value) return '—';
-  
+
   try {
     const date = value instanceof Date ? value : new Date(value);
     if (isNaN(date.getTime())) return '—';
-    
+
     return date.toLocaleDateString(getLocale(), options);
   } catch {
     return '—';
@@ -36,16 +36,16 @@ export const formatDate = (value, options = {}) => {
  */
 export const formatTime = (value, options = {}) => {
   if (!value) return '—';
-  
+
   try {
     // Handle HH:mm string format
     if (typeof value === 'string' && /^\d{2}:\d{2}$/.test(value)) {
       return value;
     }
-    
+
     const date = value instanceof Date ? value : new Date(value);
     if (isNaN(date.getTime())) return '—';
-    
+
     return date.toLocaleTimeString(getLocale(), { hour: '2-digit', minute: '2-digit', ...options });
   } catch {
     return '—';
@@ -59,17 +59,17 @@ export const formatTime = (value, options = {}) => {
  */
 export const formatDateTime = (value) => {
   if (!value) return '—';
-  
+
   try {
     const date = value instanceof Date ? value : new Date(value);
     if (isNaN(date.getTime())) return '—';
-    
+
     return date.toLocaleString(getLocale(), {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   } catch {
     return '—';
@@ -83,11 +83,11 @@ export const formatDateTime = (value) => {
  */
 export const formatDateForInput = (value) => {
   if (!value) return '';
-  
+
   try {
     const date = value instanceof Date ? value : new Date(value);
     if (isNaN(date.getTime())) return '';
-    
+
     return date.toISOString().split('T')[0];
   } catch {
     return '';
@@ -101,7 +101,7 @@ export const formatDateForInput = (value) => {
  */
 export const isValidDate = (value) => {
   if (!value) return false;
-  
+
   try {
     const date = value instanceof Date ? value : new Date(value);
     return !isNaN(date.getTime());
@@ -110,32 +110,4 @@ export const isValidDate = (value) => {
   }
 };
 
-/**
- * Calculate relative time (e.g., "2 hours ago")
- * @param {string|Date} value - Date to compare
- * @returns {string} Relative time string
- */
-export const getRelativeTime = (value) => {
-  if (!value) return '—';
-  
-  try {
-    const date = value instanceof Date ? value : new Date(value);
-    if (isNaN(date.getTime())) return '—';
-    
-    const now = new Date();
-    const diffMs = now - date;
-    const diffSec = Math.floor(diffMs / 1000);
-    const diffMin = Math.floor(diffSec / 60);
-    const diffHours = Math.floor(diffMin / 60);
-    const diffDays = Math.floor(diffHours / 24);
-    
-    if (diffSec < 60) return 'Just now';
-    if (diffMin < 60) return `${diffMin} minute${diffMin !== 1 ? 's' : ''} ago`;
-    if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
-    if (diffDays < 30) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
-    
-    return formatDate(date, { year: 'numeric', month: 'short', day: 'numeric' });
-  } catch {
-    return '—';
-  }
-};
+

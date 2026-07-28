@@ -1,0 +1,27 @@
+.sara-shell {
+  min-height: 100vh;
+  background: var(--sara-page-bg);
+}
+
+/* Content region sits to the right of the fixed sidebar. The top bar is
+   fixed and overlays the top; each page provides its own top clearance,
+   so we only offset horizontally here to avoid disturbing existing pages. */
+.sara-shell-main {
+  margin-left: var(--sara-sidebar-width);
+  min-height: 100vh;
+  transition: margin-left 0.25s ease;
+}
+
+.sidebar-collapsed .sara-shell-main {
+  margin-left: var(--sara-sidebar-collapsed);
+}
+
+@media (max-width: 1024px) {
+  .sara-shell-main {
+    margin-left: 0;
+  }
+
+  .sidebar-collapsed .sara-shell-main {
+    margin-left: 0;
+  }
+}

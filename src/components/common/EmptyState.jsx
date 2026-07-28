@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * EmptyState Component
@@ -11,10 +12,11 @@ export default function EmptyState({
   action,
   iconSize = 64,
   iconColor = '#6c757d',
-  iconOpacity = 0.3
+  iconOpacity = 0.3,
 }) {
+  const { t } = useTranslation();
   return (
-    <div style={styles.container}>
+    <div style={styles.container} role="status" aria-label={title || description || t('common.emptyState')}>
       {Icon && (
         <div style={styles.iconWrapper}>
           <Icon size={iconSize} color={iconColor} style={{ opacity: iconOpacity }} />
@@ -31,27 +33,27 @@ const styles = {
   container: {
     textAlign: 'center',
     padding: '80px 20px',
-    background: '#F9FAFB',
+    background: 'var(--color-bg-muted)',
     borderRadius: '16px',
-    border: '2px dashed #E5E7EB'
+    border: '2px dashed var(--color-border)',
   },
   iconWrapper: {
-    marginBottom: '16px'
+    marginBottom: '16px',
   },
   title: {
     fontSize: '20px',
     fontWeight: '700',
-    color: '#111',
+    color: 'var(--color-text-primary)',
     marginBottom: '8px',
-    margin: '0 0 8px 0'
+    margin: '0 0 8px 0',
   },
   description: {
     fontSize: '15px',
-    color: '#6B7280',
+    color: 'var(--color-text-muted)',
     marginBottom: '24px',
-    margin: '0 0 24px 0'
+    margin: '0 0 24px 0',
   },
   action: {
-    marginTop: '24px'
-  }
+    marginTop: '24px',
+  },
 };

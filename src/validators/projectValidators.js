@@ -13,11 +13,11 @@ export function validateProjectName(projectName) {
   if (!projectName || projectName.trim().length < 3) {
     return { isValid: false, error: i18n.t('validation.project.nameMinLength') };
   }
-  
+
   if (projectName.length > 100) {
     return { isValid: false, error: i18n.t('validation.project.nameMaxLength') };
   }
-  
+
   return { isValid: true, error: null };
 }
 
@@ -30,7 +30,7 @@ export function validateProjectDescription(description) {
   if (!description || description.trim().length < 10) {
     return { isValid: false, error: i18n.t('validation.project.descriptionMinLength') };
   }
-  
+
   return { isValid: true, error: null };
 }
 
@@ -41,15 +41,15 @@ export function validateProjectDescription(description) {
  */
 export function validateTeamSize(teamSize) {
   const size = Number(teamSize);
-  
+
   if (teamSize === null || teamSize === undefined || teamSize === '' || isNaN(size)) {
     return { isValid: false, error: i18n.t('validation.project.teamSizeRequired') };
   }
-  
+
   if (size < 1 || size > 100) {
     return { isValid: false, error: i18n.t('validation.project.teamSizeRange') };
   }
-  
+
   return { isValid: true, error: null };
 }
 
@@ -63,18 +63,18 @@ export function validateDateRange(startDate, endDate) {
   if (!startDate) {
     return { isValid: false, error: i18n.t('validation.project.startDateRequired') };
   }
-  
+
   if (!endDate) {
     return { isValid: false, error: i18n.t('validation.project.endDateRequired') };
   }
-  
+
   const start = new Date(startDate);
   const end = new Date(endDate);
-  
+
   if (start >= end) {
     return { isValid: false, error: i18n.t('validation.project.endDateAfterStart') };
   }
-  
+
   return { isValid: true, error: null };
 }
 
@@ -87,7 +87,7 @@ export function validateOrganization(organizationId) {
   if (!organizationId) {
     return { isValid: false, error: i18n.t('validation.project.selectOrganization') };
   }
-  
+
   return { isValid: true, error: null };
 }
 
@@ -98,30 +98,30 @@ export function validateOrganization(organizationId) {
  */
 export function validateStep1(formData) {
   const errors = {};
-  
+
   const nameValidation = validateProjectName(formData.projectName);
   if (!nameValidation.isValid) {
     errors.projectName = nameValidation.error;
   }
-  
+
   const descValidation = validateProjectDescription(formData.briefDescription);
   if (!descValidation.isValid) {
     errors.briefDescription = descValidation.error;
   }
-  
+
   const dateValidation = validateDateRange(formData.estimatedStartDate, formData.estimatedEndDate);
   if (!dateValidation.isValid) {
     errors.dateRange = dateValidation.error;
   }
-  
+
   const teamSizeValidation = validateTeamSize(formData.teamSize);
   if (!teamSizeValidation.isValid) {
     errors.teamSize = teamSizeValidation.error;
   }
-  
+
   return {
     isValid: Object.keys(errors).length === 0,
-    errors
+    errors,
   };
 }
 
@@ -132,24 +132,24 @@ export function validateStep1(formData) {
  */
 export function validateStep2(formData) {
   const errors = {};
-  
+
   if (!formData.requiresSynchronousCommunication) {
     errors.requiresSynchronousCommunication = i18n.t('validation.project.syncCommRequired');
   }
-  
+
   if (!formData.realTimeCommunicationLevel) {
     errors.realTimeCommunicationLevel = i18n.t('validation.project.realTimeCommRequired');
   }
-  
+
   if (formData.weeklyMeetingsCount === null || formData.weeklyMeetingsCount === undefined) {
     errors.weeklyMeetingsCount = i18n.t('validation.project.weeklyMeetingsRequired');
   }
-  
+
   // Languages are optional, no validation needed
-  
+
   return {
     isValid: Object.keys(errors).length === 0,
-    errors
+    errors,
   };
 }
 
@@ -160,18 +160,18 @@ export function validateStep2(formData) {
  */
 export function validateStep3(formData) {
   const errors = {};
-  
+
   if (!formData.mainTechnologies || formData.mainTechnologies.length === 0) {
     errors.mainTechnologies = i18n.t('validation.project.techRequired');
   }
-  
+
   if (!formData.requiredExperienceLevel) {
     errors.requiredExperienceLevel = i18n.t('validation.project.experienceLevelRequired');
   }
-  
+
   return {
     isValid: Object.keys(errors).length === 0,
-    errors
+    errors,
   };
 }
 
@@ -194,15 +194,4 @@ export function validateCurrentStep(step, formData) {
   }
 }
 
-/**
- * Checks if all required steps are valid
- * @param {Object} formData - Complete form data
- * @returns {boolean}
- */
-export function isFormComplete(formData) {
-  const step1Valid = validateStep1(formData).isValid;
-  const step2Valid = validateStep2(formData).isValid;
-  const step3Valid = validateStep3(formData).isValid;
-  
-  return step1Valid && step2Valid && step3Valid;
-}
+

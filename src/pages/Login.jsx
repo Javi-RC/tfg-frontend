@@ -9,11 +9,64 @@ import FormField from '../components/form/FormField';
 import PasswordField from '../components/form/PasswordField';
 import ErrorState from '../components/common/ErrorState';
 import { useLogin } from '../hooks/useLogin';
+import './Login.css';
 
 // Inline SVG icons (safe fallback if project icons aren't available)
 function GoogleIcon({ width = 18, height = 18 }) {
   return (
-    <svg width={width} height={height} viewBox="-0.5 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>Google-color</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Icons" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Color-" transform="translate(-401.000000, -860.000000)"> <g id="Google" transform="translate(401.000000, 860.000000)"> <path d="M9.82727273,24 C9.82727273,22.4757333 10.0804318,21.0144 10.5322727,19.6437333 L2.62345455,13.6042667 C1.08206818,16.7338667 0.213636364,20.2602667 0.213636364,24 C0.213636364,27.7365333 1.081,31.2608 2.62025,34.3882667 L10.5247955,28.3370667 C10.0772273,26.9728 9.82727273,25.5168 9.82727273,24" id="Fill-1" fill="#FBBC05"> </path> <path d="M23.7136364,10.1333333 C27.025,10.1333333 30.0159091,11.3066667 32.3659091,13.2266667 L39.2022727,6.4 C35.0363636,2.77333333 29.6954545,0.533333333 23.7136364,0.533333333 C14.4268636,0.533333333 6.44540909,5.84426667 2.62345455,13.6042667 L10.5322727,19.6437333 C12.3545909,14.112 17.5491591,10.1333333 23.7136364,10.1333333" id="Fill-2" fill="#EB4335"> </path> <path d="M23.7136364,37.8666667 C17.5491591,37.8666667 12.3545909,33.888 10.5322727,28.3562667 L2.62345455,34.3946667 C6.44540909,42.1557333 14.4268636,47.4666667 23.7136364,47.4666667 C29.4455,47.4666667 34.9177955,45.4314667 39.0249545,41.6181333 L31.5177727,35.8144 C29.3995682,37.1488 26.7323182,37.8666667 23.7136364,37.8666667" id="Fill-3" fill="#34A853"> </path> <path d="M46.1454545,24 C46.1454545,22.6133333 45.9318182,21.12 45.6113636,19.7333333 L23.7136364,19.7333333 L23.7136364,28.8 L36.3181818,28.8 C35.6879545,31.8912 33.9724545,34.2677333 31.5177727,35.8144 L39.0249545,41.6181333 C43.3393409,37.6138667 46.1454545,31.6490667 46.1454545,24" id="Fill-4" fill="#4285F4"> </path> </g> </g> </g> </g></svg>
+    <svg
+      width={width}
+      height={height}
+      viewBox="-0.5 0 48 48"
+      version="1.1"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+      fill="#000000"
+    >
+      <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
+      <g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
+      <g id="SVGRepo_iconCarrier">
+        {' '}
+        <title>Google-color</title> <desc>Created with Sketch.</desc> <defs> </defs>{' '}
+        <g id="Icons" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
+          {' '}
+          <g id="Color-" transform="translate(-401.000000, -860.000000)">
+            {' '}
+            <g id="Google" transform="translate(401.000000, 860.000000)">
+              {' '}
+              <path
+                d="M9.83,24 C9.83,22.48 10.08,21.01 10.53,19.64 L2.62,13.6 C1.08,16.73 0.21,20.26 0.21,24 C0.21,27.74 1.08,31.26 2.62,34.39 L10.52,28.34 C10.08,26.97 9.83,25.52 9.83,24"
+                id="Fill-1"
+                fill="#FBBC05"
+              >
+                {' '}
+              </path>{' '}
+              <path
+                d="M23.71,10.13 C27.03,10.13 30.02,11.31 32.37,13.23 L39.2,6.4 C35.04,2.77 29.7,0.53 23.71,0.53 C14.43,0.53 6.45,5.84 2.62,13.6 L10.53,19.64 C12.35,14.11 17.55,10.13 23.71,10.13"
+                id="Fill-2"
+                fill="#EB4335"
+              >
+                {' '}
+              </path>{' '}
+              <path
+                d="M23.71,37.87 C17.55,37.87 12.35,33.89 10.53,28.36 L2.62,34.39 C6.45,42.16 14.43,47.47 23.71,47.47 C29.45,47.47 34.92,45.43 39.02,41.62 L31.52,35.81 C29.4,37.15 26.73,37.87 23.71,37.87"
+                id="Fill-3"
+                fill="#34A853"
+              >
+                {' '}
+              </path>{' '}
+              <path
+                d="M46.15,24 C46.15,22.61 45.93,21.12 45.61,19.73 L23.71,19.73 L23.71,28.8 L36.32,28.8 C35.69,31.89 33.97,34.27 31.52,35.81 L39.02,41.62 C43.34,37.61 46.15,31.65 46.15,24"
+                id="Fill-4"
+                fill="#4285F4"
+              >
+                {' '}
+              </path>{' '}
+            </g>{' '}
+          </g>{' '}
+        </g>{' '}
+      </g>
+    </svg>
   );
 }
 
@@ -34,21 +87,38 @@ export default function Login() {
     togglePasswordVisibility,
     handleOAuthLogin,
     navigateToRegister,
-    navigateToHome
+    navigateToHome,
   } = useLogin();
 
   return (
     <AuthLayout onLoginClick={() => navigate('/login')} onSignupClick={() => navigate('/register')}>
-      <div style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px', justifyContent: 'center' }}>
-        <h1 style={{ color: '#1a1a1a', fontSize: '32px', fontWeight: '500', textAlign: 'center', margin: 0 }}>{t('auth.signInTitle')}</h1>
-        <p style={{ color: '#1a1a1a', fontSize: '15px', margin: 0 }}>{t('auth.dontHaveAccount')} <button onClick={navigateToRegister} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit', color: '#0369a1', textDecoration: 'underline' }} disabled={isLoading} aria-label={t('auth.aria.navigateToSignup')}>{t('auth.signup')}</button></p>
-        <div style={{ alignSelf: 'stretch', height: '1px', background: '#D9D9D9', outline: '1px #0F172A solid', outlineOffset: '-0.5px', margin: '16px 0' }} aria-hidden="true" />
+      <div className="login-wrapper">
+        <h1 className="login-title">
+          {t('auth.signInTitle')}
+        </h1>
+        <p className="login-subtitle">
+          {t('auth.dontHaveAccount')}{' '}
+          <button
+            type="button"
+            onClick={navigateToRegister}
+            className="login-register-link"
+            disabled={isLoading}
+            aria-label={t('auth.aria.navigateToSignup')}
+          >
+            {t('auth.signup')}
+          </button>
+        </p>
+        <div className="login-divider" aria-hidden="true" />
       </div>
 
-      <form onSubmit={handleSubmit} aria-busy={isLoading} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-        <fieldset style={{ border: 'none', margin: 0, padding: 0 }}>
+      <form
+        onSubmit={handleSubmit}
+        aria-busy={isLoading}
+        className="login-form"
+      >
+        <fieldset className="login-fieldset">
           <legend className="sr-only">{t('auth.loginCredentials')}</legend>
-          
+
           <FormField
             id="email"
             type="email"
@@ -56,13 +126,13 @@ export default function Login() {
             placeholder={t('auth.emailPlaceholder')}
             value={form.email}
             onChange={(e) => updateField('email', e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
             icon={Mail}
             required
             disabled={isLoading}
             autoComplete="email"
             error={error && !form.email.trim()}
-            ariaDescribedBy={error ? "login-error" : undefined}
+            ariaDescribedBy={error ? 'login-error' : undefined}
           />
 
           <PasswordField
@@ -70,11 +140,11 @@ export default function Login() {
             label={t('auth.password')}
             value={form.password}
             onChange={(e) => updateField('password', e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSubmit(e)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
             required
             disabled={isLoading}
             error={error && !form.password}
-            ariaDescribedBy={error ? "login-error" : undefined}
+            ariaDescribedBy={error ? 'login-error' : undefined}
             controlled
             showPasswordProp={showPassword}
             onTogglePassword={togglePasswordVisibility}
@@ -87,20 +157,35 @@ export default function Login() {
           </div>
         )}
 
-        <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
-          <PrimaryButton type="submit" disabled={isLoading} style={{ flex: 1 }}>{isLoading ? t('auth.loading') : t('auth.login')}</PrimaryButton>
-          <SecondaryButton type="button" onClick={navigateToHome} disabled={isLoading} style={{ flex: 1 }}>{t('common.back')}</SecondaryButton>
+        <div className="login-buttons">
+          <PrimaryButton type="submit" disabled={isLoading} className="login-btn-flex">
+            {isLoading ? t('auth.loading') : t('auth.login')}
+          </PrimaryButton>
+          <SecondaryButton
+            type="button"
+            onClick={navigateToHome}
+            disabled={isLoading}
+            className="login-btn-flex"
+          >
+            {t('common.back')}
+          </SecondaryButton>
         </div>
 
-        <div style={{ margin: '24px 0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', margin: '20px 0', color: '#1a1a1a', fontSize: '14px' }}>
-            <div style={{ flex: 1, borderBottom: '1px solid rgba(102,102,102,0.25)' }} aria-hidden="true" />
-            <span style={{ padding: '0 16px' }}>{t('auth.orContinueWith')}</span>
-            <div style={{ flex: 1, borderBottom: '1px solid rgba(102,102,102,0.25)' }} aria-hidden="true" />
+        <div className="login-oauth-section">
+          <div className="login-oauth-divider">
+            <div className="login-oauth-divider-line" aria-hidden="true" />
+            <span className="login-oauth-divider-text">{t('auth.orContinueWith')}</span>
+            <div className="login-oauth-divider-line" aria-hidden="true" />
           </div>
 
-          <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-            <button type="button" onClick={() => handleOAuthLogin('google')} disabled={isLoading} aria-label={t('auth.googleLogin')} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px 16px', border: '1px solid rgba(102,102,102,0.25)', borderRadius: '12px', background: 'white', cursor: isLoading ? 'not-allowed' : 'pointer', transition: 'all 0.15s', fontSize: '14px', fontWeight: '500', opacity: isLoading ? 0.6 : 1 }} onMouseEnter={(e) => { if (!isLoading) { e.target.style.borderColor = '#111'; e.target.style.background = '#f8f9fa'; } }} onMouseLeave={(e) => { e.target.style.borderColor = 'rgba(102,102,102,0.25)'; e.target.style.background = 'white'; }}>
+          <div className="login-oauth-buttons">
+            <button
+              type="button"
+              onClick={() => handleOAuthLogin('google')}
+              disabled={isLoading}
+              aria-label={t('auth.googleLogin')}
+              className="login-google-btn"
+            >
               <GoogleIcon aria-hidden="true" />
               <span>Google</span>
             </button>
@@ -109,7 +194,12 @@ export default function Login() {
       </form>
 
       {/* Status announcements for screen readers */}
-      <div role="status" aria-live="polite" aria-atomic="true" style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' }}>
+      <div
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="login-sr-only"
+      >
         {isLoading && t('common.loading')}
       </div>
     </AuthLayout>

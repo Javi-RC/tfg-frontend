@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, ClipboardList } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { showError } from '../utils/toast';
 import { useProjects } from '../hooks/useProjects';
 import PrimaryButton from '../components/PrimaryButton';
 import ProjectCard from '../components/projects/ProjectCard';
@@ -33,15 +34,18 @@ export default function ProjectsPage() {
     setFilterStatus,
     setFilterOrg,
     handleDeleteProject,
-    reloadProjects
+    reloadProjects,
   } = useProjects();
-  
+
   const handleDelete = async (project) => {
+    if (!window.confirm(t('projects.confirmDelete'))) {
+      return;
+    }
     try {
       await handleDeleteProject(project._id);
       await reloadProjects();
     } catch (error) {
-      alert(error.response?.data?.error || t('projects.errors.deleteFailed'));
+      showError(error.response?.data?.error || t('projects.errors.deleteFailed'));
     }
   };
 
@@ -63,22 +67,24 @@ export default function ProjectsPage() {
       <PageHeader
         title={t('projects.title')}
         subtitle={t('projects.manageTrackProjects')}
-        action={isProjectManager && (
-          <PrimaryButton onClick={() => navigate('/projects/new')} leftIcon={<Plus size={18} />}>
-            {t('projects.createProject')}
-          </PrimaryButton>
-        )}
+        action={
+          isProjectManager && (
+            <PrimaryButton onClick={() => navigate('/projects/new')} leftIcon={<Plus size={18} />}>
+              {t('projects.createProject')}
+            </PrimaryButton>
+          )
+        }
       />
 
       {/* Tabs */}
       <TabNavigation
         tabs={[
           { id: 'my-projects', label: `${t('projects.myProjects')} (${myProjects.length})` },
-          { id: 'assigned', label: `${t('projects.assignedToMe')} (${assignedProjects.length})` }
+          { id: 'assigned', label: `${t('projects.assignedToMe')} (${assignedProjects.length})` },
         ]}
         activeTab={activeTab}
         onChange={setActiveTab}
-        ariaLabel="Projects navigation"
+        ariaLabel={t('navigation.aria.projectsNavigation')}
       />
 
       {/* Filters */}
@@ -93,7 +99,7 @@ export default function ProjectsPage() {
             { value: PROJECT_STATUS.ACTIVE, label: t('projects.active') },
             { value: PROJECT_STATUS.PAUSED, label: t('projects.onHold') },
             { value: PROJECT_STATUS.COMPLETED, label: t('projects.completed') },
-            { value: PROJECT_STATUS.CANCELLED, label: t('projects.cancelled') }
+            { value: PROJECT_STATUS.CANCELLED, label: t('projects.cancelled') },
           ]}
         />
 
@@ -103,7 +109,7 @@ export default function ProjectsPage() {
           onChange={(e) => setFilterOrg(e.target.value)}
           options={[
             { value: 'all', label: t('projects.allOrganizations') },
-            ...organizations.map(org => ({ value: org._id, label: org.name }))
+            ...organizations.map((org) => ({ value: org._id, label: org.name })),
           ]}
         />
       </div>
@@ -121,7 +127,7 @@ export default function ProjectsPage() {
         />
       ) : (
         <div style={styles.grid}>
-          {filteredProjects.map(project => (
+          {filteredProjects.map((project) => (
             <ProjectCard
               key={project._id}
               project={project}
@@ -138,9 +144,9 @@ export default function ProjectsPage() {
 
 const styles = {
   container: {
-    maxWidth: '1400px',
+    maxWidth: '1280px',
     margin: '0 auto',
-    padding: '100px 20px 40px 20px'
+    padding: 'calc(var(--sara-topbar-height, 76px) + 20px) 32px 48px',
   },
   header: {
     display: 'flex',
@@ -148,34 +154,34 @@ const styles = {
     alignItems: 'flex-start',
     marginBottom: '32px',
     gap: '20px',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   title: {
     fontSize: '32px',
     fontWeight: '700',
-    color: '#111',
-    margin: '0 0 8px 0'
+    color: 'var(--color-text-primary)',
+    margin: '0 0 8px 0',
   },
   subtitle: {
     fontSize: '16px',
-    color: '#6B7280',
-    margin: 0
+    color: 'var(--color-text-muted)',
+    margin: 0,
   },
   loadingText: {
     textAlign: 'center',
-    color: '#6B7280',
+    color: 'var(--color-text-muted)',
     fontSize: '16px',
-    padding: '60px'
+    padding: '60px',
   },
   filters: {
     display: 'flex',
     gap: '20px',
     marginBottom: '32px',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   grid: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))',
-    gap: '24px'
-  }
+    gridTemplateColumns: 'repeat(auto-fill, minmax(min(400px, 100%), 1fr))',
+    gap: '24px',
+  },
 };

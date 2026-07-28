@@ -9,11 +9,11 @@ import SecondaryButton from '../SecondaryButton';
  * Employee Assignment Modal
  * Allows project managers to assign employees to projects
  */
-export default function EmployeeAssignmentModal({ 
-  organizationId, 
+export default function EmployeeAssignmentModal({
+  organizationId,
   currentEmployees = [],
   onAssign,
-  onClose 
+  onClose,
 }) {
   const { t } = useTranslation();
   const [employees, setEmployees] = useState([]);
@@ -32,14 +32,13 @@ export default function EmployeeAssignmentModal({
       setLoading(true);
       const res = await getOrganizationEmployees(organizationId);
       const employeeData = res.data?.success ? res.data.data : res.data;
-      
+
       // Filter out already assigned employees
-      const currentEmployeeIds = currentEmployees.map(e => e.user?._id || e.user);
-      const availableEmployees = employeeData.filter(emp => 
-        !currentEmployeeIds.includes(emp.user?._id || emp.user) &&
-        emp.status === 'active'
+      const currentEmployeeIds = new Set(currentEmployees.map((e) => e.user?._id || e.user));
+      const availableEmployees = employeeData.filter(
+        (emp) => !currentEmployeeIds.has(emp.user?._id || emp.user) && emp.status === 'active'
       );
-      
+
       setEmployees(availableEmployees);
     } catch (error) {
       console.error('Error loading employees:', error);
@@ -48,12 +47,12 @@ export default function EmployeeAssignmentModal({
     }
   };
 
-  const filteredEmployees = employees.filter(emp => {
+  const filteredEmployees = employees.filter((emp) => {
     const user = emp.user;
     const name = user?.name || '';
     const email = user?.email || '';
     const position = emp.position || '';
-    
+
     return (
       name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -70,23 +69,36 @@ export default function EmployeeAssignmentModal({
   };
 
   return (
-    <div style={styles.overlay} onClick={onClose}>
+    <div style={styles.overlay} onClick={onClose} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClose(); } }}>
       <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div style={styles.header}>
           <h2 style={styles.title}>{t('employeeAssignment.title')}</h2>
-          <button style={styles.closeButton} onClick={onClose}>×</button>
+          <button type="button" style={styles.closeButton} onClick={onClose}>
+            ×
+          </button>
         </div>
 
         <div style={styles.content}>
           {/* Search */}
           <div style={{ position: 'relative' }}>
-            <Search size={18} color="#999" style={{ position: 'absolute', left: '16px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+            <Search
+              size={18}
+              color="#6B7280"
+              style={{
+                position: 'absolute',
+                left: '16px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                pointerEvents: 'none',
+              }}
+            />
             <input
               type="text"
               placeholder={t('employeeAssignment.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{...styles.searchInput, paddingLeft: '48px'}}
+              style={{ ...styles.searchInput, paddingLeft: '48px' }}
+              aria-label={t('employeeAssignment.searchPlaceholder')}
             />
           </div>
 
@@ -96,7 +108,9 @@ export default function EmployeeAssignmentModal({
           ) : filteredEmployees.length === 0 ? (
             <div style={styles.emptyState}>
               <p style={styles.emptyText}>
-                {searchTerm ? t('employeeAssignment.noMatches') : t('employeeAssignment.noAvailable')}
+                {searchTerm
+                  ? t('employeeAssignment.noMatches')
+                  : t('employeeAssignment.noAvailable')}
               </p>
             </div>
           ) : (
@@ -106,19 +120,27 @@ export default function EmployeeAssignmentModal({
                   key={emp.user._id}
                   style={{
                     ...styles.employeeCard,
-                    ...(selectedEmployee?.user._id === emp.user._id && styles.employeeCardSelected)
+                    ...(selectedEmployee?.user._id === emp.user._id && styles.employeeCardSelected),
                   }}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => setSelectedEmployee(emp)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      setSelectedEmployee(emp);
+                    }
+                  }}
                 >
                   <div style={styles.employeeInfo}>
                     <div style={styles.employeeName}>{emp.user.name}</div>
                     <div style={styles.employeeEmail}>{emp.user.email}</div>
-                    {emp.position && (
-                      <div style={styles.employeePosition}>{emp.position}</div>
-                    )}
+                    {emp.position && <div style={styles.employeePosition}>{emp.position}</div>}
                   </div>
                   {selectedEmployee?.user._id === emp.user._id && (
-                    <div style={styles.checkmark}><CheckCircle size={24} color="#10b981" /></div>
+                    <div style={styles.checkmark}>
+                      <CheckCircle size={24} color="#10b981" />
+                    </div>
                   )}
                 </div>
               ))}
@@ -128,8 +150,9 @@ export default function EmployeeAssignmentModal({
           {/* Role Input */}
           {selectedEmployee && (
             <div style={styles.roleSection}>
-              <label style={styles.label}>{t('employeeAssignment.roleLabel')}</label>
+              <label htmlFor="employee-role" style={styles.label}>{t('employeeAssignment.roleLabel')}</label>
               <input
+                id="employee-role"
                 type="text"
                 placeholder={t('employeeAssignment.rolePlaceholder')}
                 value={assignedRole}
@@ -144,8 +167,8 @@ export default function EmployeeAssignmentModal({
           <SecondaryButton onClick={onClose} leftIcon={<X size={16} />}>
             {t('employeeAssignment.cancel')}
           </SecondaryButton>
-          <PrimaryButton 
-            onClick={handleAssign} 
+          <PrimaryButton
+            onClick={handleAssign}
             disabled={!selectedEmployee}
             leftIcon={<UserPlus size={16} />}
           >
@@ -169,7 +192,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1000,
-    padding: '20px'
+    padding: '20px',
   },
   modal: {
     background: 'white',
@@ -179,26 +202,26 @@ const styles = {
     maxHeight: '90vh',
     display: 'flex',
     flexDirection: 'column',
-    boxShadow: '0 20px 60px rgba(0,0,0,0.3)'
+    boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
   },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '24px',
-    borderBottom: '1px solid #E5E7EB'
+    borderBottom: '1px solid var(--color-border)',
   },
   title: {
     fontSize: '24px',
     fontWeight: '700',
-    color: '#111',
-    margin: 0
+    color: 'var(--color-text-primary)',
+    margin: 0,
   },
   closeButton: {
     background: 'none',
     border: 'none',
     fontSize: '32px',
-    color: '#6B7280',
+    color: 'var(--color-text-muted)',
     cursor: 'pointer',
     padding: 0,
     width: '32px',
@@ -207,7 +230,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: '8px',
-    transition: 'all 0.2s'
+    transition: 'all 0.2s',
   },
   content: {
     padding: '24px',
@@ -215,105 +238,105 @@ const styles = {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    gap: '20px'
+    gap: '20px',
   },
   searchInput: {
     width: '100%',
     padding: '12px 16px',
-    border: '2px solid #E5E7EB',
+    border: '2px solid var(--color-border)',
     borderRadius: '12px',
     fontSize: '15px',
     outline: 'none',
-    transition: 'border-color 0.2s'
+    transition: 'border-color 0.2s',
   },
   loadingText: {
     textAlign: 'center',
-    color: '#6B7280',
-    padding: '40px'
+    color: 'var(--color-text-muted)',
+    padding: '40px',
   },
   emptyState: {
     textAlign: 'center',
     padding: '40px',
-    color: '#6B7280'
+    color: 'var(--color-text-muted)',
   },
   emptyText: {
     fontSize: '15px',
-    margin: 0
+    margin: 0,
   },
   employeeList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px'
+    gap: '12px',
   },
   employeeCard: {
     padding: '16px',
-    border: '2px solid #E5E7EB',
+    border: '2px solid var(--color-border)',
     borderRadius: '12px',
     cursor: 'pointer',
     transition: 'all 0.2s',
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   employeeCardSelected: {
-    borderColor: '#111',
-    background: '#F9FAFB'
+    borderColor: 'var(--color-text-primary)',
+    background: 'var(--color-bg-muted)',
   },
   employeeInfo: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px'
+    gap: '4px',
   },
   employeeName: {
     fontSize: '16px',
     fontWeight: '600',
-    color: '#111'
+    color: 'var(--color-text-primary)',
   },
   employeeEmail: {
     fontSize: '14px',
-    color: '#6B7280'
+    color: 'var(--color-text-muted)',
   },
   employeePosition: {
     fontSize: '13px',
-    color: '#9CA3AF',
-    fontStyle: 'italic'
+    color: 'var(--color-text-muted)',
+    fontStyle: 'italic',
   },
   checkmark: {
     width: '24px',
     height: '24px',
     borderRadius: '50%',
-    background: '#111',
+    background: 'var(--color-primary)',
     color: 'white',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: '16px',
-    fontWeight: '700'
+    fontWeight: '700',
   },
   roleSection: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px'
+    gap: '8px',
   },
   label: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#111'
+    color: 'var(--color-text-primary)',
   },
   input: {
     width: '100%',
     padding: '12px 16px',
-    border: '2px solid #E5E7EB',
+    border: '2px solid var(--color-border)',
     borderRadius: '12px',
     fontSize: '15px',
     outline: 'none',
-    transition: 'border-color 0.2s'
+    transition: 'border-color 0.2s',
   },
   footer: {
     display: 'flex',
     justifyContent: 'flex-end',
     gap: '12px',
     padding: '24px',
-    borderTop: '1px solid #E5E7EB'
-  }
+    borderTop: '1px solid var(--color-border)',
+  },
 };

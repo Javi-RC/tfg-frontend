@@ -14,7 +14,10 @@ export default function Step5Roles({ formData, onChange }) {
     const newRoles = [...(formData.rolesAndResponsibilities || [])];
     if (field === 'responsibilities') {
       // Convert text to array of responsibilities (split by newline)
-      const responsibilitiesArray = value.split('\n').map(r => r.trim()).filter(r => r);
+      const responsibilitiesArray = value
+        .split('\n')
+        .map((r) => r.trim())
+        .filter((r) => r);
       newRoles[index] = { ...newRoles[index], responsibilities: responsibilitiesArray };
     } else {
       newRoles[index] = { ...newRoles[index], [field]: value };
@@ -23,7 +26,10 @@ export default function Step5Roles({ formData, onChange }) {
   };
 
   const addRole = () => {
-    const newRoles = [...(formData.rolesAndResponsibilities || []), { roleName: '', responsibilities: [], clarityScore: 3 }];
+    const newRoles = [
+      ...(formData.rolesAndResponsibilities || []),
+      { _key: `role-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, roleName: '', responsibilities: [], clarityScore: 3 },
+    ];
     onChange({ rolesAndResponsibilities: newRoles });
   };
 
@@ -34,16 +40,17 @@ export default function Step5Roles({ formData, onChange }) {
 
   const handleDependenciesChange = (e) => {
     const value = e.target.value;
-    const dependencies = value.split('\n').map(d => d.trim()).filter(d => d);
+    const dependencies = value
+      .split('\n')
+      .map((d) => d.trim())
+      .filter((d) => d);
     onChange({ criticalDependencies: dependencies });
   };
 
   return (
     <div>
       <h2 style={styles.stepTitle}>{t('projects.steps.step5.title')}</h2>
-      <p style={styles.stepDescription}>
-        {t('projects.steps.step5.description')}
-      </p>
+      <p style={styles.stepDescription}>{t('projects.steps.step5.description')}</p>
 
       <div style={styles.section}>
         <div style={styles.sectionHeader}>
@@ -53,13 +60,12 @@ export default function Step5Roles({ formData, onChange }) {
 
         {formData.rolesAndResponsibilities && formData.rolesAndResponsibilities.length > 0 ? (
           formData.rolesAndResponsibilities.map((role, index) => (
-            <div key={index} style={styles.roleCard}>
+            <div key={role._key} style={styles.roleCard}>
               <div style={styles.roleHeader}>
-                <span style={styles.roleNumber}>{t('projects.steps.step5.role')} {index + 1}</span>
-                <button
-                  style={styles.removeButton}
-                  onClick={() => removeRole(index)}
-                >
+                <span style={styles.roleNumber}>
+                  {t('projects.steps.step5.role')} {index + 1}
+                </span>
+                <button type="button" style={styles.removeButton} onClick={() => removeRole(index)}>
                   {t('projects.steps.step5.remove')}
                 </button>
               </div>
@@ -76,7 +82,11 @@ export default function Step5Roles({ formData, onChange }) {
               <FormTextarea
                 label={t('projects.steps.step5.responsibilities')}
                 name={`responsibilities-${index}`}
-                value={Array.isArray(role.responsibilities) ? role.responsibilities.join('\n') : role.responsibilities || ''}
+                value={
+                  Array.isArray(role.responsibilities)
+                    ? role.responsibilities.join('\n')
+                    : role.responsibilities || ''
+                }
                 onChange={(e) => handleRoleChange(index, 'responsibilities', e.target.value)}
                 placeholder={t('projects.steps.step5.responsibilitiesPlaceholder')}
                 rows={3}
@@ -92,7 +102,9 @@ export default function Step5Roles({ formData, onChange }) {
                   min="1"
                   max="5"
                   value={role.clarityScore || 3}
-                  onChange={(e) => handleRoleChange(index, 'clarityScore', parseInt(e.target.value))}
+                  onChange={(e) =>
+                    handleRoleChange(index, 'clarityScore', parseInt(e.target.value))
+                  }
                   style={styles.slider}
                   aria-label={t('projects.steps.step5.clarityScore')}
                 />
@@ -124,46 +136,46 @@ const styles = {
   stepTitle: {
     fontSize: '28px',
     fontWeight: '700',
-    color: '#111',
-    margin: '0 0 8px 0'
+    color: 'var(--color-text-primary)',
+    margin: '0 0 8px 0',
   },
   stepDescription: {
     fontSize: '15px',
-    color: '#6B7280',
-    marginBottom: '32px'
+    color: 'var(--color-text-muted)',
+    marginBottom: '32px',
   },
   section: {
-    marginBottom: '32px'
+    marginBottom: '32px',
   },
   sectionHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '20px'
+    marginBottom: '20px',
   },
   sectionTitle: {
     fontSize: '18px',
     fontWeight: '600',
-    color: '#111',
-    margin: 0
+    color: 'var(--color-text-primary)',
+    margin: 0,
   },
   roleCard: {
     padding: '20px',
-    background: '#F9FAFB',
+    background: 'var(--color-bg-muted)',
     borderRadius: '12px',
     marginBottom: '16px',
-    border: '1px solid #E5E7EB'
+    border: '1px solid var(--color-border)',
   },
   roleHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '16px'
+    marginBottom: '16px',
   },
   roleNumber: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#6B7280'
+    color: 'var(--color-text-muted)',
   },
   removeButton: {
     padding: '6px 12px',
@@ -172,39 +184,39 @@ const styles = {
     fontSize: '13px',
     fontWeight: '600',
     cursor: 'pointer',
-    background: '#FEE2E2',
-    color: '#DC2626',
-    transition: 'all 0.2s'
+    background: 'var(--color-danger-bg)',
+    color: 'var(--color-danger)',
+    transition: 'all 0.2s',
   },
   claritySection: {
-    marginTop: '16px'
+    marginTop: '16px',
   },
   label: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#111',
+    color: 'var(--color-text-primary)',
     marginBottom: '8px',
-    display: 'block'
+    display: 'block',
   },
   slider: {
     width: '100%',
     height: '6px',
     borderRadius: '3px',
     outline: 'none',
-    cursor: 'pointer'
+    cursor: 'pointer',
   },
   sliderLabels: {
     display: 'flex',
     justifyContent: 'space-between',
     fontSize: '12px',
-    color: '#9CA3AF',
-    marginTop: '4px'
+    color: 'var(--color-text-muted)',
+    marginTop: '4px',
   },
   emptyText: {
     textAlign: 'center',
-    color: '#9CA3AF',
+    color: 'var(--color-text-muted)',
     padding: '40px',
-    background: '#F9FAFB',
-    borderRadius: '12px'
-  }
+    background: 'var(--color-bg-muted)',
+    borderRadius: '12px',
+  },
 };

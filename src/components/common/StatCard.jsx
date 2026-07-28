@@ -12,7 +12,7 @@ export default function StatCard({
   iconColor,
   backgroundColor = '#F9FAFB',
   valueColor = '#111827',
-  labelColor = '#6B7280'
+  labelColor = '#6B7280',
 }) {
   return (
     <div style={{ ...styles.card, borderLeft: `4px solid ${borderColor}` }}>
@@ -34,8 +34,8 @@ const styles = {
     gap: '16px',
     padding: '20px',
     background: 'white',
-    border: '1px solid #E5E7EB',
-    borderRadius: '8px'
+    border: '1px solid var(--color-border)',
+    borderRadius: '8px',
   },
   iconWrapper: {
     width: '48px',
@@ -44,15 +44,15 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: '8px',
-    flexShrink: 0
+    flexShrink: 0,
   },
   value: {
     fontSize: '28px',
     fontWeight: '700',
-    lineHeight: 1
+    lineHeight: 1,
   },
   label: {
     fontSize: '14px',
-    marginTop: '4px'
-  }
+    marginTop: '4px',
+  },
 };

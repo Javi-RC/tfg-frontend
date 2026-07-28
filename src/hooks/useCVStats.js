@@ -38,8 +38,8 @@ export function useCVStats() {
     stats,
     loading,
     error,
-    
+
     // Actions
-    loadStats
+    loadStats,
   };
 }

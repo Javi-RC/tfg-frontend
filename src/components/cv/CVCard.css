@@ -1,0 +1,51 @@
+.cvcard-container {
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.cvcard-container:last-child {
+  margin-bottom: 0;
+}
+
+.cvcard-container--edit {
+  background: var(--color-bg-muted);
+  border-radius: 0 12px 12px 0;
+  padding: 20px 20px 20px 24px;
+  transition: background 0.2s;
+}
+
+.cvcard-container--view {
+  padding: 0 0 0 20px;
+}
+
+.cvcard-container--view:hover {
+  border-left-color: var(--color-primary) !important;
+  transition: border-color 0.2s;
+}
+
+.cvcard-remove-btn {
+  position: absolute;
+  background: var(--color-danger-bg);
+  border: 1px solid #fcc;
+  color: var(--color-error);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.cvcard-remove-btn:hover {
+  background: #fcc;
+}
+
+.cvcard-remove-btn--edit {
+  top: 16px;
+  right: 16px;
+}
+
+.cvcard-remove-btn--view {
+  top: 4px;
+  right: 0;
+}

@@ -1,16 +1,10 @@
-import React, { useMemo } from 'react';
+import React, { lazy, Suspense, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Brain } from 'lucide-react';
-import {
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar,
-  Tooltip,
-  ResponsiveContainer
-} from 'recharts';
-import { FactorCard } from '../personality';
+import FactorCard from '../personality/FactorCard';
+import LoadingState from '../common/LoadingState';
+
+const TeamRadarChart = lazy(() => import('./TeamRadarChart'));
 
 export default function PersonalityFitSection({ employee, loading = false, forbidden = false }) {
   const { t } = useTranslation();
@@ -58,43 +52,9 @@ export default function PersonalityFitSection({ employee, loading = false, forbi
         <p style={styles.sectionSubtitle}>{t('team.personalityFit.subtitle')}</p>
 
         <div style={styles.radarContainer}>
-          <ResponsiveContainer width="100%" height={340}>
-            <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="70%">
-              <PolarGrid stroke="#cbd5e0" strokeDasharray="3 3" />
-              <PolarAngleAxis
-                dataKey="factor"
-                tick={{ fontSize: 12, fill: '#1a1a1a', fontWeight: '600' }}
-                tickLine={false}
-              />
-              <PolarRadiusAxis
-                angle={90}
-                domain={[0, 50]}
-                tick={{ fontSize: 11, fill: '#666' }}
-                axisLine={false}
-              />
-              <Radar
-                name={t('team.personalityFit.score')}
-                dataKey="value"
-                stroke="#3b82f6"
-                strokeWidth={3}
-                fill="#3b82f6"
-                fillOpacity={0.3}
-              />
-              <Tooltip
-                contentStyle={{
-                  background: 'white',
-                  border: 'none',
-                  borderRadius: '12px',
-                  boxShadow: '0 4px 16px rgba(0,0,0,0.15)',
-                  padding: '12px 16px'
-                }}
-                formatter={(value, _name, props) => {
-                  const maxScore = props.payload.maxScore;
-                  return [`${value} / ${maxScore}`, t('team.personalityFit.score')];
-                }}
-              />
-            </RadarChart>
-          </ResponsiveContainer>
+          <Suspense fallback={<LoadingState size="small" />}>
+            <TeamRadarChart radarData={radarData} />
+          </Suspense>
         </div>
       </div>
 
@@ -107,7 +67,13 @@ export default function PersonalityFitSection({ employee, loading = false, forbi
   );
 }
 
-const FACTOR_ORDER = ['Extraversion', 'Agreeableness', 'Conscientiousness', 'Neuroticism', 'Openness'];
+const FACTOR_ORDER = [
+  'Extraversion',
+  'Agreeableness',
+  'Conscientiousness',
+  'Neuroticism',
+  'Openness',
+];
 
 function getMaxScore(factor) {
   if (factor === 'Openness') return 50;
@@ -119,7 +85,7 @@ function prepareRadarData(results) {
   return FACTOR_ORDER.map((factor) => ({
     factor,
     value: results[factor] || 0,
-    maxScore: getMaxScore(factor)
+    maxScore: getMaxScore(factor),
   }));
 }
 
@@ -134,7 +100,7 @@ function coerceBfi44Results(bfiProfile) {
     Agreeableness: source.Agreeableness ?? source.agreeableness,
     Conscientiousness: source.Conscientiousness ?? source.conscientiousness,
     Neuroticism: source.Neuroticism ?? source.neuroticism,
-    Openness: source.Openness ?? source.openness
+    Openness: source.Openness ?? source.openness,
   };
 
   const present = Object.values(raw).filter((v) => v !== undefined && v !== null);
@@ -153,9 +119,7 @@ function coerceBfi44Results(bfiProfile) {
       continue;
     }
 
-    normalized[factor] = looksLikeLikert
-      ? Math.round((value / 5) * getMaxScore(factor))
-      : value;
+    normalized[factor] = looksLikeLikert ? Math.round((value / 5) * getMaxScore(factor)) : value;
   }
 
   return normalized;
@@ -165,7 +129,7 @@ const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '20px'
+    gap: '20px',
   },
   sectionTitle: {
     display: 'flex',
@@ -174,19 +138,19 @@ const styles = {
     margin: '0 0 6px 0',
     fontSize: '16px',
     fontWeight: '600',
-    color: '#24292e'
+    color: 'var(--color-text-primary)',
   },
   sectionSubtitle: {
     margin: 0,
     fontSize: '13px',
-    color: '#64748b'
+    color: 'var(--color-text-muted)',
   },
   radarCard: {
     background: 'white',
     borderRadius: '16px',
     padding: '18px',
     boxShadow: '0 4px 16px rgba(0,0,0,0.06)',
-    border: '1px solid rgba(0,0,0,0.04)'
+    border: '1px solid rgba(0,0,0,0.04)',
   },
   radarContainer: {
     width: '100%',
@@ -194,13 +158,13 @@ const styles = {
     justifyContent: 'center',
     marginTop: '14px',
     padding: '10px 0',
-    background: 'linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)',
-    borderRadius: '14px'
+    background: 'linear-gradient(135deg, var(--color-bg-muted) 0%, #f1f5f9 100%)',
+    borderRadius: '14px',
   },
   factorsColumn: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '14px'
+    gap: '14px',
   },
   emptyState: {
     display: 'flex',
@@ -208,18 +172,18 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     padding: '60px 20px',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   emptyText: {
     fontSize: '16px',
     fontWeight: '600',
-    color: '#24292e',
-    margin: '12px 0 6px 0'
+    color: 'var(--color-text-primary)',
+    margin: '12px 0 6px 0',
   },
   emptySubtext: {
     fontSize: '14px',
-    color: '#586069',
+    color: 'var(--color-text-secondary)',
     margin: 0,
-    maxWidth: '380px'
-  }
+    maxWidth: '380px',
+  },
 };

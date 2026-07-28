@@ -35,11 +35,7 @@ export default function ConsentStatusBadge({ hasConsent, onClick }) {
     );
   }
 
-  return (
-    <span style={{ ...styles.base, ...badgeStyle }}>
-      {content}
-    </span>
-  );
+  return <span style={{ ...styles.base, ...badgeStyle }}>{content}</span>;
 }
 
 const styles = {
@@ -51,18 +47,18 @@ const styles = {
     borderRadius: '16px',
     fontSize: '12px',
     fontWeight: '600',
-    border: 'none'
+    border: 'none',
   },
   activeBadge: {
-    background: '#D1FAE5',
-    color: '#065F46'
+    background: 'var(--color-success-bg)',
+    color: 'var(--color-success-dark)',
   },
   inactiveBadge: {
-    background: '#FEF3C7',
-    color: '#92400E'
+    background: 'var(--color-warning-bg)',
+    color: 'var(--color-warning-dark)',
   },
   clickable: {
     cursor: 'pointer',
-    transition: 'opacity 0.2s'
-  }
+    transition: 'opacity 0.2s',
+  },
 };

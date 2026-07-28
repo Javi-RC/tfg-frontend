@@ -18,41 +18,24 @@ const CVUploadPage = () => {
   const [error, setError] = useState(null);
 
   const handleFileSelect = async (file) => {
-    console.log('CVUploadPage - handleFileSelect called with file:', file);
     setIsUploading(true);
     setError(null);
-    
+
     try {
-      console.log('CVUploadPage - Calling uploadCV API...');
-      const response = await uploadCV(file); // Uses current i18n language automatically
+      const response = await uploadCV(file);
       const data = response.data;
-      
-      console.log('========== BACKEND RESPONSE ==========');
-      console.log('Full Response:', response);
-      console.log('Response Data:', data);
-      console.log('Questionnaire:', data.questionnaire);
-      console.log('Needs Completion:', data.questionnaire?.needsCompletion);
-      console.log('Completeness:', data.completeness);
-      console.log('Completeness Score:', data.completeness?.score);
-      console.log('=====================================');
-      
+
       setUploadResponse(data);
 
       if (data.questionnaire?.needsCompletion) {
-        // CV incomplete - show questionnaire
-        console.log('✗ CV incomplete - showing questionnaire');
         setShowQuestionnaire(true);
       } else {
-        // CV complete - redirect to dashboard
-        console.log('✓ CV complete - redirecting to dashboard');
         setTimeout(() => {
-          navigate('/dashboard');
+          navigate('/my-cv');
         }, 1500);
       }
     } catch (err) {
       console.error('Error uploading CV:', err);
-      console.error('Error Response:', err.response);
-      console.error('Error Data:', err.response?.data);
       setError(err.response?.data?.message || t('cv.upload.errorFallback'));
     } finally {
       setIsUploading(false);
@@ -61,17 +44,20 @@ const CVUploadPage = () => {
 
   const handleQuestionnaireComplete = () => {
     setShowQuestionnaire(false);
-    navigate('/dashboard');
+    navigate('/my-cv');
   };
 
   const handleQuestionnaireSkip = () => {
     setShowQuestionnaire(false);
     // Save in localStorage for reminder
-    localStorage.setItem('pendingQuestionnaire', JSON.stringify({
-      sessionId: uploadResponse.questionnaire.sessionId,
-      timestamp: new Date().toISOString()
-    }));
-    navigate('/dashboard');
+    localStorage.setItem(
+      'pendingQuestionnaire:v1',
+      JSON.stringify({
+        sessionId: uploadResponse.questionnaire.sessionId,
+        timestamp: new Date().toISOString(),
+      })
+    );
+    navigate('/my-cv');
   };
 
   return (
@@ -79,17 +65,10 @@ const CVUploadPage = () => {
       <div className="upload-container">
         <h1>{t('cv.upload.pageTitle')}</h1>
         <p className="subtitle">{t('cv.upload.pageSubtitle')}</p>
-        
-        <FileUploader 
-          onFileSelect={handleFileSelect}
-          isUploading={isUploading}
-        />
 
-        {error && (
-          <div className="error-banner">
-            {error}
-          </div>
-        )}
+        <FileUploader onFileSelect={handleFileSelect} isUploading={isUploading} />
+
+        {error && <div className="error-banner">{error}</div>}
 
         {uploadResponse?.completeness && !showQuestionnaire && (
           <div className="upload-result">
@@ -100,7 +79,9 @@ const CVUploadPage = () => {
             </div>
             {uploadResponse.completeness.missingFieldsCount > 0 ? (
               <p>
-                {t('cv.upload.fieldsRemaining', { count: uploadResponse.completeness.missingFieldsCount })}
+                {t('cv.upload.fieldsRemaining', {
+                  count: uploadResponse.completeness.missingFieldsCount,
+                })}
               </p>
             ) : (
               <p>{t('cv.upload.profileComplete')}</p>

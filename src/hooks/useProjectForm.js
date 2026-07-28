@@ -1,13 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { 
-  createProject, 
-  updateProject, 
-  getProjectById,
-  activateProject 
-} from '../api/projects';
+import { createProject, updateProject, getProjectById, activateProject } from '../api/projects';
+import { showError, showInfo } from '../utils/toast';
 import { getMyOrganizations } from '../api/organization';
+import { unwrapData } from '../api/responseAdapter';
 import { validateCurrentStep } from '../validators/projectValidators';
 import { PROJECT_STATUS } from '../types/projectTypes';
 import { getApiErrorMessage } from '../utils/getApiErrorMessage';
@@ -49,7 +46,7 @@ function getInitialFormData() {
     documentationProcesses: {
       hasStandardization: false,
       templates: false,
-      reviewProcess: false
+      reviewProcess: false,
     },
     distributedWorkExperienceLevel: 'medium',
     workMode: 'office_mode',
@@ -70,17 +67,17 @@ function getInitialFormData() {
     coordinationRequirements: {
       workflowIntegration: 'medium',
       dependencyManagement: 'medium',
-      conflictResolutionSpeed: 'hours'
+      conflictResolutionSpeed: 'hours',
     },
     collaborationIntensity: {
       pairProgrammingFrequency: 'occasional',
       codeReviewsDepth: 'moderate',
-      sharedDecisionMaking: 'balanced'
+      sharedDecisionMaking: 'balanced',
     },
     teamMaturityExpectation: {
       autonomyLevel: 'moderate',
       mentorshipAvailability: 'available',
-      learningCurveAllowance: 'moderate'
+      learningCurveAllowance: 'moderate',
     },
     criticalDependencies: [],
     involvedTeams: [],
@@ -90,7 +87,7 @@ function getInitialFormData() {
     followUpFrequency: {
       standups: { frequency: 'daily' },
       reviews: { frequency: 'weekly' },
-      retrospectives: { frequency: 'biweekly' }
+      retrospectives: { frequency: 'biweekly' },
     },
     communicationTools: [],
     communicationToolsText: '',
@@ -105,7 +102,7 @@ function getInitialFormData() {
     requiresRegulatoryCompliance: false,
     complianceStandards: [],
     complianceStandardsText: '',
-    standardsDocumentation: ''
+    standardsDocumentation: '',
   };
 }
 
@@ -120,7 +117,7 @@ export function useProjectForm() {
   const { t } = useTranslation();
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState(getInitialFormData());
+  const [formData, setFormData] = useState(() => getInitialFormData());
   const [errors, setErrors] = useState({});
   const [validationMessage, setValidationMessage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -141,9 +138,9 @@ export function useProjectForm() {
   const loadOrganizations = async () => {
     try {
       const res = await getMyOrganizations();
-      const orgs = res.data?.success ? res.data.data : res.data;
+      const orgs = unwrapData(res);
       setOrganizations(orgs || []);
-      
+
       if (orgs && orgs.length > 0 && !selectedOrg) {
         setSelectedOrg(orgs[0]._id);
       }
@@ -159,23 +156,23 @@ export function useProjectForm() {
     try {
       setLoading(true);
       const res = await getProjectById(id, false);
-      const projectData = res.data?.success ? res.data.data : res.data;
-      
+      const projectData = unwrapData(res);
+
       // Get initial structure with all defaults
       const initialData = getInitialFormData();
-      
+
       // Helper to safely merge objects
       const mergeObject = (target, source) => {
         if (!source || typeof source !== 'object') return target;
         const result = { ...target };
-        Object.keys(source).forEach(key => {
+        Object.keys(source).forEach((key) => {
           if (source[key] !== null && source[key] !== undefined) {
             result[key] = source[key];
           }
         });
         return result;
       };
-      
+
       // Merge nested objects properly
       const mappedData = {
         ...initialData,
@@ -184,17 +181,46 @@ export function useProjectForm() {
         estimatedStartDate: projectData.estimatedStartDate?.split('T')[0] || '',
         estimatedEndDate: projectData.estimatedEndDate?.split('T')[0] || '',
         // Merge nested objects with defaults
-        averageMeetingDuration: mergeObject(initialData.averageMeetingDuration, projectData.averageMeetingDuration),
-        expectedTimeOverlap: mergeObject(initialData.expectedTimeOverlap, projectData.expectedTimeOverlap),
-        requiresSpecializedTools: mergeObject(initialData.requiresSpecializedTools, projectData.requiresSpecializedTools),
-        coordinationRequirements: mergeObject(initialData.coordinationRequirements, projectData.coordinationRequirements),
-        collaborationIntensity: mergeObject(initialData.collaborationIntensity, projectData.collaborationIntensity),
-        teamMaturityExpectation: mergeObject(initialData.teamMaturityExpectation, projectData.teamMaturityExpectation),
-        followUpFrequency: projectData.followUpFrequency ? {
-          standups: mergeObject(initialData.followUpFrequency.standups, projectData.followUpFrequency.standups),
-          reviews: mergeObject(initialData.followUpFrequency.reviews, projectData.followUpFrequency.reviews),
-          retrospectives: mergeObject(initialData.followUpFrequency.retrospectives, projectData.followUpFrequency.retrospectives)
-        } : initialData.followUpFrequency,
+        averageMeetingDuration: mergeObject(
+          initialData.averageMeetingDuration,
+          projectData.averageMeetingDuration
+        ),
+        expectedTimeOverlap: mergeObject(
+          initialData.expectedTimeOverlap,
+          projectData.expectedTimeOverlap
+        ),
+        requiresSpecializedTools: mergeObject(
+          initialData.requiresSpecializedTools,
+          projectData.requiresSpecializedTools
+        ),
+        coordinationRequirements: mergeObject(
+          initialData.coordinationRequirements,
+          projectData.coordinationRequirements
+        ),
+        collaborationIntensity: mergeObject(
+          initialData.collaborationIntensity,
+          projectData.collaborationIntensity
+        ),
+        teamMaturityExpectation: mergeObject(
+          initialData.teamMaturityExpectation,
+          projectData.teamMaturityExpectation
+        ),
+        followUpFrequency: projectData.followUpFrequency
+          ? {
+              standups: mergeObject(
+                initialData.followUpFrequency.standups,
+                projectData.followUpFrequency.standups
+              ),
+              reviews: mergeObject(
+                initialData.followUpFrequency.reviews,
+                projectData.followUpFrequency.reviews
+              ),
+              retrospectives: mergeObject(
+                initialData.followUpFrequency.retrospectives,
+                projectData.followUpFrequency.retrospectives
+              ),
+            }
+          : initialData.followUpFrequency,
         // Ensure arrays are properly set
         requiredLanguages: projectData.requiredLanguages || [],
         mainTechnologies: projectData.mainTechnologies || [],
@@ -207,7 +233,7 @@ export function useProjectForm() {
         highLoadPeriods: projectData.highLoadPeriods || [],
         communicationTools: projectData.communicationTools || [],
         taskManagementTools: projectData.taskManagementTools || [],
-        complianceStandards: projectData.complianceStandards || []
+        complianceStandards: projectData.complianceStandards || [],
       };
 
       // Keep raw text versions for comma-separated list inputs (better typing UX)
@@ -218,19 +244,13 @@ export function useProjectForm() {
       mappedData.communicationToolsText = mappedData.communicationTools.join(', ');
       mappedData.taskManagementToolsText = mappedData.taskManagementTools.join(', ');
       mappedData.complianceStandardsText = mappedData.complianceStandards.join(', ');
-      
+
       setFormData(mappedData);
       if (projectData.organization?._id) {
         setSelectedOrg(projectData.organization._id);
       }
     } catch (error) {
-      console.error('Error loading project:', {
-        status: error?.response?.status,
-        data: error?.response?.data,
-        url: error?.config?.url,
-        method: error?.config?.method
-      });
-      alert(getApiErrorMessage(error, t('projects.errors.loadFailed')));
+      showError(getApiErrorMessage(error, t('projects.errors.loadFailed')));
       navigate('/projects');
     } finally {
       setLoading(false);
@@ -245,23 +265,23 @@ export function useProjectForm() {
     // Handle both formats: updateField(field, value) or updateField({ field: value })
     if (typeof fieldOrObject === 'object') {
       // Object format: { field: value, anotherField: anotherValue }
-      setFormData(prev => ({ ...prev, ...fieldOrObject }));
-      
+      setFormData((prev) => ({ ...prev, ...fieldOrObject }));
+
       // Clear errors for all updated fields
       const updatedFields = Object.keys(fieldOrObject);
-      if (updatedFields.some(field => errors[field])) {
-        setErrors(prev => {
+      if (updatedFields.some((field) => errors[field])) {
+        setErrors((prev) => {
           const newErrors = { ...prev };
-          updatedFields.forEach(field => delete newErrors[field]);
+          updatedFields.forEach((field) => delete newErrors[field]);
           return newErrors;
         });
       }
     } else {
       // Two-parameter format: updateField(field, value)
-      setFormData(prev => ({ ...prev, [fieldOrObject]: value }));
-      
+      setFormData((prev) => ({ ...prev, [fieldOrObject]: value }));
+
       if (errors[fieldOrObject]) {
-        setErrors(prev => {
+        setErrors((prev) => {
           const newErrors = { ...prev };
           delete newErrors[fieldOrObject];
           return newErrors;
@@ -275,7 +295,7 @@ export function useProjectForm() {
    */
   const nextStep = () => {
     const validation = validateCurrentStep(currentStep, formData);
-    
+
     if (!validation.isValid) {
       setErrors(validation.errors);
       // Show generic validation message
@@ -284,10 +304,10 @@ export function useProjectForm() {
       setTimeout(() => setValidationMessage(null), 5000);
       return false;
     }
-    
+
     setErrors({});
     setValidationMessage(null);
-    setCurrentStep(prev => prev + 1);
+    setCurrentStep((prev) => prev + 1);
     return true;
   };
 
@@ -296,7 +316,7 @@ export function useProjectForm() {
    */
   const prevStep = () => {
     setErrors({});
-    setCurrentStep(prev => Math.max(1, prev - 1));
+    setCurrentStep((prev) => Math.max(1, prev - 1));
   };
 
   /**
@@ -312,7 +332,7 @@ export function useProjectForm() {
    */
   const handleSubmit = async (shouldActivate = false) => {
     if (!selectedOrg) {
-      alert(t('projects.errors.selectOrganization'));
+      showInfo(t('projects.errors.selectOrganization'));
       return;
     }
 
@@ -334,7 +354,7 @@ export function useProjectForm() {
         'knowledgeManagementToolsText',
         'communicationToolsText',
         'taskManagementToolsText',
-        'complianceStandardsText'
+        'complianceStandardsText',
       ].forEach((key) => {
         delete payloadFormData[key];
       });
@@ -346,9 +366,8 @@ export function useProjectForm() {
           ? 40
           : rawWeeklyHours
       );
-      payloadFormData.weeklyHoursPerMember = Number.isFinite(parsedWeeklyHours) && parsedWeeklyHours > 0
-        ? parsedWeeklyHours
-        : 40;
+      payloadFormData.weeklyHoursPerMember =
+        Number.isFinite(parsedWeeklyHours) && parsedWeeklyHours > 0 ? parsedWeeklyHours : 40;
 
       const payload = {
         ...payloadFormData,
@@ -356,11 +375,11 @@ export function useProjectForm() {
         organizationId: selectedOrg,
         // Backend requires this field; force it to be present.
         weeklyHoursPerMember: payloadFormData.weeklyHoursPerMember,
-        status: PROJECT_STATUS.DRAFT
+        status: PROJECT_STATUS.DRAFT,
       };
 
       let projectId = id;
-      
+
       if (isEditMode) {
         await updateProject(id, payload);
       } else {
@@ -374,13 +393,7 @@ export function useProjectForm() {
 
       navigate('/projects');
     } catch (error) {
-      console.error('Error saving project:', {
-        status: error?.response?.status,
-        data: error?.response?.data,
-        url: error?.config?.url,
-        method: error?.config?.method
-      });
-      alert(getApiErrorMessage(error, t('projects.errors.saveFailed')));
+      showError(getApiErrorMessage(error, t('projects.errors.saveFailed')));
     } finally {
       setLoading(false);
     }
@@ -406,7 +419,7 @@ export function useProjectForm() {
     organizations,
     selectedOrg,
     isEditMode,
-    
+
     // Actions
     navigate,
     setSelectedOrg,
@@ -416,6 +429,6 @@ export function useProjectForm() {
     goToStep,
     saveDraft,
     submitAndActivate,
-    setFormData
+    setFormData,
   };
 }

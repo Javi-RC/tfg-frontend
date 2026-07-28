@@ -1,0 +1,125 @@
+.admin-cv-list-page {
+  min-height: 100vh;
+  background: var(--color-bg-muted);
+  padding: 124px 24px 60px;
+}
+
+.admin-cv-list-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.admin-cv-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.admin-cv-list-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.admin-cv-list-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.admin-cv-list-search {
+  margin-bottom: 24px;
+}
+
+.admin-cv-list-empty {
+  text-align: center;
+  padding: 60px 20px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.admin-cv-list-empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
+
+.admin-cv-list-empty-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--color-text-primary);
+}
+
+.admin-cv-list-empty-text {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.admin-cv-list-grid {
+  display: grid;
+  gap: 24px;
+}
+
+.admin-cv-list-grid--with-detail {
+  grid-template-columns: 1fr 400px;
+}
+
+.admin-cv-list-ul {
+  display: grid;
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-cv-list-detail {
+  position: sticky;
+  top: 20px;
+  height: fit-content;
+}
+
+/* Loading & Error states */
+.admin-cv-list-loading,
+.admin-cv-list-error {
+  min-height: 100vh;
+  background: var(--color-bg-muted);
+  padding: 40px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-cv-list-error {
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-cv-list-error-card {
+  max-width: 500px;
+  text-align: center;
+  padding: 40px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.admin-cv-list-error-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
+
+.admin-cv-list-error-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--color-text-primary);
+}
+
+.admin-cv-list-error-text {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin-bottom: 24px;
+}

@@ -47,140 +47,40 @@ export function normalizeCvSkills(cv) {
 
   // Format A: legacy array (e.g. [{ technology, proficiency, category }, ...])
   if (Array.isArray(cv.skills)) {
-    return cv.skills
-      .map((skill) => {
-        if (typeof skill === 'string') {
-          return { technology: skill, proficiency: 'intermedio', category: 'general' };
-        }
+    return cv.skills.flatMap((skill) => {
+      if (typeof skill === 'string') {
+        return [{ technology: skill, proficiency: 'intermedio', category: 'general' }];
+      }
 
-        const technology = skill.technology || skill.name || '';
-        const proficiencyRaw = skill.proficiency || skill.level || '';
-        const proficiency = normalizeProficiency(proficiencyRaw);
-        const category = skill.category || 'general';
+      const technology = skill.technology || skill.name || '';
+      const proficiencyRaw = skill.proficiency || skill.level || '';
+      const proficiency = normalizeProficiency(proficiencyRaw);
+      const category = skill.category || 'general';
 
-        return { technology, proficiency, category };
-      })
-      .filter((s) => s.technology);
+      const item = { technology, proficiency, category };
+      return item.technology ? [item] : [];
+    });
   }
 
   // Format B: normalized CV service shape (e.g. { skills: { technical: [{name, level}], soft: [...] } })
   const technical = Array.isArray(cv.skills?.technical) ? cv.skills.technical : [];
   const soft = Array.isArray(cv.skills?.soft) ? cv.skills.soft : [];
 
-  const normalizedTechnical = technical
-    .map((skill) => {
-      const technology = typeof skill === 'string' ? skill : (skill.name || '');
-      const level = typeof skill === 'string' ? '' : (skill.level || '');
-      return { technology, proficiency: normalizeProficiency(level), category: 'technical' }; 
-    })
-    .filter((s) => s.technology);
+  const normalizedTechnical = technical.flatMap((skill) => {
+    const technology = typeof skill === 'string' ? skill : skill.name || '';
+    const level = typeof skill === 'string' ? '' : skill.level || '';
+    const item = { technology, proficiency: normalizeProficiency(level), category: 'technical' };
+    return item.technology ? [item] : [];
+  });
 
-  const normalizedSoft = soft
-    .map((skill) => {
-      const technology = typeof skill === 'string' ? skill : (skill.name || '');
-      const level = typeof skill === 'string' ? '' : (skill.level || '');
-      return { technology, proficiency: normalizeProficiency(level), category: 'soft' };
-    })
-    .filter((s) => s.technology);
+  const normalizedSoft = soft.flatMap((skill) => {
+    const technology = typeof skill === 'string' ? skill : skill.name || '';
+    const level = typeof skill === 'string' ? '' : skill.level || '';
+    const item = { technology, proficiency: normalizeProficiency(level), category: 'soft' };
+    return item.technology ? [item] : [];
+  });
 
   return [...normalizedTechnical, ...normalizedSoft];
 }
 
-const normalizeSkillEntry = (value) => {
-  if (value == null) return '';
-  if (typeof value === 'string') return value.trim();
-  if (typeof value === 'object') {
-    if (typeof value.skill === 'string') return value.skill.trim();
-    if (typeof value.name === 'string') return value.name.trim();
-    if (typeof value.technology === 'string') return value.technology.trim();
-  }
-  return '';
-};
 
-const normalizeTechName = (value) => {
-  if (value == null) return '';
-  if (typeof value === 'string') return value.trim();
-  if (typeof value === 'object') {
-    if (typeof value.name === 'string') return value.name.trim();
-    if (typeof value.skill === 'string') return value.skill.trim();
-    if (typeof value.technology === 'string') return value.technology.trim();
-  }
-  return '';
-};
-
-/**
- * Resolve matched/missing skills and match percentage.
- * - Uses backend arrays if present
- * - Falls back to comparing project mainTechnologies with CV skills
- *
- * @param {Object} params
- * @param {Object|null|undefined} params.cv
- * @param {Object|null|undefined} params.project
- * @param {Array<string|Object>} [params.matchedSkills]
- * @param {Array<string|Object>} [params.missingSkills]
- * @param {number} [params.matchPercentage]
- * @returns {ResolvedSkillMatch}
- */
-export function resolveSkillMatch({
-  cv,
-  project,
-  matchedSkills = [],
-  missingSkills = [],
-  matchPercentage = 0,
-}) {
-  const cvSkills = normalizeCvSkills(cv);
-
-  const projectTechnologies = Array.isArray(project?.mainTechnologies) ? project.mainTechnologies : [];
-  const projectTechNames = projectTechnologies.map(normalizeTechName).filter(Boolean);
-
-  const normalizedMatched = Array.isArray(matchedSkills)
-    ? matchedSkills.map(normalizeSkillEntry).filter(Boolean)
-    : [];
-
-  const normalizedMissing = Array.isArray(missingSkills)
-    ? missingSkills.map(normalizeSkillEntry).filter(Boolean)
-    : [];
-
-  const hasNoRequirements = projectTechNames.length === 0;
-
-  const cvSkillSet = new Set(
-    cvSkills
-      .map((s) => (s.technology || '').toLowerCase())
-      .filter(Boolean)
-  );
-
-  const shouldFallbackCompare =
-    projectTechNames.length > 0 &&
-    normalizedMatched.length === 0 &&
-    normalizedMissing.length === 0 &&
-    cvSkillSet.size > 0;
-
-  const resolvedMatched = shouldFallbackCompare
-    ? projectTechNames.filter((tech) => cvSkillSet.has(tech.toLowerCase()))
-    : normalizedMatched;
-
-  const resolvedMissing = shouldFallbackCompare
-    ? projectTechNames.filter((tech) => !cvSkillSet.has(tech.toLowerCase()))
-    : normalizedMissing;
-
-  const hasComparisonData =
-    projectTechNames.length > 0 && (resolvedMatched.length > 0 || resolvedMissing.length > 0);
-
-  const resolvedMatchPercentage = (() => {
-    const raw = Number(matchPercentage);
-    if (Number.isFinite(raw) && raw > 0) return raw;
-    const total = resolvedMatched.length + resolvedMissing.length;
-    if (total === 0) return 0;
-    return Math.round((resolvedMatched.length / total) * 100);
-  })();
-
-  return {
-    matchedSkills: resolvedMatched,
-    missingSkills: resolvedMissing,
-    matchPercentage: resolvedMatchPercentage,
-    projectTechNames,
-    cvSkills,
-    hasNoRequirements,
-    hasComparisonData,
-  };
-}

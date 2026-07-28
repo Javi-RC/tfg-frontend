@@ -18,7 +18,6 @@ const CVQuestionnaire = ({ onComplete }) => {
   // Show a message or complete immediately
   useEffect(() => {
     if (state.questions && state.questions.length === 0 && !state.isLoading && !state.error) {
-      console.log('CVQuestionnaire - Phase has no questions, marking as complete...');
       // Don't POST to backend - just complete locally
       onComplete?.();
     }
@@ -32,16 +31,12 @@ const CVQuestionnaire = ({ onComplete }) => {
   const handleNextPhase = async () => {
     // No validation - backend decides what's required
     // Frontend only sends what user has filled
-    
+
     try {
-      console.log('CVQuestionnaire - Submitting phase with responses:', state.responses);
       const result = await submitPhase();
-      
-      console.log('CVQuestionnaire - Submit result:', result);
-      
+
       if (result.isComplete) {
         // Backend indicates completion
-        console.log('✓ Questionnaire completed!');
         onComplete?.();
       }
     } catch (error) {
@@ -88,11 +83,7 @@ const CVQuestionnaire = ({ onComplete }) => {
         completenessScore={state.completenessScore}
       />
 
-      {state.error && (
-        <div className="error-banner">
-          {state.error}
-        </div>
-      )}
+      {state.error && <div className="error-banner">{state.error}</div>}
 
       <PhaseForm
         phase={state.currentPhase}
@@ -102,13 +93,12 @@ const CVQuestionnaire = ({ onComplete }) => {
       />
 
       <div className="questionnaire-actions">
-        <button
-          onClick={handleNextPhase}
-          disabled={state.isLoading}
-          className="btn-next"
-        >
-          {state.isLoading ? t('questionnaire.submitting') : 
-           state.currentPhase?.index === state.currentPhase?.total ? t('questionnaire.finish') : t('questionnaire.next')}
+        <button type="button" onClick={handleNextPhase} disabled={state.isLoading} className="btn-next">
+          {state.isLoading
+            ? t('questionnaire.submitting')
+            : state.currentPhase?.index === state.currentPhase?.total
+              ? t('questionnaire.finish')
+              : t('questionnaire.next')}
         </button>
       </div>
     </div>

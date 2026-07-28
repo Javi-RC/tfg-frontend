@@ -1,11 +1,13 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * DateQuestion - Handles date inputs
  */
 const DateQuestion = ({ question, value, onChange }) => {
+  const { t } = useTranslation();
   const inputId = question.field || question.id || 'question-date';
-  const ariaLabel = question.label || question.question || question.field || 'Select date';
+  const ariaLabel = question.label || question.question || question.field || t('questionnaire.aria.selectDate');
   return (
     <input
       type="date"

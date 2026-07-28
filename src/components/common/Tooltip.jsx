@@ -6,7 +6,8 @@ import React, { useState, useRef, useEffect } from 'react';
  */
 export default function Tooltip({ children, content, position = 'top', delay = 200 }) {
   const [isVisible, setIsVisible] = useState(false);
-  const [coords, setCoords] = useState({ top: 0, left: 0 });
+  const coordsRef = useRef({ top: 0, left: 0 });
+  const tooltipStyleRef = useRef(null);
   const timeoutRef = useRef(null);
   const triggerRef = useRef(null);
   const tooltipRef = useRef(null);
@@ -56,7 +57,11 @@ export default function Tooltip({ children, content, position = 'top', delay = 2
       }
       if (top < padding) top = padding;
 
-      setCoords({ top, left });
+      coordsRef.current = { top, left };
+      if (tooltipStyleRef.current) {
+        tooltipStyleRef.current.style.top = `${top}px`;
+        tooltipStyleRef.current.style.left = `${left}px`;
+      }
     }
   }, [isVisible, position]);
 
@@ -96,20 +101,22 @@ export default function Tooltip({ children, content, position = 'top', delay = 2
       </span>
       {isVisible && content && (
         <div
-          ref={tooltipRef}
+          ref={(el) => { tooltipRef.current = el; tooltipStyleRef.current = el; }}
           id={tooltipId.current}
           role="tooltip"
           style={{
             ...styles.tooltip,
-            top: `${coords.top}px`,
-            left: `${coords.left}px`,
+            top: `${coordsRef.current.top}px`,
+            left: `${coordsRef.current.left}px`,
           }}
         >
           {content}
-          <div style={{
-            ...styles.arrow,
-            ...getArrowStyle(position)
-          }} />
+          <div
+            style={{
+              ...styles.arrow,
+              ...getArrowStyle(position),
+            }}
+          />
         </div>
       )}
     </>
@@ -164,8 +171,8 @@ const styles = {
   tooltip: {
     position: 'fixed',
     zIndex: 9999,
-    backgroundColor: '#1F2937',
-    color: '#F9FAFB',
+    backgroundColor: 'var(--color-text-heading)',
+    color: 'var(--color-bg-muted)',
     padding: '8px 12px',
     borderRadius: '6px',
     fontSize: '13px',

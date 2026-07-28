@@ -4,30 +4,30 @@
 }
 
 .drop-zone {
-  border: 2px dashed #cbd5e0;
+  border: 2px dashed var(--color-border-strong);
   border-radius: 12px;
   padding: 3rem 2rem;
   text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: #f7fafc;
+  background: var(--color-bg-muted);
   position: relative;
 }
 
 .drop-zone:hover {
-  border-color: #3b82f6;
+  border-color: var(--color-primary);
   background: #eff6ff;
 }
 
 .drop-zone.active {
-  border-color: #3b82f6;
+  border-color: var(--color-primary);
   background: #eff6ff;
   border-style: solid;
 }
 
 .drop-zone.has-file {
   background: #f0fdf4;
-  border-color: #10b981;
+  border-color: var(--color-success);
   cursor: default;
 }
 
@@ -36,14 +36,14 @@
 }
 
 .upload-icon {
-  color: #3b82f6;
+  color: var(--color-primary);
   margin: 0 auto 1rem;
   display: block;
 }
 
 .drop-zone-text {
   font-size: 1.125rem;
-  color: #2d3748;
+  color: var(--color-text-body);
   font-weight: 500;
   margin-bottom: 0.5rem;
 }
@@ -51,7 +51,7 @@
 .file-types {
   display: block;
   font-size: 0.875rem;
-  color: #718096;
+  color: var(--color-text-muted);
 }
 
 .file-selected {
@@ -81,17 +81,17 @@
 
 .file-name {
   font-weight: 600;
-  color: #1a202c;
+  color: var(--color-text-body);
   word-break: break-word;
 }
 
 .file-size {
   font-size: 0.875rem;
-  color: #718096;
+  color: var(--color-text-muted);
 }
 
 .btn-remove {
-  background: #fee;
+  background: var(--color-danger-bg);
   color: #c53030;
   border: none;
   border-radius: 50%;
@@ -110,7 +110,7 @@
 .btn-upload {
   width: 100%;
   padding: 1rem;
-  background: #3b82f6;
+  background: var(--color-primary);
   color: white;
   border: none;
   border-radius: 8px;
@@ -122,13 +122,13 @@
 }
 
 .btn-upload:hover:not(:disabled) {
-  background: #2563eb;
+  background: var(--color-primary);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
 }
 
 .btn-upload:disabled {
-  background: #cbd5e0;
+  background: var(--color-border-strong);
   cursor: not-allowed;
   transform: none;
 }

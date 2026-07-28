@@ -21,7 +21,10 @@ export default function Step6Availability({ formData, onChange }) {
   };
 
   const addPeriod = () => {
-    const newPeriods = [...(formData.highLoadPeriods || []), { description: '', startDate: '', endDate: '' }];
+    const newPeriods = [
+      ...(formData.highLoadPeriods || []),
+      { _key: `period-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, description: '', startDate: '', endDate: '' },
+    ];
     onChange({ highLoadPeriods: newPeriods });
   };
 
@@ -33,9 +36,7 @@ export default function Step6Availability({ formData, onChange }) {
   return (
     <div>
       <h2 style={styles.stepTitle}>{t('projects.steps.step6.title')}</h2>
-      <p style={styles.stepDescription}>
-        {t('projects.steps.step6.description')}
-      </p>
+      <p style={styles.stepDescription}>{t('projects.steps.step6.description')}</p>
 
       <FormNumber
         label={t('projects.steps.step6.weeklyHoursPerMember')}
@@ -55,7 +56,10 @@ export default function Step6Availability({ formData, onChange }) {
         options={[
           { value: AFTER_HOURS_OPTIONS.YES, label: t('projects.steps.step6.afterHoursYes') },
           { value: AFTER_HOURS_OPTIONS.NO, label: t('projects.steps.step6.afterHoursNo') },
-          { value: AFTER_HOURS_OPTIONS.OCCASIONAL, label: t('projects.steps.step6.afterHoursOccasional') }
+          {
+            value: AFTER_HOURS_OPTIONS.OCCASIONAL,
+            label: t('projects.steps.step6.afterHoursOccasional'),
+          },
         ]}
       />
 
@@ -67,13 +71,12 @@ export default function Step6Availability({ formData, onChange }) {
 
         {formData.highLoadPeriods && formData.highLoadPeriods.length > 0 ? (
           formData.highLoadPeriods.map((period, index) => (
-            <div key={index} style={styles.periodCard}>
+            <div key={period._key} style={styles.periodCard}>
               <div style={styles.periodHeader}>
-                <span style={styles.periodNumber}>{t('projects.steps.step6.period')} {index + 1}</span>
-                <button
-                  style={styles.removeButton}
-                  onClick={() => removePeriod(index)}
-                >
+                <span style={styles.periodNumber}>
+                  {t('projects.steps.step6.period')} {index + 1}
+                </span>
+                <button type="button" style={styles.removeButton} onClick={() => removePeriod(index)}>
                   {t('projects.steps.step5.remove')}
                 </button>
               </div>
@@ -117,46 +120,46 @@ const styles = {
   stepTitle: {
     fontSize: '28px',
     fontWeight: '700',
-    color: '#111',
-    margin: '0 0 8px 0'
+    color: 'var(--color-text-primary)',
+    margin: '0 0 8px 0',
   },
   stepDescription: {
     fontSize: '15px',
-    color: '#6B7280',
-    marginBottom: '32px'
+    color: 'var(--color-text-muted)',
+    marginBottom: '32px',
   },
   section: {
-    marginTop: '32px'
+    marginTop: '32px',
   },
   sectionHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '20px'
+    marginBottom: '20px',
   },
   sectionTitle: {
     fontSize: '18px',
     fontWeight: '600',
-    color: '#111',
-    margin: 0
+    color: 'var(--color-text-primary)',
+    margin: 0,
   },
   periodCard: {
     padding: '20px',
-    background: '#F9FAFB',
+    background: 'var(--color-bg-muted)',
     borderRadius: '12px',
     marginBottom: '16px',
-    border: '1px solid #E5E7EB'
+    border: '1px solid var(--color-border)',
   },
   periodHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '16px'
+    marginBottom: '16px',
   },
   periodNumber: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#6B7280'
+    color: 'var(--color-text-muted)',
   },
   removeButton: {
     padding: '6px 12px',
@@ -165,20 +168,20 @@ const styles = {
     fontSize: '13px',
     fontWeight: '600',
     cursor: 'pointer',
-    background: '#FEE2E2',
-    color: '#DC2626',
-    transition: 'all 0.2s'
+    background: 'var(--color-danger-bg)',
+    color: 'var(--color-danger)',
+    transition: 'all 0.2s',
   },
   row: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    gap: '16px'
+    gap: '16px',
   },
   emptyText: {
     textAlign: 'center',
-    color: '#9CA3AF',
+    color: 'var(--color-text-muted)',
     padding: '40px',
-    background: '#F9FAFB',
-    borderRadius: '12px'
-  }
+    background: 'var(--color-bg-muted)',
+    borderRadius: '12px',
+  },
 };

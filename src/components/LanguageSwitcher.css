@@ -1,0 +1,92 @@
+.languageswitcher-root {
+  position: relative;
+}
+
+.languageswitcher-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  transition: background-color 0.2s, border-color 0.2s, opacity 0.2s;
+}
+
+.languageswitcher-toggle:disabled {
+  cursor: wait;
+}
+
+.languageswitcher-toggle:not(:disabled) {
+  cursor: pointer;
+}
+
+.languageswitcher-flag {
+  display: block;
+  border-radius: 2px;
+}
+
+.languageswitcher-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+}
+
+.languageswitcher-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: white;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  min-width: 150px;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.languageswitcher-option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  text-align: left;
+  transition: background-color 0.2s, color 0.2s, opacity 0.2s;
+}
+
+.languageswitcher-option:disabled {
+  cursor: wait;
+}
+
+.languageswitcher-option:not(:disabled) {
+  cursor: pointer;
+}
+
+.languageswitcher-option--active {
+  background: #f0f4f8;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.languageswitcher-option--inactive:hover {
+  background: var(--color-bg-muted);
+}
+
+.languageswitcher-option--saving {
+  opacity: 0.6;
+}
+
+.languageswitcher-option-flag {
+  display: block;
+  border-radius: 2px;
+}

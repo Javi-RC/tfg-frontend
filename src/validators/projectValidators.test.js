@@ -195,7 +195,7 @@ describe('projectValidators', () => {
       briefDescription: 'This is a valid project description',
       estimatedStartDate: '2024-01-01',
       estimatedEndDate: '2024-12-31',
-      teamSize: 5
+      teamSize: 5,
     };
 
     it('validates correct step 1 data', () => {
@@ -236,7 +236,7 @@ describe('projectValidators', () => {
       const formData = {
         ...validFormData,
         estimatedStartDate: '2024-12-31',
-        estimatedEndDate: '2024-01-01'
+        estimatedEndDate: '2024-01-01',
       };
       const result = validateStep1(formData);
       expect(result.isValid).toBe(false);
@@ -249,7 +249,7 @@ describe('projectValidators', () => {
         briefDescription: 'Short',
         estimatedStartDate: '',
         estimatedEndDate: '',
-        teamSize: 0
+        teamSize: 0,
       };
       const result = validateStep1(formData);
       expect(result.isValid).toBe(false);
@@ -262,7 +262,7 @@ describe('projectValidators', () => {
       requiresSynchronousCommunication: true,
       realTimeCommunicationLevel: 'high',
       weeklyMeetingsCount: 3,
-      languages: ['English', 'Spanish']
+      languages: ['English', 'Spanish'],
     };
 
     it('validates correct step 2 data', () => {
@@ -308,7 +308,7 @@ describe('projectValidators', () => {
   describe('validateStep3', () => {
     const validFormData = {
       mainTechnologies: ['JavaScript', 'React'],
-      requiredExperienceLevel: 'intermediate'
+      requiredExperienceLevel: 'intermediate',
     };
 
     it('validates correct step 3 data', () => {

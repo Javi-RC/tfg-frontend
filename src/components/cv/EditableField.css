@@ -1,0 +1,51 @@
+.editablefield-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.editablefield-required {
+  color: var(--color-danger);
+  margin-left: 4px;
+}
+
+.editablefield-error {
+  font-size: 12px;
+  color: var(--color-danger);
+  margin-bottom: 6px;
+  font-weight: 500;
+}
+
+.editablefield-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+  color: var(--color-text-body);
+  box-sizing: border-box;
+  background-color: white;
+}
+
+.editablefield-input--error {
+  border-color: #fc8181;
+  background-color: #fff5f5;
+}
+
+.editablefield-input:focus {
+  border-color: #4299e1;
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+}
+
+.editablefield-value {
+  font-size: 15px;
+  color: var(--color-text-body);
+  font-weight: 500;
+  line-height: 1.6;
+}

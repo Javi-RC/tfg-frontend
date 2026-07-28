@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useNotifications } from '../../contexts/useNotifications';
+import { useNotifications } from '../../hooks/useNotifications';
 import { formatDistanceToNow } from 'date-fns';
 import { enUS, es } from 'date-fns/locale';
 import { getNotificationTypeIcon } from '../../types/notificationTypes';
@@ -14,26 +14,26 @@ import './NotificationItem.css';
  */
 const normalizePriority = (priority) => {
   if (!priority) return 'medium';
-  
+
   const lowerPriority = priority.toLowerCase();
-  
+
   // Mapeo de prioridades en diferentes idiomas
   const priorityMap = {
     // English
-    'urgent': 'urgent',
-    'high': 'high',
-    'medium': 'medium',
-    'low': 'low',
+    urgent: 'urgent',
+    high: 'high',
+    medium: 'medium',
+    low: 'low',
     // Spanish
-    'urgente': 'urgent',
-    'alta': 'high',
-    'media': 'medium',
-    'baja': 'low',
+    urgente: 'urgent',
+    alta: 'high',
+    media: 'medium',
+    baja: 'low',
     // Just in case
-    'critical': 'urgent',
-    'crítica': 'urgent'
+    critical: 'urgent',
+    crítica: 'urgent',
   };
-  
+
   return priorityMap[lowerPriority] || 'medium';
 };
 
@@ -41,7 +41,7 @@ const normalizePriority = (priority) => {
  * NotificationItem Component
  * Single notification item.
  * Shows title, message, relative time, and actions.
- * 
+ *
  * Estructura de una notificación:
  * {
  *   _id: string,
@@ -60,7 +60,7 @@ const NotificationItem = ({ notification, onClose }) => {
   const navigate = useNavigate();
   const { markAsRead, deleteNotification } = useNotifications();
   const isUnread = !notification.readAt;
-  
+
   // Normalizar la prioridad traducida del backend
   const normalizedPriority = normalizePriority(notification.priority);
 
@@ -68,7 +68,7 @@ const NotificationItem = ({ notification, onClose }) => {
     if (isUnread) {
       await markAsRead(notification._id);
     }
-    
+
     // If it has an action URL, navigate using React Router
     if (notification.actionUrl) {
       // Check whether the URL is internal or external
@@ -90,13 +90,13 @@ const NotificationItem = ({ notification, onClose }) => {
   const timeLocale = i18n.language?.toLowerCase().startsWith('es') ? es : enUS;
   const timeAgo = formatDistanceToNow(new Date(notification.createdAt), {
     addSuffix: true,
-    locale: timeLocale
+    locale: timeLocale,
   });
 
   const priorityClass = `priority-${normalizedPriority}`;
 
   return (
-    <div 
+    <div
       className={`notification-item ${isUnread ? 'unread' : ''} ${priorityClass}`}
       onClick={handleClick}
       role="button"
@@ -127,7 +127,8 @@ const NotificationItem = ({ notification, onClose }) => {
         </div>
       </div>
 
-      <button 
+      <button
+        type="button"
         className="notification-delete-btn"
         onClick={handleDelete}
         aria-label={t('notifications.aria.delete')}
@@ -146,9 +147,13 @@ const NotificationItem = ({ notification, onClose }) => {
 const NotificationIcon = ({ type }) => {
   const { t } = useTranslation();
   const IconComponent = getNotificationTypeIcon(type);
-  
+
   return (
-    <span className="notification-icon" role="img" aria-label={t('notifications.aria.type', { type })}>
+    <span
+      className="notification-icon"
+      role="img"
+      aria-label={t('notifications.aria.type', { type })}
+    >
       <IconComponent size={24} />
     </span>
   );

@@ -1,0 +1,110 @@
+.skillssection-section {
+  margin-bottom: 48px;
+}
+
+.skillssection-edit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.skillssection-edit-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto;
+  gap: 12px;
+  align-items: end;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 10px;
+  border: 1px solid var(--color-border);
+}
+
+.skillssection-remove-btn {
+  padding: 8px 12px;
+  background: var(--color-danger-bg);
+  border: none;
+  border-radius: 6px;
+  color: var(--color-error);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 2px;
+  transition: background 0.15s;
+}
+
+.skillssection-remove-btn:hover {
+  background: #fcc;
+}
+
+.skillssection-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.skillssection-category {
+  background: var(--color-bg-muted);
+  border-radius: 10px;
+  padding: 16px 20px;
+  border: 1px solid var(--color-border);
+}
+
+.skillssection-category-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.skillssection-category-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skillssection-category-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.skillssection-badge-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skillssection-badge {
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.skillssection-badge:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.skillssection-badge-level {
+  font-size: 10px;
+  opacity: 0.7;
+  margin-left: 4px;
+  font-weight: 400;
+}
+
+.skillssection-add-wrapper {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.skillssection-no-skills {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  font-style: italic;
+  padding: 8px 0;
+}

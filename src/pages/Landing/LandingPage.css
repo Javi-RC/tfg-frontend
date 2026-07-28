@@ -1,0 +1,724 @@
+/* ===============================================
+   LANDING PAGE
+   Public marketing page. All rules are scoped to
+   `.landing` so they never leak into the app UI.
+   =============================================== */
+
+.landing {
+  --landing-violet: var(--color-primary);
+  --landing-violet-dark: var(--color-primary-hover);
+  --landing-violet-light: #9d84ff;
+  --landing-rose: #f43f5e;
+  --landing-emerald: var(--color-success);
+
+  --landing-ink: #1e2340;
+  --landing-ink-soft: #5b6079;
+  --landing-surface: #ffffff;
+  --landing-tint: #f6f5fe;
+  --landing-border: #ebe9f7;
+
+  --landing-gradient: linear-gradient(120deg, var(--landing-violet) 0%, var(--landing-violet-light) 100%);
+  --landing-shadow-sm: 0 2px 10px rgba(30, 35, 64, 0.05);
+  --landing-shadow-md: 0 14px 40px rgba(124, 92, 252, 0.14);
+  --landing-max-width: 1180px;
+  --landing-header-height: 84px;
+
+  font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+  color: var(--landing-ink);
+  background: var(--landing-surface);
+  overflow-x: hidden;
+}
+
+/* These resets are wrapped in :where() so they carry ZERO specificity.
+   Written as `.landing ul` they scored a class plus an element, which outranks
+   a plain `.landing-features__grid` — so the reset's `margin: 0` beat the
+   grid's `margin: 0 auto` and every list-based container sat flush left
+   instead of centred. A reset must never outrank the components it serves. */
+.landing :where(h1, h2, h3) {
+  letter-spacing: -0.02em;
+  margin: 0;
+  text-wrap: balance;
+}
+
+.landing :where(p) {
+  margin: 0;
+}
+
+.landing :where(ul, ol) {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.landing :where(a) {
+  text-decoration: none;
+  color: inherit;
+}
+
+.landing-text-gradient {
+  background: var(--landing-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* ---- Buttons ---------------------------------------------------------- */
+
+.landing-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  padding: 0.85rem 1.6rem;
+  border-radius: 999px;
+  border: 1px solid transparent;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    transform var(--transition-base, 0.2s ease),
+    box-shadow var(--transition-base, 0.2s ease),
+    background-color var(--transition-base, 0.2s ease);
+}
+
+.landing-btn:hover {
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+.landing-btn--primary {
+  background: var(--landing-gradient);
+  color: #fff;
+  box-shadow: var(--landing-shadow-md);
+}
+
+.landing-btn--primary:hover {
+  box-shadow: 0 18px 44px rgba(124, 92, 252, 0.32);
+}
+
+.landing-btn--ghost {
+  background: var(--landing-surface);
+  border-color: var(--landing-border);
+  color: var(--landing-violet);
+  box-shadow: var(--landing-shadow-sm);
+}
+
+.landing-btn--ghost:hover {
+  border-color: var(--landing-violet);
+}
+
+/* ---- Brand lockup ------------------------------------------------------ */
+
+.landing-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.landing-brand__logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 14px;
+  object-fit: cover;
+  box-shadow: var(--landing-shadow-md);
+}
+
+.landing-brand__text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+/* Brand type, matching AuthHeader and TopNavBar. Those set it in the app blue;
+   here it follows the landing's violet — change the colour, not the face. */
+.landing-brand__name {
+  font-family: 'Pacifico', cursive;
+  font-size: 1.6rem;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--landing-violet);
+}
+
+.landing-brand__tagline {
+  white-space: pre-line;
+  font-size: 0.68rem;
+  color: var(--landing-ink-soft);
+}
+
+.landing-brand--footer .landing-brand__name,
+.landing-brand--footer .landing-brand__tagline {
+  color: var(--landing-ink);
+}
+
+/* ---- Header ------------------------------------------------------------ */
+
+.landing-header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-nav, 1000);
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid transparent;
+  transition:
+    border-color var(--transition-base, 0.2s ease),
+    box-shadow var(--transition-base, 0.2s ease);
+}
+
+.landing-header.is-scrolled {
+  border-bottom-color: var(--landing-border);
+  box-shadow: var(--landing-shadow-sm);
+}
+
+.landing-header__inner {
+  max-width: var(--landing-max-width);
+  min-height: var(--landing-header-height);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.landing-nav {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+}
+
+.landing-nav__link {
+  position: relative;
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--landing-ink-soft);
+  padding: 0.35rem 0;
+  transition: color var(--transition-base, 0.2s ease);
+}
+
+.landing-nav__link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 2px;
+  width: 100%;
+  border-radius: 2px;
+  background: var(--landing-violet);
+  transform: scaleX(0);
+  transition: transform var(--transition-base, 0.2s ease);
+}
+
+.landing-nav__link:hover,
+.landing-nav__link.is-active {
+  color: var(--landing-violet);
+}
+
+.landing-nav__link.is-active::after {
+  transform: scaleX(1);
+}
+
+.landing-nav__login {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--landing-ink-soft);
+  transition: color var(--transition-base, 0.2s ease);
+}
+
+.landing-nav__login:hover {
+  color: var(--landing-violet);
+}
+
+/* The language switcher is a shared app component; nudge it onto the landing's
+   baseline without overriding its own styling. */
+.landing-nav .languageswitcher-root {
+  display: flex;
+  align-items: center;
+}
+
+.landing-header__toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid var(--landing-border);
+  background: var(--landing-surface);
+  color: var(--landing-ink);
+  cursor: pointer;
+}
+
+/* ---- Hero -------------------------------------------------------------- */
+
+.landing-hero {
+  position: relative;
+  background: linear-gradient(180deg, #fbfaff 0%, #f4f2ff 100%);
+  padding: clamp(3rem, 7vw, 5.5rem) 1.5rem clamp(4rem, 9vw, 7rem);
+}
+
+.landing-hero__inner {
+  max-width: var(--landing-max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 4rem);
+}
+
+.landing-hero__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.landing-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 999px;
+  background: rgba(124, 92, 252, 0.12);
+  color: var(--landing-violet-dark);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.landing-hero__title {
+  font-size: clamp(2.3rem, 4.6vw, 3.6rem);
+  font-weight: 800;
+  line-height: 1.12;
+}
+
+.landing-hero__subtitle {
+  max-width: 46ch;
+  font-size: 1.05rem;
+  line-height: 1.65;
+  color: var(--landing-ink-soft);
+}
+
+.landing-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.landing-hero__art {
+  display: grid;
+  place-items: center;
+}
+
+.landing-hero__illustration {
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+}
+
+/* ---- Animated SARA wordmark -------------------------------------------- */
+
+/* Inherits its type from whatever class it is given (the header passes
+   .landing-brand__name), so the animated mark and the static footer one are
+   always set in the same face, size and weight. */
+.sara-wordmark {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.sara-wordmark__word {
+  display: inline-block;
+  /* The reveal animates clip-path; promoting it avoids repainting the text.
+     The clip is inset past the baseline so Pacifico's descenders never clip. */
+  will-change: clip-path;
+}
+
+.sara-wordmark__dot {
+  display: inline-block;
+  width: 0.18em;
+  height: 0.18em;
+  margin-left: 0.06em;
+  border-radius: 50%;
+  background: var(--landing-violet);
+  will-change: transform;
+}
+
+/* ---- Shared section shell --------------------------------------------- */
+
+.landing-section {
+  padding: clamp(3.5rem, 7vw, 5.5rem) 1.5rem;
+}
+
+.landing-section__heading {
+  max-width: var(--landing-max-width);
+  margin: 0 auto clamp(2.5rem, 5vw, 3.5rem);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.landing-eyebrow {
+  padding: 0.4rem 1rem;
+  border-radius: 999px;
+  background: rgba(124, 92, 252, 0.1);
+  color: var(--landing-violet-dark);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.landing-section__title {
+  max-width: 22ch;
+  font-size: clamp(1.7rem, 3.2vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* ---- Features ---------------------------------------------------------- */
+
+/* Six cards. The 300px floor resolves to three columns at full width, so they
+   land as two even rows instead of a row of five and a lonely sixth. */
+.landing-features__grid {
+  max-width: var(--landing-max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.75rem;
+}
+
+.landing-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Content stays top-aligned on purpose. Centring it vertically pushes the
+     icon of a card with longer copy above its neighbours' — the icons and
+     titles have to line up across the row, and the slack belongs at the
+     bottom, where the underline sits. */
+  justify-content: flex-start;
+  gap: 1rem;
+  padding: 2.25rem 1.5rem 2.75rem;
+  text-align: center;
+  background: var(--landing-surface);
+  border: 1px solid var(--landing-border);
+  border-radius: 20px;
+  overflow: hidden;
+  transition:
+    transform var(--transition-base, 0.2s ease),
+    box-shadow var(--transition-base, 0.2s ease);
+}
+
+.landing-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--landing-shadow-md);
+}
+
+.landing-card__icon {
+  display: grid;
+  place-items: center;
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  background: var(--landing-accent-soft);
+  color: var(--landing-accent);
+}
+
+.landing-card__title {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.landing-card__text {
+  font-size: 0.88rem;
+  line-height: 1.65;
+  color: var(--landing-ink-soft);
+}
+
+.landing-card__underline {
+  position: absolute;
+  left: 50%;
+  bottom: 1.25rem;
+  width: 56px;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--landing-accent);
+  transform: translateX(-50%);
+}
+
+/* Accent variants shared by feature cards and workflow steps */
+
+.landing-card--violet,
+.landing-step--violet {
+  --landing-accent: var(--landing-violet);
+  --landing-accent-soft: rgba(124, 92, 252, 0.12);
+}
+
+.landing-card--blue,
+.landing-step--blue {
+  --landing-accent: var(--landing-violet-light);
+  --landing-accent-soft: rgba(124, 92, 255, 0.12);
+}
+
+.landing-card--rose,
+.landing-step--rose {
+  --landing-accent: var(--landing-rose);
+  --landing-accent-soft: rgba(244, 63, 94, 0.12);
+}
+
+.landing-card--emerald,
+.landing-step--emerald {
+  --landing-accent: var(--landing-emerald);
+  --landing-accent-soft: rgba(16, 185, 129, 0.12);
+}
+
+/* ---- How it works ------------------------------------------------------ */
+
+.landing-steps {
+  background: linear-gradient(160deg, #f7f4ff 0%, #fdf6f8 55%, #f4f7ff 100%);
+}
+
+/* Grid, not flex: four equal step columns with a fixed arrow column between
+   them. Flex items refuse to shrink below their content (`min-width: auto`),
+   so a step with longer copy pushed the whole row wider than the container and
+   it spilled past the left edge. `minmax(0, 1fr)` cannot do that. */
+.landing-steps__list {
+  max-width: var(--landing-max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr) 90px) minmax(0, 1fr);
+  align-items: start;
+  gap: 0.75rem;
+}
+
+.landing-step {
+  max-width: 250px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+  text-align: center;
+}
+
+.landing-step__icon {
+  display: grid;
+  place-items: center;
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  background: var(--landing-accent-soft);
+  color: var(--landing-accent);
+  transition: transform var(--transition-base, 0.2s ease);
+}
+
+.landing-step:hover .landing-step__icon {
+  transform: scale(1.07);
+}
+
+.landing-step__title {
+  font-size: 0.98rem;
+  font-weight: 700;
+}
+
+.landing-step__text {
+  font-size: 0.85rem;
+  line-height: 1.65;
+  color: var(--landing-ink-soft);
+}
+
+.landing-steps__arrow {
+  /* 38px puts the 2px dashed line's centre at 39px: the middle of the 78px
+     icon it points between. */
+  margin-top: 38px;
+  border-top: 2px dashed #c9c4e6;
+  position: relative;
+}
+
+.landing-steps__arrow::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: -5px;
+  border-left: 8px solid #c9c4e6;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+}
+
+/* ---- About ------------------------------------------------------------- */
+
+.landing-about {
+  background: linear-gradient(180deg, #f4f7ff 0%, #ffffff 100%);
+}
+
+.landing-about__inner {
+  max-width: var(--landing-max-width);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 4rem);
+}
+
+.landing-about__illustration {
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  justify-self: center;
+}
+
+.landing-about__copy {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.4rem;
+}
+
+.landing-about__title {
+  font-size: clamp(1.6rem, 3vw, 2.1rem);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.landing-about__text {
+  max-width: 42ch;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--landing-ink-soft);
+}
+
+/* ---- Footer ------------------------------------------------------------ */
+
+.landing-footer {
+  border-top: 1px solid var(--landing-border);
+  background: var(--landing-tint);
+  padding: 2rem 1.5rem;
+}
+
+.landing-footer__inner {
+  max-width: var(--landing-max-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.landing-footer__nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.75rem;
+}
+
+.landing-footer__link {
+  font-size: 0.85rem;
+  color: var(--landing-ink-soft);
+  transition: color var(--transition-base, 0.2s ease);
+}
+
+.landing-footer__link:hover {
+  color: var(--landing-violet);
+}
+
+.landing-footer__social {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.landing-footer__social-link {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--landing-surface);
+  border: 1px solid var(--landing-border);
+  color: var(--landing-ink-soft);
+  transition:
+    color var(--transition-base, 0.2s ease),
+    border-color var(--transition-base, 0.2s ease);
+}
+
+.landing-footer__social-link:hover {
+  color: var(--landing-violet);
+  border-color: var(--landing-violet);
+}
+
+/* ---- Responsive -------------------------------------------------------- */
+
+@media (max-width: 960px) {
+  .landing-hero__inner,
+  .landing-about__inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* Stacked, the headline and its call to action come first; the illustration
+     is decorative and would otherwise push them below the fold. */
+  .landing-hero__illustration {
+    max-width: 420px;
+  }
+
+  /* Two per row, and the connecting arrows no longer point anywhere useful. */
+  .landing-steps__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2.5rem 1.5rem;
+  }
+
+  .landing-steps__arrow {
+    display: none;
+  }
+}
+
+@media (max-width: 780px) {
+  .landing-header__toggle {
+    display: inline-flex;
+  }
+
+  .landing-nav {
+    position: absolute;
+    top: var(--landing-header-height);
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    padding: 1.25rem 1.5rem 1.75rem;
+    background: var(--landing-surface);
+    border-bottom: 1px solid var(--landing-border);
+    box-shadow: var(--landing-shadow-sm);
+    display: none;
+  }
+
+  .landing-nav.is-open {
+    display: flex;
+  }
+
+  .landing-nav__cta {
+    margin: 0.5rem 0 0;
+  }
+
+  .landing-steps__list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .landing-footer__inner {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing *,
+  .landing *::before,
+  .landing *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .landing-btn:hover,
+  .landing-card:hover {
+    transform: none;
+  }
+}

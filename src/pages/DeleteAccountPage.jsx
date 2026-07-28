@@ -1,12 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState, useContext } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShieldX, Trash2, KeyRound } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import { getDeletionPrerequisites, deleteAccount } from '../api/account';
-import { DeleteAccountModal, DeletionBlockers } from '../components/account';
+import DeleteAccountModal from '../components/account/DeleteAccountModal';
+import DeletionBlockers from '../components/account/DeletionBlockers';
 import PrimaryButton from '../components/PrimaryButton';
 import SecondaryButton from '../components/SecondaryButton';
+import i18n from '../i18n';
 
 const CONFIRMATION_KEYWORDS = ['DELETE', 'ELIMINAR'];
 
@@ -30,36 +32,39 @@ const normalizeBlockers = (payload) => {
         return {
           id: `blocker-${index}`,
           title: item,
-          description: ''
+          description: '',
         };
       }
 
       if (item && typeof item === 'object') {
-        const title = item.title || item.reason || item.message || item.name || item.code || 'Blocked item';
+        const title =
+          item.title || item.reason || item.message || item.name || item.code || i18n.t('common.blockedItem');
         const description = item.description || item.detail || item.details || '';
         const action = item.action || item.resolution || item.nextStep || '';
         return {
           id: item.id || item.code || item.type || `blocker-${index}`,
           title,
           description,
-          action
+          action,
         };
       }
 
       return {
         id: `blocker-${index}`,
-        title: 'Blocked item',
-        description: ''
+        title: i18n.t('common.blockedItem'),
+        description: '',
       };
     });
   }
 
   if (data.blocked || data.isBlocked || data.canDelete === false) {
-    return [{
-      id: 'blocked-generic',
-      title: data.message || data.reason || 'Account cannot be deleted yet.',
-      description: data.detail || ''
-    }];
+    return [
+      {
+        id: 'blocked-generic',
+        title: data.message || data.reason || i18n.t('common.accountCannotBeDeleted'),
+        description: data.detail || '',
+      },
+    ];
   }
 
   return [];
@@ -75,7 +80,7 @@ const extractRequiresPassword = (payload) => {
 export default function DeleteAccountPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { logout } = useContext(AuthContext);
+  const { logout } = useAuth();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -104,8 +109,8 @@ export default function DeleteAccountPage() {
     } catch (err) {
       setError(
         err?.response?.data?.message ||
-        err?.response?.data?.error ||
-        t('accountDeletion.errors.loadFailed')
+          err?.response?.data?.error ||
+          t('accountDeletion.errors.loadFailed')
       );
       setRequiresPassword(true);
     } finally {
@@ -139,7 +144,7 @@ export default function DeleteAccountPage() {
       errors.confirmation = t('accountDeletion.errors.confirmationRequired');
     } else if (!CONFIRMATION_KEYWORDS.includes(normalizedConfirmation)) {
       errors.confirmation = t('accountDeletion.errors.confirmationMismatch', {
-        keyword: confirmationKeyword
+        keyword: confirmationKeyword,
       });
     }
     return errors;
@@ -174,9 +179,10 @@ export default function DeleteAccountPage() {
       }, 1500);
     } catch (err) {
       setFormErrors({
-        submit: err?.response?.data?.message ||
+        submit:
+          err?.response?.data?.message ||
           err?.response?.data?.error ||
-          t('accountDeletion.errors.deleteFailed')
+          t('accountDeletion.errors.deleteFailed'),
       });
     } finally {
       setIsDeleting(false);
@@ -185,26 +191,31 @@ export default function DeleteAccountPage() {
 
   if (success) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        background: '#f8fafc',
-        padding: '104px 20px 40px',
-        fontFamily: 'Poppins, Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial'
-      }}>
-        <div style={{
-          maxWidth: '760px',
-          margin: '0 auto',
-          background: 'white',
-          borderRadius: '16px',
-          padding: '32px',
-          boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-          textAlign: 'center'
-        }}>
+      <div
+        style={{
+          minHeight: '100vh',
+          background: 'var(--color-bg-muted)',
+          padding: '104px 20px 40px',
+          fontFamily:
+            'Poppins, Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '760px',
+            margin: '0 auto',
+            background: 'white',
+            borderRadius: '16px',
+            padding: '32px',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+            textAlign: 'center',
+          }}
+        >
           <ShieldX size={32} color="#16a34a" aria-hidden="true" />
-          <h1 style={{ fontSize: '24px', fontWeight: '600', color: '#111', marginTop: '16px' }}>
+          <h1 style={{ fontSize: '24px', fontWeight: '600', color: 'var(--color-text-primary)', marginTop: '16px' }}>
             {t('accountDeletion.success.title')}
           </h1>
-          <p style={{ fontSize: '14px', color: '#6b7280', marginTop: '8px' }}>
+          <p style={{ fontSize: '14px', color: 'var(--color-text-muted)', marginTop: '8px' }}>
             {t('accountDeletion.success.message')}
           </p>
         </div>
@@ -213,76 +224,80 @@ export default function DeleteAccountPage() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#f8fafc',
-      padding: '104px 20px 40px',
-      fontFamily: 'Poppins, Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial'
-    }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        background: 'var(--color-bg-muted)',
+        padding: '104px 20px 40px',
+        fontFamily:
+          'Poppins, Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial',
+      }}
+    >
       <div style={{ maxWidth: '900px', margin: '0 auto', display: 'grid', gap: '24px' }}>
-        <div style={{
-          background: 'white',
-          borderRadius: '16px',
-          padding: '32px',
-          boxShadow: '0 2px 12px rgba(0,0,0,0.08)'
-        }}>
+        <div
+          style={{
+            background: 'white',
+            borderRadius: '16px',
+            padding: '32px',
+            boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+          }}
+        >
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
             <ShieldX size={26} color="#dc2626" aria-hidden="true" />
-            <h1 style={{ fontSize: '24px', fontWeight: '600', color: '#111' }}>
+            <h1 style={{ fontSize: '24px', fontWeight: '600', color: 'var(--color-text-primary)' }}>
               {t('accountDeletion.pageTitle')}
             </h1>
           </div>
-          <p style={{ fontSize: '14px', color: '#6b7280' }}>
+          <p style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
             {t('accountDeletion.pageDescription')}
           </p>
         </div>
 
         {error && (
-          <div style={{
-            padding: '16px',
-            borderRadius: '12px',
-            background: '#fee2e2',
-            border: '1px solid #fecaca',
-            color: '#b91c1c',
-            fontSize: '14px'
-          }} role="alert">
+          <div
+            style={{
+              padding: '16px',
+              borderRadius: '12px',
+              background: 'var(--color-danger-bg)',
+              border: '1px solid var(--color-danger-bg)',
+              color: 'var(--color-danger-hover)',
+              fontSize: '14px',
+            }}
+            role="alert"
+          >
             {error}
           </div>
         )}
 
-        <DeletionBlockers
-          blockers={blockers}
-          onRetry={fetchPrerequisites}
-          loading={loading}
-        />
+        <DeletionBlockers blockers={blockers} onRetry={fetchPrerequisites} loading={loading} />
 
         {!hasBlockers && !loading && (
-          <div style={{
-            background: 'white',
-            borderRadius: '16px',
-            padding: '28px',
-            boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
-            display: 'grid',
-            gap: '12px'
-          }}>
+          <div
+            style={{
+              background: 'white',
+              borderRadius: '16px',
+              padding: '28px',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
+              display: 'grid',
+              gap: '12px',
+            }}
+          >
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <KeyRound size={20} color="#6b7280" aria-hidden="true" />
-              <h2 style={{ fontSize: '18px', fontWeight: '600', color: '#111' }}>
+              <h2 style={{ fontSize: '18px', fontWeight: '600', color: 'var(--color-text-primary)' }}>
                 {t('accountDeletion.confirmation.readyTitle')}
               </h2>
             </div>
-            <p style={{ fontSize: '14px', color: '#6b7280' }}>
+            <p style={{ fontSize: '14px', color: 'var(--color-text-muted)' }}>
               {t('accountDeletion.confirmation.readyDescription')}
             </p>
 
             <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-              <SecondaryButton onClick={() => navigate('/')}>
-                {t('common.back')}
-              </SecondaryButton>
+              <SecondaryButton onClick={() => navigate('/')}>{t('common.back')}</SecondaryButton>
               <PrimaryButton
                 onClick={() => setShowModal(true)}
                 leftIcon={<Trash2 size={16} />}
-                style={{ background: '#dc2626' }}
+                style={{ background: 'var(--color-danger)' }}
                 aria-label={t('accountDeletion.actions.openModal')}
               >
                 {t('accountDeletion.actions.openModal')}

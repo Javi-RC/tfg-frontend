@@ -1,39 +1,43 @@
-import React, { useMemo, useCallback, useEffect, useState } from 'react';
+import React, { useMemo, useCallback, useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  ReactFlow, 
-  Background, 
-  Controls, 
+import {
+  ReactFlow,
+  Background,
+  Controls,
   MiniMap,
   useNodesState,
   useEdgesState,
-  MarkerType
+  MarkerType,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import RiskNode from './RiskNode';
 import { transformRisksToFlow } from '../../utils/riskFlowUtils';
+
+const EMPTY_ARRAY = [];
 
 /**
  * RiskFlowMap Component
  * Interactive visualization of project risks using React Flow
  * Enhanced with accessibility features and keyboard navigation
  */
-export default function RiskFlowMap({ 
-  predictedRisks = [], 
-  actualizedRisks = [],
-  projectName = 'Project',
-  onRiskClick = null
+export default function RiskFlowMap({
+  predictedRisks = EMPTY_ARRAY,
+  actualizedRisks = EMPTY_ARRAY,
+  projectName,
+  onRiskClick = null,
 }) {
   const { t } = useTranslation();
+  const displayProjectName = projectName || t('common.project');
   const [selectedRisk, setSelectedRisk] = useState(null);
+  const dialogRef = useRef(null);
 
   // Define custom node types
   const nodeTypes = useMemo(() => ({ risk: RiskNode }), []);
 
   // Transform data to flow format
   const { nodes: initialNodes, edges: initialEdges } = useMemo(() => {
-    return transformRisksToFlow(predictedRisks, actualizedRisks, projectName);
-  }, [predictedRisks, actualizedRisks, projectName]);
+    return transformRisksToFlow(predictedRisks, actualizedRisks, displayProjectName);
+  }, [predictedRisks, actualizedRisks, displayProjectName]);
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -47,53 +51,51 @@ export default function RiskFlowMap({
   }, [initialEdges, setEdges]);
 
   // Handle node click
-  const handleNodeClick = useCallback((event, node) => {
-    if (node.data.riskData) {
-      setSelectedRisk(node.data.riskData);
-      if (onRiskClick) {
-        onRiskClick(node.data.riskData);
+  const handleNodeClick = useCallback(
+    (event, node) => {
+      if (node.data.riskData) {
+        setSelectedRisk(node.data.riskData);
+        if (onRiskClick) {
+          onRiskClick(node.data.riskData);
+        }
       }
-    }
-  }, [onRiskClick]);
+    },
+    [onRiskClick]
+  );
 
-  // Handle keyboard navigation
+  // Open/close the dialog when selectedRisk changes
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (!selectedRisk) return;
-
-      if (e.key === 'Escape') {
-        setSelectedRisk(null);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    if (selectedRisk) {
+      dialogRef.current?.showModal();
+    } else {
+      dialogRef.current?.close();
+    }
   }, [selectedRisk]);
 
   // Calculate statistics for legend
   const stats = useMemo(() => {
-    const occurred = actualizedRisks.filter(r => r.occurred).length;
-    const notOccurred = actualizedRisks.filter(r => r.occurred === false).length;
+    const occurred = actualizedRisks.filter((r) => r.occurred).length;
+    const notOccurred = actualizedRisks.filter((r) => r.occurred === false).length;
     const unknown = predictedRisks.length - occurred - notOccurred;
-    
+
     const bySeverity = {
       critical: 0,
       high: 0,
       medium: 0,
-      low: 0
+      low: 0,
     };
-    
-    predictedRisks.forEach(risk => {
+
+    predictedRisks.forEach((risk) => {
       if (bySeverity[risk.severity] !== undefined) {
         bySeverity[risk.severity]++;
       }
     });
-    
+
     return { occurred, notOccurred, unknown, bySeverity };
   }, [predictedRisks, actualizedRisks]);
 
   return (
-    <div 
+    <div
       style={{ width: '100%', height: '100%', position: 'relative' }}
       role="application"
       aria-label={t('riskFlowMap.ariaVisualization')}
@@ -110,7 +112,7 @@ export default function RiskFlowMap({
           padding: 0.2,
           minZoom: 0.3,
           maxZoom: 0.8,
-          duration: 300
+          duration: 300,
         }}
         minZoom={0.2}
         maxZoom={2}
@@ -118,7 +120,7 @@ export default function RiskFlowMap({
         defaultEdgeOptions={{
           type: 'smoothstep',
           animated: false,
-          style: { stroke: '#9CA3AF', strokeWidth: 2 }
+          style: { stroke: '#9CA3AF', strokeWidth: 2 },
         }}
         nodesDraggable={true}
         nodesConnectable={false}
@@ -126,11 +128,8 @@ export default function RiskFlowMap({
         aria-label={t('riskFlowMap.ariaFlowDiagram')}
       >
         <Background color="#E5E7EB" gap={20} size={1} />
-        <Controls 
-          showInteractive={false}
-          aria-label={t('riskFlowMap.ariaFlowControls')}
-        />
-        <MiniMap 
+        <Controls showInteractive={false} aria-label={t('riskFlowMap.ariaFlowControls')} />
+        <MiniMap
           nodeColor={(node) => {
             if (node.data.isRoot) return '#667eea';
             if (node.data.isCategory) return '#D1D5DB';
@@ -138,37 +137,33 @@ export default function RiskFlowMap({
               critical: '#DC2626',
               high: '#F59E0B',
               medium: '#EAB308',
-              low: '#10B981'
+              low: '#10B981',
             };
             return colors[node.data.severity] || '#6B7280';
           }}
           maskColor="rgba(0, 0, 0, 0.1)"
           style={{
-            backgroundColor: '#F9FAFB',
-            border: '1px solid #E5E7EB',
-            borderRadius: '8px'
+            backgroundColor: 'var(--color-bg-muted)',
+            border: '1px solid var(--color-border)',
+            borderRadius: '8px',
           }}
           aria-label={t('riskFlowMap.ariaMinimap')}
         />
       </ReactFlow>
 
       {/* Enhanced Legend with better descriptions */}
-      <div 
-        style={styles.legend}
-        role="complementary"
-        aria-label={t('riskFlowMap.ariaLegend')}
-      >
+      <aside style={styles.legend} aria-label={t('riskFlowMap.ariaLegend')}>
         <div style={styles.legendTitle}>{t('riskFlowMap.riskSeverity')}</div>
         <div style={styles.legendContent}>
           <div style={styles.legendItem}>
-            <span style={{ ...styles.legendDot, backgroundColor: '#DC2626' }} aria-hidden="true" />
+            <span style={{ ...styles.legendDot, backgroundColor: 'var(--color-danger)' }} aria-hidden="true" />
             <div style={styles.legendText}>
               <strong>{t('riskFlowMap.critical')}</strong>
               <span style={styles.legendCount}>{stats.bySeverity.critical}</span>
             </div>
           </div>
           <div style={styles.legendItem}>
-            <span style={{ ...styles.legendDot, backgroundColor: '#F59E0B' }} aria-hidden="true" />
+            <span style={{ ...styles.legendDot, backgroundColor: 'var(--color-warning)' }} aria-hidden="true" />
             <div style={styles.legendText}>
               <strong>{t('riskFlowMap.high')}</strong>
               <span style={styles.legendCount}>{stats.bySeverity.high}</span>
@@ -182,7 +177,7 @@ export default function RiskFlowMap({
             </div>
           </div>
           <div style={styles.legendItem}>
-            <span style={{ ...styles.legendDot, backgroundColor: '#10B981' }} aria-hidden="true" />
+            <span style={{ ...styles.legendDot, backgroundColor: 'var(--color-success)' }} aria-hidden="true" />
             <div style={styles.legendText}>
               <strong>{t('riskFlowMap.low')}</strong>
               <span style={styles.legendCount}>{stats.bySeverity.low}</span>
@@ -191,59 +186,80 @@ export default function RiskFlowMap({
         </div>
 
         <div style={styles.legendDivider} />
-        
+
         <div style={styles.legendHint}>
           💡 <strong>{t('riskFlowMap.tip')}</strong> {t('riskFlowMap.clickNode')}
           <br />
-          <span style={{ fontSize: '11px' }}>{t('riskFlowMap.zoomHint')}</span>
+          <span style={{ fontSize: '12px' }}>{t('riskFlowMap.zoomHint')}</span>
         </div>
-      </div>
+      </aside>
 
       {/* Selected Risk Details Panel - Enhanced */}
-      {selectedRisk && (
-        <div 
-          style={styles.detailsPanel}
-          role="dialog"
-          aria-labelledby="risk-detail-title"
-          aria-modal="false"
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-            <div style={{ flex: 1 }}>
-              <div id="risk-detail-title" style={styles.detailTitle}>
-                {selectedRisk.type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
-              </div>
-              <div style={styles.detailDescription}>
-                {selectedRisk.description}
-              </div>
-              <div style={styles.detailMeta}>
-                <span style={styles.detailMetaItem}>
-                  <strong>{t('riskFlowMap.severity')}</strong>{' '}
-                  <span style={{ 
-                    ...styles.severityBadge,
-                    background: selectedRisk.severity === 'critical' ? '#FEE2E2' :
-                               selectedRisk.severity === 'high' ? '#FEF3C7' :
-                               selectedRisk.severity === 'medium' ? '#FEF9C3' : '#D1FAE5',
-                    color: selectedRisk.severity === 'critical' ? '#991B1B' :
-                           selectedRisk.severity === 'high' ? '#92400E' :
-                           selectedRisk.severity === 'medium' ? '#854D0E' : '#065F46',
-                  }}>
-                    {selectedRisk.severity?.toUpperCase()}
+      <dialog
+        ref={dialogRef}
+        onClose={() => setSelectedRisk(null)}
+        aria-labelledby="risk-detail-title"
+        style={{
+          ...styles.detailsPanel,
+          border: 'none',
+          padding: '20px',
+        }}
+      >
+        <style>{`
+          dialog::backdrop {
+            background: rgba(0, 0, 0, 0.3);
+          }
+        `}</style>
+        {selectedRisk && (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+              <div style={{ flex: 1 }}>
+                <div id="risk-detail-title" style={styles.detailTitle}>
+                  {selectedRisk.type?.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase())}
+                </div>
+                <div style={styles.detailDescription}>{selectedRisk.description}</div>
+                <div style={styles.detailMeta}>
+                  <span style={styles.detailMetaItem}>
+                    <strong>{t('riskFlowMap.severity')}</strong>{' '}
+                    <span
+                      style={{
+                        ...styles.severityBadge,
+                        background:
+                          selectedRisk.severity === 'critical'
+                            ? '#FEE2E2'
+                            : selectedRisk.severity === 'high'
+                              ? '#FEF3C7'
+                              : selectedRisk.severity === 'medium'
+                                ? '#FEF9C3'
+                                : '#D1FAE5',
+                        color:
+                          selectedRisk.severity === 'critical'
+                            ? '#991B1B'
+                            : selectedRisk.severity === 'high'
+                              ? '#92400E'
+                              : selectedRisk.severity === 'medium'
+                                ? '#854D0E'
+                                : '#065F46',
+                      }}
+                    >
+                      {selectedRisk.severity?.toUpperCase()}
+                    </span>
                   </span>
-                </span>
+                </div>
               </div>
+              <button type="button"
+                onClick={() => {
+                  setSelectedRisk(null);
+                }}
+                style={styles.closeButton}
+                aria-label={t('riskFlowMap.ariaCloseDetails')}
+              >
+                ✕
+              </button>
             </div>
-            <button
-              onClick={() => {
-                setSelectedRisk(null);
-              }}
-              style={styles.closeButton}
-              aria-label={t('riskFlowMap.ariaCloseDetails')}
-            >
-              ✕
-            </button>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </dialog>
 
       {/* Custom styles */}
       <style>{`
@@ -276,29 +292,29 @@ const styles = {
     boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
     minWidth: '220px',
     maxWidth: '280px',
-    zIndex: 10
+    zIndex: 10,
   },
   legendTitle: {
     fontSize: '14px',
     fontWeight: '700',
-    color: '#111827',
-    marginBottom: '12px'
+    color: 'var(--color-text-heading)',
+    marginBottom: '12px',
   },
   legendContent: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px'
+    gap: '8px',
   },
   legendItem: {
     display: 'flex',
     alignItems: 'center',
-    gap: '10px'
+    gap: '10px',
   },
   legendDot: {
     width: '12px',
     height: '12px',
     borderRadius: '50%',
-    flexShrink: 0
+    flexShrink: 0,
   },
   legendText: {
     display: 'flex',
@@ -306,22 +322,22 @@ const styles = {
     alignItems: 'center',
     flex: 1,
     fontSize: '13px',
-    color: '#374151'
+    color: 'var(--color-text-strong)',
   },
   legendCount: {
     fontWeight: 'bold',
-    color: '#111827',
-    fontSize: '14px'
+    color: 'var(--color-text-heading)',
+    fontSize: '14px',
   },
   legendDivider: {
     height: '1px',
-    background: '#E5E7EB',
-    margin: '12px 0'
+    background: 'var(--color-border)',
+    margin: '12px 0',
   },
   legendHint: {
     fontSize: '12px',
-    color: '#6B7280',
-    lineHeight: '1.5'
+    color: 'var(--color-text-muted)',
+    lineHeight: '1.5',
   },
   detailsPanel: {
     position: 'absolute',
@@ -333,46 +349,46 @@ const styles = {
     borderRadius: '12px',
     padding: '20px',
     boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
-    zIndex: 10
+    zIndex: 10,
   },
   detailTitle: {
     fontWeight: 'bold',
     fontSize: '16px',
     marginBottom: '8px',
-    color: '#111827'
+    color: 'var(--color-text-heading)',
   },
   detailDescription: {
     fontSize: '14px',
     color: '#4B5563',
     marginBottom: '12px',
-    lineHeight: '1.5'
+    lineHeight: '1.5',
   },
   detailMeta: {
     display: 'flex',
     gap: '20px',
     flexWrap: 'wrap',
-    fontSize: '13px'
+    fontSize: '13px',
   },
   detailMetaItem: {
     display: 'flex',
     alignItems: 'center',
-    gap: '6px'
+    gap: '6px',
   },
   severityBadge: {
     padding: '2px 8px',
     borderRadius: '4px',
     fontWeight: '600',
-    fontSize: '11px'
+    fontSize: '11px',
   },
   closeButton: {
     background: 'none',
     border: 'none',
     cursor: 'pointer',
     padding: '4px 8px',
-    color: '#6B7280',
+    color: 'var(--color-text-muted)',
     borderRadius: '4px',
     fontSize: '18px',
     lineHeight: '1',
-    transition: 'all 0.2s ease'
-  }
+    transition: 'all 0.2s ease',
+  },
 };

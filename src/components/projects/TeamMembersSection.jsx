@@ -8,7 +8,7 @@ export default function TeamMembersSection({
   canEdit,
   onOpenAssignModal,
   onRemoveEmployee,
-  formatDate
+  formatDate,
 }) {
   const { t } = useTranslation();
   return (
@@ -16,7 +16,9 @@ export default function TeamMembersSection({
       <div style={styles.teamHeader}>
         <h3 style={styles.sectionTitle}>{t('teamMembers.title')}</h3>
         {canEdit && project.status !== PROJECT_STATUS.COMPLETED && (
-          <PrimaryButton onClick={onOpenAssignModal}>+ {t('teamMembers.assignEmployee')}</PrimaryButton>
+          <PrimaryButton onClick={onOpenAssignModal}>
+            + {t('teamMembers.assignEmployee')}
+          </PrimaryButton>
         )}
       </div>
 
@@ -44,13 +46,13 @@ export default function TeamMembersSection({
                 <div style={styles.memberInfo}>
                   <div style={styles.memberName}>{emp.user.name}</div>
                   <div style={styles.memberEmail}>{emp.user.email}</div>
-                  {emp.assignedRole && (
-                    <div style={styles.memberPosition}>{emp.assignedRole}</div>
-                  )}
-                  <div style={styles.memberDate}>{t('teamMembers.joined')} {formatDate(emp.assignedAt)}</div>
+                  {emp.assignedRole && <div style={styles.memberPosition}>{emp.assignedRole}</div>}
+                  <div style={styles.memberDate}>
+                    {t('teamMembers.joined')} {formatDate(emp.assignedAt)}
+                  </div>
                 </div>
                 {canEdit && project.status !== PROJECT_STATUS.COMPLETED && (
-                  <button
+                  <button type="button"
                     style={styles.removeButton}
                     onClick={() => onRemoveEmployee(emp.user._id)}
                   >
@@ -75,51 +77,51 @@ const styles = {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '24px'
+    marginBottom: '24px',
   },
   sectionTitle: {
     fontSize: '20px',
     fontWeight: '700',
-    color: '#111',
-    marginBottom: '20px'
+    color: 'var(--color-text-primary)',
+    marginBottom: '20px',
   },
   pmSection: {
-    marginBottom: '32px'
+    marginBottom: '32px',
   },
   subsectionTitle: {
     fontSize: '16px',
     fontWeight: '600',
-    color: '#111',
-    marginBottom: '12px'
+    color: 'var(--color-text-primary)',
+    marginBottom: '12px',
   },
   memberCard: {
     padding: '16px',
-    background: '#F9FAFB',
+    background: 'var(--color-bg-muted)',
     borderRadius: '12px',
-    border: '1px solid #E5E7EB',
+    border: '1px solid var(--color-border)',
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: '12px'
+    marginBottom: '12px',
   },
   memberInfo: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px'
+    gap: '4px',
   },
   memberName: {
     fontSize: '16px',
     fontWeight: '600',
-    color: '#111'
+    color: 'var(--color-text-primary)',
   },
   memberEmail: {
     fontSize: '14px',
-    color: '#6B7280'
+    color: 'var(--color-text-muted)',
   },
   memberPosition: {
     fontSize: '13px',
-    color: '#9CA3AF',
-    fontStyle: 'italic'
+    color: 'var(--color-text-muted)',
+    fontStyle: 'italic',
   },
   memberRole: {
     padding: '6px 12px',
@@ -127,11 +129,11 @@ const styles = {
     color: '#1E40AF',
     borderRadius: '6px',
     fontSize: '13px',
-    fontWeight: '600'
+    fontWeight: '600',
   },
   memberDate: {
     fontSize: '12px',
-    color: '#9CA3AF'
+    color: 'var(--color-text-muted)',
   },
   removeButton: {
     padding: '8px 16px',
@@ -140,27 +142,27 @@ const styles = {
     fontSize: '13px',
     fontWeight: '600',
     cursor: 'pointer',
-    background: '#FEE2E2',
-    color: '#DC2626',
-    transition: 'all 0.2s'
+    background: 'var(--color-danger-bg)',
+    color: 'var(--color-danger)',
+    transition: 'all 0.2s',
   },
   membersSection: {
-    marginTop: '24px'
+    marginTop: '24px',
   },
   membersList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px'
+    gap: '12px',
   },
   emptyState: {
     textAlign: 'center',
     padding: '40px',
-    background: '#F9FAFB',
-    borderRadius: '12px'
+    background: 'var(--color-bg-muted)',
+    borderRadius: '12px',
   },
   emptyText: {
     fontSize: '15px',
-    color: '#6B7280',
-    margin: 0
-  }
+    color: 'var(--color-text-muted)',
+    margin: 0,
+  },
 };

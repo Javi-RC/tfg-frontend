@@ -7,24 +7,16 @@ import api from './axios';
 
 export const getCVConsent = () => api.get('/api/cv-consent');
 
-export const updateCVConsent = ({
-  accepted,
-  aiProcessing,
-  thirdPartySharing,
-  dataRetention
-}) =>
+export const updateCVConsent = ({ accepted, aiProcessing, thirdPartySharing, dataRetention }) =>
   api.post('/api/cv-consent', {
     accepted,
     ...(accepted
       ? {
           aiProcessing: Boolean(aiProcessing),
           thirdPartySharing: Boolean(thirdPartySharing),
-          dataRetention: Boolean(dataRetention)
+          dataRetention: Boolean(dataRetention),
         }
-      : {})
+      : {}),
   });
 
-export default {
-  getCVConsent,
-  updateCVConsent
-};
+

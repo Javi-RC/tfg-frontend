@@ -1,14 +1,96 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useReducer, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Sparkles, CheckCircle, Users } from 'lucide-react';
 import { getQuestions, submitResponses, getMyProfile, hasProfile } from '../api/bfi44';
 import { getBFI44ConsentStatus } from '../api/personalityConsent';
-import { ProgressIndicator, BFI44ResultsView, BFI44QuestionnaireView, ConsentStatusBadge } from '../components/personality';
+import ProgressIndicator from '../components/personality/ProgressIndicator';
+import BFI44ResultsView from '../components/personality/BFI44ResultsView';
+import BFI44QuestionnaireView from '../components/personality/BFI44QuestionnaireView';
+import ConsentStatusBadge from '../components/personality/ConsentStatusBadge';
+import ConsentGateView from '../components/personality/ConsentGateView';
 import PersonalityConsentModal from '../components/personality/PersonalityConsentModal';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
+const initialState = {
+  loading: true,
+  submitting: false,
+  error: null,
+  questions: [],
+  responses: {},
+  results: null,
+  hasExistingProfile: false,
+  currentPage: 0,
+  completedAt: null,
+  hasConsent: null,
+  showConsentModal: false,
+};
 
+function bfi44Reducer(state, action) {
+  switch (action.type) {
+    case 'SET_LOADING':
+      return { ...state, loading: action.payload };
+    case 'SET_SUBMITTING':
+      return { ...state, submitting: action.payload };
+    case 'SET_ERROR':
+      return { ...state, error: action.payload };
+    case 'SET_QUESTIONS':
+      return { ...state, questions: action.payload };
+    case 'SET_RESPONSE':
+      return { ...state, responses: { ...state.responses, [action.questionId]: action.value }, error: null };
+    case 'SET_RESULTS':
+      return { ...state, results: action.payload };
+    case 'SET_HAS_EXISTING_PROFILE':
+      return { ...state, hasExistingProfile: action.payload };
+    case 'SET_CURRENT_PAGE':
+      return { ...state, currentPage: action.payload };
+    case 'SET_COMPLETED_AT':
+      return { ...state, completedAt: action.payload };
+    case 'SET_HAS_CONSENT':
+      return { ...state, hasConsent: action.payload };
+    case 'SET_SHOW_CONSENT_MODAL':
+      return { ...state, showConsentModal: action.payload };
+    case 'LOAD_INITIAL_DATA':
+      return {
+        ...state,
+        loading: false,
+        hasConsent: action.hasConsent,
+        hasExistingProfile: action.hasExistingProfile,
+        results: action.results || null,
+        completedAt: action.completedAt || null,
+        questions: action.questions || [],
+      };
+    case 'SUBMIT_SUCCESS':
+      return {
+        ...state,
+        submitting: false,
+        results: action.results,
+        completedAt: action.completedAt,
+        hasExistingProfile: true,
+      };
+    case 'RETAKE_RESET':
+      return {
+        ...state,
+        loading: false,
+        questions: action.questions,
+        results: null,
+        responses: {},
+        currentPage: 0,
+        completedAt: null,
+        error: null,
+      };
+    case 'CONSENT_ACCEPTED':
+      return {
+        ...state,
+        showConsentModal: false,
+        hasConsent: true,
+        error: null,
+        questions: action.questions || state.questions,
+      };
+    default:
+      return state;
+  }
+}
 
 /**
  * BFI-44 Page Component
@@ -17,19 +99,11 @@ import { AuthContext } from '../contexts/AuthContext';
 export default function BFI44Page() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const canManageTeam = user?.role === 'org_admin' || user?.isProjectManager === true;
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState(null);
-  const [questions, setQuestions] = useState([]);
-  const [responses, setResponses] = useState({});
-  const [results, setResults] = useState(null);
-  const [hasExistingProfile, setHasExistingProfile] = useState(false);
-  const [currentPage, setCurrentPage] = useState(0);
-  const [completedAt, setCompletedAt] = useState(null);
-  const [hasConsent, setHasConsent] = useState(null);
-  const [showConsentModal, setShowConsentModal] = useState(false);
+  const [state, dispatch] = useReducer(bfi44Reducer, initialState);
+
+  const { loading, submitting, error, questions, responses, results, hasExistingProfile, currentPage, completedAt, hasConsent, showConsentModal } = state;
 
   const QUESTIONS_PER_PAGE = 11;
   const totalPages = Math.ceil(questions.length / QUESTIONS_PER_PAGE);
@@ -40,127 +114,118 @@ export default function BFI44Page() {
 
   const loadInitialData = async () => {
     try {
-      setLoading(true);
-      setError(null);
+      dispatch({ type: 'SET_LOADING', payload: true });
+      dispatch({ type: 'SET_ERROR', payload: null });
 
-      // Check personality consent status via BFI-44 consent endpoint
       const consentRes = await getBFI44ConsentStatus();
       const consentData = consentRes?.data;
-      setHasConsent(consentData?.hasConsent === true);
+      const hasConsentValue = consentData?.hasConsent === true;
 
-      // Check if user already has a profile
       const profileCheck = await hasProfile();
       const userHasProfile = profileCheck.data?.hasProfile;
-      setHasExistingProfile(userHasProfile);
+
+      let loadedResults = null;
+      let loadedCompletedAt = null;
+      let loadedQuestions = [];
 
       if (userHasProfile) {
-        // Load existing results
         const profileRes = await getMyProfile();
-        setResults(profileRes.data?.results || profileRes.data);
-        setCompletedAt(profileRes.data?.completedAt);
-      } else if (consentData?.hasConsent) {
-        // Load questions only if consent is granted
+        loadedResults = profileRes.data?.results || profileRes.data;
+        loadedCompletedAt = profileRes.data?.completedAt;
+      } else if (hasConsentValue) {
         const questionsRes = await getQuestions();
-        setQuestions(questionsRes.data?.questions || []);
+        loadedQuestions = questionsRes.data?.questions || [];
       }
+
+      dispatch({
+        type: 'LOAD_INITIAL_DATA',
+        hasConsent: hasConsentValue,
+        hasExistingProfile: userHasProfile,
+        results: loadedResults,
+        completedAt: loadedCompletedAt,
+        questions: loadedQuestions,
+      });
     } catch (err) {
-      console.error('Error loading BFI-44 data:', err);
-      setError(err.response?.data?.error || t('bfi44.errors.loadError'));
-    } finally {
-      setLoading(false);
+      dispatch({ type: 'SET_ERROR', payload: err.response?.data?.error || t('bfi44.errors.loadError') });
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 
   const handleResponseChange = (questionId, value) => {
-    setResponses(prev => ({
-      ...prev,
-      [questionId]: value
-    }));
-    if (error) setError(null);
+    dispatch({ type: 'SET_RESPONSE', questionId, value });
   };
 
   const handleSubmit = async () => {
-    // Validate all questions answered
     const answeredCount = Object.keys(responses).length;
     if (answeredCount < 44) {
-      setError(t('bfi44.pleaseAnswerAllQuestions', { answered: answeredCount, total: 44 }));
+      dispatch({ type: 'SET_ERROR', payload: t('bfi44.pleaseAnswerAllQuestions', { answered: answeredCount, total: 44 }) });
       return;
     }
 
     try {
-      setSubmitting(true);
-      setError(null);
+      dispatch({ type: 'SET_SUBMITTING', payload: true });
+      dispatch({ type: 'SET_ERROR', payload: null });
 
       const res = await submitResponses(responses);
-      setResults(res.data?.results);
-      setCompletedAt(res.data?.completedAt);
-      setHasExistingProfile(true);
+      dispatch({
+        type: 'SUBMIT_SUCCESS',
+        results: res.data?.results,
+        completedAt: res.data?.completedAt,
+      });
     } catch (err) {
-      console.error('Error submitting BFI-44:', err);
       const errorMsg = err.response?.data?.error;
       if (errorMsg === 'PERSONALITY_CONSENT_REQUIRED') {
-        setHasConsent(false);
-        setShowConsentModal(true);
-        setError(t('personalityConsent.consentRequiredToSubmit'));
+        dispatch({ type: 'SET_HAS_CONSENT', payload: false });
+        dispatch({ type: 'SET_SHOW_CONSENT_MODAL', payload: true });
+        dispatch({ type: 'SET_ERROR', payload: t('personalityConsent.consentRequiredToSubmit') });
       } else {
-        setError(err.response?.data?.error || t('bfi44.errorSubmittingQuestionnaire'));
+        dispatch({ type: 'SET_ERROR', payload: err.response?.data?.error || t('bfi44.errorSubmittingQuestionnaire') });
       }
     } finally {
-      setSubmitting(false);
+      dispatch({ type: 'SET_SUBMITTING', payload: false });
     }
   };
 
   const goToNextPage = () => {
     if (currentPage < totalPages - 1) {
-      setCurrentPage(prev => prev + 1);
+      dispatch({ type: 'SET_CURRENT_PAGE', payload: currentPage + 1 });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const goToPrevPage = () => {
     if (currentPage > 0) {
-      setCurrentPage(prev => prev - 1);
+      dispatch({ type: 'SET_CURRENT_PAGE', payload: currentPage - 1 });
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
   const handleConsentAccepted = async () => {
-    setShowConsentModal(false);
-    setHasConsent(true);
-    setError(null);
+    let loadedQuestions = state.questions;
 
-    if (!hasExistingProfile && questions.length === 0) {
+    if (!hasExistingProfile && state.questions.length === 0) {
       try {
         const questionsRes = await getQuestions();
-        setQuestions(questionsRes.data?.questions || []);
-      } catch (err) {
-        console.error('Error loading questions after consent:', err);
-        setError(t('bfi44.errorLoadingQuestionnaire'));
+        loadedQuestions = questionsRes.data?.questions || [];
+      } catch {
+        dispatch({ type: 'SET_ERROR', payload: t('bfi44.errorLoadingQuestionnaire') });
       }
     }
+
+    dispatch({ type: 'CONSENT_ACCEPTED', questions: loadedQuestions });
   };
 
   const retakeQuestionnaire = async () => {
     try {
-      setLoading(true);
-      // Reload questions for new questionnaire
+      dispatch({ type: 'SET_LOADING', payload: true });
       const questionsRes = await getQuestions();
-      setQuestions(questionsRes.data?.questions || []);
-      setResults(null);
-      setResponses({});
-      setCurrentPage(0);
-      setCompletedAt(null);
-      setError(null);
+      dispatch({ type: 'RETAKE_RESET', questions: questionsRes.data?.questions || [] });
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    } catch (err) {
-      console.error('Error reloading questionnaire:', err);
-      setError(t('bfi44.errors.reloadError'));
-    } finally {
-      setLoading(false);
+    } catch {
+      dispatch({ type: 'SET_ERROR', payload: t('bfi44.errors.reloadError') });
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
-
-
 
   // Loading state
   if (loading) {
@@ -179,31 +244,13 @@ export default function BFI44Page() {
     return (
       <div style={styles.container}>
         <div style={styles.content}>
-          <div style={styles.headerCard}>
-            <h1 style={styles.title}>{t('bfi44.bigFiveInventory')}</h1>
-            <p style={styles.subtitle}>{t('personalityConsent.consentNeededDescription')}</p>
-            <div style={{ marginTop: '16px' }}>
-              <ConsentStatusBadge hasConsent={false} onClick={() => setShowConsentModal(true)} />
-            </div>
-          </div>
-
-          <div style={styles.consentGateCard}>
-            <p style={styles.consentGateText}>
-              {t('personalityConsent.mustAcceptBeforeQuestionnaire')}
-            </p>
-            <button
-              type="button"
-              onClick={() => setShowConsentModal(true)}
-              style={styles.consentGateButton}
-            >
-              {t('personalityConsent.reviewAndAccept')}
-            </button>
-          </div>
+          <ConsentGateView onShowConsentModal={() => dispatch({ type: 'SET_SHOW_CONSENT_MODAL', payload: true })} />
         </div>
 
         <PersonalityConsentModal
+          key={showConsentModal ? 'open' : 'closed'}
           show={showConsentModal}
-          onClose={() => setShowConsentModal(false)}
+          onClose={() => dispatch({ type: 'SET_SHOW_CONSENT_MODAL', payload: false })}
           onAccepted={handleConsentAccepted}
         />
       </div>
@@ -217,8 +264,10 @@ export default function BFI44Page() {
         <div style={styles.contentWide}>
           {/* Header */}
           <div style={styles.headerCard}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <h1 style={{...styles.title, display: 'flex', alignItems: 'center', gap: '8px'}}>
+            <div
+              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
+            >
+              <h1 style={{ ...styles.title, display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <Sparkles size={32} />
                 {t('bfi44.yourProfile')}
               </h1>
@@ -239,12 +288,20 @@ export default function BFI44Page() {
             </div>
             <p style={styles.subtitle}>{t('bfi44.resultsSubtitle')}</p>
             {completedAt && (
-              <p style={{...styles.completedDate, display: 'flex', alignItems: 'center', gap: '6px'}}>
+              <p
+                style={{
+                  ...styles.completedDate,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                }}
+              >
                 <CheckCircle size={16} />
-                {t('bfi44.completedOn')} {new Date(completedAt).toLocaleDateString(i18n.language, { 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
+                {t('bfi44.completedOn')}{' '}
+                {new Date(completedAt).toLocaleDateString(i18n.language, {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
                 })}
               </p>
             )}
@@ -265,7 +322,9 @@ export default function BFI44Page() {
     <div style={styles.container}>
       <div style={styles.content}>
         <div style={styles.headerCard}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+          <div
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
+          >
             <h1 style={styles.title}>{t('bfi44.bigFiveInventory')}</h1>
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               {canManageTeam && (
@@ -279,17 +338,15 @@ export default function BFI44Page() {
                   {t('bfi44.adminPanel')}
                 </button>
               )}
-              <ConsentStatusBadge hasConsent={hasConsent} onClick={() => setShowConsentModal(true)} />
+              <ConsentStatusBadge
+                hasConsent={hasConsent}
+                onClick={() => dispatch({ type: 'SET_SHOW_CONSENT_MODAL', payload: true })}
+              />
             </div>
           </div>
-          <p style={styles.subtitle}>
-            {t('bfi44.rateStatements')}
-          </p>
-          
-          <ProgressIndicator 
-            answeredCount={Object.keys(responses).length} 
-            totalQuestions={44} 
-          />
+          <p style={styles.subtitle}>{t('bfi44.rateStatements')}</p>
+
+          <ProgressIndicator answeredCount={Object.keys(responses).length} totalQuestions={44} />
         </div>
 
         <BFI44QuestionnaireView
@@ -307,8 +364,9 @@ export default function BFI44Page() {
       </div>
 
       <PersonalityConsentModal
+        key={showConsentModal ? 'open' : 'closed'}
         show={showConsentModal}
-        onClose={() => setShowConsentModal(false)}
+        onClose={() => dispatch({ type: 'SET_SHOW_CONSENT_MODAL', payload: false })}
         onAccepted={handleConsentAccepted}
       />
     </div>
@@ -318,57 +376,58 @@ export default function BFI44Page() {
 const styles = {
   container: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #f5f7fa 0%, #e8edf2 100%)',
+    background: 'var(--gradient-page)',
     padding: '104px 20px 40px',
-    fontFamily: 'Poppins, Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial'
+    fontFamily:
+      'Poppins, Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial',
   },
   content: {
     maxWidth: '1000px',
-    margin: '0 auto'
+    margin: '0 auto',
   },
   contentWide: {
     maxWidth: '1400px',
-    margin: '0 auto'
+    margin: '0 auto',
   },
   loadingWrapper: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: '60vh'
+    minHeight: '60vh',
   },
   spinner: {
     width: '48px',
     height: '48px',
-    border: '4px solid #e2e8f0',
-    borderTopColor: '#3b82f6',
+    border: '4px solid var(--color-primary-track)',
+    borderTopColor: 'var(--color-primary)',
     borderRadius: '50%',
-    animation: 'spin 1s linear infinite'
+    animation: 'spin 1s linear infinite',
   },
   loadingText: {
     marginTop: '16px',
     fontSize: '16px',
-    color: '#666'
+    color: 'var(--color-text-muted)',
   },
   headerCard: {
-    background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-    borderRadius: '16px',
+    background: 'var(--gradient-primary)',
+    borderRadius: '18px',
     padding: '40px',
     marginBottom: '36px',
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.12)',
-    color: 'white'
+    boxShadow: 'var(--shadow-primary)',
+    color: 'white',
   },
   title: {
     fontSize: '38px',
     fontWeight: '700',
     color: 'white',
     marginBottom: '10px',
-    margin: 0
+    margin: 0,
   },
   subtitle: {
     fontSize: '17px',
     color: 'rgba(255, 255, 255, 0.95)',
-    margin: 0
+    margin: 0,
   },
   completedDate: {
     fontSize: '14px',
@@ -377,7 +436,7 @@ const styles = {
     paddingTop: '20px',
     borderTop: '1px solid rgba(255, 255, 255, 0.2)',
     margin: 0,
-    fontWeight: '500'
+    fontWeight: '500',
   },
   consentGateCard: {
     background: 'white',
@@ -385,16 +444,16 @@ const styles = {
     padding: '40px',
     textAlign: 'center',
     boxShadow: '0 2px 8px rgba(0, 0, 0, 0.08)',
-    border: '1px solid #E5E7EB'
+    border: '1px solid var(--color-border)',
   },
   consentGateText: {
     fontSize: '16px',
-    color: '#4a5568',
+    color: 'var(--color-text-secondary)',
     marginBottom: '24px',
-    lineHeight: '1.6'
+    lineHeight: '1.6',
   },
   consentGateButton: {
-    background: '#111',
+    background: 'var(--color-primary)',
     color: 'white',
     borderRadius: '32px',
     padding: '14px 40px',
@@ -402,7 +461,7 @@ const styles = {
     fontSize: '15px',
     border: 'none',
     cursor: 'pointer',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.15)'
+    boxShadow: 'var(--shadow-primary-sm)',
   },
   adminLinkButton: {
     display: 'flex',
@@ -417,8 +476,8 @@ const styles = {
     fontWeight: '600',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-    whiteSpace: 'nowrap'
-  }
+    whiteSpace: 'nowrap',
+  },
 };
 
 // Add keyframes for spinner animation

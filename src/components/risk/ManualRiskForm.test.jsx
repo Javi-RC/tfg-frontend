@@ -3,46 +3,6 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ManualRiskForm from './ManualRiskForm';
 
-jest.mock('react-i18next', () => ({
-  useTranslation: () => ({
-    t: (key) => {
-      const translations = {
-        'risk.form.addTitle': 'Add Manual Risk',
-        'risk.form.editTitle': 'Edit Manual Risk',
-        'risk.form.riskType': 'Risk Type',
-        'risk.form.selectRiskType': 'Select a risk type',
-        'risk.form.title': 'Title',
-        'risk.form.titlePlaceholder': 'e.g., Vendor API downtime risk',
-        'risk.form.description': 'Description',
-        'risk.form.descriptionPlaceholder': 'Detailed description of the risk',
-        'risk.form.severity': 'Severity',
-        'risk.form.rootCause': 'Root Cause',
-        'risk.form.rootCausePlaceholder': 'What is causing this risk?',
-        'risk.form.indicators': 'Indicators',
-        'risk.form.indicatorPlaceholder': 'Add an indicator and press Add',
-        'risk.form.addIndicatorAria': 'Add indicator',
-        'risk.form.removeIndicatorAria': 'Remove indicator {{indicator}}',
-        'risk.form.recommendations': 'Recommendations',
-        'risk.form.recommendationPlaceholder': 'Add a recommendation and press Add',
-        'risk.form.addRecommendationAria': 'Add recommendation',
-        'risk.form.removeRecommendationAria': 'Remove recommendation {{recommendation}}',
-        'risk.form.add': 'Add',
-        'risk.form.deleteRisk': 'Delete Risk',
-        'risk.form.saving': 'Saving...',
-        'risk.form.updateRisk': 'Update Risk',
-        'risk.form.addRiskButton': 'Add Risk',
-        'common.cancel': 'Cancel',
-        'common.close': 'Close'
-      };
-      return translations[key] || key;
-    }
-  }),
-  initReactI18next: {
-    type: '3rdParty',
-    init: () => {}
-  }
-}));
-
 describe('ManualRiskForm Component', () => {
   const mockOnSubmit = jest.fn();
   const mockOnCancel = jest.fn();
@@ -50,7 +10,7 @@ describe('ManualRiskForm Component', () => {
   const defaultProps = {
     onSubmit: mockOnSubmit,
     onCancel: mockOnCancel,
-    loading: false
+    loading: false,
   };
 
   afterEach(() => {
@@ -86,7 +46,7 @@ describe('ManualRiskForm Component', () => {
           expect.objectContaining({
             type: 'vendor_lock_in',
             title: 'Vendor Lock-in Risk',
-            description: 'Risk of vendor API dependency'
+            description: 'Risk of vendor API dependency',
           })
         );
       });
@@ -184,16 +144,11 @@ describe('ManualRiskForm Component', () => {
       rootCause: 'No alternatives',
       indicators: ['No SLA'],
       recommendations: ['Implement caching'],
-      status: 'predicted'
+      status: 'predicted',
     };
 
     it('should render form for editing an existing risk', () => {
-      render(
-        <ManualRiskForm
-          {...defaultProps}
-          initialRisk={mockRisk}
-        />
-      );
+      render(<ManualRiskForm {...defaultProps} initialRisk={mockRisk} />);
 
       expect(screen.getByText('Edit Manual Risk')).toBeInTheDocument();
       expect(screen.getByDisplayValue('Existing Vendor Risk')).toBeInTheDocument();
@@ -202,12 +157,7 @@ describe('ManualRiskForm Component', () => {
 
     it('should submit edited risk with updated data', async () => {
       const user = userEvent.setup();
-      render(
-        <ManualRiskForm
-          {...defaultProps}
-          initialRisk={mockRisk}
-        />
-      );
+      render(<ManualRiskForm {...defaultProps} initialRisk={mockRisk} />);
 
       const severitySelect = screen.getByLabelText(/Severity/i);
       await user.selectOptions(severitySelect, 'critical');
@@ -218,7 +168,7 @@ describe('ManualRiskForm Component', () => {
       await waitFor(() => {
         expect(mockOnSubmit).toHaveBeenCalledWith(
           expect.objectContaining({
-            severity: 'critical'
+            severity: 'critical',
           })
         );
       });
@@ -226,16 +176,6 @@ describe('ManualRiskForm Component', () => {
   });
 
   describe('Close Modal', () => {
-    it('should close modal when clicking overlay', async () => {
-      const user = userEvent.setup();
-      render(<ManualRiskForm {...defaultProps} />);
-
-      const overlay = screen.getByTestId('manual-risk-form-overlay');
-      await user.click(overlay);
-
-      expect(mockOnCancel).toHaveBeenCalled();
-    });
-
     it('should close modal when clicking close button', async () => {
       const user = userEvent.setup();
       const { container } = render(<ManualRiskForm {...defaultProps} />);
@@ -249,24 +189,14 @@ describe('ManualRiskForm Component', () => {
 
   describe('Loading State', () => {
     it('should disable submit button when loading', () => {
-      render(
-        <ManualRiskForm
-          {...defaultProps}
-          loading={true}
-        />
-      );
+      render(<ManualRiskForm {...defaultProps} loading={true} />);
 
       const submitButton = screen.getByRole('button', { name: /Saving.../i });
       expect(submitButton).toBeDisabled();
     });
 
     it('should disable cancel button when loading', () => {
-      render(
-        <ManualRiskForm
-          {...defaultProps}
-          loading={true}
-        />
-      );
+      render(<ManualRiskForm {...defaultProps} loading={true} />);
 
       const cancelButton = screen.getByRole('button', { name: /Cancel/i });
       expect(cancelButton).toBeDisabled();

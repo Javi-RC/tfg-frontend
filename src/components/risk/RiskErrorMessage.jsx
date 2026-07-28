@@ -8,13 +8,13 @@ import { AlertCircle, RefreshCw, FileText } from 'lucide-react';
  */
 export default function RiskErrorMessage({ error, onRetry, onEditProject }) {
   const { t } = useTranslation();
-  
+
   const getErrorDetails = () => {
     if (!error) {
       return {
         title: t('risk.errors.unknownTitle'),
         message: t('risk.errors.unknownMessage'),
-        actions: []
+        actions: [],
       };
     }
 
@@ -27,9 +27,9 @@ export default function RiskErrorMessage({ error, onRetry, onEditProject }) {
             label: t('risk.errors.completeInfo'),
             icon: FileText,
             onClick: onEditProject,
-            primary: true
-          }
-        ]
+            primary: true,
+          },
+        ],
       };
     }
 
@@ -42,29 +42,29 @@ export default function RiskErrorMessage({ error, onRetry, onEditProject }) {
             label: t('risk.errors.retryAnalysis'),
             icon: RefreshCw,
             onClick: onRetry,
-            primary: true
+            primary: true,
           },
           {
             label: t('risk.errors.checkData'),
             icon: FileText,
             onClick: onEditProject,
-            primary: false
-          }
-        ]
+            primary: false,
+          },
+        ],
       };
     }
 
     return {
-      title: 'Error',
-      message: error.message || 'Something went wrong.',
+      title: t('risk.errors.defaultTitle'),
+      message: error.message || t('risk.errors.defaultMessage'),
       actions: [
         {
-          label: 'Try Again',
+          label: t('risk.errors.defaultRetry'),
           icon: RefreshCw,
           onClick: onRetry,
-          primary: true
-        }
-      ]
+          primary: true,
+        },
+      ],
     };
   };
 
@@ -80,13 +80,13 @@ export default function RiskErrorMessage({ error, onRetry, onEditProject }) {
         <p style={styles.message}>{details.message}</p>
         {details.actions.length > 0 && (
           <div style={styles.actions}>
-            {details.actions.map((action, index) => (
-              <button
-                key={index}
+            {details.actions.map((action) => (
+              <button type="button"
+                key={action.label}
                 onClick={action.onClick}
                 style={{
                   ...styles.button,
-                  ...(action.primary ? styles.primaryButton : styles.secondaryButton)
+                  ...(action.primary ? styles.primaryButton : styles.secondaryButton),
                 }}
                 aria-label={action.label}
               >
@@ -107,36 +107,36 @@ const styles = {
     gap: '16px',
     padding: '24px',
     backgroundColor: '#FEF2F2',
-    border: '1px solid #FECACA',
+    border: '1px solid var(--color-danger-bg)',
     borderRadius: '8px',
-    margin: '16px 0'
+    margin: '16px 0',
   },
   iconWrapper: {
-    flexShrink: 0
+    flexShrink: 0,
   },
   content: {
     flex: 1,
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px'
+    gap: '12px',
   },
   title: {
     margin: 0,
     fontSize: '16px',
     fontWeight: '600',
-    color: '#991B1B'
+    color: 'var(--color-danger-strong)',
   },
   message: {
     margin: 0,
     fontSize: '14px',
     color: '#7F1D1D',
-    lineHeight: '1.5'
+    lineHeight: '1.5',
   },
   actions: {
     display: 'flex',
     gap: '12px',
     flexWrap: 'wrap',
-    marginTop: '8px'
+    marginTop: '8px',
   },
   button: {
     display: 'inline-flex',
@@ -149,15 +149,15 @@ const styles = {
     fontWeight: '500',
     cursor: 'pointer',
     transition: 'all 0.2s ease',
-    outline: 'none'
+    outline: 'none',
   },
   primaryButton: {
-    backgroundColor: '#DC2626',
-    color: 'white'
+    backgroundColor: 'var(--color-danger)',
+    color: 'white',
   },
   secondaryButton: {
     backgroundColor: 'white',
-    color: '#DC2626',
-    border: '1px solid #DC2626'
-  }
+    color: 'var(--color-danger)',
+    border: '1px solid var(--color-danger)',
+  },
 };

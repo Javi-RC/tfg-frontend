@@ -6,24 +6,24 @@ import Tooltip from '../common/Tooltip';
 /**
  * Risk Source Badge Component
  * Displays the source of a risk based on the current system strategy
- * 
+ *
  * @param {Object} props
  * @param {Object} props.risk - Risk object with source and similarity
  * @param {string} props.strategy - Current system strategy
  * @param {string} props.size - Badge size ('sm', 'md', 'lg')
  */
+const sizeStyles = {
+  sm: { fontSize: '11px', padding: '4px 8px', iconSize: 12 },
+  md: { fontSize: '12px', padding: '6px 10px', iconSize: 14 },
+  lg: { fontSize: '13px', padding: '8px 12px', iconSize: 16 },
+};
+
 export default function RiskSourceBadge({ risk, strategy, size = 'md' }) {
   const { t } = useTranslation();
-  
+
   if (!risk || !strategy) {
     return null;
   }
-
-  const sizeStyles = {
-    sm: { fontSize: '11px', padding: '4px 8px', iconSize: 12 },
-    md: { fontSize: '12px', padding: '6px 10px', iconSize: 14 },
-    lg: { fontSize: '13px', padding: '8px 12px', iconSize: 16 }
-  };
 
   const currentSize = sizeStyles[size];
 
@@ -31,13 +31,15 @@ export default function RiskSourceBadge({ risk, strategy, size = 'md' }) {
   if (strategy === 'dt_only') {
     return (
       <Tooltip content={t('risk.source.expertRulesDesc')}>
-        <div style={{
-          ...styles.badge,
-          ...currentSize,
-          backgroundColor: '#DBEAFE',
-          color: '#1E40AF',
-          border: '1px solid #93C5FD'
-        }}>
+        <div
+          style={{
+            ...styles.badge,
+            ...currentSize,
+            backgroundColor: '#DBEAFE',
+            color: '#1E40AF',
+            border: '1px solid #93C5FD',
+          }}
+        >
           <AlertTriangle size={currentSize.iconSize} />
           <span>{t('risk.source.expertRules')}</span>
         </div>
@@ -47,18 +49,22 @@ export default function RiskSourceBadge({ risk, strategy, size = 'md' }) {
 
   // Strategy: cbr_only - Only CBR Experience
   if (strategy === 'cbr_only') {
-    const similarity = risk.similarity ? (risk.similarity * 100).toFixed(0) : 'N/A';
+    const similarity = risk.similarity ? (risk.similarity * 100).toFixed(0) : t('common.notAvailable');
     return (
       <Tooltip content={t('risk.source.cbrDesc', { similarity })}>
-        <div style={{
-          ...styles.badge,
-          ...currentSize,
-          backgroundColor: '#F3E8FF',
-          color: '#6B21A8',
-          border: '1px solid #D8B4FE'
-        }}>
+        <div
+          style={{
+            ...styles.badge,
+            ...currentSize,
+            backgroundColor: '#F3E8FF',
+            color: '#6B21A8',
+            border: '1px solid #D8B4FE',
+          }}
+        >
           <Database size={currentSize.iconSize} />
-          <span>{t('risk.source.experience')} ({similarity}%)</span>
+          <span>
+            {t('risk.source.experience')} ({similarity}%)
+          </span>
         </div>
       </Tooltip>
     );
@@ -72,37 +78,55 @@ export default function RiskSourceBadge({ risk, strategy, size = 'md' }) {
   if (risk.source === 'expert_rules' || risk.source === 'decision_tree') {
     const priorityText = isDTPriority ? ` (${t('risk.source.priority')})` : '';
     return (
-      <Tooltip content={t('risk.source.expertRulesIdentified', { priority: isDTPriority ? ` - ${t('risk.source.prioritizedPhase')}` : '' })}>
-        <div style={{
-          ...styles.badge,
-          ...currentSize,
-          backgroundColor: '#DBEAFE',
-          color: '#1E40AF',
-          border: `2px solid ${isDTPriority ? '#3B82F6' : '#93C5FD'}`,
-          fontWeight: isDTPriority ? '600' : '500'
-        }}>
+      <Tooltip
+        content={t('risk.source.expertRulesIdentified', {
+          priority: isDTPriority ? ` - ${t('risk.source.prioritizedPhase')}` : '',
+        })}
+      >
+        <div
+          style={{
+            ...styles.badge,
+            ...currentSize,
+            backgroundColor: '#DBEAFE',
+            color: '#1E40AF',
+            border: `2px solid ${isDTPriority ? '#3B82F6' : '#93C5FD'}`,
+            fontWeight: isDTPriority ? '600' : '500',
+          }}
+        >
           <AlertTriangle size={currentSize.iconSize} />
-          <span>{t('risk.source.expertRules')}{priorityText}</span>
+          <span>
+            {t('risk.source.expertRules')}
+            {priorityText}
+          </span>
         </div>
       </Tooltip>
     );
   }
 
   if (risk.source === 'cbr') {
-    const similarity = risk.similarity ? (risk.similarity * 100).toFixed(0) : 'N/A';
+    const similarity = risk.similarity ? (risk.similarity * 100).toFixed(0) : t('common.notAvailable');
     const priorityText = isCBRPriority ? ` (${t('risk.source.priority')})` : '';
     return (
-      <Tooltip content={t('risk.source.cbrLearnedDesc', { similarity, priority: isCBRPriority ? ` - ${t('risk.source.prioritizedPhase')}` : '' })}>
-        <div style={{
-          ...styles.badge,
-          ...currentSize,
-          backgroundColor: '#F3E8FF',
-          color: '#6B21A8',
-          border: `2px solid ${isCBRPriority ? '#8B5CF6' : '#D8B4FE'}`,
-          fontWeight: isCBRPriority ? '600' : '500'
-        }}>
+      <Tooltip
+        content={t('risk.source.cbrLearnedDesc', {
+          similarity,
+          priority: isCBRPriority ? ` - ${t('risk.source.prioritizedPhase')}` : '',
+        })}
+      >
+        <div
+          style={{
+            ...styles.badge,
+            ...currentSize,
+            backgroundColor: '#F3E8FF',
+            color: '#6B21A8',
+            border: `2px solid ${isCBRPriority ? '#8B5CF6' : '#D8B4FE'}`,
+            fontWeight: isCBRPriority ? '600' : '500',
+          }}
+        >
           <Database size={currentSize.iconSize} />
-          <span>CBR ({similarity}%){priorityText}</span>
+          <span>
+            CBR ({similarity}%){priorityText}
+          </span>
         </div>
       </Tooltip>
     );
@@ -110,13 +134,15 @@ export default function RiskSourceBadge({ risk, strategy, size = 'md' }) {
 
   // Fallback for unknown source
   return (
-    <div style={{
-      ...styles.badge,
-      ...currentSize,
-      backgroundColor: '#F3F4F6',
-      color: '#6B7280',
-      border: '1px solid #D1D5DB'
-    }}>
+    <div
+      style={{
+        ...styles.badge,
+        ...currentSize,
+        backgroundColor: 'var(--color-bg-subtle)',
+        color: 'var(--color-text-muted)',
+        border: '1px solid var(--color-border-strong)',
+      }}
+    >
       <Target size={currentSize.iconSize} />
       <span>{t('risk.source.hybrid')}</span>
     </div>
@@ -132,6 +158,6 @@ const styles = {
     fontWeight: '500',
     whiteSpace: 'nowrap',
     transition: 'all 0.2s',
-    cursor: 'help'
-  }
+    cursor: 'help',
+  },
 };

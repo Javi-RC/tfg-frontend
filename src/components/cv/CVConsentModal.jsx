@@ -6,12 +6,7 @@ import SecondaryButton from '../SecondaryButton';
 import { updateCVConsent } from '../../api/cvConsent';
 import { trapFocus, createFocusManager } from '../../utils/focusManagement';
 
-export default function CVConsentModal({
-  show,
-  onClose,
-  onAccepted,
-  version = '1.0'
-}) {
+export default function CVConsentModal({ show, onClose, onAccepted, version = '1.0' }) {
   const { t } = useTranslation();
   const [aiProcessing, setAiProcessing] = useState(false);
   const [thirdPartySharing, setThirdPartySharing] = useState(false);
@@ -19,35 +14,29 @@ export default function CVConsentModal({
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
   const modalRef = useRef(null);
-  const focusManagerRef = useRef(createFocusManager());
+  const focusManagerRef = useRef(null);
+  if (focusManagerRef.current === null) {
+    focusManagerRef.current = createFocusManager();
+  }
 
   useEffect(() => {
     if (!show) return;
-    
+
     // Save current focus and trap focus in modal
     focusManagerRef.current.save();
     const savedFocusManager = focusManagerRef.current;
-    
+
     const cleanup = trapFocus(modalRef.current);
-    
+
     // Prevent body scroll
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    
+
     return () => {
       cleanup();
       document.body.style.overflow = originalOverflow;
       savedFocusManager.restore();
     };
-  }, [show]);
-
-  useEffect(() => {
-    if (!show) return;
-    setAiProcessing(false);
-    setThirdPartySharing(false);
-    setDataRetention(false);
-    setSubmitting(false);
-    setError(null);
   }, [show]);
 
   const canAccept = useMemo(
@@ -71,7 +60,7 @@ export default function CVConsentModal({
         accepted: true,
         aiProcessing: true,
         thirdPartySharing: true,
-        dataRetention: true
+        dataRetention: true,
       });
 
       if (onAccepted) onAccepted(res.data);
@@ -88,7 +77,13 @@ export default function CVConsentModal({
   };
 
   return (
-    <div style={styles.overlay} onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="consent-modal-title">
+    <div
+      style={styles.overlay}
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="consent-modal-title"
+    >
       <div ref={modalRef} style={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div style={styles.header}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -96,8 +91,12 @@ export default function CVConsentModal({
               <Shield size={18} color="#111" />
             </div>
             <div>
-              <h2 id="consent-modal-title" style={styles.title}>{t('cv.consent.title')}</h2>
-              <p style={styles.subtitle}>{t('cv.consent.version')}: {version}</p>
+              <h2 id="consent-modal-title" style={styles.title}>
+                {t('cv.consent.title')}
+              </h2>
+              <p style={styles.subtitle}>
+                {t('cv.consent.version')}: {version}
+              </p>
             </div>
           </div>
 
@@ -112,9 +111,7 @@ export default function CVConsentModal({
         </div>
 
         <div style={styles.body}>
-          <p style={styles.paragraph}>
-            {t('cv.consent.description')}
-          </p>
+          <p style={styles.paragraph}>{t('cv.consent.description')}</p>
 
           <div style={styles.section}>
             <h3 style={styles.sectionTitle}>{t('cv.consent.implications')}</h3>
@@ -199,7 +196,7 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 1200,
-    padding: '16px'
+    padding: '16px',
   },
   modal: {
     background: 'white',
@@ -209,7 +206,7 @@ const styles = {
     maxHeight: '85vh',
     display: 'flex',
     flexDirection: 'column',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.12)'
+    boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
   },
   header: {
     display: 'flex',
@@ -217,28 +214,28 @@ const styles = {
     justifyContent: 'space-between',
     gap: '16px',
     padding: '20px 22px',
-    borderBottom: '1px solid #eee'
+    borderBottom: '1px solid var(--color-border)',
   },
   iconWrap: {
     width: '34px',
     height: '34px',
     borderRadius: '10px',
-    background: '#f3f4f6',
+    background: 'var(--color-bg-subtle)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    flex: '0 0 auto'
+    flex: '0 0 auto',
   },
   title: {
     margin: 0,
     fontSize: '18px',
     fontWeight: '650',
-    color: '#111'
+    color: 'var(--color-text-primary)',
   },
   subtitle: {
     margin: '4px 0 0',
     fontSize: '12px',
-    color: '#666'
+    color: 'var(--color-text-muted)',
   },
   closeButton: {
     background: 'none',
@@ -246,73 +243,73 @@ const styles = {
     cursor: 'pointer',
     padding: '6px',
     borderRadius: '8px',
-    color: '#666'
+    color: 'var(--color-text-muted)',
   },
   body: {
     padding: '18px 22px',
-    overflowY: 'auto'
+    overflowY: 'auto',
   },
   paragraph: {
     margin: 0,
     fontSize: '14px',
-    color: '#2d3748',
-    lineHeight: '1.6'
+    color: 'var(--color-text-body)',
+    lineHeight: '1.6',
   },
   section: {
-    marginTop: '16px'
+    marginTop: '16px',
   },
   sectionTitle: {
     margin: '0 0 10px',
     fontSize: '14px',
     fontWeight: '650',
-    color: '#111'
+    color: 'var(--color-text-primary)',
   },
   list: {
     margin: 0,
     paddingLeft: '18px',
-    color: '#2d3748',
+    color: 'var(--color-text-body)',
     fontSize: '14px',
-    lineHeight: '1.7'
+    lineHeight: '1.7',
   },
   checkboxRow: {
     display: 'flex',
     alignItems: 'flex-start',
     gap: '10px',
     padding: '10px 12px',
-    border: '1px solid #e5e7eb',
+    border: '1px solid var(--color-border)',
     borderRadius: '10px',
     marginBottom: '10px',
     fontSize: '14px',
-    color: '#2d3748',
-    cursor: 'pointer'
+    color: 'var(--color-text-body)',
+    cursor: 'pointer',
   },
   links: {
     marginTop: '12px',
     display: 'flex',
     gap: '12px',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   link: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '6px',
     fontSize: '13px',
-    color: '#2563eb',
-    textDecoration: 'none'
+    color: 'var(--color-primary)',
+    textDecoration: 'none',
   },
   errorBanner: {
     marginTop: '14px',
-    background: '#ffebee',
-    color: '#c62828',
+    background: 'var(--color-danger-bg)',
+    color: 'var(--color-danger)',
     padding: '12px 14px',
     borderRadius: '10px',
-    fontSize: '14px'
+    fontSize: '14px',
   },
   actions: {
     padding: '16px 22px',
-    borderTop: '1px solid #eee',
+    borderTop: '1px solid var(--color-border)',
     display: 'flex',
     justifyContent: 'flex-end',
-    gap: '12px'
-  }
+    gap: '12px',
+  },
 };

@@ -21,7 +21,7 @@ export function useMyCVPage() {
   const loadCV = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const response = await getMyCV();
       const cvData = response.data?.cv || response.data;
@@ -46,7 +46,7 @@ export function useMyCVPage() {
    */
   const handleDelete = async () => {
     if (!cv?._id) return;
-    
+
     if (!window.confirm(t('cv.confirmDeleteCV'))) {
       return;
     }
@@ -74,15 +74,15 @@ export function useMyCVPage() {
    */
   const handleSaveCV = async (editData) => {
     if (!cv?._id) return { success: false, errors: [t('cv.noCVFound')] };
-    
+
     // Validate CV data
     const validationErrors = validateCV(editData);
-    
+
     if (validationErrors.length > 0) {
       setError(validationErrors.join('\n'));
       return { success: false, errors: validationErrors };
     }
-    
+
     try {
       await updateCV(cv._id, editData);
       setError(null);
@@ -99,14 +99,14 @@ export function useMyCVPage() {
    * Toggle upload modal
    */
   const toggleUploadModal = () => {
-    setShowUpload(prev => !prev);
+    setShowUpload((prev) => !prev);
   };
 
   /**
    * Toggle submit to organization modal
    */
   const toggleSubmitToOrgModal = () => {
-    setShowSubmitToOrg(prev => !prev);
+    setShowSubmitToOrg((prev) => !prev);
   };
 
   /**
@@ -123,7 +123,7 @@ export function useMyCVPage() {
     error,
     showUpload,
     showSubmitToOrg,
-    
+
     // Actions
     loadCV,
     handleDelete,
@@ -133,6 +133,6 @@ export function useMyCVPage() {
     toggleSubmitToOrgModal,
     clearError,
     setShowUpload,
-    setShowSubmitToOrg
+    setShowSubmitToOrg,
   };
 }

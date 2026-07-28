@@ -3,7 +3,7 @@ import {
   getEmployeesWithoutTest,
   notifyPendingEmployees,
   notifyPendingEmployee,
-  getOrganizationBFI44Stats
+  getOrganizationBFI44Stats,
 } from './bfi44Admin';
 
 jest.mock('./axios');
@@ -21,9 +21,9 @@ describe('bfi44Admin API', () => {
           count: 2,
           employees: [
             { id: '64abc', name: 'Juan Pérez', email: 'juan@empresa.com' },
-            { id: '64def', name: 'María López', email: 'maria@empresa.com' }
-          ]
-        }
+            { id: '64def', name: 'María López', email: 'maria@empresa.com' },
+          ],
+        },
       };
       api.get.mockResolvedValue(mockResponse);
 
@@ -50,10 +50,8 @@ describe('bfi44Admin API', () => {
           success: true,
           message: '3 empleado(s) notificado(s)',
           notified: 3,
-          employees: [
-            { id: '64abc', name: 'Juan Pérez', email: 'juan@empresa.com' }
-          ]
-        }
+          employees: [{ id: '64abc', name: 'Juan Pérez', email: 'juan@empresa.com' }],
+        },
       };
       api.post.mockResolvedValue(mockResponse);
 
@@ -68,8 +66,8 @@ describe('bfi44Admin API', () => {
         data: {
           success: true,
           notified: 0,
-          message: 'Todos los empleados han completado el test'
-        }
+          message: 'Todos los empleados han completado el test',
+        },
       };
       api.post.mockResolvedValue(mockResponse);
 
@@ -86,8 +84,8 @@ describe('bfi44Admin API', () => {
           success: true,
           notified: true,
           userId: '64abc',
-          userName: 'Juan'
-        }
+          userName: 'Juan',
+        },
       };
       api.post.mockResolvedValue(mockResponse);
 
@@ -103,8 +101,8 @@ describe('bfi44Admin API', () => {
         data: {
           success: true,
           notified: false,
-          reason: 'Usuario ya completó el test'
-        }
+          reason: 'Usuario ya completó el test',
+        },
       };
       api.post.mockResolvedValue(mockResponse);
 
@@ -130,8 +128,8 @@ describe('bfi44Admin API', () => {
           totalEmployees: 15,
           completed: 12,
           pending: 3,
-          completionRate: 80.0
-        }
+          completionRate: 80.0,
+        },
       };
       api.get.mockResolvedValue(mockResponse);
 

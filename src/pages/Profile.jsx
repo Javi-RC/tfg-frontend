@@ -1,19 +1,49 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import CVConsentModal from '../components/cv/CVConsentModal';
 import PersonalityConsentModal from '../components/personality/PersonalityConsentModal';
 import { useProfile } from '../hooks/useProfile';
-import { 
-  ProfileHeader, 
-  ConsentSection, 
-  PersonalityConsentSection,
-  PreferencesSection, 
-  CVManagementSection 
-} from '../components/profile';
-import { DangerZone } from '../components/account';
+import { computeProfileCompletion } from '../utils/profileCompletion';
+import ProfileHero from '../components/profile/dashboard/ProfileHero';
+import StatsRow from '../components/profile/dashboard/StatsRow';
+import PersonalInfoCard from '../components/profile/dashboard/PersonalInfoCard';
+import PreferencesCard from '../components/profile/dashboard/PreferencesCard';
+import CompetenciasCard from '../components/profile/dashboard/CompetenciasCard';
+import AboutCard from '../components/profile/dashboard/AboutCard';
+import RecentActivityCard from '../components/profile/dashboard/RecentActivityCard';
+import PreferencesSection from '../components/profile/PreferencesSection';
+import ConsentSection from '../components/profile/ConsentSection';
+import PersonalityConsentSection from '../components/profile/PersonalityConsentSection';
+import CVManagementSection from '../components/profile/CVManagementSection';
+import DangerZone from '../components/account/DangerZone';
+import '../components/profile/dashboard/ProfileDashboard.css';
+
+// --- Placeholder data ---------------------------------------------------
+// These mirror the reference design. They are static until the matching
+// backend endpoints exist; swap the arrays below for real data when ready.
+const PLACEHOLDER_STATS = [
+  { key: 'projects', value: 8, labelKey: 'profile.dashboard.stats.projects', linkKey: 'profile.dashboard.seeAll', color: 'purple', path: '/projects' },
+  { key: 'teams', value: 15, labelKey: 'profile.dashboard.stats.teams', linkKey: 'profile.dashboard.seeAll', color: 'green', path: '/projects' },
+  { key: 'compatibility', value: '94%', labelKey: 'profile.dashboard.stats.compatibility', subKey: 'profile.dashboard.stats.average', color: 'orange' },
+  { key: 'recommendations', value: 12, labelKey: 'profile.dashboard.stats.recommendations', linkKey: 'profile.dashboard.seeAll', color: 'blue', path: '/' },
+];
+
+const PLACEHOLDER_SKILLS = [
+  { name: 'Java', level: 90 },
+  { name: 'Spring Boot', level: 75 },
+  { name: 'React', level: 82 },
+  { name: 'TypeScript', level: 70 },
+  { name: 'Docker', level: 65 },
+];
+
+const PLACEHOLDER_ACTIVITY = [
+  { titleKey: 'profile.dashboard.activity.updatedProfile', timeKey: 'profile.dashboard.activity.twoDaysAgo' },
+];
 
 export default function Profile() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const {
     authUser,
     profile,
@@ -45,7 +75,6 @@ export default function Profile() {
     navigateToCVStats,
     navigateToAdminCVs,
     loadConsent,
-    // Personality consent
     personalityConsentLoading,
     personalityConsentError,
     personalityConsentSuccess,
@@ -56,87 +85,73 @@ export default function Profile() {
     openPersonalityConsentModal,
     closePersonalityConsentModal,
     handlePersonalityConsentAccepted,
-    revokePersonalityConsent
+    revokePersonalityConsent,
   } = useProfile();
 
   const role = profileUser?.role || authUser?.role;
   const isAdmin = role === 'org_admin';
 
-  const displayName = profileUser?.name || profileUser?.username || authUser?.name || authUser?.username || 'User';
+  const displayName =
+    profileUser?.name || profileUser?.username || authUser?.name || authUser?.username || t('common.user');
+  const firstName = (displayName || '').trim().split(' ')[0] || displayName;
   const email = profileUser?.email || authUser?.email;
   const userInitial = (displayName || 'U').trim().charAt(0).toUpperCase();
 
-  const formatText = (value) => (typeof value === 'string' && value.trim() ? value : t('profile.notSpecified'));
+  const completion = useMemo(() => computeProfileCompletion(profileUser), [profileUser]);
 
   const organizationDisplay = useMemo(() => {
     if (resolvingOrganization) return t('profile.loading');
-    return formatText(resolvedOrganizationName);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    return resolvedOrganizationName || '';
   }, [resolvedOrganizationName, resolvingOrganization, t]);
+
+  // Real where available, placeholder otherwise.
+  const jobTitle = profileUser?.jobTitle || t('profile.dashboard.defaultJobTitle');
+  const department = profileUser?.department || t('profile.dashboard.defaultDepartment');
+  const bio = profileUser?.bio || profileUser?.about || '';
 
   if (loading) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        background: '#fafbfc',
-        padding: '40px 20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-      <p style={{ fontSize: '16px', color: '#666' }}>{t('profile.loadingProfile')}</p>
+      <div className="sara-profile" style={{ display: 'flex', justifyContent: 'center' }}>
+        <p style={{ fontSize: '16px', color: 'var(--sara-text-muted)' }}>
+          {t('profile.loadingProfile')}
+        </p>
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        background: '#fafbfc',
-        padding: '40px 20px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        <p style={{ fontSize: '16px', color: '#666' }}>{t('profile.noProfileFound')}</p>
+      <div className="sara-profile" style={{ display: 'flex', justifyContent: 'center' }}>
+        <p style={{ fontSize: '16px', color: 'var(--sara-text-muted)' }}>
+          {t('profile.noProfileFound')}
+        </p>
       </div>
     );
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: 'linear-gradient(to bottom, #f7fafc 0%, #edf2f7 100%)',
-      padding: '104px 20px 60px',
-      fontFamily: 'Poppins, Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial'
-    }}>
-      <div style={{
-        maxWidth: '1000px',
-        margin: '0 auto'
-      }}>
-        {/* Contenedor unificado */}
-        <div style={{
-          background: 'white',
-          borderRadius: '12px',
-          boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
-          overflow: 'hidden'
-        }}>
-          <ProfileHeader
-            displayName={displayName}
-            email={email}
-            role={role}
-            isAdmin={isAdmin}
-            userInitial={userInitial}
-            profileUser={profileUser}
-            organizationDisplay={organizationDisplay}
-            editMode={editMode}
-            saving={saving}
-            onStartEditing={startEditing}
-            onCancelEditing={cancelEditing}
-            onSaveProfile={saveProfile}
-          />
-          
+    <div className="sara-profile">
+      <ProfileHero
+        displayName={firstName}
+        jobTitle={jobTitle}
+        email={email}
+        country={profileUser?.country}
+        timezone={profileUser?.timezone}
+        isAdmin={isAdmin}
+        userInitial={userInitial}
+        avatar={profileUser?.avatar}
+        completion={completion}
+        editMode={editMode}
+        saving={saving}
+        onStartEditing={startEditing}
+        onCancelEditing={cancelEditing}
+        onSaveProfile={saveProfile}
+      />
+
+      <StatsRow stats={PLACEHOLDER_STATS} onNavigate={(path) => path && navigate(path)} />
+
+      {editMode ? (
+        <section className="sara-card sara-edit-panel">
           <PreferencesSection
             profileUser={profileUser}
             editMode={editMode}
@@ -146,51 +161,78 @@ export default function Profile() {
             onUpdateDraftField={updateDraftField}
             onUpdateNestedField={updateNestedField}
           />
-          
-          <ConsentSection
-            consentLoading={consentLoading}
-            consentError={consentError}
-            consentSuccess={consentSuccess}
-            hasConsent={hasConsent}
-            consentData={consentData}
-            onLoadConsent={loadConsent}
-            onOpenConsentModal={openConsentModal}
-            onRevokeConsent={revokeConsent}
+        </section>
+      ) : (
+        <div className="sara-cards-grid">
+          <PersonalInfoCard
+            organization={organizationDisplay}
+            department={department}
+            country={profileUser?.country}
+            timezone={profileUser?.timezone}
+            onEdit={startEditing}
           />
 
-          <PersonalityConsentSection
-            loading={personalityConsentLoading}
-            error={personalityConsentError}
-            success={personalityConsentSuccess}
-            hasConsent={hasPersonalityConsent}
-            consentData={personalityConsentData}
-            onRefresh={loadPersonalityConsent}
-            onOpenConsentModal={openPersonalityConsentModal}
-            onRevokeConsent={revokePersonalityConsent}
+          <PreferencesCard
+            flexibleSchedule={Boolean(profileUser?.flexibleSchedule)}
+            workingHours={profileUser?.preferredWorkingHours}
+            notifications={profileUser?.notificationPreferences}
           />
 
-          <CVManagementSection
-            isAdmin={isAdmin}
-            onNavigateToCV={navigateToCV}
-            onNavigateToCVStats={navigateToCVStats}
-            onNavigateToAdminCVs={navigateToAdminCVs}
-          />
+          <CompetenciasCard skills={PLACEHOLDER_SKILLS} onSeeAll={navigateToCV} />
 
-          <DangerZone />
+          <AboutCard bio={bio} onEdit={startEditing} />
+
+          <RecentActivityCard items={PLACEHOLDER_ACTIVITY} />
         </div>
+      )}
 
-        <CVConsentModal
-          show={showConsentModal}
-          onClose={closeConsentModal}
-          onAccepted={handleConsentAccepted}
+      {/* Functional sections, restyled as dashboard cards. */}
+      <div className="sara-cards-grid">
+        <ConsentSection
+          consentLoading={consentLoading}
+          consentError={consentError}
+          consentSuccess={consentSuccess}
+          hasConsent={hasConsent}
+          consentData={consentData}
+          onLoadConsent={loadConsent}
+          onOpenConsentModal={openConsentModal}
+          onRevokeConsent={revokeConsent}
         />
 
-        <PersonalityConsentModal
-          show={showPersonalityConsentModal}
-          onClose={closePersonalityConsentModal}
-          onAccepted={handlePersonalityConsentAccepted}
+        <PersonalityConsentSection
+          loading={personalityConsentLoading}
+          error={personalityConsentError}
+          success={personalityConsentSuccess}
+          hasConsent={hasPersonalityConsent}
+          consentData={personalityConsentData}
+          onRefresh={loadPersonalityConsent}
+          onOpenConsentModal={openPersonalityConsentModal}
+          onRevokeConsent={revokePersonalityConsent}
+        />
+
+        <CVManagementSection
+          isAdmin={isAdmin}
+          onNavigateToCV={navigateToCV}
+          onNavigateToCVStats={navigateToCVStats}
+          onNavigateToAdminCVs={navigateToAdminCVs}
         />
       </div>
+
+      <DangerZone />
+
+      <CVConsentModal
+        key={showConsentModal ? 'open' : 'closed'}
+        show={showConsentModal}
+        onClose={closeConsentModal}
+        onAccepted={handleConsentAccepted}
+      />
+
+      <PersonalityConsentModal
+        key={showPersonalityConsentModal ? 'open' : 'closed'}
+        show={showPersonalityConsentModal}
+        onClose={closePersonalityConsentModal}
+        onAccepted={handlePersonalityConsentAccepted}
+      />
     </div>
   );
 }

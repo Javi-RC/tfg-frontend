@@ -6,42 +6,42 @@ import Tooltip from '../common/Tooltip';
 /**
  * Phase Indicator Component
  * Displays the current system phase with appropriate icon and color
- * 
+ *
  * @param {Object} props
  * @param {number} props.phase - System phase (1-4)
  * @param {string} props.strategy - Current strategy (dt_only, dt_priority, cbr_priority, cbr_only)
  * @param {number} props.caseCount - Number of cases in the case base
  * @param {string} props.description - Phase description from backend
  */
+const phaseConfig = {
+  1: {
+    color: '#3B82F6',
+    bgColor: '#DBEAFE',
+    icon: Sprout,
+    labelKey: 'risk.phases.initial',
+  },
+  2: {
+    color: '#06B6D4',
+    bgColor: '#CFFAFE',
+    icon: BookOpen,
+    labelKey: 'risk.phases.learning',
+  },
+  3: {
+    color: 'var(--color-success)',
+    bgColor: '#D1FAE5',
+    icon: Target,
+    labelKey: 'risk.phases.mature',
+  },
+  4: {
+    color: 'var(--color-accent-purple)',
+    bgColor: '#EDE9FE',
+    icon: Star,
+    labelKey: 'risk.phases.expert',
+  },
+};
+
 export default function PhaseIndicator({ phase, caseCount, description }) {
   const { t } = useTranslation();
-  
-  const phaseConfig = {
-    1: { 
-      color: '#3B82F6', 
-      bgColor: '#DBEAFE',
-      icon: Sprout, 
-      labelKey: 'risk.phases.initial'
-    },
-    2: { 
-      color: '#06B6D4', 
-      bgColor: '#CFFAFE',
-      icon: BookOpen, 
-      labelKey: 'risk.phases.learning'
-    },
-    3: { 
-      color: '#10B981', 
-      bgColor: '#D1FAE5',
-      icon: Target, 
-      labelKey: 'risk.phases.mature'
-    },
-    4: { 
-      color: '#8B5CF6', 
-      bgColor: '#EDE9FE',
-      icon: Star, 
-      labelKey: 'risk.phases.expert'
-    }
-  };
 
   const config = phaseConfig[phase] || phaseConfig[1];
   const Icon = config.icon;
@@ -51,12 +51,14 @@ export default function PhaseIndicator({ phase, caseCount, description }) {
 
   return (
     <Tooltip content={tooltipContent}>
-      <div style={{
-        ...styles.badge,
-        backgroundColor: config.bgColor,
-        color: config.color,
-        border: `1px solid ${config.color}40`
-      }}>
+      <div
+        style={{
+          ...styles.badge,
+          backgroundColor: config.bgColor,
+          color: config.color,
+          border: `1px solid ${config.color}40`,
+        }}
+      >
         <Icon size={16} />
         <span style={styles.badgeText}>
           {t('risk.phaseLabel')} {phase}: {label}
@@ -81,14 +83,14 @@ const styles = {
     fontSize: '14px',
     fontWeight: '600',
     transition: 'all 0.2s',
-    cursor: 'help'
+    cursor: 'help',
   },
   badgeText: {
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
   },
   caseCount: {
     fontSize: '12px',
     fontWeight: '500',
-    opacity: 0.8
-  }
+    opacity: 0.8,
+  },
 };

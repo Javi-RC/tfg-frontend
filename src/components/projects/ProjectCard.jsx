@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { User, Users, Calendar, Clock, Eye, Edit, Trash2 } from 'lucide-react';
 import ProjectStatusBadge from './ProjectStatusBadge';
+import './ProjectCard.css';
 
 /**
  * Project Card Component
@@ -20,20 +21,21 @@ export default function ProjectCard({ project, onEdit, onDelete, showActions = t
     return new Date(date).toLocaleDateString(i18n.language, {
       year: 'numeric',
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
     });
   };
 
   return (
-    <div style={styles.card}>
+    <div className="project-card">
       <div style={styles.header}>
         <div style={styles.headerTop}>
-          <h3 
-            style={styles.title}
+          <button
+            type="button"
+            style={{ ...styles.title, background: 'none', border: 'none', padding: 0, font: 'inherit', textAlign: 'left' }}
             onClick={handleCardClick}
           >
             {project.projectName}
-          </h3>
+          </button>
           <ProjectStatusBadge status={project.status} />
         </div>
         <p style={styles.description}>
@@ -48,11 +50,9 @@ export default function ProjectCard({ project, onEdit, onDelete, showActions = t
             <User size={16} color="#666" style={{ flexShrink: 0 }} />
             <span style={styles.metaLabel}>{t('projects.card.projectManager')}:</span>
           </div>
-          <span style={styles.metaValue}>
-            {project.projectManager?.name || 'N/A'}
-          </span>
+          <span style={styles.metaValue}>{project.projectManager?.name || t('common.notAvailable')}</span>
         </div>
-        
+
         <div style={styles.metaItem}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0 }}>
             <Users size={16} color="#666" style={{ flexShrink: 0 }} />
@@ -79,7 +79,12 @@ export default function ProjectCard({ project, onEdit, onDelete, showActions = t
             <span style={styles.metaLabel}>{t('projects.card.duration')}:</span>
           </div>
           <span style={styles.metaValue}>
-            {project.expectedDuration?.value} {project.expectedDuration?.unit ? t(`projects.timeUnits.${project.expectedDuration.unit}`, { defaultValue: project.expectedDuration.unit }) : ''}
+            {project.expectedDuration?.value}{' '}
+            {project.expectedDuration?.unit
+              ? t(`projects.timeUnits.${project.expectedDuration.unit}`, {
+                  defaultValue: project.expectedDuration.unit,
+                })
+              : ''}
           </span>
         </div>
       </div>
@@ -88,6 +93,7 @@ export default function ProjectCard({ project, onEdit, onDelete, showActions = t
         {showActions && (
           <div style={styles.actions}>
             <button
+              type="button"
               style={styles.actionButton}
               onClick={(e) => {
                 e.stopPropagation();
@@ -101,7 +107,8 @@ export default function ProjectCard({ project, onEdit, onDelete, showActions = t
             </button>
             {onEdit && (
               <button
-                style={{...styles.actionButton, background: '#F3F4F6', color: '#111'}}
+                type="button"
+                style={{ ...styles.actionButton, background: 'var(--color-bg-subtle)', color: 'var(--color-text-primary)' }}
                 onClick={(e) => {
                   e.stopPropagation();
                   onEdit(project);
@@ -115,7 +122,8 @@ export default function ProjectCard({ project, onEdit, onDelete, showActions = t
             )}
             {onDelete && (
               <button
-                style={{...styles.actionButton, background: '#FEE2E2', color: '#DC2626'}}
+                type="button"
+                style={{ ...styles.actionButton, background: 'var(--color-danger-bg)', color: 'var(--color-danger)' }}
                 onClick={(e) => {
                   e.stopPropagation();
                   onDelete(project);
@@ -135,66 +143,54 @@ export default function ProjectCard({ project, onEdit, onDelete, showActions = t
 }
 
 const styles = {
-  card: {
-    background: 'white',
-    borderRadius: '16px',
-    padding: '24px',
-    border: '1px solid #E5E7EB',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-    transition: 'all 0.2s',
-    cursor: 'pointer',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '20px'
-  },
   header: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px'
+    gap: '12px',
   },
   headerTop: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    gap: '12px'
+    gap: '12px',
   },
   title: {
     fontSize: '20px',
     fontWeight: '700',
-    color: '#111',
+    color: 'var(--color-text-primary)',
     margin: 0,
     flex: 1,
     cursor: 'pointer',
-    transition: 'color 0.2s'
+    transition: 'color 0.2s',
   },
   description: {
     fontSize: '14px',
-    color: '#6B7280',
+    color: 'var(--color-text-muted)',
     margin: 0,
-    lineHeight: '1.6'
+    lineHeight: '1.6',
   },
   metadata: {
     display: 'flex',
     flexDirection: 'column',
     gap: '10px',
     padding: '16px',
-    background: '#F9FAFB',
-    borderRadius: '12px'
+    background: 'var(--color-bg-muted)',
+    borderRadius: '12px',
   },
   metaItem: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   metaLabel: {
     fontSize: '13px',
-    color: '#6B7280',
-    fontWeight: '500'
+    color: 'var(--color-text-muted)',
+    fontWeight: '500',
   },
   metaValue: {
     fontSize: '13px',
-    color: '#111',
-    fontWeight: '600'
+    color: 'var(--color-text-primary)',
+    fontWeight: '600',
   },
   footer: {
     display: 'flex',
@@ -202,11 +198,11 @@ const styles = {
     alignItems: 'center',
     gap: '16px',
     paddingTop: '16px',
-    borderTop: '1px solid #E5E7EB'
+    borderTop: '1px solid var(--color-border)',
   },
   actions: {
     display: 'flex',
-    gap: '8px'
+    gap: '8px',
   },
   actionButton: {
     padding: '8px 16px',
@@ -216,7 +212,7 @@ const styles = {
     fontWeight: '600',
     cursor: 'pointer',
     transition: 'all 0.2s',
-    background: '#111',
-    color: 'white'
-  }
+    background: 'var(--color-primary)',
+    color: 'white',
+  },
 };

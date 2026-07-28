@@ -1,19 +1,10 @@
 import api from './axios';
-import i18n from '../i18n';
+import { getCurrentLanguage } from '../utils/language';
 
 /**
  * Projects API service
  * Handles all project-related operations following RESTful principles
  */
-
-/**
- * Get current language from i18n
- * @returns {string} Current language code ('en' or 'es')
- */
-const getCurrentLanguage = () => {
-  const rawLanguage = i18n.language || 'en';
-  return rawLanguage.split('-')[0]; // Extract base language
-};
 
 // ==================== Project Management ====================
 
@@ -30,7 +21,7 @@ export const createProject = (data) => api.post('/api/projects', data);
  * @param {boolean} includeEmployees - Include employee details
  * @returns {Promise} API response with project data
  */
-export const getProjectById = (id, includeEmployees = true) => 
+export const getProjectById = (id, includeEmployees = true) =>
   api.get(`/api/projects/${id}`, { params: { includeEmployees } });
 
 /**
@@ -53,46 +44,41 @@ export const deleteProject = (id) => api.delete(`/api/projects/${id}`);
  * @param {Object} params - Query parameters (status, organizationId)
  * @returns {Promise} API response with projects list
  */
-export const getMyProjects = (params = {}) => 
-  api.get('/api/projects/my-projects', { params });
+export const getMyProjects = (params = {}) => api.get('/api/projects/my-projects', { params });
 
 /**
  * Get projects assigned to the user
  * @returns {Promise} API response with projects list
  */
-export const getAssignedProjects = () => 
-  api.get('/api/projects/assigned-to-me');
+export const getAssignedProjects = () => api.get('/api/projects/assigned-to-me');
 
 /**
  * Activate project (change status from draft to active)
  * @param {string} id - Project ID
  * @returns {Promise} API response
  */
-export const activateProject = (id) => 
-  api.patch(`/api/projects/${id}/activate`);
+export const activateProject = (id) => api.patch(`/api/projects/${id}/activate`);
 
 /**
  * Complete project (mark as finished)
  * IMPORTANT: Call this BEFORE submitting project outcome
  * This changes project status to 'completed' and is required for outcome submission
- * 
+ *
  * WORKFLOW:
  * 1. Call completeProject(id) - marks status as 'completed'
  * 2. Call submitProjectOutcome(id, data) - captures results and creates CBR case
- * 
+ *
  * @param {string} id - Project ID
  * @returns {Promise} API response with completedAt timestamp
  */
-export const completeProject = (id) => 
-  api.patch(`/api/projects/${id}/complete`);
+export const completeProject = (id) => api.patch(`/api/projects/${id}/complete`);
 
 /**
  * Cancel project (Admin only)
  * @param {string} id - Project ID
  * @returns {Promise} API response
  */
-export const cancelProject = (id) => 
-  api.patch(`/api/projects/${id}/cancel`);
+export const cancelProject = (id) => api.patch(`/api/projects/${id}/cancel`);
 
 /**
  * Assign employee to project
@@ -100,8 +86,7 @@ export const cancelProject = (id) =>
  * @param {Object} data - { employeeId, assignedRole }
  * @returns {Promise} API response
  */
-export const assignEmployeeToProject = (id, data) => 
-  api.post(`/api/projects/${id}/assign`, data);
+export const assignEmployeeToProject = (id, data) => api.post(`/api/projects/${id}/assign`, data);
 
 /**
  * Remove employee from project
@@ -109,7 +94,7 @@ export const assignEmployeeToProject = (id, data) =>
  * @param {string} employeeId - Employee ID
  * @returns {Promise} API response
  */
-export const removeEmployeeFromProject = (projectId, employeeId) => 
+export const removeEmployeeFromProject = (projectId, employeeId) =>
   api.delete(`/api/projects/${projectId}/employees/${employeeId}`);
 
 // ==================== Organization Project Management ====================
@@ -120,7 +105,7 @@ export const removeEmployeeFromProject = (projectId, employeeId) =>
  * @param {Object} params - Query parameters (status, projectManager)
  * @returns {Promise} API response with projects list
  */
-export const getOrganizationProjects = (id, params = {}) => 
+export const getOrganizationProjects = (id, params = {}) =>
   api.get(`/api/organizations/${id}/projects`, { params });
 
 /**
@@ -128,7 +113,7 @@ export const getOrganizationProjects = (id, params = {}) =>
  * @param {string} id - Organization ID
  * @returns {Promise} API response with statistics
  */
-export const getOrganizationProjectStats = (id) => 
+export const getOrganizationProjectStats = (id) =>
   api.get(`/api/organizations/${id}/projects/statistics`);
 
 /**
@@ -136,8 +121,7 @@ export const getOrganizationProjectStats = (id) =>
  * @param {string} id - Organization ID
  * @returns {Promise} API response with project managers list
  */
-export const getProjectManagers = (id) => 
-  api.get(`/api/organizations/${id}/project-managers`);
+
 
 /**
  * Assign/Remove project manager role to employee
@@ -146,9 +130,9 @@ export const getProjectManagers = (id) =>
  * @param {boolean} isProjectManager - Whether to assign or remove role
  * @returns {Promise} API response
  */
-export const updateProjectManagerRole = (orgId, employeeId, isProjectManager) => 
+export const updateProjectManagerRole = (orgId, employeeId, isProjectManager) =>
   api.patch(`/api/organizations/${orgId}/employees/${employeeId}/project-manager`, {
-    isProjectManager
+    isProjectManager,
   });
 
 // ==================== Team Analysis & Risk Prediction ====================
@@ -170,21 +154,7 @@ export const getTeamAnalysis = (id) => {
  * @param {string} id - Project ID
  * @returns {Promise} API response with synergy analysis
  */
-export const getTeamSynergy = (id) => {
-  const lang = getCurrentLanguage();
-  return api.get(`/api/projects/${id}/team-synergy?lang=${lang}`);
-};
 
-/**
- * Suggest optimal team for project requirements (without creating project)
- * Useful for testing different team configurations before assignment
- * @param {Object} data - { projectRequirements, organizationId, teamSize, enablePersonalityOptimization }
- * @returns {Promise} API response with team suggestions
- */
-export const suggestTeam = (data) => {
-  const lang = getCurrentLanguage();
-  return api.post(`/api/projects/suggest-team?lang=${lang}`, data);
-};
 
 /**
  * Predict project risks using Expert Rules + CBR + Team Analysis
@@ -192,8 +162,7 @@ export const suggestTeam = (data) => {
  * @param {string} id - Project ID
  * @returns {Promise} API response with comprehensive risk analysis
  */
-export const predictProjectRisks = (id) => 
-  api.post(`/api/projects/${id}/risks/predict`);
+export const predictProjectRisks = (id) => api.post(`/api/projects/${id}/risks/predict`);
 
 /**
  * Preview project risks with hypothetical team composition
@@ -202,8 +171,7 @@ export const predictProjectRisks = (id) =>
  * @param {Object} data - { selectedEmployeeIds }
  * @returns {Promise} API response with risk preview
  */
-export const previewProjectRisks = (id, data) => 
-  api.post(`/api/projects/${id}/risks/preview`, data);
+
 
 // ==================== Team Configuration Management ====================
 
@@ -212,8 +180,7 @@ export const previewProjectRisks = (id, data) =>
  * @param {string} projectId - Project ID
  * @returns {Promise} API response with team configuration
  */
-export const getTeamConfig = (projectId) => 
-  api.get(`/api/projects/${projectId}/team-config`);
+export const getTeamConfig = (projectId) => api.get(`/api/projects/${projectId}/team-config`);
 
 /**
  * Update complete team configuration
@@ -221,7 +188,7 @@ export const getTeamConfig = (projectId) =>
  * @param {Object} config - Complete configuration object
  * @returns {Promise} API response
  */
-export const updateTeamConfig = (projectId, config) => 
+export const updateTeamConfig = (projectId, config) =>
   api.put(`/api/projects/${projectId}/team-config`, config);
 
 /**
@@ -230,7 +197,7 @@ export const updateTeamConfig = (projectId, config) =>
  * @param {Object} phase1Config - Phase 1 configuration
  * @returns {Promise} API response
  */
-export const updatePhase1Config = (projectId, phase1Config) => 
+export const updatePhase1Config = (projectId, phase1Config) =>
   api.patch(`/api/projects/${projectId}/team-config/phase1`, phase1Config);
 
 /**
@@ -239,7 +206,7 @@ export const updatePhase1Config = (projectId, phase1Config) =>
  * @param {Object} phase2Config - Phase 2 configuration
  * @returns {Promise} API response
  */
-export const updatePhase2Config = (projectId, phase2Config) => 
+export const updatePhase2Config = (projectId, phase2Config) =>
   api.patch(`/api/projects/${projectId}/team-config/phase2`, phase2Config);
 
 /**
@@ -248,7 +215,7 @@ export const updatePhase2Config = (projectId, phase2Config) =>
  * @param {Object} cbrConfig - CBR configuration
  * @returns {Promise} API response
  */
-export const updateCBRConfig = (projectId, cbrConfig) => 
+export const updateCBRConfig = (projectId, cbrConfig) =>
   api.patch(`/api/projects/${projectId}/team-config/cbr`, cbrConfig);
 
 /**
@@ -258,7 +225,7 @@ export const updateCBRConfig = (projectId, cbrConfig) =>
  * @param {Object} decisionTreeConfig - Expert rules configuration
  * @returns {Promise} API response
  */
-export const updateDecisionTreeConfig = (projectId, decisionTreeConfig) => 
+export const updateDecisionTreeConfig = (projectId, decisionTreeConfig) =>
   api.patch(`/api/projects/${projectId}/team-config/decision-tree`, decisionTreeConfig);
 
 /**
@@ -266,7 +233,7 @@ export const updateDecisionTreeConfig = (projectId, decisionTreeConfig) =>
  * @param {string} projectId - Project ID
  * @returns {Promise} API response
  */
-export const resetTeamConfig = (projectId) => 
+export const resetTeamConfig = (projectId) =>
   api.post(`/api/projects/${projectId}/team-config/reset`);
 
 /**
@@ -274,8 +241,7 @@ export const resetTeamConfig = (projectId) =>
  * @param {string} projectId - Project ID
  * @returns {Promise} API response with formatted summary
  */
-export const getTeamConfigSummary = (projectId) => 
-  api.get(`/api/projects/${projectId}/team-config/summary`);
+
 
 // ==================== Candidate Pool Size ====================
 
@@ -298,37 +264,3 @@ export const getCandidatePoolSize = (projectId) =>
 export const updateCandidatePoolSize = (projectId, candidatePoolMultiplier) =>
   api.patch(`/api/projects/${projectId}/candidate-pool-size`, { candidatePoolMultiplier });
 
-// ==================== Project Completion Questionnaire ====================
-
-/**
- * Check if project has a pending completion questionnaire
- * @param {string} projectId - Project ID
- * @param {string} language - Language preference ('en' or 'es'). Defaults to current i18n language
- * @returns {Promise} API response with { pending: boolean, questionnaire?: object }
- */
-export const getCompletionQuestionnaire = (projectId, language = null) => {
-  const effectiveLanguage = language || getCurrentLanguage();
-  
-  return api.get(`/api/projects/${projectId}/completion-questionnaire`, {
-    params: {
-      language: effectiveLanguage
-    }
-  });
-};
-
-/**
- * Submit project completion questionnaire responses
- * @param {string} projectId - Project ID
- * @param {Object} responses - Questionnaire responses
- * @param {string} language - Language preference ('en' or 'es'). Defaults to current i18n language
- * @returns {Promise} API response
- */
-export const submitCompletionQuestionnaire = (projectId, responses, language = null) => {
-  const effectiveLanguage = language || getCurrentLanguage();
-  
-  return api.post(`/api/projects/${projectId}/completion-questionnaire`, responses, {
-    params: {
-      language: effectiveLanguage
-    }
-  });
-};

@@ -1,13 +1,8 @@
 import React from 'react';
-import { 
-  Database
-} from 'lucide-react';
+import { Database } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import PhaseIndicator from './PhaseIndicator';
-import { 
-  extractProjectName, 
-  extractSimilarity 
-} from '../../utils/cbrCaseHelpers';
+import { extractProjectName, extractSimilarity } from '../../utils/cbrCaseHelpers';
 import { getStrategyLabel } from '../../utils/strategyHelpers';
 
 /**
@@ -20,18 +15,12 @@ import { getStrategyLabel } from '../../utils/strategyHelpers';
  */
 export default function RiskPredictionMetadata({ metadata }) {
   const { t } = useTranslation();
-  
+
   if (!metadata) {
     return null;
   }
 
-  const {
-    phase,
-    strategy,
-    phaseDescription,
-    caseBaseSize,
-    similarCases = []
-  } = metadata;
+  const { phase, strategy, phaseDescription, caseBaseSize, similarCases = [] } = metadata;
 
   const sanitizedPhaseDescription =
     typeof phaseDescription === 'string'
@@ -51,7 +40,7 @@ export default function RiskPredictionMetadata({ metadata }) {
       {/* System Phase & Strategy */}
       {phase && strategy && (
         <div style={styles.phaseSection}>
-          <PhaseIndicator 
+          <PhaseIndicator
             phase={phase}
             strategy={strategy}
             caseCount={caseBaseSize}
@@ -62,9 +51,7 @@ export default function RiskPredictionMetadata({ metadata }) {
             <div style={styles.strategyValue}>{getStrategyLabel(strategy, 'es')}</div>
           </div>
           {sanitizedPhaseDescription && (
-            <div style={styles.phaseDescription}>
-              {sanitizedPhaseDescription}
-            </div>
+            <div style={styles.phaseDescription}>{sanitizedPhaseDescription}</div>
           )}
         </div>
       )}
@@ -76,38 +63,29 @@ export default function RiskPredictionMetadata({ metadata }) {
             <Database size={16} />
             <span>{t('risk.metadata.similarCases', { count: similarCases.length })}</span>
           </div>
-          <div style={styles.sectionDescription}>
-            {t('risk.metadata.similarCasesDescription')}
-          </div>
+          <div style={styles.sectionDescription}>{t('risk.metadata.similarCasesDescription')}</div>
 
           <div style={styles.casesList}>
-            {similarCases.map((caseItem, idx) => {
+            {similarCases.map((caseItem) => {
               const projectName = extractProjectName(caseItem);
               const similarity = extractSimilarity(caseItem);
 
               return (
-                <div 
-                  key={caseItem.caseId || caseItem._id || idx} 
-                  style={styles.caseCard}
-                >
+                <div key={caseItem.caseId || caseItem._id} style={styles.caseCard}>
                   <div style={styles.caseHeader}>
                     <div style={styles.caseInfo}>
-                      <div style={styles.caseName}>
-                        {projectName}
-                      </div>
+                      <div style={styles.caseName}>{projectName}</div>
                       <div style={styles.caseSimilarityRow}>
                         <span style={styles.similarityLabel}>{t('risk.metadata.similarity')}:</span>
                         <div style={styles.similarityBar}>
-                          <div 
+                          <div
                             style={{
                               ...styles.similarityFill,
-                              width: `${similarity * 100}%`
+                              width: `${similarity * 100}%`,
                             }}
                           />
                         </div>
-                        <span style={styles.similarityValue}>
-                          {(similarity * 100).toFixed(1)}%
-                        </span>
+                        <span style={styles.similarityValue}>{(similarity * 100).toFixed(1)}%</span>
                       </div>
                     </div>
                   </div>
@@ -117,8 +95,6 @@ export default function RiskPredictionMetadata({ metadata }) {
           </div>
         </div>
       )}
-
-
     </div>
   );
 }
@@ -126,41 +102,41 @@ export default function RiskPredictionMetadata({ metadata }) {
 const styles = {
   container: {
     backgroundColor: '#fff',
-    border: '1px solid #E5E7EB',
+    border: '1px solid var(--color-border)',
     borderRadius: '12px',
     padding: '24px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '20px'
+    gap: '20px',
   },
   header: {
     paddingBottom: '16px',
-    borderBottom: '2px solid #E5E7EB'
+    borderBottom: '2px solid var(--color-border)',
   },
   headerTitle: {
     display: 'flex',
     alignItems: 'center',
-    gap: '10px'
+    gap: '10px',
   },
   title: {
     margin: 0,
     fontSize: '18px',
     fontWeight: '700',
-    color: '#111827'
+    color: 'var(--color-text-heading)',
   },
   systemGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '12px'
+    gap: '12px',
   },
   systemCard: {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
     padding: '16px',
-    backgroundColor: '#F9FAFB',
-    border: '1px solid #E5E7EB',
-    borderRadius: '8px'
+    backgroundColor: 'var(--color-bg-muted)',
+    border: '1px solid var(--color-border)',
+    borderRadius: '8px',
   },
   systemIcon: {
     display: 'flex',
@@ -169,60 +145,60 @@ const styles = {
     width: '40px',
     height: '40px',
     backgroundColor: '#fff',
-    borderRadius: '8px'
+    borderRadius: '8px',
   },
   systemContent: {
-    flex: 1
+    flex: 1,
   },
   systemLabel: {
     fontSize: '11px',
     fontWeight: '600',
-    color: '#6B7280',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
-    marginBottom: '4px'
+    marginBottom: '4px',
   },
   systemValue: {
     fontSize: '16px',
     fontWeight: '700',
-    color: '#111827'
+    color: 'var(--color-text-heading)',
   },
   phaseSection: {
     display: 'flex',
     flexDirection: 'column',
     gap: '12px',
     padding: '16px',
-    backgroundColor: '#F9FAFB',
-    border: '1px solid #E5E7EB',
-    borderRadius: '8px'
+    backgroundColor: 'var(--color-bg-muted)',
+    border: '1px solid var(--color-border)',
+    borderRadius: '8px',
   },
   strategyInfo: {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    fontSize: '14px'
+    fontSize: '14px',
   },
   strategyLabel: {
     fontWeight: '600',
-    color: '#6B7280'
+    color: 'var(--color-text-muted)',
   },
   strategyValue: {
     fontWeight: '700',
-    color: '#111827'
+    color: 'var(--color-text-heading)',
   },
   phaseDescription: {
     fontSize: '13px',
-    color: '#6B7280',
+    color: 'var(--color-text-muted)',
     lineHeight: '1.6',
     padding: '12px',
     backgroundColor: '#fff',
     borderRadius: '6px',
-    borderLeft: '3px solid #667EEA'
+    borderLeft: '3px solid var(--color-accent-gradient-start)',
   },
   section: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px'
+    gap: '12px',
   },
   sectionTitle: {
     display: 'flex',
@@ -230,50 +206,50 @@ const styles = {
     gap: '8px',
     fontSize: '14px',
     fontWeight: '700',
-    color: '#111827'
+    color: 'var(--color-text-heading)',
   },
   sectionDescription: {
     fontSize: '13px',
-    color: '#6B7280',
+    color: 'var(--color-text-muted)',
     lineHeight: '1.5',
-    marginTop: '-4px'
+    marginTop: '-4px',
   },
   weightsGrid: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px'
+    gap: '12px',
   },
   weightItem: {
     display: 'grid',
     gridTemplateColumns: '180px 1fr 60px',
     alignItems: 'center',
-    gap: '12px'
+    gap: '12px',
   },
   weightLabel: {
     fontSize: '13px',
     fontWeight: '600',
-    color: '#374151'
+    color: 'var(--color-text-strong)',
   },
   weightBar: {
     height: '8px',
-    backgroundColor: '#E5E7EB',
+    backgroundColor: 'var(--color-border)',
     borderRadius: '4px',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   weightFill: {
     height: '100%',
-    transition: 'width 0.3s ease'
+    transition: 'width 0.3s ease',
   },
   weightValue: {
     fontSize: '13px',
     fontWeight: '700',
-    color: '#111827',
-    textAlign: 'right'
+    color: 'var(--color-text-heading)',
+    textAlign: 'right',
   },
   sourcesGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
-    gap: '12px'
+    gap: '12px',
   },
   sourceCard: {
     display: 'flex',
@@ -281,10 +257,10 @@ const styles = {
     alignItems: 'center',
     gap: '8px',
     padding: '16px',
-    backgroundColor: '#F9FAFB',
-    border: '1px solid #E5E7EB',
+    backgroundColor: 'var(--color-bg-muted)',
+    border: '1px solid var(--color-border)',
     borderRadius: '8px',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   sourceIcon: {
     display: 'flex',
@@ -292,86 +268,86 @@ const styles = {
     justifyContent: 'center',
     width: '48px',
     height: '48px',
-    borderRadius: '12px'
+    borderRadius: '12px',
   },
   sourceContent: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '2px'
+    gap: '2px',
   },
   sourceLabel: {
     fontSize: '12px',
     fontWeight: '600',
-    color: '#6B7280'
+    color: 'var(--color-text-muted)',
   },
   sourceValue: {
     fontSize: '20px',
     fontWeight: '700',
-    color: '#111827'
+    color: 'var(--color-text-heading)',
   },
   casesList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px'
+    gap: '12px',
   },
   caseCard: {
     padding: '16px',
-    backgroundColor: '#F9FAFB',
-    border: '1px solid #E5E7EB',
+    backgroundColor: 'var(--color-bg-muted)',
+    border: '1px solid var(--color-border)',
     borderRadius: '8px',
-    transition: 'all 0.2s ease'
+    transition: 'all 0.2s ease',
   },
   caseHeader: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    gap: '12px'
+    gap: '12px',
   },
   caseInfo: {
     flex: 1,
-    minWidth: 0
+    minWidth: 0,
   },
   caseName: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#111827',
-    marginBottom: '8px'
+    color: 'var(--color-text-heading)',
+    marginBottom: '8px',
   },
   caseDescription: {
     fontSize: '12px',
-    color: '#6B7280',
+    color: 'var(--color-text-muted)',
     lineHeight: '1.4',
-    marginBottom: '8px'
+    marginBottom: '8px',
   },
   caseSimilarityRow: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px'
+    gap: '8px',
   },
   similarityLabel: {
     fontSize: '12px',
     fontWeight: '600',
-    color: '#6B7280',
-    minWidth: '70px'
+    color: 'var(--color-text-muted)',
+    minWidth: '70px',
   },
   similarityBar: {
     flex: 1,
     height: '6px',
-    backgroundColor: '#E5E7EB',
+    backgroundColor: 'var(--color-border)',
     borderRadius: '3px',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   similarityFill: {
     height: '100%',
-    backgroundColor: '#10B981',
-    transition: 'width 0.3s ease'
+    backgroundColor: 'var(--color-success)',
+    transition: 'width 0.3s ease',
   },
   similarityValue: {
     fontSize: '13px',
     fontWeight: '700',
-    color: '#10B981',
+    color: 'var(--color-success)',
     minWidth: '50px',
-    textAlign: 'right'
+    textAlign: 'right',
   },
   outcomeBadge: {
     display: 'flex',
@@ -381,30 +357,30 @@ const styles = {
     borderRadius: '12px',
     fontSize: '12px',
     fontWeight: '600',
-    border: '1px solid currentColor'
+    border: '1px solid currentColor',
   },
   expandButton: {
     background: 'none',
     border: 'none',
     padding: '4px',
     cursor: 'pointer',
-    color: '#6B7280',
+    color: 'var(--color-text-muted)',
     display: 'flex',
     alignItems: 'center',
-    transition: 'color 0.2s'
+    transition: 'color 0.2s',
   },
   outcomeDetails: {
     marginTop: '12px',
     paddingTop: '12px',
-    borderTop: '1px solid #E5E7EB',
+    borderTop: '1px solid var(--color-border)',
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px'
+    gap: '12px',
   },
   outcomeGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-    gap: '12px'
+    gap: '12px',
   },
   outcomeCard: {
     display: 'flex',
@@ -412,8 +388,8 @@ const styles = {
     gap: '12px',
     padding: '12px',
     backgroundColor: '#fff',
-    border: '1px solid #E5E7EB',
-    borderRadius: '6px'
+    border: '1px solid var(--color-border)',
+    borderRadius: '6px',
   },
   outcomeIcon: {
     display: 'flex',
@@ -421,66 +397,66 @@ const styles = {
     justifyContent: 'center',
     width: '36px',
     height: '36px',
-    backgroundColor: '#F9FAFB',
+    backgroundColor: 'var(--color-bg-muted)',
     borderRadius: '8px',
-    flexShrink: 0
+    flexShrink: 0,
   },
   outcomeContent: {
-    flex: 1
+    flex: 1,
   },
   outcomeLabel: {
     fontSize: '11px',
     fontWeight: '600',
-    color: '#6B7280',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
-    marginBottom: '4px'
+    marginBottom: '4px',
   },
   outcomeValue: {
     fontSize: '15px',
-    fontWeight: '700'
+    fontWeight: '700',
   },
   outcomeDescription: {
     padding: '12px',
     backgroundColor: '#fff',
-    border: '1px solid #E5E7EB',
+    border: '1px solid var(--color-border)',
     borderRadius: '6px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '4px'
+    gap: '4px',
   },
   outcomeDescLabel: {
     fontSize: '12px',
     fontWeight: '600',
-    color: '#374151'
+    color: 'var(--color-text-strong)',
   },
   outcomeDescText: {
     fontSize: '13px',
-    color: '#6B7280',
-    lineHeight: '1.5'
+    color: 'var(--color-text-muted)',
+    lineHeight: '1.5',
   },
   insightsBox: {
     padding: '16px',
-    backgroundColor: '#F9FAFB',
-    border: '1px solid #E5E7EB',
+    backgroundColor: 'var(--color-bg-muted)',
+    border: '1px solid var(--color-border)',
     borderRadius: '8px',
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px'
+    gap: '8px',
   },
   insightItem: {
     display: 'flex',
     alignItems: 'baseline',
-    gap: '8px'
+    gap: '8px',
   },
   insightKey: {
     fontSize: '13px',
     fontWeight: '600',
-    color: '#374151',
-    textTransform: 'capitalize'
+    color: 'var(--color-text-strong)',
+    textTransform: 'capitalize',
   },
   insightValue: {
     fontSize: '13px',
-    color: '#6B7280'
-  }
+    color: 'var(--color-text-muted)',
+  },
 };

@@ -15,8 +15,8 @@ describe('cvConsent API', () => {
           accepted: true,
           aiProcessing: true,
           thirdPartySharing: false,
-          dataRetention: true
-        }
+          dataRetention: true,
+        },
       };
       api.get.mockResolvedValue(mockResponse);
 
@@ -46,8 +46,8 @@ describe('cvConsent API', () => {
           accepted: false,
           aiProcessing: false,
           thirdPartySharing: false,
-          dataRetention: false
-        }
+          dataRetention: false,
+        },
       };
       api.get.mockResolvedValue(mockResponse);
 
@@ -66,7 +66,7 @@ describe('cvConsent API', () => {
         accepted: true,
         aiProcessing: true,
         thirdPartySharing: false,
-        dataRetention: true
+        dataRetention: true,
       };
       const mockResponse = { data: { success: true } };
       api.post.mockResolvedValue(mockResponse);
@@ -77,7 +77,7 @@ describe('cvConsent API', () => {
         accepted: true,
         aiProcessing: true,
         thirdPartySharing: false,
-        dataRetention: true
+        dataRetention: true,
       });
       expect(result).toEqual(mockResponse);
     });
@@ -87,7 +87,7 @@ describe('cvConsent API', () => {
         accepted: false,
         aiProcessing: true,
         thirdPartySharing: true,
-        dataRetention: true
+        dataRetention: true,
       };
       const mockResponse = { data: { success: true } };
       api.post.mockResolvedValue(mockResponse);
@@ -95,7 +95,7 @@ describe('cvConsent API', () => {
       const result = await updateCVConsent(consentData);
 
       expect(api.post).toHaveBeenCalledWith('/api/cv-consent', {
-        accepted: false
+        accepted: false,
       });
       expect(result).toEqual(mockResponse);
     });
@@ -105,7 +105,7 @@ describe('cvConsent API', () => {
         accepted: true,
         aiProcessing: 1, // truthy
         thirdPartySharing: 0, // falsy
-        dataRetention: 'yes' // truthy
+        dataRetention: 'yes', // truthy
       };
       const mockResponse = { data: { success: true } };
       api.post.mockResolvedValue(mockResponse);
@@ -116,7 +116,7 @@ describe('cvConsent API', () => {
         accepted: true,
         aiProcessing: true,
         thirdPartySharing: false,
-        dataRetention: true
+        dataRetention: true,
       });
     });
 
@@ -125,7 +125,7 @@ describe('cvConsent API', () => {
         accepted: true,
         aiProcessing: true,
         thirdPartySharing: false,
-        dataRetention: true
+        dataRetention: true,
       };
       const mockError = new Error('Update failed');
       api.post.mockRejectedValue(mockError);
@@ -138,7 +138,7 @@ describe('cvConsent API', () => {
         accepted: true,
         aiProcessing: true,
         thirdPartySharing: true,
-        dataRetention: true
+        dataRetention: true,
       };
       const mockResponse = { data: { success: true } };
       api.post.mockResolvedValue(mockResponse);
@@ -149,7 +149,7 @@ describe('cvConsent API', () => {
         accepted: true,
         aiProcessing: true,
         thirdPartySharing: true,
-        dataRetention: true
+        dataRetention: true,
       });
     });
 
@@ -158,7 +158,7 @@ describe('cvConsent API', () => {
         accepted: true,
         aiProcessing: false,
         thirdPartySharing: false,
-        dataRetention: false
+        dataRetention: false,
       };
       const mockResponse = { data: { success: true } };
       api.post.mockResolvedValue(mockResponse);
@@ -169,7 +169,7 @@ describe('cvConsent API', () => {
         accepted: true,
         aiProcessing: false,
         thirdPartySharing: false,
-        dataRetention: false
+        dataRetention: false,
       });
     });
 
@@ -178,7 +178,7 @@ describe('cvConsent API', () => {
         accepted: true,
         aiProcessing: true,
         thirdPartySharing: false,
-        dataRetention: true
+        dataRetention: true,
       };
       const mockError = new Error('Network error');
       api.post.mockRejectedValue(mockError);
@@ -191,7 +191,7 @@ describe('cvConsent API', () => {
         accepted: 'invalid', // Should be boolean
         aiProcessing: true,
         thirdPartySharing: false,
-        dataRetention: true
+        dataRetention: true,
       };
       const mockError = new Error('Invalid consent data');
       api.post.mockRejectedValue(mockError);
@@ -201,7 +201,7 @@ describe('cvConsent API', () => {
 
     it('omits flags when accepted is false', async () => {
       const consentData = {
-        accepted: false
+        accepted: false,
       };
       const mockResponse = { data: { success: true } };
       api.post.mockResolvedValue(mockResponse);
@@ -217,7 +217,7 @@ describe('cvConsent API', () => {
 
     it('handles undefined flags when accepted', async () => {
       const consentData = {
-        accepted: true
+        accepted: true,
       };
       const mockResponse = { data: { success: true } };
       api.post.mockResolvedValue(mockResponse);
@@ -228,7 +228,7 @@ describe('cvConsent API', () => {
         accepted: true,
         aiProcessing: false,
         thirdPartySharing: false,
-        dataRetention: false
+        dataRetention: false,
       });
     });
   });

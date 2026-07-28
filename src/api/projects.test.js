@@ -1,10 +1,5 @@
 import api from './axios';
-import {
-  createProject,
-  getProjectById,
-  updateProject,
-  deleteProject
-} from './projects';
+import { createProject, getProjectById, updateProject, deleteProject } from './projects';
 
 jest.mock('./axios');
 
@@ -19,12 +14,12 @@ describe('projects API', () => {
         name: 'New Project',
         description: 'Project description',
         start_date: '2024-01-01',
-        end_date: '2024-12-31'
+        end_date: '2024-12-31',
       };
       const mockResponse = {
         data: {
-          project: { id: 1, ...projectData }
-        }
+          project: { id: 1, ...projectData },
+        },
       };
       api.post.mockResolvedValue(mockResponse);
 
@@ -56,17 +51,16 @@ describe('projects API', () => {
       const projectId = '123';
       const mockResponse = {
         data: {
-          project: { id: 123, name: 'Test Project' }
-        }
+          project: { id: 123, name: 'Test Project' },
+        },
       };
       api.get.mockResolvedValue(mockResponse);
 
       const result = await getProjectById(projectId);
 
-      expect(api.get).toHaveBeenCalledWith(
-        `/api/projects/${projectId}`,
-        { params: { includeEmployees: true } }
-      );
+      expect(api.get).toHaveBeenCalledWith(`/api/projects/${projectId}`, {
+        params: { includeEmployees: true },
+      });
       expect(result).toEqual(mockResponse);
     });
 
@@ -77,10 +71,9 @@ describe('projects API', () => {
 
       await getProjectById(projectId, true);
 
-      expect(api.get).toHaveBeenCalledWith(
-        `/api/projects/${projectId}`,
-        { params: { includeEmployees: true } }
-      );
+      expect(api.get).toHaveBeenCalledWith(`/api/projects/${projectId}`, {
+        params: { includeEmployees: true },
+      });
     });
 
     it('excludes employee details when specified', async () => {
@@ -90,10 +83,9 @@ describe('projects API', () => {
 
       await getProjectById(projectId, false);
 
-      expect(api.get).toHaveBeenCalledWith(
-        `/api/projects/${projectId}`,
-        { params: { includeEmployees: false } }
-      );
+      expect(api.get).toHaveBeenCalledWith(`/api/projects/${projectId}`, {
+        params: { includeEmployees: false },
+      });
     });
 
     it('handles not found errors', async () => {
@@ -110,12 +102,12 @@ describe('projects API', () => {
       const projectId = '123';
       const updateData = {
         name: 'Updated Project',
-        description: 'Updated description'
+        description: 'Updated description',
       };
       const mockResponse = {
         data: {
-          project: { id: 123, ...updateData }
-        }
+          project: { id: 123, ...updateData },
+        },
       };
       api.put.mockResolvedValue(mockResponse);
 

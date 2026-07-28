@@ -1,12 +1,13 @@
 import api from './axios';
+import i18n from '../i18n';
 
 /**
  * Manual Risks API service
  * Handles manual risk CRUD operations for projects during execution
- * 
+ *
  * NEW FLOW (Backend Refactoring - January 2026):
  * ================================================
- * 
+ *
  * DURING PROJECT EXECUTION (status: ACTIVE):
  * - Add manual risks: POST /api/projects/:id/risks/manual
  * - Edit manual risks: PUT /api/projects/:id/risks/:riskId
@@ -14,13 +15,13 @@ import api from './axios';
  * - View risks: GET /api/projects/:id/risks
  * - All risks created with status: 'active'
  * - NO marking of occurred/not_occurred during execution
- * 
+ *
  * AT PROJECT COMPLETION (status: COMPLETED):
  * - Mark risks individually: PUT /api/projects/:id/risks/:riskId
  * - For occurred risks: { occurred: true, detectedAt, actualSeverity, scheduleDelayDays, rootCause, mitigatedAt }
  * - For avoided risks: { occurred: false, avoidanceReason }
  * - This updates risk status to 'occurred', 'mitigated', or 'avoided'
- * 
+ *
  * REMOVED ENDPOINTS:
  * - POST /api/projects/:id/outcome with actualizedRisks (deprecated)
  */
@@ -47,8 +48,7 @@ export const addManualRisk = (projectId, riskData) =>
  * @param {string} projectId - Project ID
  * @returns {Promise} API response with all project risks
  */
-export const getAllProjectRisks = (projectId) =>
-  api.get(`/api/projects/${projectId}/risks`);
+export const getAllProjectRisks = (projectId) => api.get(`/api/projects/${projectId}/risks`);
 
 /**
  * Get only manual risks for a project
@@ -59,24 +59,15 @@ export const getProjectManualRisks = (projectId) =>
   api.get(`/api/projects/${projectId}/risks/manual`);
 
 /**
- * Get a specific manual risk
- * @param {string} projectId - Project ID
- * @param {string} riskId - Risk ID
- * @returns {Promise} API response with risk data
- */
-export const getManualRisk = (projectId, riskId) =>
-  api.get(`/api/projects/${projectId}/risks/${riskId}`);
-
-/**
  * Update a manual risk (DURING ACTIVE PROJECT or RETROSPECTIVE)
- * 
+ *
  * DURING ACTIVE PROJECT:
  * - Can update: title, description, severity, rootCause, recommendations, indicators
- * 
+ *
  * DURING RETROSPECTIVE (project completed):
  * - Mark as OCCURRED: { occurred: true, detectedAt, actualSeverity, scheduleDelayDays, rootCause, mitigatedAt }
  * - Mark as AVOIDED: { occurred: false, avoidanceReason }
- * 
+ *
  * @param {string} projectId - Project ID
  * @param {string} riskId - Risk ID
  * @param {Object} updateData - Data to update
@@ -106,7 +97,7 @@ export const markRiskOccurred = (projectId, riskId, details = undefined) => {
     'severity',
     'rootCause',
     'recommendations',
-    'indicators'
+    'indicators',
   ];
 
   const body = { occurred: true };
@@ -131,7 +122,7 @@ export const markRiskOccurred = (projectId, riskId, details = undefined) => {
  */
 export const markRiskAvoided = (projectId, riskId) =>
   api.put(`/api/projects/${projectId}/risks/${riskId}`, {
-    occurred: false
+    occurred: false,
   });
 
 /**
@@ -144,18 +135,17 @@ export const deleteManualRisk = (projectId, riskId) =>
   api.delete(`/api/projects/${projectId}/risks/${riskId}`);
 
 /**
- * Get project outcome and risks
+ * Submit project outcome (retrospective phase).
+ *
+ * Called by ProjectCompletionPage after every risk has been marked
+ * occurred/avoided. This is the only path that persists project.projectOutcome
+ * and refines the CBR case with the real evaluation: marking risks individually
+ * never touches the case base.
+ *
  * @param {string} projectId - Project ID
- * @returns {Promise} API response with outcome data
- */
-export const getProjectOutcome = (projectId) =>
-  api.get(`/api/projects/${projectId}/outcome`);
-
-/**
- * DEPRECATED: Submit project outcome with actualized risks
- * This endpoint is no longer used. Use markRiskOccurred/markRiskAvoided instead.
- * 
- * @deprecated Use individual risk marking endpoints
+ * @param {Object} outcomeData - Outcome fields (completed, actualCompletedDate,
+ *   qualityScore, clientSatisfaction, teamMorale, actualizedRisks, ...)
+ * @returns {Promise} API response with prediction accuracy and learning report
  */
 export const submitProjectOutcome = (projectId, outcomeData) =>
   api.post(`/api/projects/${projectId}/outcome`, outcomeData);
@@ -167,21 +157,21 @@ export const submitProjectOutcome = (projectId, outcomeData) =>
  */
 export const validateManualRisk = (riskData) => {
   const errors = {};
-  
+
   if (!riskData.type) {
-    errors.type = 'El tipo es obligatorio';
+    errors.type = i18n.t('risk.form.riskTypeRequired');
   }
   if (!riskData.title) {
-    errors.title = 'El título es obligatorio';
+    errors.title = i18n.t('risk.form.titleRequired');
   }
   if (!riskData.description) {
-    errors.description = 'La descripción es obligatoria';
+    errors.description = i18n.t('risk.form.descriptionRequired');
   }
-  
+
   if (riskData.severity && !['low', 'medium', 'high', 'critical'].includes(riskData.severity)) {
-    errors.severity = 'Severidad inválida';
+    errors.severity = i18n.t('risk.form.invalidSeverity');
   }
-  
+
   return Object.keys(errors).length > 0 ? errors : null;
 };
 
@@ -192,20 +182,20 @@ export const validateManualRisk = (riskData) => {
  */
 export const validateOccurrence = (occurrenceData) => {
   const errors = {};
-  
+
   if (occurrenceData.scheduleDelayDays !== undefined && occurrenceData.scheduleDelayDays < 0) {
-    errors.scheduleDelayDays = 'No puede ser negativo';
+    errors.scheduleDelayDays = i18n.t('risk.form.cannotBeNegative');
   }
-  
+
   if (occurrenceData.detectedAt && new Date(occurrenceData.detectedAt) > new Date()) {
-    errors.detectedAt = 'No puede ser fecha futura';
+    errors.detectedAt = i18n.t('risk.form.cannotBeFutureDate');
   }
-  
+
   if (occurrenceData.mitigatedAt && occurrenceData.detectedAt) {
     if (new Date(occurrenceData.mitigatedAt) < new Date(occurrenceData.detectedAt)) {
-      errors.mitigatedAt = 'No puede ser anterior a la fecha de detección';
+      errors.mitigatedAt = i18n.t('risk.form.cannotBeEarlierThanDetection');
     }
   }
-  
+
   return Object.keys(errors).length > 0 ? errors : null;
 };

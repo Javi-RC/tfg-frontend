@@ -17,24 +17,19 @@ jest.mock('react-i18next', () => ({
   }),
   initReactI18next: {
     type: '3rdParty',
-    init: () => {}
-  }
+    init: () => {},
+  },
 }));
 
 // Mock lucide-react
 jest.mock('lucide-react', () => ({
-  Plus: jest.fn(() => <svg data-testid="plus-icon" />)
+  Plus: jest.fn(() => <svg data-testid="plus-icon" />),
 }));
 
 // Mock SecondaryButton
 jest.mock('../SecondaryButton', () => {
   return jest.fn(({ onClick, children, style, 'aria-label': ariaLabel, leftIcon }) => (
-    <button 
-      onClick={onClick} 
-      style={style} 
-      aria-label={ariaLabel}
-      data-testid="secondary-button"
-    >
+    <button type="button" onClick={onClick} style={style} aria-label={ariaLabel} data-testid="secondary-button">
       {leftIcon}
       {children}
     </button>
@@ -61,17 +56,6 @@ describe('SectionHeader Component', () => {
       expect(heading.tagName).toBe('H2');
     });
 
-    test('applies correct heading styles', () => {
-      render(<SectionHeader title="Education" />);
-      const heading = screen.getByText('Education');
-      expect(heading).toHaveStyle({
-        fontSize: '18px',
-        fontWeight: '700',
-        color: '#2d3748',
-        textTransform: 'uppercase',
-        letterSpacing: '0.5px'
-      });
-    });
   });
 
   // Edit Mode Tests
@@ -132,11 +116,11 @@ describe('SectionHeader Component', () => {
   describe('Custom Add Label', () => {
     test('uses custom addLabel when provided', () => {
       render(
-        <SectionHeader 
-          title="Projects" 
-          editMode={true} 
-          onAdd={jest.fn()} 
-          addLabel="Add New Project" 
+        <SectionHeader
+          title="Projects"
+          editMode={true}
+          onAdd={jest.fn()}
+          addLabel="Add New Project"
         />
       );
       const button = screen.getByTestId('secondary-button');
@@ -153,45 +137,6 @@ describe('SectionHeader Component', () => {
       render(<SectionHeader title="Education" editMode={true} onAdd={jest.fn()} />);
       const button = screen.getByTestId('secondary-button');
       expect(button).toHaveAttribute('aria-label', 'Add entry to Education');
-    });
-  });
-
-  // Layout Tests
-  describe('Layout and Spacing', () => {
-    test('applies flexbox layout to container', () => {
-      const { container } = render(<SectionHeader title="Skills" />);
-      const wrapper = container.firstChild;
-      expect(wrapper).toHaveStyle({
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      });
-    });
-
-    test('applies correct margin to container', () => {
-      const { container } = render(<SectionHeader title="Skills" />);
-      const wrapper = container.firstChild;
-      expect(wrapper).toHaveStyle({ marginBottom: '28px' });
-    });
-
-    test('applies gap between title and button', () => {
-      const { container } = render(<SectionHeader title="Skills" editMode={true} onAdd={jest.fn()} />);
-      const wrapper = container.firstChild;
-      expect(wrapper).toHaveStyle({ gap: '20px' });
-    });
-  });
-
-  // Button Styling Tests
-  describe('Button Styling', () => {
-    test('applies custom styles to add button', () => {
-      render(<SectionHeader title="Skills" editMode={true} onAdd={jest.fn()} />);
-      const button = screen.getByTestId('secondary-button');
-      expect(button).toHaveStyle({
-        padding: '10px 20px',
-        fontSize: '14px',
-        fontWeight: '600',
-        minWidth: '100px'
-      });
     });
   });
 
@@ -244,11 +189,11 @@ describe('SectionHeader Component', () => {
 
     test('custom aria-label is properly applied', () => {
       render(
-        <SectionHeader 
-          title="Skills" 
-          editMode={true} 
-          onAdd={jest.fn()} 
-          addLabel="Add New Skill Entry" 
+        <SectionHeader
+          title="Skills"
+          editMode={true}
+          onAdd={jest.fn()}
+          addLabel="Add New Skill Entry"
         />
       );
       const button = screen.getByTestId('secondary-button');
@@ -274,10 +219,10 @@ describe('SectionHeader Component', () => {
     test('transitions between edit and read modes', () => {
       const { rerender } = render(<SectionHeader title="Skills" editMode={false} />);
       expect(screen.queryByTestId('secondary-button')).not.toBeInTheDocument();
-      
+
       rerender(<SectionHeader title="Skills" editMode={true} onAdd={jest.fn()} />);
       expect(screen.getByTestId('secondary-button')).toBeInTheDocument();
-      
+
       rerender(<SectionHeader title="Skills" editMode={false} />);
       expect(screen.queryByTestId('secondary-button')).not.toBeInTheDocument();
     });

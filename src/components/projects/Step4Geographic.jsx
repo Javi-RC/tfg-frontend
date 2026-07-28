@@ -15,7 +15,10 @@ export default function Step4Geographic({ formData, onChange, errors = {} }) {
 
   const handleCountriesChange = (e) => {
     const value = e.target.value;
-    const countries = value.split(',').map(r => r.trim()).filter(r => r);
+    const countries = value
+      .split(',')
+      .map((r) => r.trim())
+      .filter((r) => r);
     onChange({ involvedCountriesText: value, involvedCountries: countries });
   };
 
@@ -23,17 +26,15 @@ export default function Step4Geographic({ formData, onChange, errors = {} }) {
     onChange({
       expectedTimeOverlap: {
         ...formData.expectedTimeOverlap,
-        [field]: value
-      }
+        [field]: value,
+      },
     });
   };
 
   return (
     <div>
       <h2 style={styles.stepTitle}>{t('projects.steps.step4.title')}</h2>
-      <p style={styles.stepDescription}>
-        {t('projects.steps.step4.description')}
-      </p>
+      <p style={styles.stepDescription}>{t('projects.steps.step4.description')}</p>
 
       <FormTextarea
         label={t('projects.steps.step4.involvedCountries')}
@@ -56,7 +57,7 @@ export default function Step4Geographic({ formData, onChange, errors = {} }) {
           { value: WORK_MODE.OFFICE_FIRST, label: t('projects.workMode.officeFirst') },
           { value: WORK_MODE.OFFICE_REMOTE_MIX, label: t('projects.workMode.officeMix') },
           { value: WORK_MODE.REMOTE_FIRST, label: t('projects.workMode.remoteFirst') },
-          { value: WORK_MODE.REMOTE_MODE, label: t('projects.workMode.remoteMode') }
+          { value: WORK_MODE.REMOTE_MODE, label: t('projects.workMode.remoteMode') },
         ]}
       />
 
@@ -68,12 +69,12 @@ export default function Step4Geographic({ formData, onChange, errors = {} }) {
         options={[
           { value: COMMUNICATION_LEVELS.LOW, label: t('projects.levels.low') },
           { value: COMMUNICATION_LEVELS.MEDIUM, label: t('projects.levels.medium') },
-          { value: COMMUNICATION_LEVELS.HIGH, label: t('projects.levels.high') }
+          { value: COMMUNICATION_LEVELS.HIGH, label: t('projects.levels.high') },
         ]}
       />
 
       <div style={styles.section}>
-        <label style={styles.label}>{t('projects.steps.step4.expectedTimeOverlap')}</label>
+        <span style={styles.label}>{t('projects.steps.step4.expectedTimeOverlap')}</span>
         <div style={styles.row}>
           <FormNumber
             label=""
@@ -88,9 +89,7 @@ export default function Step4Geographic({ formData, onChange, errors = {} }) {
             name="timeOverlapUnit"
             value={formData.expectedTimeOverlap?.unit || 'hours'}
             onChange={(e) => handleTimeOverlapChange('unit', e.target.value)}
-            options={[
-              { value: TIME_UNITS.HOURS, label: t('projects.timeUnits.hours') }
-            ]}
+            options={[{ value: TIME_UNITS.HOURS, label: t('projects.timeUnits.hours') }]}
           />
         </div>
       </div>
@@ -103,7 +102,7 @@ export default function Step4Geographic({ formData, onChange, errors = {} }) {
         options={[
           { value: COMMUNICATION_LEVELS.LOW, label: t('projects.levels.low') },
           { value: COMMUNICATION_LEVELS.MEDIUM, label: t('projects.levels.medium') },
-          { value: COMMUNICATION_LEVELS.HIGH, label: t('projects.levels.high') }
+          { value: COMMUNICATION_LEVELS.HIGH, label: t('projects.levels.high') },
         ]}
       />
     </div>
@@ -114,27 +113,27 @@ const styles = {
   stepTitle: {
     fontSize: '28px',
     fontWeight: '700',
-    color: '#111',
-    margin: '0 0 8px 0'
+    color: 'var(--color-text-primary)',
+    margin: '0 0 8px 0',
   },
   stepDescription: {
     fontSize: '15px',
-    color: '#6B7280',
-    marginBottom: '32px'
+    color: 'var(--color-text-muted)',
+    marginBottom: '32px',
   },
   row: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    gap: '16px'
+    gap: '16px',
   },
   section: {
-    marginBottom: '20px'
+    marginBottom: '20px',
   },
   label: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#111',
+    color: 'var(--color-text-primary)',
     marginBottom: '8px',
-    display: 'block'
-  }
+    display: 'block',
+  },
 };

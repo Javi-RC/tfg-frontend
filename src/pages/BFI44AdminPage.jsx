@@ -1,14 +1,16 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Users, Bell, BarChart3, ArrowLeft, CheckCircle, Clock } from 'lucide-react';
-import { AuthContext } from '../contexts/AuthContext';
+import { ArrowLeft } from 'lucide-react';
+import { useAuth } from '../hooks/useAuth';
 import {
   getEmployeesWithoutTest,
   notifyPendingEmployees,
   notifyPendingEmployee,
-  getOrganizationBFI44Stats
+  getOrganizationBFI44Stats,
 } from '../api/bfi44Admin';
+import AdminStatsSection from '../components/personality/AdminStatsSection';
+import EmployeesTable from '../components/personality/EmployeesTable';
 
 /**
  * BFI44AdminPage Component
@@ -18,7 +20,7 @@ import {
 export default function BFI44AdminPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
 
   const [stats, setStats] = useState(null);
   const [employees, setEmployees] = useState([]);
@@ -28,8 +30,7 @@ export default function BFI44AdminPage() {
   const [error, setError] = useState(null);
   const [toast, setToast] = useState(null);
 
-  const isAuthorized =
-    user?.role === 'org_admin' || user?.isProjectManager === true;
+  const isAuthorized = user?.role === 'org_admin' || user?.isProjectManager === true;
 
   useEffect(() => {
     if (!isAuthorized) return;
@@ -66,28 +67,19 @@ export default function BFI44AdminPage() {
       }
 
       if (employeesResult.status === 'fulfilled') {
-        setEmployees(
-          employeesResult.value.data?.employees || []
-        );
+        setEmployees(employeesResult.value.data?.employees || []);
       }
 
       // Show error only if all requests failed
-      const failures = results.filter(r => r.status === 'rejected');
+      const failures = results.filter((r) => r.status === 'rejected');
       if (failures.length === results.length) {
         const firstErr = failures[0].reason;
         setError(
-          firstErr?.response?.data?.error ||
-          firstErr?.message ||
-          t('bfi44Admin.errorLoading')
+          firstErr?.response?.data?.error || firstErr?.message || t('bfi44Admin.errorLoading')
         );
       }
     } catch (err) {
-      console.error('Error loading BFI-44 admin data:', err);
-      setError(
-        err.response?.data?.error ||
-        err.message ||
-        t('bfi44Admin.errorLoading')
-      );
+      setError(err.response?.data?.error || err.message || t('bfi44Admin.errorLoading'));
     } finally {
       setLoading(false);
     }
@@ -101,18 +93,14 @@ export default function BFI44AdminPage() {
 
       setToast({
         type: 'success',
-        message: t('bfi44Admin.employeesNotified', { count: notified })
+        message: t('bfi44Admin.employeesNotified', { count: notified }),
       });
 
       await loadData();
     } catch (err) {
-      console.error('Error notifying employees:', err);
       setToast({
         type: 'error',
-        message:
-          err.response?.data?.error ||
-          err.message ||
-          t('bfi44Admin.errorNotifying')
+        message: err.response?.data?.error || err.message || t('bfi44Admin.errorNotifying'),
       });
     } finally {
       setNotifying(false);
@@ -129,21 +117,20 @@ export default function BFI44AdminPage() {
       if (data?.notified) {
         setToast({
           type: 'success',
-          message: t('bfi44Admin.employeeNotified', { name: data.userName || employee.name })
+          message: t('bfi44Admin.employeeNotified', { name: data.userName || employee.name }),
         });
       } else {
         setToast({
           type: 'info',
-          message: data?.reason || t('bfi44Admin.employeeAlreadyCompleted')
+          message: data?.reason || t('bfi44Admin.employeeAlreadyCompleted'),
         });
       }
 
       await loadData();
     } catch (err) {
-      console.error('Error notifying employee:', err);
       setToast({
         type: 'error',
-        message: err.response?.data?.error || t('bfi44Admin.errorNotifying')
+        message: err.response?.data?.error || t('bfi44Admin.errorNotifying'),
       });
     } finally {
       setNotifyingUserId(null);
@@ -165,7 +152,7 @@ export default function BFI44AdminPage() {
     return (
       <div style={styles.container}>
         <div style={styles.content}>
-          <p style={{ color: '#c0392b', textAlign: 'center', padding: '60px 20px' }}>
+          <p style={{ color: 'var(--color-error)', textAlign: 'center', padding: '60px 20px' }}>
             {t('bfi44Admin.unauthorized')}
           </p>
         </div>
@@ -184,17 +171,12 @@ export default function BFI44AdminPage() {
     );
   }
 
-  const completionRate = stats?.completionRate ?? 0;
-  const totalEmployees = stats?.totalEmployees ?? 0;
-  const completed = stats?.completed ?? 0;
-  const pending = stats?.pending ?? totalEmployees - completed;
-
   return (
     <div style={styles.container}>
       <div style={styles.content}>
         {/* Header */}
         <div style={styles.headerCard}>
-          <button style={styles.backButton} onClick={() => navigate(-1)}>
+          <button type="button" style={styles.backButton} onClick={() => navigate(-1)}>
             <ArrowLeft size={18} />
             {t('common.back')}
           </button>
@@ -209,137 +191,16 @@ export default function BFI44AdminPage() {
         )}
 
         {/* Stats Cards */}
-        {stats && (
-          <div style={styles.statsGrid}>
-            <div style={{ ...styles.statCard, borderLeft: '4px solid #3B82F6' }}>
-              <div style={{ ...styles.statIcon, background: '#EFF6FF' }}>
-                <Users size={24} color="#3B82F6" />
-              </div>
-              <div>
-                <div style={styles.statValue}>{totalEmployees}</div>
-                <div style={styles.statLabel}>{t('bfi44Admin.stats.totalEmployees')}</div>
-              </div>
-            </div>
-
-            <div style={{ ...styles.statCard, borderLeft: '4px solid #10B981' }}>
-              <div style={{ ...styles.statIcon, background: '#D1FAE5' }}>
-                <CheckCircle size={24} color="#10B981" />
-              </div>
-              <div>
-                <div style={styles.statValue}>{completed}</div>
-                <div style={styles.statLabel}>{t('bfi44Admin.stats.completed')}</div>
-              </div>
-            </div>
-
-            <div style={{ ...styles.statCard, borderLeft: '4px solid #F59E0B' }}>
-              <div style={{ ...styles.statIcon, background: '#FEF3C7' }}>
-                <Clock size={24} color="#F59E0B" />
-              </div>
-              <div>
-                <div style={styles.statValue}>{pending}</div>
-                <div style={styles.statLabel}>{t('bfi44Admin.stats.pending')}</div>
-              </div>
-            </div>
-
-            <div style={{ ...styles.statCard, borderLeft: '4px solid #8B5CF6' }}>
-              <div style={{ ...styles.statIcon, background: '#EDE9FE' }}>
-                <BarChart3 size={24} color="#8B5CF6" />
-              </div>
-              <div>
-                <div style={styles.statValue}>{Math.round(completionRate)}%</div>
-                <div style={styles.statLabel}>{t('bfi44Admin.stats.completionRate')}</div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Completion Progress Bar */}
-        {stats && (
-          <div style={styles.progressSection}>
-            <div style={styles.progressHeader}>
-              <span style={styles.progressLabel}>{t('bfi44Admin.completionProgress')}</span>
-              <span style={styles.progressValue}>{Math.round(completionRate)}%</span>
-            </div>
-            <div style={styles.progressBarTrack}>
-              <div
-                style={{
-                  ...styles.progressBarFill,
-                  width: `${Math.min(completionRate, 100)}%`
-                }}
-              />
-            </div>
-          </div>
-        )}
+        {stats && <AdminStatsSection stats={stats} />}
 
         {/* Employees Without Test */}
-        <div style={styles.sectionCard}>
-          <div style={styles.sectionHeader}>
-            <h2 style={styles.sectionTitle}>{t('bfi44Admin.pendingEmployees')}</h2>
-            {employees.length > 0 && (
-              <button
-                type="button"
-                onClick={handleNotifyAll}
-                disabled={notifying}
-                style={styles.notifyButton}
-              >
-                <Bell size={16} />
-                {notifying
-                  ? t('bfi44Admin.sending')
-                  : t('bfi44Admin.notifyAll')}
-              </button>
-            )}
-          </div>
-
-          {employees.length === 0 ? (
-            <div style={styles.emptyState}>
-              <CheckCircle size={40} color="#10B981" />
-              <p style={styles.emptyText}>{t('bfi44Admin.allCompleted')}</p>
-            </div>
-          ) : (
-            <div style={styles.tableWrapper}>
-              <table style={styles.table}>
-                <thead>
-                  <tr>
-                    <th style={styles.th}>{t('bfi44Admin.table.name')}</th>
-                    <th style={styles.th}>{t('bfi44Admin.table.email')}</th>
-                    <th style={{...styles.th, textAlign: 'right'}}>{t('bfi44Admin.table.actions')}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {employees.map((emp) => {
-                    const empId = emp.id || emp._id;
-                    const isNotifyingThis = notifyingUserId === empId;
-                    return (
-                      <tr key={empId || emp.email} style={styles.tr}>
-                        <td style={styles.td}>
-                          {emp.name || emp.username || '—'}
-                        </td>
-                        <td style={styles.td}>{emp.email}</td>
-                        <td style={{...styles.td, textAlign: 'right'}}>
-                          <button
-                            type="button"
-                            onClick={() => handleNotifyOne(emp)}
-                            disabled={isNotifyingThis || notifying}
-                            style={{
-                              ...styles.notifyOneButton,
-                              opacity: isNotifyingThis || notifying ? 0.5 : 1
-                            }}
-                            aria-label={t('bfi44Admin.notifyOne', { name: emp.name })}
-                          >
-                            <Bell size={14} />
-                            {isNotifyingThis
-                              ? t('bfi44Admin.sending')
-                              : t('bfi44Admin.notify')}
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </div>
+        <EmployeesTable
+          employees={employees}
+          notifying={notifying}
+          notifyingUserId={notifyingUserId}
+          onNotifyAll={handleNotifyAll}
+          onNotifyOne={handleNotifyOne}
+        />
       </div>
 
       {/* Toast Notification */}
@@ -347,7 +208,7 @@ export default function BFI44AdminPage() {
         <div
           style={{
             ...styles.toast,
-            background: toast.type === 'success' ? '#065F46' : '#991B1B'
+            background: toast.type === 'success' ? '#065F46' : '#991B1B',
           }}
           role="status"
           aria-live="polite"
@@ -362,42 +223,42 @@ export default function BFI44AdminPage() {
 const styles = {
   container: {
     minHeight: '100vh',
-    background: 'linear-gradient(135deg, #f5f7fa 0%, #e8edf2 100%)',
+    background: 'var(--gradient-page)',
     padding: '104px 20px 40px',
     fontFamily:
-      'Poppins, Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial'
+      'Poppins, Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial',
   },
   content: {
     maxWidth: '1000px',
-    margin: '0 auto'
+    margin: '0 auto',
   },
   loadingWrapper: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: '60vh'
+    minHeight: '60vh',
   },
   spinner: {
     width: '48px',
     height: '48px',
-    border: '4px solid #e2e8f0',
-    borderTopColor: '#3b82f6',
+    border: '4px solid var(--color-primary-track)',
+    borderTopColor: 'var(--color-primary)',
     borderRadius: '50%',
-    animation: 'spin 1s linear infinite'
+    animation: 'spin 1s linear infinite',
   },
   loadingText: {
     marginTop: '16px',
     fontSize: '16px',
-    color: '#666'
+    color: 'var(--color-text-muted)',
   },
   headerCard: {
-    background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
-    borderRadius: '16px',
+    background: 'var(--gradient-primary)',
+    borderRadius: '18px',
     padding: '40px',
     marginBottom: '24px',
-    boxShadow: '0 4px 16px rgba(0, 0, 0, 0.12)',
-    color: 'white'
+    boxShadow: 'var(--shadow-primary)',
+    color: 'white',
   },
   backButton: {
     display: 'inline-flex',
@@ -410,33 +271,33 @@ const styles = {
     color: 'white',
     fontSize: '13px',
     cursor: 'pointer',
-    marginBottom: '16px'
+    marginBottom: '16px',
   },
   title: {
     fontSize: '32px',
     fontWeight: '700',
     color: 'white',
-    margin: 0
+    margin: 0,
   },
   subtitle: {
     fontSize: '16px',
     color: 'rgba(255, 255, 255, 0.85)',
-    margin: '8px 0 0'
+    margin: '8px 0 0',
   },
   errorBanner: {
     padding: '12px 16px',
-    background: '#FEE2E2',
-    border: '1px solid #FECACA',
+    background: 'var(--color-danger-bg)',
+    border: '1px solid var(--color-danger-bg)',
     borderRadius: '10px',
-    color: '#991B1B',
+    color: 'var(--color-danger-strong)',
     fontSize: '14px',
-    marginBottom: '16px'
+    marginBottom: '16px',
   },
   statsGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
     gap: '16px',
-    marginBottom: '24px'
+    marginBottom: '24px',
   },
   statCard: {
     display: 'flex',
@@ -444,8 +305,8 @@ const styles = {
     gap: '16px',
     padding: '20px',
     background: 'white',
-    border: '1px solid #E5E7EB',
-    borderRadius: '8px'
+    border: '1px solid var(--color-border)',
+    borderRadius: '8px',
   },
   statIcon: {
     width: '48px',
@@ -454,78 +315,78 @@ const styles = {
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: '8px',
-    flexShrink: 0
+    flexShrink: 0,
   },
   statValue: {
     fontSize: '28px',
     fontWeight: '700',
-    color: '#111827',
-    lineHeight: 1
+    color: 'var(--color-text-heading)',
+    lineHeight: 1,
   },
   statLabel: {
     fontSize: '14px',
-    color: '#6B7280',
-    marginTop: '4px'
+    color: 'var(--color-text-muted)',
+    marginTop: '4px',
   },
   progressSection: {
     background: 'white',
-    border: '1px solid #E5E7EB',
+    border: '1px solid var(--color-border)',
     borderRadius: '12px',
     padding: '24px',
-    marginBottom: '24px'
+    marginBottom: '24px',
   },
   progressHeader: {
     display: 'flex',
     justifyContent: 'space-between',
-    marginBottom: '10px'
+    marginBottom: '10px',
   },
   progressLabel: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#374151'
+    color: 'var(--color-text-strong)',
   },
   progressValue: {
     fontSize: '14px',
     fontWeight: '700',
-    color: '#10B981'
+    color: 'var(--color-success)',
   },
   progressBarTrack: {
     width: '100%',
     height: '10px',
-    background: '#E5E7EB',
+    background: 'var(--color-border)',
     borderRadius: '5px',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    background: 'linear-gradient(90deg, #10B981, #34D399)',
+    background: 'linear-gradient(90deg, var(--color-success), #34D399)',
     borderRadius: '5px',
-    transition: 'width 0.6s ease'
+    transition: 'width 0.6s ease',
   },
   sectionCard: {
     background: 'white',
-    border: '1px solid #E5E7EB',
+    border: '1px solid var(--color-border)',
     borderRadius: '12px',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   sectionHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '20px 24px',
-    borderBottom: '1px solid #E5E7EB'
+    borderBottom: '1px solid var(--color-border)',
   },
   sectionTitle: {
     fontSize: '18px',
     fontWeight: '700',
-    color: '#111827',
-    margin: 0
+    color: 'var(--color-text-heading)',
+    margin: 0,
   },
   notifyButton: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '8px',
-    background: '#111',
+    background: 'var(--color-primary)',
     color: 'white',
     border: 'none',
     borderRadius: '24px',
@@ -533,51 +394,51 @@ const styles = {
     fontSize: '14px',
     fontWeight: '600',
     cursor: 'pointer',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.12)'
+    boxShadow: '0 2px 8px rgba(0,0,0,0.12)',
   },
   emptyState: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     padding: '48px 24px',
-    gap: '12px'
+    gap: '12px',
   },
   emptyText: {
     fontSize: '15px',
-    color: '#6B7280',
-    margin: 0
+    color: 'var(--color-text-muted)',
+    margin: 0,
   },
   tableWrapper: {
-    overflowX: 'auto'
+    overflowX: 'auto',
   },
   table: {
     width: '100%',
-    borderCollapse: 'collapse'
+    borderCollapse: 'collapse',
   },
   th: {
     textAlign: 'left',
     padding: '12px 24px',
     fontSize: '12px',
     fontWeight: '600',
-    color: '#6B7280',
+    color: 'var(--color-text-muted)',
     textTransform: 'uppercase',
     letterSpacing: '0.5px',
-    background: '#F9FAFB',
-    borderBottom: '1px solid #E5E7EB'
+    background: 'var(--color-bg-muted)',
+    borderBottom: '1px solid var(--color-border)',
   },
   tr: {
-    borderBottom: '1px solid #F3F4F6'
+    borderBottom: '1px solid var(--color-bg-subtle)',
   },
   td: {
     padding: '14px 24px',
     fontSize: '14px',
-    color: '#374151'
+    color: 'var(--color-text-strong)',
   },
   notifyOneButton: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '6px',
-    background: '#374151',
+    background: 'var(--color-text-strong)',
     color: 'white',
     border: 'none',
     borderRadius: '20px',
@@ -585,7 +446,7 @@ const styles = {
     fontSize: '13px',
     fontWeight: '500',
     cursor: 'pointer',
-    transition: 'opacity 0.2s'
+    transition: 'opacity 0.2s',
   },
   toast: {
     position: 'fixed',
@@ -598,6 +459,6 @@ const styles = {
     fontWeight: '500',
     boxShadow: '0 4px 16px rgba(0,0,0,0.2)',
     zIndex: 1300,
-    animation: 'slideIn 0.3s ease'
-  }
+    animation: 'slideIn 0.3s ease',
+  },
 };

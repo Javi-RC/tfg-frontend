@@ -69,7 +69,7 @@ export const getOrganizationStats = (id) => api.get(`/api/organizations/${id}/st
  * @param {Object} settings - Settings to update
  * @returns {Promise} API response
  */
-export const updateOrganizationSettings = (id, settings) => 
+export const updateOrganizationSettings = (id, settings) =>
   api.patch(`/api/organizations/${id}/settings`, settings);
 
 // ==================== Employee Management ====================
@@ -88,7 +88,7 @@ export const addEmployee = (id, data) => api.post(`/api/organizations/${id}/empl
  * @param {string} userId - User ID to remove
  * @returns {Promise} API response
  */
-export const removeEmployee = (id, userId) => 
+export const removeEmployee = (id, userId) =>
   api.delete(`/api/organizations/${id}/employees/${userId}`);
 
 /**
@@ -98,7 +98,7 @@ export const removeEmployee = (id, userId) =>
  * @param {string} status - New status (pending/active/inactive)
  * @returns {Promise} API response
  */
-export const updateEmployeeStatus = (id, userId, status) => 
+export const updateEmployeeStatus = (id, userId, status) =>
   api.patch(`/api/organizations/${id}/employees/${userId}/status`, { status });
 
 /**
@@ -107,7 +107,7 @@ export const updateEmployeeStatus = (id, userId, status) =>
  * @param {Object} params - Query parameters (status, department, position)
  * @returns {Promise} API response with employees list
  */
-export const getOrganizationEmployees = (id, params = {}) => 
+export const getOrganizationEmployees = (id, params = {}) =>
   api.get(`/api/organizations/${id}/employees`, { params });
 
 // ==================== Admin Management ====================
@@ -127,7 +127,7 @@ export const addAdmin = (id, data) => api.post(`/api/organizations/${id}/admins`
  * @param {string} organizationId - Organization ID
  * @returns {Promise} API response
  */
-export const submitCVToOrganization = (organizationId) => 
+export const submitCVToOrganization = (organizationId) =>
   api.post('/api/cv/submit-to-organization', { organizationId });
 
 /**
@@ -136,7 +136,7 @@ export const submitCVToOrganization = (organizationId) =>
  * @param {Object} params - Query parameters (status, page, limit)
  * @returns {Promise} API response with CVs list
  */
-export const getOrganizationCVs = (id, params = {}) => 
+export const getOrganizationCVs = (id, params = {}) =>
   api.get(`/api/organizations/${id}/cvs`, { params });
 
 /**
@@ -145,8 +145,7 @@ export const getOrganizationCVs = (id, params = {}) =>
  * @param {string} cvId - CV ID
  * @returns {Promise} API response with CV data
  */
-export const getOrganizationCV = (id, cvId) => 
-  api.get(`/api/organizations/${id}/cvs/${cvId}`);
+export const getOrganizationCV = (id, cvId) => api.get(`/api/organizations/${id}/cvs/${cvId}`);
 
 /**
  * Update CV status in organization
@@ -155,26 +154,7 @@ export const getOrganizationCV = (id, cvId) =>
  * @param {Object} data - Status update data (status, notes)
  * @returns {Promise} API response
  */
-export const updateCVStatus = (id, cvId, data) => 
+export const updateCVStatus = (id, cvId, data) =>
   api.patch(`/api/organizations/${id}/cvs/${cvId}/status`, data);
 
-export default {
-  createOrganization,
-  getOrganizationById,
-  updateOrganization,
-  getMyOrganizations,
-  searchOrganizations,
-  deactivateOrganization,
-  activateOrganization,
-  getOrganizationStats,
-  updateOrganizationSettings,
-  addEmployee,
-  removeEmployee,
-  updateEmployeeStatus,
-  getOrganizationEmployees,
-  addAdmin,
-  submitCVToOrganization,
-  getOrganizationCVs,
-  getOrganizationCV,
-  updateCVStatus
-};
+

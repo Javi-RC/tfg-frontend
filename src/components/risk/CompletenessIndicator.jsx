@@ -6,12 +6,12 @@ import { Info, CheckCircle2, TrendingUp } from 'lucide-react';
  * Data Completeness Banner Component
  * Shows user how complete their project data is and suggestions for improvement
  */
-export default function CompletenessIndicator({ 
-  completeness, 
-  completedFields, 
-  totalFields, 
+export default function CompletenessIndicator({
+  completeness,
+  completedFields,
+  totalFields,
   suggestions = [],
-  message 
+  message,
 }) {
   const { t } = useTranslation();
   const getProgressColor = () => {
@@ -41,9 +41,7 @@ export default function CompletenessIndicator({
           </div>
         </div>
         <div style={styles.percentage}>
-          <span style={{ ...styles.percentageText, color: progressColor }}>
-            {completeness}%
-          </span>
+          <span style={{ ...styles.percentageText, color: progressColor }}>{completeness}%</span>
           <span style={styles.fieldCount}>
             {t('risk.completeness.fieldsCount', { completed: completedFields, total: totalFields })}
           </span>
@@ -52,29 +50,25 @@ export default function CompletenessIndicator({
 
       {/* Progress Bar */}
       <div style={styles.progressBarContainer}>
-        <div
+        <progress
+          value={completeness}
+          max={100}
+          aria-label={t('risk.completeness.aria.progress', { percent: completeness })}
           style={{
             ...styles.progressBar,
-            width: `${completeness}%`,
-            backgroundColor: progressColor
+            width: '100%',
+            accentColor: progressColor,
           }}
-          role="progressbar"
-          aria-valuenow={completeness}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-label={t('risk.completeness.aria.progress', { percent: completeness })}
         />
       </div>
 
       {/* Suggestions */}
       {suggestions.length > 0 && (
         <div style={styles.suggestions}>
-          <div style={styles.suggestionsTitle}>
-            {t('risk.completeness.suggestionsTitle')}
-          </div>
+          <div style={styles.suggestionsTitle}>{t('risk.completeness.suggestionsTitle')}</div>
           <ul style={styles.suggestionsList}>
-            {suggestions.map((suggestion, index) => (
-              <li key={index} style={styles.suggestionItem}>
+            {suggestions.map((suggestion) => (
+              <li key={suggestion} style={styles.suggestionItem}>
                 {suggestion}
               </li>
             ))}
@@ -87,11 +81,11 @@ export default function CompletenessIndicator({
 
 const styles = {
   container: {
-    backgroundColor: '#F9FAFB',
-    border: '1px solid #E5E7EB',
+    backgroundColor: 'var(--color-bg-muted)',
+    border: '1px solid var(--color-border)',
     borderRadius: '8px',
     padding: '16px',
-    marginBottom: '16px'
+    marginBottom: '16px',
   },
   header: {
     display: 'flex',
@@ -99,75 +93,75 @@ const styles = {
     alignItems: 'flex-start',
     marginBottom: '12px',
     gap: '16px',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   headerLeft: {
     display: 'flex',
     alignItems: 'flex-start',
     gap: '12px',
     flex: 1,
-    minWidth: '200px'
+    minWidth: '200px',
   },
   title: {
     margin: '0 0 4px 0',
     fontSize: '14px',
     fontWeight: '600',
-    color: '#111827'
+    color: 'var(--color-text-heading)',
   },
   subtitle: {
     margin: 0,
     fontSize: '13px',
-    color: '#6B7280',
-    lineHeight: '1.4'
+    color: 'var(--color-text-muted)',
+    lineHeight: '1.4',
   },
   percentage: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'flex-end'
+    alignItems: 'flex-end',
   },
   percentageText: {
     fontSize: '24px',
     fontWeight: '700',
-    lineHeight: '1'
+    lineHeight: '1',
   },
   fieldCount: {
     fontSize: '12px',
-    color: '#6B7280',
-    marginTop: '4px'
+    color: 'var(--color-text-muted)',
+    marginTop: '4px',
   },
   progressBarContainer: {
     width: '100%',
     height: '8px',
-    backgroundColor: '#E5E7EB',
+    backgroundColor: 'var(--color-border)',
     borderRadius: '4px',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   progressBar: {
     height: '100%',
-    transition: 'width 0.3s ease',
-    borderRadius: '4px'
+    width: '100%',
+    borderRadius: '4px',
   },
   suggestions: {
     marginTop: '16px',
     padding: '12px',
     backgroundColor: '#FFFBEB',
     borderRadius: '6px',
-    border: '1px solid #FDE68A'
+    border: '1px solid var(--color-warning-bg)',
   },
   suggestionsTitle: {
     fontSize: '13px',
     fontWeight: '600',
-    color: '#92400E',
-    marginBottom: '8px'
+    color: 'var(--color-warning-dark)',
+    marginBottom: '8px',
   },
   suggestionsList: {
     margin: 0,
     paddingLeft: '20px',
     fontSize: '13px',
-    color: '#78350F'
+    color: '#78350F',
   },
   suggestionItem: {
     marginBottom: '4px',
-    lineHeight: '1.5'
-  }
+    lineHeight: '1.5',
+  },
 };

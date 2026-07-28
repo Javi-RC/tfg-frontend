@@ -1,11 +1,11 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FormInput, FormTextarea, FormSelect, FormNumber } from './FormComponents';
-import { 
-  SYNCHRONOUS_COMMUNICATION, 
+import {
+  SYNCHRONOUS_COMMUNICATION,
   COMMUNICATION_LEVELS,
   LANGUAGE_PROFICIENCY,
-  TIME_UNITS
+  TIME_UNITS,
 } from '../../types/projectTypes';
 
 /**
@@ -22,23 +22,24 @@ export default function Step2Collaboration({ formData, onChange, errors = {} }) 
     onChange({
       averageMeetingDuration: {
         ...formData.averageMeetingDuration,
-        [field]: value
-      }
+        [field]: value,
+      },
     });
   };
 
   const handleLanguagesChange = (e) => {
     const value = e.target.value;
-    const languages = value.split(',').map(l => l.trim()).filter(l => l);
+    const languages = value
+      .split(',')
+      .map((l) => l.trim())
+      .filter((l) => l);
     onChange({ requiredLanguagesText: value, requiredLanguages: languages });
   };
 
   return (
     <div>
       <h2 style={styles.stepTitle}>{t('projects.steps.step2.title')}</h2>
-      <p style={styles.stepDescription}>
-        {t('projects.steps.step2.description')}
-      </p>
+      <p style={styles.stepDescription}>{t('projects.steps.step2.description')}</p>
 
       <FormSelect
         label={t('projects.steps.step2.requiresSynchronousCommunication')}
@@ -50,7 +51,10 @@ export default function Step2Collaboration({ formData, onChange, errors = {} }) 
         options={[
           { value: SYNCHRONOUS_COMMUNICATION.YES, label: t('projects.yesNoPartial.yes') },
           { value: SYNCHRONOUS_COMMUNICATION.NO, label: t('projects.yesNoPartial.no') },
-          { value: SYNCHRONOUS_COMMUNICATION.ONLY_CRITICAL, label: t('projects.steps.step2.onlyCritical') }
+          {
+            value: SYNCHRONOUS_COMMUNICATION.ONLY_CRITICAL,
+            label: t('projects.steps.step2.onlyCritical'),
+          },
         ]}
       />
 
@@ -64,7 +68,7 @@ export default function Step2Collaboration({ formData, onChange, errors = {} }) 
         options={[
           { value: COMMUNICATION_LEVELS.LOW, label: t('projects.levels.low') },
           { value: COMMUNICATION_LEVELS.MEDIUM, label: t('projects.levels.medium') },
-          { value: COMMUNICATION_LEVELS.HIGH, label: t('projects.levels.high') }
+          { value: COMMUNICATION_LEVELS.HIGH, label: t('projects.levels.high') },
         ]}
       />
 
@@ -79,7 +83,7 @@ export default function Step2Collaboration({ formData, onChange, errors = {} }) 
       />
 
       <div style={styles.section}>
-        <label style={styles.label}>{t('projects.steps.step2.averageMeetingDuration')}</label>
+        <span style={styles.label}>{t('projects.steps.step2.averageMeetingDuration')}</span>
         <div style={styles.row}>
           <FormNumber
             label=""
@@ -96,7 +100,7 @@ export default function Step2Collaboration({ formData, onChange, errors = {} }) 
             onChange={(e) => handleMeetingDurationChange('unit', e.target.value)}
             options={[
               { value: TIME_UNITS.MINUTES, label: t('projects.timeUnits.minutes') },
-              { value: TIME_UNITS.HOURS, label: t('projects.timeUnits.hours') }
+              { value: TIME_UNITS.HOURS, label: t('projects.timeUnits.hours') },
             ]}
           />
         </div>
@@ -133,7 +137,10 @@ export default function Step2Collaboration({ formData, onChange, errors = {} }) 
           { value: LANGUAGE_PROFICIENCY.C1, label: t('projects.languageProficiency.c1') },
           { value: LANGUAGE_PROFICIENCY.C2, label: t('projects.languageProficiency.c2') },
           { value: LANGUAGE_PROFICIENCY.NATIVE, label: t('projects.languageProficiency.native') },
-          { value: LANGUAGE_PROFICIENCY.BILINGUAL, label: t('projects.languageProficiency.bilingual') }
+          {
+            value: LANGUAGE_PROFICIENCY.BILINGUAL,
+            label: t('projects.languageProficiency.bilingual'),
+          },
         ]}
       />
     </div>
@@ -144,27 +151,27 @@ const styles = {
   stepTitle: {
     fontSize: '28px',
     fontWeight: '700',
-    color: '#111',
-    margin: '0 0 8px 0'
+    color: 'var(--color-text-primary)',
+    margin: '0 0 8px 0',
   },
   stepDescription: {
     fontSize: '15px',
-    color: '#6B7280',
-    marginBottom: '32px'
+    color: 'var(--color-text-muted)',
+    marginBottom: '32px',
   },
   row: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    gap: '16px'
+    gap: '16px',
   },
   section: {
-    marginBottom: '20px'
+    marginBottom: '20px',
   },
   label: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#111',
+    color: 'var(--color-text-primary)',
     marginBottom: '8px',
-    display: 'block'
-  }
+    display: 'block',
+  },
 };

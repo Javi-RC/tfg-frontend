@@ -16,16 +16,15 @@ export default function AdminCVDetailPanel({ cv, onClose }) {
   const technicalSkills = cv.skills?.technical || [];
 
   return (
-    <div
+    <aside
       style={{
         background: 'white',
         borderRadius: '16px',
         padding: '32px 28px',
         boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
         maxHeight: 'calc(100vh - 100px)',
-        overflowY: 'auto'
+        overflowY: 'auto',
       }}
-      role="complementary"
       aria-label={t('cv.admin.detailPanel.aria.panel')}
     >
       <div
@@ -33,27 +32,27 @@ export default function AdminCVDetailPanel({ cv, onClose }) {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: '24px'
+          marginBottom: '24px',
         }}
       >
         <h2
           style={{
             fontSize: '20px',
             fontWeight: '600',
-            color: '#1a1a1a'
+            color: 'var(--color-text-primary)',
           }}
         >
           {t('cv.admin.detailPanel.title')}
         </h2>
-        <button
+        <button type="button"
           onClick={onClose}
           style={{
             background: 'none',
             border: 'none',
             fontSize: '24px',
             cursor: 'pointer',
-            color: '#666',
-            padding: '4px'
+            color: 'var(--color-text-muted)',
+            padding: '4px',
           }}
           aria-label={t('cv.admin.detailPanel.aria.close')}
         >
@@ -65,18 +64,16 @@ export default function AdminCVDetailPanel({ cv, onClose }) {
         <h3 style={{ fontSize: '16px', fontWeight: '600', marginBottom: '8px' }}>
           {email.split('@')[0] || t('cv.unnamed')}
         </h3>
-        <p style={{ fontSize: '14px', color: '#666', marginBottom: '4px' }}>
-          {email}
-        </p>
+        <p style={{ fontSize: '14px', color: 'var(--color-text-muted)', marginBottom: '4px' }}>{email}</p>
         {phone && (
           <p
             style={{
               fontSize: '14px',
-              color: '#666',
+              color: 'var(--color-text-muted)',
               marginBottom: '4px',
               display: 'flex',
               alignItems: 'center',
-              gap: '4px'
+              gap: '4px',
             }}
           >
             <Phone size={16} />
@@ -87,11 +84,11 @@ export default function AdminCVDetailPanel({ cv, onClose }) {
           <p
             style={{
               fontSize: '14px',
-              color: '#666',
+              color: 'var(--color-text-muted)',
               marginBottom: '4px',
               display: 'flex',
               alignItems: 'center',
-              gap: '4px'
+              gap: '4px',
             }}
           >
             <MapPin size={16} />
@@ -100,14 +97,24 @@ export default function AdminCVDetailPanel({ cv, onClose }) {
         )}
         {linkedin && (
           <p style={{ fontSize: '13px', marginTop: '8px' }}>
-            <a href={linkedin} target="_blank" rel="noopener noreferrer" style={{ color: '#0066cc', textDecoration: 'none' }}>
+            <a
+              href={linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#0066cc', textDecoration: 'none' }}
+            >
               {t('cv.linkedin')} ↗
             </a>
           </p>
         )}
         {github && (
           <p style={{ fontSize: '13px', marginTop: '4px' }}>
-            <a href={github} target="_blank" rel="noopener noreferrer" style={{ color: '#0066cc', textDecoration: 'none' }}>
+            <a
+              href={github}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#0066cc', textDecoration: 'none' }}
+            >
               {t('cv.github')} ↗
             </a>
           </p>
@@ -116,7 +123,9 @@ export default function AdminCVDetailPanel({ cv, onClose }) {
 
       {technicalSkills.length > 0 && (
         <div style={{ marginBottom: '20px' }}>
-          <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px', color: '#1a1a1a' }}>
+          <h4
+            style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px', color: 'var(--color-text-primary)' }}
+          >
             {t('cv.editor.skills.sectionTitle')}
           </h4>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
@@ -128,7 +137,7 @@ export default function AdminCVDetailPanel({ cv, onClose }) {
                   background: skill.category === 'framework' ? '#e8f4f8' : '#f0f0f0',
                   borderRadius: '12px',
                   fontSize: '12px',
-                  color: skill.category === 'framework' ? '#0066cc' : '#333'
+                  color: skill.category === 'framework' ? '#0066cc' : '#333',
                 }}
               >
                 {skill.name}
@@ -140,7 +149,9 @@ export default function AdminCVDetailPanel({ cv, onClose }) {
 
       {cv.languages && cv.languages.length > 0 && (
         <div style={{ marginBottom: '20px' }}>
-          <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px', color: '#1a1a1a' }}>
+          <h4
+            style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px', color: 'var(--color-text-primary)' }}
+          >
             {t('cv.languages')}
           </h4>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
@@ -152,7 +163,7 @@ export default function AdminCVDetailPanel({ cv, onClose }) {
                   background: '#e8f4f8',
                   borderRadius: '12px',
                   fontSize: '12px',
-                  color: '#0066cc'
+                  color: '#0066cc',
                 }}
               >
                 {typeof lang === 'string' ? lang : `${lang.language} (${lang.level})`}
@@ -164,21 +175,25 @@ export default function AdminCVDetailPanel({ cv, onClose }) {
 
       {cv.experience && cv.experience.length > 0 && (
         <div style={{ marginBottom: '20px' }}>
-          <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
+          <h4
+            style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: 'var(--color-text-primary)' }}
+          >
             {t('cv.experience')}
           </h4>
           {cv.experience.map((exp, index) => (
             <div
-              key={exp._id || index}
+              key={exp._id}
               style={{
                 marginBottom: '12px',
                 paddingBottom: '12px',
-                borderBottom: index < cv.experience.length - 1 ? '1px solid #f0f0f0' : 'none'
+                borderBottom: index < cv.experience.length - 1 ? '1px solid #f0f0f0' : 'none',
               }}
             >
-              <p style={{ fontSize: '13px', fontWeight: '600', marginBottom: '2px' }}>{exp.position}</p>
-              <p style={{ fontSize: '12px', color: '#666' }}>{exp.company}</p>
-              <p style={{ fontSize: '11px', color: '#999', marginTop: '2px' }}>
+              <p style={{ fontSize: '13px', fontWeight: '600', marginBottom: '2px' }}>
+                {exp.position}
+              </p>
+              <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{exp.company}</p>
+              <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '2px' }}>
                 {exp.startDate} - {exp.current ? t('cv.present') : exp.endDate}
               </p>
             </div>
@@ -188,22 +203,28 @@ export default function AdminCVDetailPanel({ cv, onClose }) {
 
       {cv.education && cv.education.length > 0 && (
         <div style={{ marginBottom: '20px' }}>
-          <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
+          <h4
+            style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: 'var(--color-text-primary)' }}
+          >
             {t('cv.education')}
           </h4>
           {cv.education.map((edu, index) => (
             <div
-              key={edu._id || index}
+              key={edu._id}
               style={{
                 marginBottom: '12px',
                 paddingBottom: '12px',
-                borderBottom: index < cv.education.length - 1 ? '1px solid #f0f0f0' : 'none'
+                borderBottom: index < cv.education.length - 1 ? '1px solid #f0f0f0' : 'none',
               }}
             >
-              <p style={{ fontSize: '13px', fontWeight: '600', marginBottom: '2px' }}>{edu.degree}</p>
-              <p style={{ fontSize: '12px', color: '#666' }}>{edu.institution}</p>
+              <p style={{ fontSize: '13px', fontWeight: '600', marginBottom: '2px' }}>
+                {edu.degree}
+              </p>
+              <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{edu.institution}</p>
               {edu.fieldOfStudy && (
-                <p style={{ fontSize: '11px', color: '#999', marginTop: '2px' }}>{edu.fieldOfStudy}</p>
+              <p style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginTop: '2px' }}>
+                  {edu.fieldOfStudy}
+                </p>
               )}
             </div>
           ))}
@@ -212,16 +233,18 @@ export default function AdminCVDetailPanel({ cv, onClose }) {
 
       {cv.projects && cv.projects.length > 0 && (
         <div style={{ marginBottom: '20px' }}>
-          <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
+          <h4
+            style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: 'var(--color-text-primary)' }}
+          >
             {t('cv.editor.projects.sectionTitle')}
           </h4>
           {cv.projects.map((project, index) => (
             <div
-              key={project._id || index}
+              key={project._id}
               style={{
                 marginBottom: '12px',
                 paddingBottom: '12px',
-                borderBottom: index < cv.projects.length - 1 ? '1px solid #f0f0f0' : 'none'
+                borderBottom: index < cv.projects.length - 1 ? '1px solid #f0f0f0' : 'none',
               }}
             >
               <p style={{ fontSize: '13px', fontWeight: '600', marginBottom: '2px' }}>
@@ -238,7 +261,7 @@ export default function AdminCVDetailPanel({ cv, onClose }) {
                   project.name
                 )}
               </p>
-              <p style={{ fontSize: '12px', color: '#666' }}>{project.description}</p>
+              <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>{project.description}</p>
             </div>
           ))}
         </div>
@@ -246,26 +269,30 @@ export default function AdminCVDetailPanel({ cv, onClose }) {
 
       {cv.certifications && cv.certifications.length > 0 && (
         <div>
-          <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
+          <h4
+            style={{ fontSize: '14px', fontWeight: '600', marginBottom: '12px', color: 'var(--color-text-primary)' }}
+          >
             {t('cv.certifications')}
           </h4>
           {cv.certifications.map((cert, index) => (
             <div
-              key={cert._id || index}
+              key={cert._id}
               style={{
                 marginBottom: '12px',
                 paddingBottom: '12px',
-                borderBottom: index < cv.certifications.length - 1 ? '1px solid #f0f0f0' : 'none'
+                borderBottom: index < cv.certifications.length - 1 ? '1px solid #f0f0f0' : 'none',
               }}
             >
-              <p style={{ fontSize: '13px', fontWeight: '600', marginBottom: '2px' }}>{cert.name}</p>
-              <p style={{ fontSize: '12px', color: '#666' }}>
+              <p style={{ fontSize: '13px', fontWeight: '600', marginBottom: '2px' }}>
+                {cert.name}
+              </p>
+              <p style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
                 {cert.issuer} • {cert.dateObtained}
               </p>
             </div>
           ))}
         </div>
       )}
-    </div>
+    </aside>
   );
 }

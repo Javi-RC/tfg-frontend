@@ -15,11 +15,11 @@
 }
 
 .notification-item:hover {
-  background-color: #f8fafc;
+  background-color: var(--color-bg-muted);
 }
 
 .notification-item:focus {
-  outline: 2px solid #2563eb;
+  outline: 2px solid var(--color-primary);
   outline-offset: -2px;
 }
 
@@ -32,11 +32,11 @@
 }
 
 .notification-item.priority-urgent {
-  border-left: 3px solid #dc3545;
+  border-left: 3px solid var(--color-danger);
 }
 
 .notification-item.priority-high {
-  border-left: 3px solid #f59e0b;
+  border-left: 3px solid var(--color-warning);
 }
 
 .notification-indicator {
@@ -52,7 +52,7 @@
 .unread-dot {
   width: 8px;
   height: 8px;
-  background-color: #2563eb;
+  background-color: var(--color-primary);
   border-radius: 50%;
   display: block;
   animation: pulse-dot 2s ease-in-out infinite;
@@ -98,13 +98,13 @@
   font-weight: 600;
   font-size: 14px;
   margin-bottom: 4px;
-  color: #1a202c;
+  color: var(--color-text-body);
   line-height: 1.4;
 }
 
 .notification-message {
   font-size: 13px;
-  color: #64748b;
+  color: var(--color-text-muted);
   line-height: 1.5;
   margin-bottom: 6px;
   display: -webkit-box;
@@ -138,19 +138,19 @@
 }
 
 .urgent-badge {
-  background-color: #fee2e2;
-  color: #dc2626;
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger);
 }
 
 .high-badge {
-  background-color: #fef3c7;
+  background-color: var(--color-warning-bg);
   color: #d97706;
 }
 
 .notification-delete-btn {
   background: none;
   border: none;
-  color: #cbd5e1;
+  color: var(--color-border-strong);
   cursor: pointer;
   padding: 4px;
   display: flex;
@@ -167,12 +167,12 @@
 }
 
 .notification-delete-btn:hover {
-  background-color: #fee2e2;
-  color: #dc2626;
+  background-color: var(--color-danger-bg);
+  color: var(--color-danger);
 }
 
 .notification-delete-btn:focus {
   opacity: 1;
-  outline: 2px solid #2563eb;
+  outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }

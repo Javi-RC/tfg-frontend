@@ -13,8 +13,8 @@ describe('Badge Component', () => {
     render(<Badge variant="success">Success</Badge>);
     const badge = screen.getByText('Success');
     expect(badge).toHaveStyle({
-      background: '#D1FAE5',
-      color: '#065F46',
+      background: 'var(--color-success-bg)',
+      color: 'var(--color-success-dark)',
     });
   });
 
@@ -22,8 +22,8 @@ describe('Badge Component', () => {
     render(<Badge variant="error">Error</Badge>);
     const badge = screen.getByText('Error');
     expect(badge).toHaveStyle({
-      background: '#FEE2E2',
-      color: '#991B1B',
+      background: 'var(--color-danger-bg)',
+      color: 'var(--color-danger-strong)',
     });
   });
 
@@ -31,8 +31,8 @@ describe('Badge Component', () => {
     render(<Badge variant="warning">Warning</Badge>);
     const badge = screen.getByText('Warning');
     expect(badge).toHaveStyle({
-      background: '#FEF3C7',
-      color: '#92400E',
+      background: 'var(--color-warning-bg)',
+      color: 'var(--color-warning-dark)',
     });
   });
 
@@ -49,8 +49,8 @@ describe('Badge Component', () => {
     render(<Badge variant="neutral">Neutral</Badge>);
     const badge = screen.getByText('Neutral');
     expect(badge).toHaveStyle({
-      background: '#F3F4F6',
-      color: '#374151',
+      background: 'var(--color-bg-subtle)',
+      color: 'var(--color-text-strong)',
     });
   });
 

@@ -3,57 +3,66 @@ import { AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import RiskEvaluationModal from './RiskEvaluationModal';
 
+const EMPTY_ARRAY = [];
+
+const getSeverityColor = (severity) => {
+  const colors = {
+    critical: '#DC2626',
+    high: '#F59E0B',
+    'medium-high': '#F59E0B',
+    medium: '#EAB308',
+    low: '#10B981',
+  };
+  return colors[severity] || '#6B7280';
+};
+
+const normalizeSeverity = (severity) => {
+  const normalized = {
+    'medium-high': 'mediumHigh',
+    medium_high: 'mediumHigh',
+  };
+  return normalized[severity] || severity;
+};
+
 /**
  * RisksSection Component
  * Retrospective evaluation for predicted + manual risks.
  * Matches the UX: list of risks + per-risk evaluation modal (occurred yes/no).
  */
-export default function RisksSection({ formData, setFormData, predictedRisks = [], manualRisks = [] }) {
+export default function RisksSection({
+  formData,
+  setFormData,
+  predictedRisks = EMPTY_ARRAY,
+  manualRisks = EMPTY_ARRAY,
+}) {
   const { t } = useTranslation();
   const [selectedRiskMeta, setSelectedRiskMeta] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const getRiskTypeLabel = useCallback((type) => {
-    const labels = {
-      communication_issues: t('outcome.risks.types.communicationIssues'),
-      communication_breakdown: t('outcome.risks.types.communicationBreakdown'),
-      skill_gap: t('outcome.risks.types.skillGap'),
-      team_overload: t('outcome.risks.types.teamOverload'),
-      dependency_blockage: t('outcome.risks.types.dependencyBlockage'),
-      scope_creep: t('outcome.risks.types.scopeCreep'),
-      process_mismatch: t('outcome.risks.types.processMismatch'),
-      technical_infrastructure: t('outcome.risks.types.technicalInfrastructure'),
-      quality_degradation: t('outcome.risks.types.qualityDegradation'),
-      vendor_issue: t('outcome.risks.types.vendorIssue'),
-      resource_unavailability: t('outcome.risks.types.resourceUnavailability'),
-      timezone_scheduling_gap: t('outcome.risks.types.timezoneSchedulingGap'),
-      social_isolation: t('outcome.risks.types.socialIsolation'),
-      team_autonomy_risk: t('outcome.risks.types.teamAutonomyRisk'),
-      travel_availability_risk: t('outcome.risks.types.travelAvailabilityRisk'),
-      other: t('outcome.risks.types.other')
-    };
-    return labels[type] || type;
-  }, [t]);
-
-  const getSeverityColor = (severity) => {
-    const colors = {
-      critical: '#DC2626',
-      high: '#F59E0B',
-      'medium-high': '#F59E0B',
-      medium: '#EAB308',
-      low: '#10B981'
-    };
-    return colors[severity] || '#6B7280';
-  };
-
-  const normalizeSeverity = (severity) => {
-    // Normalize severity keys for translation
-    const normalized = {
-      'medium-high': 'mediumHigh',
-      'medium_high': 'mediumHigh'
-    };
-    return normalized[severity] || severity;
-  };
+  const getRiskTypeLabel = useCallback(
+    (type) => {
+      const labels = {
+        communication_issues: t('outcome.risks.types.communicationIssues'),
+        communication_breakdown: t('outcome.risks.types.communicationBreakdown'),
+        skill_gap: t('outcome.risks.types.skillGap'),
+        team_overload: t('outcome.risks.types.teamOverload'),
+        dependency_blockage: t('outcome.risks.types.dependencyBlockage'),
+        scope_creep: t('outcome.risks.types.scopeCreep'),
+        process_mismatch: t('outcome.risks.types.processMismatch'),
+        technical_infrastructure: t('outcome.risks.types.technicalInfrastructure'),
+        quality_degradation: t('outcome.risks.types.qualityDegradation'),
+        vendor_issue: t('outcome.risks.types.vendorIssue'),
+        resource_unavailability: t('outcome.risks.types.resourceUnavailability'),
+        timezone_scheduling_gap: t('outcome.risks.types.timezoneSchedulingGap'),
+        social_isolation: t('outcome.risks.types.socialIsolation'),
+        team_autonomy_risk: t('outcome.risks.types.teamAutonomyRisk'),
+        travel_availability_risk: t('outcome.risks.types.travelAvailabilityRisk'),
+        other: t('outcome.risks.types.other'),
+      };
+      return labels[type] || type;
+    },
+    [t]
+  );
 
   const actualizedById = useMemo(() => {
     const map = new Map();
@@ -67,10 +76,17 @@ export default function RisksSection({ formData, setFormData, predictedRisks = [
 
   const predictedItems = useMemo(() => {
     return (predictedRisks || []).map((risk, index) => {
-      const riskId = String(risk?._id ?? risk?.id ?? (risk?.type ? `${risk.type}-${index}` : index));
+      const riskId = String(
+        risk?._id ?? risk?.id ?? (risk?.type ? `${risk.type}-${index}` : index)
+      );
       const severity = risk?.severity || 'medium';
       const source = risk?.source || 'system';
-      const sourceLabel = source === 'CBR' ? t('outcome.risks.sourceCBR') : source === 'DT' ? t('outcome.risks.sourceDT') : t('outcome.risks.sourceSystem');
+      const sourceLabel =
+        source === 'CBR'
+          ? t('outcome.risks.sourceCBR')
+          : source === 'DT'
+            ? t('outcome.risks.sourceDT')
+            : t('outcome.risks.sourceSystem');
       return {
         riskId,
         kind: 'predicted',
@@ -82,7 +98,7 @@ export default function RisksSection({ formData, setFormData, predictedRisks = [
         recommendations: risk?.recommendations,
         indicators: risk?.indicators,
         source,
-        sourceLabel
+        sourceLabel,
       };
     });
   }, [predictedRisks, t, getRiskTypeLabel]);
@@ -102,12 +118,15 @@ export default function RisksSection({ formData, setFormData, predictedRisks = [
         sourceLabel: t('outcome.risks.sourceManual'),
         rootCause: risk?.rootCause,
         recommendations: risk?.recommendations,
-        indicators: risk?.indicators
+        indicators: risk?.indicators,
       };
     });
   }, [manualRisks, t, getRiskTypeLabel]);
 
-  const allItems = useMemo(() => [...predictedItems, ...manualItems], [predictedItems, manualItems]);
+  const allItems = useMemo(
+    () => [...predictedItems, ...manualItems],
+    [predictedItems, manualItems]
+  );
 
   const progress = useMemo(() => {
     const total = allItems.length;
@@ -118,7 +137,7 @@ export default function RisksSection({ formData, setFormData, predictedRisks = [
     return {
       total,
       evaluated,
-      percent: total > 0 ? Math.round((evaluated / total) * 100) : 0
+      percent: total > 0 ? Math.round((evaluated / total) * 100) : 0,
     };
   }, [allItems, actualizedById]);
 
@@ -128,12 +147,15 @@ export default function RisksSection({ formData, setFormData, predictedRisks = [
       const riskId = String(riskMeta.riskId);
       const idx = list.findIndex((r) => String(r.riskId) === riskId);
 
-      const base = idx >= 0 ? list[idx] : {
-        riskId,
-        type: riskMeta.type,
-        severity: riskMeta.severity,
-        source: riskMeta.kind === 'manual' ? 'manual' : (riskMeta.source || 'predicted')
-      };
+      const base =
+        idx >= 0
+          ? list[idx]
+          : {
+              riskId,
+              type: riskMeta.type,
+              severity: riskMeta.severity,
+              source: riskMeta.kind === 'manual' ? 'manual' : riskMeta.source || 'predicted',
+            };
 
       const merged = { ...base, ...patch };
 
@@ -200,10 +222,12 @@ export default function RisksSection({ formData, setFormData, predictedRisks = [
                 <span
                   style={{
                     ...styles.severityBadge,
-                    background: getSeverityColor(riskMeta.severity)
+                    background: getSeverityColor(riskMeta.severity),
                   }}
                 >
-                  {t(`risk.severity.${normalizeSeverity(riskMeta.severity || 'medium')}`).toUpperCase()}
+                  {t(
+                    `risk.severity.${normalizeSeverity(riskMeta.severity || 'medium')}`
+                  ).toUpperCase()}
                 </span>
                 <span style={styles.metaSeparator}>|</span>
                 <span style={styles.riskType}>{getRiskTypeLabel(riskMeta.type)}</span>
@@ -236,7 +260,11 @@ export default function RisksSection({ formData, setFormData, predictedRisks = [
 
       <div style={styles.progressRow}>
         <div style={styles.progressText}>
-          {t('outcome.risks.progress', { evaluated: progress.evaluated, total: progress.total, percent: progress.percent })}
+          {t('outcome.risks.progress', {
+            evaluated: progress.evaluated,
+            total: progress.total,
+            percent: progress.percent,
+          })}
         </div>
         <div style={styles.progressBar}>
           <div style={{ ...styles.progressFill, width: `${progress.percent}%` }} />
@@ -244,12 +272,16 @@ export default function RisksSection({ formData, setFormData, predictedRisks = [
       </div>
 
       <div style={styles.subsection}>
-        <h4 style={styles.subsectionTitle}>{t('outcome.risks.predictedRisks', { count: predictedItems.length })}</h4>
+        <h4 style={styles.subsectionTitle}>
+          {t('outcome.risks.predictedRisks', { count: predictedItems.length })}
+        </h4>
         <div style={styles.risksList}>{predictedItems.map(renderRiskRow)}</div>
       </div>
 
       <div style={styles.subsection}>
-        <h4 style={styles.subsectionTitle}>{t('outcome.risks.manualRisks', { count: manualItems.length })}</h4>
+        <h4 style={styles.subsectionTitle}>
+          {t('outcome.risks.manualRisks', { count: manualItems.length })}
+        </h4>
         <div style={styles.risksList}>{manualItems.map(renderRiskRow)}</div>
       </div>
 
@@ -266,108 +298,108 @@ export default function RisksSection({ formData, setFormData, predictedRisks = [
     </div>
   );
 }
- 
+
 const styles = {
   section: {
     background: '#FFFFFF',
     borderRadius: '12px',
     padding: '28px',
     marginBottom: '28px',
-    border: '1px solid #E5E7EB'
+    border: '1px solid var(--color-border)',
   },
   sectionTitle: {
     fontSize: '18px',
     fontWeight: '800',
     marginBottom: '16px',
-    color: '#111827'
+    color: 'var(--color-text-heading)',
   },
   progressRow: {
     display: 'flex',
     flexDirection: 'column',
     gap: '10px',
-    marginBottom: '24px'
+    marginBottom: '24px',
   },
   progressText: {
     fontSize: '14px',
     fontWeight: '700',
-    color: '#374151'
+    color: 'var(--color-text-strong)',
   },
   progressBar: {
     width: '100%',
     height: '10px',
     borderRadius: '999px',
-    background: '#E5E7EB',
-    overflow: 'hidden'
+    background: 'var(--color-border)',
+    overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    background: '#3B82F6'
+    background: '#3B82F6',
   },
   subsection: {
-    marginTop: '24px'
+    marginTop: '24px',
   },
   subsectionTitle: {
     margin: '0 0 12px 0',
     fontSize: '14px',
     fontWeight: '800',
-    color: '#111827'
+    color: 'var(--color-text-heading)',
   },
   risksList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '14px'
+    gap: '14px',
   },
   riskCard: {
-    border: '1px solid #E5E7EB',
+    border: '1px solid var(--color-border)',
     borderRadius: '12px',
     padding: '16px',
-    background: '#F9FAFB'
+    background: 'var(--color-bg-muted)',
   },
   riskHeader: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    gap: '12px'
+    gap: '12px',
   },
   riskHeaderLeft: {
     display: 'flex',
     alignItems: 'flex-start',
     gap: '10px',
-    flex: 1
+    flex: 1,
   },
   riskTitle: {
     fontSize: '14px',
     fontWeight: '800',
-    color: '#111827'
+    color: 'var(--color-text-heading)',
   },
   riskMetaLine: {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   severityBadge: {
     padding: '3px 8px',
     borderRadius: '999px',
     fontSize: '11px',
     fontWeight: '800',
-    color: '#FFFFFF'
+    color: '#FFFFFF',
   },
   metaSeparator: {
-    color: '#9CA3AF'
+    color: 'var(--color-text-muted)',
   },
   riskType: {
     fontSize: '12px',
     fontWeight: '700',
-    color: '#374151'
+    color: 'var(--color-text-strong)',
   },
   sourceText: {
     fontSize: '12px',
     fontWeight: '700',
-    color: '#6B7280'
+    color: 'var(--color-text-muted)',
   },
   evaluateButton: {
-    background: '#111827',
+    background: 'var(--color-text-heading)',
     color: '#FFFFFF',
     border: 'none',
     borderRadius: '10px',
@@ -375,12 +407,11 @@ const styles = {
     fontSize: '13px',
     fontWeight: '800',
     cursor: 'pointer',
-    whiteSpace: 'nowrap'
+    whiteSpace: 'nowrap',
   },
   riskSummary: {
     marginTop: '10px',
     fontSize: '13px',
-    color: '#6B7280'
-  }
+    color: 'var(--color-text-muted)',
+  },
 };
-

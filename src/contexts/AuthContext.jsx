@@ -1,187 +1,167 @@
-import React, { createContext, useState, useEffect, useCallback, useRef } from 'react';
-import { jwtDecode } from 'jwt-decode';
-import { login as apiLogin, getProfile, patchProfile as apiPatchProfile, completeProfile as apiCompleteProfile } from '../api/auth';
+import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import {
+  login as apiLogin,
+  logout as apiLogout,
+  getProfile,
+  patchProfile as apiPatchProfile,
+  completeProfile as apiCompleteProfile,
+} from '../api/auth';
+import { unwrapUser } from '../api/responseAdapter';
+import { setUser, clearStoredUser, USER_STORAGE_KEY } from '../api/tokenStore';
 import { isPublicRoute } from '../constants/routes';
+import { AuthContext } from './AuthContextObj';
 
-export const AuthContext = createContext(null);
+const ALLOWED_ROLES = new Set(['employee', 'org_admin', 'unassigned']);
+const normalizeRole = (r) => (ALLOWED_ROLES.has(r) ? r : 'unassigned');
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const stored = localStorage.getItem('user');
-    return stored ? JSON.parse(stored) : null;
+  const [auth, setAuth] = useState(() => {
+    const storedUser = localStorage.getItem(USER_STORAGE_KEY);
+    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
+    setUser(parsedUser);
+    return {
+      authenticated: false,
+      user: parsedUser,
+    };
   });
-  const [token, setToken] = useState(() => localStorage.getItem('token'));
   const isLoadingProfile = useRef(false);
 
+  const { authenticated, user } = auth;
+
   useEffect(() => {
-    // Skip profile loading on public pages
-    if (isPublicRoute(window.location.pathname)) {
-      return;
-    }
+    if (isPublicRoute(window.location.pathname)) return;
+    if (authenticated) return;
+    if (isLoadingProfile.current) return;
 
-    if (!token) return;
-
-    // Normalize roles coming from the backend to avoid invalid enum values
-    const ALLOWED_ROLES = ['employee', 'org_admin', 'unassigned'];
-    const normalizeRole = (r) => (ALLOWED_ROLES.includes(r) ? r : 'unassigned');
-
-    // If user already present from localStorage, do a background refresh
-    // to pick up new fields (e.g. organization) without blocking the UI
-    if (user) {
-      getProfile().then(res => {
-        const rawUser = res?.data?.data?.user || res?.data?.user || res?.data || null;
+    isLoadingProfile.current = true;
+    getProfile()
+      .then((res) => {
+        const rawUser = unwrapUser(res);
         if (rawUser) {
-          const refreshed = { ...rawUser, role: normalizeRole(rawUser.role) };
-          const merged = { ...user, ...refreshed };
-          setUser(merged);
-          localStorage.setItem('user', JSON.stringify(merged));
-        }
-      }).catch(() => {
-        // Background refresh failed — non-blocking
-      });
-      return;
-    }
-    
-    if (!user && !isLoadingProfile.current) {
-      isLoadingProfile.current = true;
-      try {
-        const decoded = jwtDecode(token);
-        const currentTime = Date.now() / 1000;
-        if (decoded.exp && decoded.exp < currentTime) {
-          isLoadingProfile.current = false;
-          setToken(null);
-          setUser(null);
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          return;
-        }
-
-        getProfile().then(res => {
-          const rawUser = res?.data?.data?.user || res?.data?.user || res?.data || null;
-          const normalized = rawUser ? { ...rawUser, role: normalizeRole(rawUser.role) } : null;
+          const normalized = { ...rawUser, role: normalizeRole(rawUser.role) };
+          setAuth({ authenticated: true, user: normalized });
           setUser(normalized);
-          localStorage.setItem('user', JSON.stringify(normalized));
-          isLoadingProfile.current = false;
-        }).catch(() => {
-          isLoadingProfile.current = false;
-          setToken(null);
-          setUser(null);
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-        });
-      } catch {
-        // Invalid token
+          localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(normalized));
+        } else {
+          setAuth({ authenticated: false, user: null });
+          clearStoredUser();
+        }
+      })
+      .catch(() => {
+        setAuth({ authenticated: false, user: null });
+        clearStoredUser();
+      })
+      .finally(() => {
         isLoadingProfile.current = false;
-        setToken(null);
-        setUser(null);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-      }
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [token]);
+      });
+  }, [authenticated]);
 
-  const setSession = useCallback((tokenValue, userData) => {
-    setToken(tokenValue);
-    // Ensure role is normalized before storing
-    const ALLOWED_ROLES = ['employee', 'org_admin', 'unassigned'];
-    const normalizeRole = (r) => (ALLOWED_ROLES.includes(r) ? r : 'unassigned');
+  const setSession = useCallback((_tokenValue, userData) => {
     const normalizedUser = { ...userData, role: normalizeRole(userData.role) };
+    setAuth({ authenticated: true, user: normalizedUser });
     setUser(normalizedUser);
-    localStorage.setItem('token', tokenValue);
-    localStorage.setItem('user', JSON.stringify(normalizedUser));
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(normalizedUser));
   }, []);
 
-  const login = async (credentials) => {
-    const res = await apiLogin(credentials);
-    setSession(res.data.token, res.data.user);
-    return res.data;
-  };
+  const login = useCallback(
+    async (credentials) => {
+      const res = await apiLogin(credentials);
+      setSession(null, res.data.user);
+      return res.data;
+    },
+    [setSession]
+  );
 
-  const loginWithOAuth = async (provider) => {
+  const loginWithOAuth = useCallback(async (provider) => {
     const apiUrl = import.meta.env.VITE_API_URL;
     if (!apiUrl) {
       console.error('VITE_API_URL is not configured. OAuth login will not work.');
       return;
     }
     window.location.href = `${apiUrl}/auth/${provider}`;
-  };
+  }, []);
 
-  const updateProfile = async (profileData) => {
-    // Normalize role before sending to API to avoid backend enum validation errors
-    const ALLOWED_ROLES = ['employee', 'org_admin', 'unassigned'];
-    const normalizeRole = (r) => (ALLOWED_ROLES.includes(r) ? r : 'unassigned');
+  const updateProfile = useCallback(async (profileData) => {
     const payload = { ...profileData };
     if (payload.role) payload.role = normalizeRole(payload.role);
 
     const res = await apiPatchProfile(payload);
-    const rawUser = (res && res.data && (res.data.user || res.data)) || {};
+    const rawUser = unwrapUser(res) || {};
     const updatedUser = { ...rawUser, role: normalizeRole(rawUser?.role) };
+    setAuth((prev) => ({ ...prev, user: updatedUser }));
     setUser(updatedUser);
-    localStorage.setItem('user', JSON.stringify(updatedUser));
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updatedUser));
     return res.data;
-  };
+  }, []);
 
-  const completeOAuthProfile = async (profileData) => {
-    // Backend expects 'employee' or 'org_admin' exactly
-    const allowedRoles = ['employee', 'org_admin'];
-    const backendRole = allowedRoles.includes(profileData.role) ? profileData.role : 'employee';
-    const payload = { ...profileData, role: backendRole };
-    
-    const res = await apiCompleteProfile(payload);
+  const completeOAuthProfile = useCallback(
+    async (profileData) => {
+      const allowedRoles = ['employee', 'org_admin'];
+      const backendRole = allowedRoles.includes(profileData.role) ? profileData.role : 'employee';
+      const payload = { ...profileData, role: backendRole };
 
-    // Backend returns new token with updated role
-    if (res.data.token) {
-      setSession(res.data.token, res.data.user);
-    }
-    
-    return res.data;
-  };
+      const res = await apiCompleteProfile(payload);
 
-  /**
-   * Force-refresh the user profile from the API.
-   * Useful when the backend adds new fields (e.g. organization).
-   */
+      if (res.data.user) {
+        setSession(null, res.data.user);
+      }
+
+      return res.data;
+    },
+    [setSession]
+  );
+
   const refreshProfile = useCallback(async () => {
-    if (!token) return null;
-    const ALLOWED_ROLES = ['employee', 'org_admin', 'unassigned'];
-    const normalizeRole = (r) => (ALLOWED_ROLES.includes(r) ? r : 'unassigned');
+    if (!authenticated) return null;
 
     const res = await getProfile();
-    const rawUser = (res && res.data && (res.data.user || res.data)) || null;
+    const rawUser = unwrapUser(res);
     if (rawUser) {
       const refreshed = { ...rawUser, role: normalizeRole(rawUser.role) };
       const merged = { ...user, ...refreshed };
+      setAuth((prev) => ({ ...prev, user: merged }));
       setUser(merged);
-      localStorage.setItem('user', JSON.stringify(merged));
+      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(merged));
       return merged;
     }
     return user;
-  }, [token, user]);
+  }, [authenticated, user]);
 
-  const logout = () => {
-    setToken(null);
-    setUser(null);
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    // No redirigir aquí, dejamos que el componente que llama a logout maneje la navegación
-  };
+  const logout = useCallback(async () => {
+    try {
+      await apiLogout();
+    } catch {
+      // Proceed with local cleanup even if backend call fails
+    }
+    setAuth({ authenticated: false, user: null });
+    clearStoredUser();
+  }, []);
 
-  return (
-    <AuthContext.Provider value={{ 
-      user, 
-      token, 
-      login, 
-      logout, 
+  const value = useMemo(
+    () => ({
+      user,
+      token: null,
+      login,
+      logout,
       setSession,
       loginWithOAuth,
       updateProfile,
       completeOAuthProfile,
-      refreshProfile
-    }}>
-      {children}
-    </AuthContext.Provider>
+      refreshProfile,
+    }),
+    [
+      user,
+      login,
+      logout,
+      setSession,
+      loginWithOAuth,
+      updateProfile,
+      completeOAuthProfile,
+      refreshProfile,
+    ]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthProvider;

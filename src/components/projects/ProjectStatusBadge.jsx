@@ -19,7 +19,7 @@ export default function ProjectStatusBadge({ status }) {
         borderRadius: '20px',
         fontSize: '13px',
         fontWeight: '600',
-        display: 'inline-block'
+        display: 'inline-block',
       }}
     >
       {label}

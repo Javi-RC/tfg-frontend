@@ -5,13 +5,7 @@ import './PhaseForm.css';
 /**
  * PhaseForm - Renders questions for a specific phase
  */
-const PhaseForm = ({ 
-  phase, 
-  questions, 
-  responses, 
-  validationErrors = {}, 
-  onQuestionChange 
-}) => {
+const PhaseForm = ({ phase, questions, responses, validationErrors = {}, onQuestionChange }) => {
   if (!phase || !questions) return null;
 
   return (
@@ -22,7 +16,7 @@ const PhaseForm = ({
       </div>
 
       <div className="questions-list">
-        {questions.map(question => (
+        {questions.map((question) => (
           <QuestionRenderer
             key={question.id}
             question={question}

@@ -13,15 +13,15 @@
 export const RISK_STATUS = {
   /** Risk predicted and being monitored during project execution */
   PREDICTED: 'predicted',
-  
+
   /** Risk marked as occurred during project retrospective (COMPLETED projects only) */
   OCCURRED: 'occurred',
-  
+
   /** Risk marked as not occurred during project retrospective */
   NOT_OCCURRED: 'not_occurred',
-  
+
   /** Project finished, risk closed */
-  CLOSED: 'closed'
+  CLOSED: 'closed',
 };
 
 /**
@@ -29,11 +29,11 @@ export const RISK_STATUS = {
  * @readonly
  * @enum {string}
  */
-export const RISK_SEVERITY = {
+const RISK_SEVERITY = {
   LOW: 'low',
   MEDIUM: 'medium',
   HIGH: 'high',
-  CRITICAL: 'critical'
+  CRITICAL: 'critical',
 };
 
 /**
@@ -41,15 +41,15 @@ export const RISK_SEVERITY = {
  * @readonly
  * @enum {string}
  */
-export const RISK_SOURCE = {
+const RISK_SOURCE = {
   /** Expert rules risk detection */
   DECISION_TREE: 'dt',
-  
+
   /** Case-Based Reasoning - Historical learning */
   CBR: 'cbr',
-  
+
   /** Manual risk added by PM */
-  MANUAL: 'manual'
+  MANUAL: 'manual',
 };
 
 // ==================== Risk Types ====================
@@ -59,7 +59,7 @@ export const RISK_SOURCE = {
  * @readonly
  * @enum {string}
  */
-export const RISK_TYPES = {
+const RISK_TYPES = {
   COMMUNICATION_BREAKDOWN: 'communication_breakdown',
   SCOPE_CREEP: 'scope_creep',
   SKILL_GAP: 'skill_gap',
@@ -71,23 +71,23 @@ export const RISK_TYPES = {
   DEPENDENCY_DELAYS: 'dependency_delays',
   REQUIREMENTS_CHANGE: 'requirements_change',
   TEAM_TURNOVER: 'team_turnover',
-  KNOWLEDGE_LOSS: 'knowledge_loss'
+  KNOWLEDGE_LOSS: 'knowledge_loss',
 };
 
 // ==================== Risk Lifecycle States ====================
 
 /**
  * Risk state mapping during monitoring phase
- * 
+ *
  * NEW FLOW (Backend Refactoring - January 2026):
  * During project ACTIVE phase:
  *   - All risks have status 'active' (predicted by DT/CBR or added manually)
  *   - No marking of occurred/not_occurred during execution
- * 
+ *
  * During project retrospective (COMPLETED phase):
  *   - PM fills outcome form marking each risk as occurred: true/false
  *   - This data is used for CBR learning
- * 
+ *
  * | State          | Status       | occurred | When                                    |
  * |----------------|--------------|----------|----------------------------------------|
  * | predicted      | predicted    | null     | During project execution (monitoring)   |
@@ -95,11 +95,11 @@ export const RISK_TYPES = {
  * | retrospective  | not_occurred | false    | Marked in outcome form (retrospective)  |
  * | closed         | closed       | true/false| Project archived                        |
  */
-export const RISK_LIFECYCLE_STATES = {
+const RISK_LIFECYCLE_STATES = {
   PREDICTED_MONITORING: { status: RISK_STATUS.PREDICTED, occurred: null },
   RETROSPECTIVE_OCCURRED: { status: RISK_STATUS.OCCURRED, occurred: true },
   RETROSPECTIVE_NOT_OCCURRED: { status: RISK_STATUS.NOT_OCCURRED, occurred: false },
-  PROJECT_CLOSED: { status: RISK_STATUS.CLOSED }
+  PROJECT_CLOSED: { status: RISK_STATUS.CLOSED },
 };
 
 // ==================== Type Definitions (JSDoc) ====================
@@ -165,67 +165,4 @@ export const RISK_LIFECYCLE_STATES = {
  * @property {string} [mitigatedAt] - When risk was mitigated
  */
 
-// ==================== Helper Functions ====================
 
-/**
- * Determine risk state from risk object
- * @param {Risk} risk - Risk object
- * @returns {string} Human-readable state
- */
-export function getRiskState(risk) {
-  if (risk.status === RISK_STATUS.CLOSED) {
-    return 'Closed';
-  }
-  if (risk.status === RISK_STATUS.PREDICTED) {
-    return 'Predicted';
-  }
-  if (risk.status === RISK_STATUS.OCCURRED) {
-    return 'Occurred';
-  }
-  if (risk.status === RISK_STATUS.NOT_OCCURRED) {
-    return 'Not Occurred';
-  }
-  return 'Unknown';
-}
-
-/**
- * Check if risk can be marked as occurred
- * @deprecated - As of January 2026, risks are not marked as occurred during execution.
- * They are marked in the project retrospective (outcome form) when project is COMPLETED.
- * @param {Risk} risk - Risk object
- * @returns {boolean} Always returns false during active project
- */
-export function canMarkAsOccurred() {
-  // Risks are marked as occurred/not_occurred only in retrospective (outcome form)
-  // Not during active project execution
-  return false;
-}
-
-/**
- * Get risk severity color
- * @param {string} severity - Severity level
- * @returns {string} Color code
- */
-export function getRiskSeverityColor(severity) {
-  const colors = {
-    [RISK_SEVERITY.LOW]: '#10b981',      // green
-    [RISK_SEVERITY.MEDIUM]: '#f59e0b',   // amber
-    [RISK_SEVERITY.HIGH]: '#ef4444',     // red
-    [RISK_SEVERITY.CRITICAL]: '#991b1b'  // dark red
-  };
-  return colors[severity] || '#6b7280'; // gray as default
-}
-
-/**
- * Get risk source badge text
- * @param {string} source - Risk source
- * @returns {string} Badge text
- */
-export function getRiskSourceLabel(source) {
-  const labels = {
-    [RISK_SOURCE.DECISION_TREE]: 'Expert Rules',
-    [RISK_SOURCE.CBR]: 'Historical Data',
-    [RISK_SOURCE.MANUAL]: 'Manual'
-  };
-  return labels[source] || 'Unknown';
-}

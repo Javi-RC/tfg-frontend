@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { BellOff, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { useNotifications } from '../contexts/useNotifications';
+import { useNotifications } from '../hooks/useNotifications';
 import NotificationItem from '../components/notifications/NotificationItem';
 import './NotificationsPage.css';
 
@@ -9,33 +9,28 @@ import './NotificationsPage.css';
  * NotificationsPage Component
  * Página completa dedicada a la gestión de notificaciones
  * Incluye filtros, paginación y lista completa de notificaciones
- * 
+ *
  * Consume la API: GET /api/notifications con paginación
  */
 const NotificationsPage = () => {
   const { t } = useTranslation();
-  const { 
-    notifications, 
-    loading, 
-    pagination,
-    fetchNotifications,
-    markAllAsRead 
-  } = useNotifications();
+  const { notifications, loading, pagination, fetchNotifications, markAllAsRead } =
+    useNotifications();
   const [filter, setFilter] = useState('all'); // 'all' | 'unread' | 'read'
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState('recent'); // 'recent' | 'oldest'
   const ITEMS_PER_PAGE = 20;
 
   useEffect(() => {
-    fetchNotifications({ 
-      page: currentPage, 
+    fetchNotifications({
+      page: currentPage,
       limit: ITEMS_PER_PAGE,
-      unreadOnly: filter === 'unread'
+      unreadOnly: filter === 'unread',
     });
   }, [currentPage, fetchNotifications, filter]);
 
   const filteredNotifications = (notifications || [])
-    .filter(n => {
+    .filter((n) => {
       if (filter === 'unread') return !n.readAt;
       if (filter === 'read') return n.readAt;
       return true;
@@ -46,8 +41,8 @@ const NotificationsPage = () => {
       return sortBy === 'recent' ? dateB - dateA : dateA - dateB;
     });
 
-  const unreadCount = (notifications || []).filter(n => !n.readAt).length;
-  const readCount = (notifications || []).filter(n => n.readAt).length;
+  const unreadCount = (notifications || []).filter((n) => !n.readAt).length;
+  const readCount = (notifications || []).filter((n) => n.readAt).length;
   const totalCount = pagination?.total || (notifications || []).length;
 
   const handleMarkAllAsRead = async () => {
@@ -71,16 +66,22 @@ const NotificationsPage = () => {
         <div className="notifications-page-header">
           <div>
             <h1>{t('notifications.title')}</h1>
-            <p className="notifications-subtitle">
-              {t('notifications.manageNotifications')}
-            </p>
+            <p className="notifications-subtitle">{t('notifications.manageNotifications')}</p>
           </div>
-          <button 
+          <button
+            type="button"
             className="mark-all-read-btn-large"
             onClick={handleMarkAllAsRead}
             disabled={unreadCount === 0}
           >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+            >
               <polyline points="20 6 9 17 4 12"></polyline>
             </svg>
             {t('notifications.markAllAsRead')}
@@ -104,19 +105,22 @@ const NotificationsPage = () => {
 
         <div className="notifications-controls">
           <div className="notifications-filters">
-            <button 
+            <button
+              type="button"
               className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
               onClick={() => handleFilterChange('all')}
             >
               {t('notifications.all')} ({totalCount})
             </button>
-            <button 
+            <button
+              type="button"
               className={`filter-btn ${filter === 'unread' ? 'active' : ''}`}
               onClick={() => handleFilterChange('unread')}
             >
               {t('notifications.unread')} ({unreadCount})
             </button>
-            <button 
+            <button
+              type="button"
               className={`filter-btn ${filter === 'read' ? 'active' : ''}`}
               onClick={() => handleFilterChange('read')}
             >
@@ -126,9 +130,9 @@ const NotificationsPage = () => {
 
           <div className="notifications-sort">
             <label htmlFor="sort-select">{t('notifications.sortBy')}:</label>
-            <select 
+            <select
               id="sort-select"
-              value={sortBy} 
+              value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
               className="sort-select"
             >
@@ -146,17 +150,14 @@ const NotificationsPage = () => {
             </div>
           ) : filteredNotifications.length === 0 ? (
             <div className="empty-state-large">
-              <BellOff size={64} color="#999" />
+              <BellOff size={64} color="#6B7280" />
               <h3>{t('notifications.noNotifications')}</h3>
               <p>{t('notifications.noNotificationsDesc')}</p>
             </div>
           ) : (
             <div className="notifications-grid">
-              {filteredNotifications.map(notification => (
-                <NotificationItem 
-                  key={notification._id} 
-                  notification={notification}
-                />
+              {filteredNotifications.map((notification) => (
+                <NotificationItem key={notification._id} notification={notification} />
               ))}
             </div>
           )}
@@ -165,7 +166,8 @@ const NotificationsPage = () => {
         {/* Paginación */}
         {pagination && pagination.pages > 1 && (
           <div className="notifications-pagination">
-            <button 
+            <button
+              type="button"
               className="pagination-btn"
               onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
@@ -177,7 +179,8 @@ const NotificationsPage = () => {
             <span className="pagination-info">
               {t('notifications.page')} {currentPage} {t('notifications.of')} {pagination.pages}
             </span>
-            <button 
+            <button
+              type="button"
               className="pagination-btn"
               onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === pagination.pages}

@@ -46,9 +46,16 @@ export default function SynergyImpactIndicator({ validation }) {
   return (
     <div style={styles.container}>
       <div style={{ ...styles.pill, ...containerStyle }}>
-        {isPositive ? <ArrowUp size={14} /> : isNeutral ? <Info size={14} /> : <ArrowDown size={14} />}
+        {isPositive ? (
+          <ArrowUp size={14} />
+        ) : isNeutral ? (
+          <Info size={14} />
+        ) : (
+          <ArrowDown size={14} />
+        )}
         <span style={styles.pillText}>
-          {isPositive ? '+' : ''}{Number(impact).toFixed(1)} {t('team.synergy.synergy')}
+          {isPositive ? '+' : ''}
+          {Number(impact).toFixed(1)} {t('team.synergy.synergy')}
         </span>
       </div>
       <span style={styles.message}>{displayMessage}</span>
@@ -92,14 +99,14 @@ const styles = {
   },
   message: {
     fontSize: '12px',
-    color: '#57606a',
+    color: 'var(--color-text-secondary)',
   },
   noData: {
     display: 'inline-flex',
     alignItems: 'center',
     gap: '6px',
     fontSize: '12px',
-    color: '#57606a',
+    color: 'var(--color-text-secondary)',
   },
   positive: {
     backgroundColor: '#dafbe1',
@@ -107,8 +114,8 @@ const styles = {
     borderColor: '#2da44e33',
   },
   neutral: {
-    backgroundColor: '#f6f8fa',
-    color: '#24292f',
+    backgroundColor: 'var(--color-bg-muted)',
+    color: 'var(--color-text-primary)',
     borderColor: '#d0d7de',
   },
   negative: {

@@ -4,7 +4,4 @@ export const getDeletionPrerequisites = () => api.get('/api/profile/deletion-pre
 
 export const deleteAccount = (payload) => api.delete('/api/profile/account', { data: payload });
 
-export default {
-  getDeletionPrerequisites,
-  deleteAccount
-};
+

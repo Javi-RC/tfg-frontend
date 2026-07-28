@@ -15,9 +15,7 @@ export default function Step1GeneralInfo({ formData, onChange, errors = {} }) {
   return (
     <div>
       <h2 style={styles.stepTitle}>{t('projects.steps.step1.title')}</h2>
-      <p style={styles.stepDescription}>
-        {t('projects.steps.step1.description')}
-      </p>
+      <p style={styles.stepDescription}>{t('projects.steps.step1.description')}</p>
 
       <FormInput
         label={t('projects.steps.step1.projectName')}
@@ -63,12 +61,8 @@ export default function Step1GeneralInfo({ formData, onChange, errors = {} }) {
           error={errors.estimatedEndDate}
         />
       </div>
-      
-      {errors.dateRange && (
-        <div style={styles.dateRangeError}>
-          {errors.dateRange}
-        </div>
-      )}
+
+      {errors.dateRange && <div style={styles.dateRangeError}>{errors.dateRange}</div>}
 
       <FormInput
         label={t('projects.steps.step1.teamSize')}
@@ -83,9 +77,7 @@ export default function Step1GeneralInfo({ formData, onChange, errors = {} }) {
         error={errors.teamSize}
       />
       {!errors.teamSize && (
-        <p style={styles.helperText}>
-          {t('projects.steps.step1.teamSizeHelper')}
-        </p>
+        <p style={styles.helperText}>{t('projects.steps.step1.teamSizeHelper')}</p>
       )}
     </div>
   );
@@ -95,42 +87,42 @@ const styles = {
   stepTitle: {
     fontSize: '28px',
     fontWeight: '700',
-    color: '#111',
-    margin: '0 0 8px 0'
+    color: 'var(--color-text-primary)',
+    margin: '0 0 8px 0',
   },
   stepDescription: {
     fontSize: '15px',
-    color: '#6B7280',
-    marginBottom: '32px'
+    color: 'var(--color-text-muted)',
+    marginBottom: '32px',
   },
   row: {
     display: 'grid',
     gridTemplateColumns: '1fr 1fr',
-    gap: '16px'
+    gap: '16px',
   },
   dateRangeError: {
-    color: '#EF4444',
+    color: 'var(--color-danger-icon)',
     fontSize: '13px',
     marginTop: '8px',
-    fontWeight: '500'
+    fontWeight: '500',
   },
   helperText: {
     fontSize: '13px',
-    color: '#6B7280',
+    color: 'var(--color-text-muted)',
     marginTop: '-16px',
-    marginBottom: '16px'
+    marginBottom: '16px',
   },
   section: {
-    marginBottom: '20px'
+    marginBottom: '20px',
   },
   label: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#111',
+    color: 'var(--color-text-primary)',
     marginBottom: '8px',
-    display: 'block'
+    display: 'block',
   },
   required: {
-    color: '#EF4444'
-  }
+    color: 'var(--color-danger-icon)',
+  },
 };

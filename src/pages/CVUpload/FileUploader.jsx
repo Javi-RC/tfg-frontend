@@ -1,7 +1,14 @@
 import React, { useRef, useState } from 'react';
 import { Upload } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { showError } from '../../utils/toast';
 import './FileUploader.css';
+
+const formatFileSize = (bytes) => {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+};
 
 /**
  * FileUploader - Drag and drop file uploader
@@ -18,9 +25,9 @@ const FileUploader = ({ onFileSelect, isUploading }) => {
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
+    if (e.type === 'dragenter' || e.type === 'dragover') {
       setDragActive(true);
-    } else if (e.type === "dragleave") {
+    } else if (e.type === 'dragleave') {
       setDragActive(false);
     }
   };
@@ -29,55 +36,46 @@ const FileUploader = ({ onFileSelect, isUploading }) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       handleFileChange(e.dataTransfer.files[0]);
     }
   };
 
   const handleFileChange = (file) => {
-    console.log('FileUploader - handleFileChange called with file:', file);
     if (!file) return;
 
     if (!ALLOWED_TYPES.includes(file.type)) {
-      console.log('FileUploader - Invalid file type:', file.type);
-      alert(t('cv.upload.invalidFormat'));
+      showError(t('cv.upload.invalidFormat'));
       return;
     }
 
     if (file.size > MAX_SIZE) {
-      console.log('FileUploader - File too large:', file.size);
-      alert(t('cv.upload.fileTooLarge'));
+      showError(t('cv.upload.fileTooLarge'));
       return;
     }
 
-    console.log('FileUploader - File validated successfully:', file.name);
     setSelectedFile(file);
   };
 
   const handleUpload = () => {
-    console.log('FileUploader - handleUpload called, selectedFile:', selectedFile);
     if (selectedFile) {
-      console.log('FileUploader - Calling onFileSelect with file:', selectedFile.name);
       onFileSelect(selectedFile);
     }
   };
 
-  const formatFileSize = (bytes) => {
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-  };
-
   return (
     <div className="file-uploader">
-      <div 
+      <div
         className={`drop-zone ${dragActive ? 'active' : ''} ${selectedFile ? 'has-file' : ''}`}
         onDragEnter={handleDrag}
         onDragLeave={handleDrag}
         onDragOver={handleDrag}
         onDrop={handleDrop}
         onClick={() => !selectedFile && fileInputRef.current?.click()}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); if (!selectedFile) fileInputRef.current?.click(); } }}
       >
         <input
           ref={fileInputRef}
@@ -86,7 +84,7 @@ const FileUploader = ({ onFileSelect, isUploading }) => {
           onChange={(e) => handleFileChange(e.target.files[0])}
           style={{ display: 'none' }}
         />
-        
+
         {!selectedFile ? (
           <>
             <Upload className="upload-icon" size={48} />
@@ -103,13 +101,12 @@ const FileUploader = ({ onFileSelect, isUploading }) => {
                   <span className="file-size">{formatFileSize(selectedFile.size)}</span>
                 </div>
               </div>
-              <button 
+              <button type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   setSelectedFile(null);
                 }}
                 className="btn-remove"
-                type="button"
               >
                 ✕
               </button>
@@ -119,11 +116,7 @@ const FileUploader = ({ onFileSelect, isUploading }) => {
       </div>
 
       {selectedFile && (
-        <button 
-          onClick={handleUpload}
-          disabled={isUploading}
-          className="btn-upload"
-        >
+        <button type="button" onClick={handleUpload} disabled={isUploading} className="btn-upload">
           {isUploading ? t('cv.upload.processing') : t('cv.upload.uploadButton')}
         </button>
       )}

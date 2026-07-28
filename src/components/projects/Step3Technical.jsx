@@ -1,10 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { FormTextarea, FormSelect, FormCheckbox } from './FormComponents';
-import { 
+import {
   EXPERIENCE_LEVELS,
   COMPLEXITY_LEVELS,
-  DOCUMENTATION_LEVELS
+  DOCUMENTATION_LEVELS,
 } from '../../types/projectTypes';
 
 /**
@@ -19,7 +19,10 @@ export default function Step3Technical({ formData, onChange, errors = {} }) {
 
   const handleTechnologiesChange = (e) => {
     const value = e.target.value;
-    const technologies = value.split(',').map(t => t.trim()).filter(t => t);
+    const technologies = value
+      .split(',')
+      .map((t) => t.trim())
+      .filter((t) => t);
     onChange({ mainTechnologiesText: value, mainTechnologies: technologies });
   };
 
@@ -29,15 +32,15 @@ export default function Step3Technical({ formData, onChange, errors = {} }) {
       onChange({
         requiresSpecializedTools: {
           ...formData.requiresSpecializedTools,
-          needed: checked
-        }
+          needed: checked,
+        },
       });
     } else {
       onChange({
         requiresSpecializedTools: {
           ...formData.requiresSpecializedTools,
-          description: value
-        }
+          description: value,
+        },
       });
     }
   };
@@ -45,9 +48,7 @@ export default function Step3Technical({ formData, onChange, errors = {} }) {
   return (
     <div>
       <h2 style={styles.stepTitle}>{t('projects.steps.step3.title')}</h2>
-      <p style={styles.stepDescription}>
-        {t('projects.steps.step3.description')}
-      </p>
+      <p style={styles.stepDescription}>{t('projects.steps.step3.description')}</p>
 
       <FormTextarea
         label={t('projects.steps.step3.mainTechnologies')}
@@ -70,7 +71,7 @@ export default function Step3Technical({ formData, onChange, errors = {} }) {
           { value: EXPERIENCE_LEVELS.JUNIOR, label: t('projects.levels.junior') },
           { value: EXPERIENCE_LEVELS.MID, label: t('projects.levels.mid') },
           { value: EXPERIENCE_LEVELS.SENIOR, label: t('projects.levels.senior') },
-          { value: EXPERIENCE_LEVELS.EXPERT, label: t('projects.levels.expert') }
+          { value: EXPERIENCE_LEVELS.EXPERT, label: t('projects.levels.expert') },
         ]}
       />
 
@@ -96,7 +97,8 @@ export default function Step3Technical({ formData, onChange, errors = {} }) {
 
       <div style={styles.sliderSection}>
         <label style={styles.sliderLabel} htmlFor="requiredScheduleFlexibility">
-          {t('projects.steps.step3.requiredScheduleFlexibility')}: {formData.requiredScheduleFlexibility || 3}
+          {t('projects.steps.step3.requiredScheduleFlexibility')}:{' '}
+          {formData.requiredScheduleFlexibility || 3}
         </label>
         <input
           type="range"
@@ -116,7 +118,8 @@ export default function Step3Technical({ formData, onChange, errors = {} }) {
 
       <div style={styles.sliderSection}>
         <label style={styles.sliderLabel} htmlFor="requiredTravelAvailability">
-          {t('projects.steps.step3.requiredTravelAvailability')}: {formData.requiredTravelAvailability || 3}
+          {t('projects.steps.step3.requiredTravelAvailability')}:{' '}
+          {formData.requiredTravelAvailability || 3}
         </label>
         <input
           type="range"
@@ -175,7 +178,7 @@ export default function Step3Technical({ formData, onChange, errors = {} }) {
           { value: DOCUMENTATION_LEVELS.COMPLETE, label: t('projects.steps.step3.complete') },
           { value: DOCUMENTATION_LEVELS.PARTIAL, label: t('projects.steps.step3.partial') },
           { value: DOCUMENTATION_LEVELS.MINIMAL, label: t('projects.steps.step3.minimal') },
-          { value: DOCUMENTATION_LEVELS.NONE, label: t('projects.steps.step3.none') }
+          { value: DOCUMENTATION_LEVELS.NONE, label: t('projects.steps.step3.none') },
         ]}
       />
     </div>
@@ -186,39 +189,39 @@ const styles = {
   stepTitle: {
     fontSize: '28px',
     fontWeight: '700',
-    color: '#111',
-    margin: '0 0 8px 0'
+    color: 'var(--color-text-primary)',
+    margin: '0 0 8px 0',
   },
   stepDescription: {
     fontSize: '15px',
-    color: '#6B7280',
-    marginBottom: '32px'
+    color: 'var(--color-text-muted)',
+    marginBottom: '32px',
   },
   section: {
-    marginBottom: '20px'
+    marginBottom: '20px',
   },
   sliderSection: {
-    marginBottom: '24px'
+    marginBottom: '24px',
   },
   sliderLabel: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#111',
+    color: 'var(--color-text-primary)',
     marginBottom: '8px',
-    display: 'block'
+    display: 'block',
   },
   slider: {
     width: '100%',
     height: '6px',
     borderRadius: '3px',
     outline: 'none',
-    cursor: 'pointer'
+    cursor: 'pointer',
   },
   sliderLabels: {
     display: 'flex',
     justifyContent: 'space-between',
     fontSize: '12px',
-    color: '#9CA3AF',
-    marginTop: '4px'
-  }
+    color: 'var(--color-text-muted)',
+    marginTop: '4px',
+  },
 };

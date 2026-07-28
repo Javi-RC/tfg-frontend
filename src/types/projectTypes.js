@@ -2,6 +2,7 @@
  * Project Types and Constants
  * Defines all enums and constants for the project management system
  */
+import i18n from '../i18n';
 
 // ==================== Project Status ====================
 
@@ -10,23 +11,17 @@ export const PROJECT_STATUS = {
   ACTIVE: 'active',
   PAUSED: 'paused',
   COMPLETED: 'completed',
-  CANCELLED: 'cancelled'
+  CANCELLED: 'cancelled',
 };
 
-export const PROJECT_STATUS_LABELS = {
-  draft: 'Draft',
-  active: 'Active',
-  paused: 'Paused',
-  completed: 'Completed',
-  cancelled: 'Cancelled'
-};
+export const getProjectStatusLabel = (status) => i18n.t(`projectStatus.${status}`, status);
 
 export const PROJECT_STATUS_COLORS = {
   draft: { bg: '#F3F4F6', text: '#6B7280' },
   active: { bg: '#D1FAE5', text: '#10B981' },
   paused: { bg: '#FEF3C7', text: '#F59E0B' },
   completed: { bg: '#DBEAFE', text: '#3B82F6' },
-  cancelled: { bg: '#FEE2E2', text: '#EF4444' }
+  cancelled: { bg: '#FEE2E2', text: '#EF4444' },
 };
 
 // ==================== Time Units ====================
@@ -37,7 +32,7 @@ export const TIME_UNITS = {
   DAYS: 'days',
   WEEKS: 'weeks',
   MONTHS: 'months',
-  YEARS: 'years'
+  YEARS: 'years',
 };
 
 // ==================== Collaboration ====================
@@ -45,13 +40,13 @@ export const TIME_UNITS = {
 export const SYNCHRONOUS_COMMUNICATION = {
   YES: 'yes',
   NO: 'no',
-  ONLY_CRITICAL: 'only_critical_moments'
+  ONLY_CRITICAL: 'only_critical_moments',
 };
 
 export const COMMUNICATION_LEVELS = {
   LOW: 'low',
   MEDIUM: 'medium',
-  HIGH: 'high'
+  HIGH: 'high',
 };
 
 export const LANGUAGE_PROFICIENCY = {
@@ -62,7 +57,7 @@ export const LANGUAGE_PROFICIENCY = {
   C1: 'C1',
   C2: 'C2',
   NATIVE: 'native',
-  BILINGUAL: 'bilingual'
+  BILINGUAL: 'bilingual',
 };
 
 // ==================== Technical Requirements ====================
@@ -71,26 +66,26 @@ export const EXPERIENCE_LEVELS = {
   JUNIOR: 'junior',
   MID: 'mid',
   SENIOR: 'senior',
-  EXPERT: 'expert'
+  EXPERT: 'expert',
 };
 
 export const COMPLEXITY_LEVELS = {
   LOW: 'low',
   MEDIUM: 'medium',
-  HIGH: 'high'
+  HIGH: 'high',
 };
 
 export const DOCUMENTATION_LEVELS = {
   COMPLETE: 'complete',
   PARTIAL: 'partial',
   MINIMAL: 'minimal',
-  NONE: 'none'
+  NONE: 'none',
 };
 
-export const DOCUMENTATION_STANDARDIZATION = {
+const DOCUMENTATION_STANDARDIZATION = {
   HIGH: 'high',
   MEDIUM: 'medium',
-  LOW: 'low'
+  LOW: 'low',
 };
 
 // ==================== Work Mode ====================
@@ -101,16 +96,19 @@ export const WORK_MODE = {
   OFFICE_FIRST: 'office_first',
   OFFICE_REMOTE_MIX: 'office_remote_mix',
   REMOTE_FIRST: 'remote_first',
-  REMOTE_MODE: 'remote_mode'
+  REMOTE_MODE: 'remote_mode',
 };
 
-export const WORK_MODE_LABELS = {
-  inherit_from_organization: 'Inherit from Organization',
-  office_mode: 'Office Mode',
-  office_first: 'Office First',
-  office_remote_mix: 'Office/Remote Mix',
-  remote_first: 'Remote First',
-  remote_mode: 'Remote Mode'
+export const getWorkModeLabel = (mode) => {
+  const map = {
+    inherit_from_organization: 'projects.workMode.inherit',
+    office_mode: 'projects.workMode.officeMode',
+    office_first: 'projects.workMode.officeFirst',
+    office_remote_mix: 'projects.workMode.officeMix',
+    remote_first: 'projects.workMode.remoteFirst',
+    remote_mode: 'projects.workMode.remoteMode',
+  };
+  return i18n.t(map[mode] || mode);
 };
 
 // ==================== Management Methods ====================
@@ -120,7 +118,7 @@ export const MANAGEMENT_METHODS = {
   KANBAN: 'kanban',
   WATERFALL: 'waterfall',
   HYBRID: 'hybrid',
-  OTHER: 'other'
+  OTHER: 'other',
 };
 
 export const FREQUENCY_OPTIONS = {
@@ -128,7 +126,7 @@ export const FREQUENCY_OPTIONS = {
   WEEKLY: 'weekly',
   BIWEEKLY: 'biweekly',
   MONTHLY: 'monthly',
-  NONE: 'none'
+  NONE: 'none',
 };
 
 // ==================== Availability ====================
@@ -136,36 +134,36 @@ export const FREQUENCY_OPTIONS = {
 export const AFTER_HOURS_OPTIONS = {
   YES: 'yes',
   NO: 'no',
-  OCCASIONAL: 'occasional'
+  OCCASIONAL: 'occasional',
 };
 
 // ==================== Risks ====================
 
-export const RISK_CATEGORIES = {
+const RISK_CATEGORIES = {
   COMMUNICATION: 'communication',
   TECHNOLOGY: 'technology',
   COORDINATION: 'coordination',
   LANGUAGE: 'language',
   SCHEDULE: 'schedule',
   CULTURE: 'culture',
-  OTHER: 'other'
+  OTHER: 'other',
 };
 
-export const RISK_SEVERITY = {
+const RISK_SEVERITY = {
   LOW: 'low',
   MEDIUM: 'medium',
   HIGH: 'high',
-  CRITICAL: 'critical'
+  CRITICAL: 'critical',
 };
 
-export const RISK_SEVERITY_COLORS = {
+const RISK_SEVERITY_COLORS = {
   low: { bg: '#D1FAE5', text: '#10B981' },
   medium: { bg: '#FEF3C7', text: '#F59E0B' },
   high: { bg: '#FFEDD5', text: '#F97316' },
-  critical: { bg: '#FEE2E2', text: '#EF4444' }
+  critical: { bg: '#FEE2E2', text: '#EF4444' },
 };
 
-export const DIFFICULT_AREAS = {
+const DIFFICULT_AREAS = {
   COMMUNICATION: 'communication',
   TECHNOLOGY: 'technology',
   COORDINATION: 'coordination',
@@ -174,7 +172,7 @@ export const DIFFICULT_AREAS = {
   CULTURE: 'culture',
   BUDGET: 'budget',
   RESOURCES: 'resources',
-  OTHER: 'other'
+  OTHER: 'other',
 };
 
 // ==================== Information Flow ====================
@@ -182,7 +180,7 @@ export const DIFFICULT_AREAS = {
 export const INFORMATION_FLOW = {
   UNIDIRECTIONAL: 'unidirectional',
   BIDIRECTIONAL: 'bidirectional',
-  MULTIPLE: 'multiple'
+  MULTIPLE: 'multiple',
 };
 
 // ==================== Yes/No/Partial Options ====================
@@ -190,7 +188,7 @@ export const INFORMATION_FLOW = {
 export const YES_NO_PARTIAL = {
   YES: 'yes',
   NO: 'no',
-  PARTIAL: 'partial'
+  PARTIAL: 'partial',
 };
 
 // ==================== Dependency Levels ====================
@@ -198,40 +196,21 @@ export const YES_NO_PARTIAL = {
 export const DEPENDENCY_LEVELS = {
   LOW: 'low',
   MEDIUM: 'medium',
-  HIGH: 'high'
+  HIGH: 'high',
 };
 
 // ==================== Form Steps ====================
 
 export const FORM_STEPS = [
-  { id: 1, title: 'General Information', key: 'general' },
-  { id: 2, title: 'Collaboration Requirements', key: 'collaboration' },
-  { id: 3, title: 'Technical Requirements', key: 'technical' },
-  { id: 4, title: 'Geographic Distribution', key: 'geographic' },
-  { id: 5, title: 'Roles and Responsibilities', key: 'roles' },
-  { id: 6, title: 'Availability Requirements', key: 'availability' },
-  { id: 7, title: 'Coordination and Management', key: 'coordination' },
-  { id: 8, title: 'Team Collaboration Intensity', key: 'collaboration_intensity' },
-  { id: 9, title: 'Organizational Maturity', key: 'maturity' }
+  { id: 1, titleKey: 'projects.steps.step1.title', key: 'general' },
+  { id: 2, titleKey: 'projects.steps.step2.title', key: 'collaboration' },
+  { id: 3, titleKey: 'projects.steps.step3.title', key: 'technical' },
+  { id: 4, titleKey: 'projects.steps.step4.title', key: 'geographic' },
+  { id: 5, titleKey: 'projects.steps.step5.title', key: 'roles' },
+  { id: 6, titleKey: 'projects.steps.step6.title', key: 'availability' },
+  { id: 7, titleKey: 'projects.steps.step7.title', key: 'coordination' },
+  { id: 8, titleKey: 'projects.steps.step8.title', key: 'collaboration_intensity' },
+  { id: 9, titleKey: 'projects.steps.step9.title', key: 'maturity' },
 ];
 
-// ==================== Risk Score Ranges ====================
 
-export const RISK_SCORE_RANGES = {
-  LOW: { min: 0, max: 5, label: 'riskScore.low', color: '#10B981' },
-  MEDIUM: { min: 6, max: 15, label: 'riskScore.medium', color: '#F59E0B' },
-  HIGH: { min: 16, max: 30, label: 'riskScore.high', color: '#F97316' },
-  CRITICAL: { min: 31, max: Infinity, label: 'riskScore.critical', color: '#EF4444' }
-};
-
-export const getRiskLevel = (score) => {
-  if (score <= 5) return 'LOW';
-  if (score <= 15) return 'MEDIUM';
-  if (score <= 30) return 'HIGH';
-  return 'CRITICAL';
-};
-
-export const getRiskScoreInfo = (score) => {
-  const level = getRiskLevel(score);
-  return RISK_SCORE_RANGES[level];
-};

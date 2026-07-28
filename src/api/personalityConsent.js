@@ -19,19 +19,15 @@ export const getPersonalityConsent = () => api.get('/api/personality-consent');
  * @param {boolean} [params.dataRetention] - Accept data retention (optional)
  * @returns {Promise} Response with updated consent status
  */
-export const updatePersonalityConsent = ({
-  accepted,
-  personalityProfiling,
-  dataRetention
-}) =>
+export const updatePersonalityConsent = ({ accepted, personalityProfiling, dataRetention }) =>
   api.post('/api/personality-consent', {
     accepted,
     ...(accepted
       ? {
           personalityProfiling: Boolean(personalityProfiling),
-          dataRetention: Boolean(dataRetention)
+          dataRetention: Boolean(dataRetention),
         }
-      : {})
+      : {}),
   });
 
 /**
@@ -40,8 +36,4 @@ export const updatePersonalityConsent = ({
  */
 export const getBFI44ConsentStatus = () => api.get('/api/bfi-44/consent-status');
 
-export default {
-  getPersonalityConsent,
-  updatePersonalityConsent,
-  getBFI44ConsentStatus
-};
+

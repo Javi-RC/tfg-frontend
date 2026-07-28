@@ -6,7 +6,7 @@ import {
   resendConfirmation,
   getProfile,
   updateProfile,
-  patchProfile
+  patchProfile,
 } from './auth';
 
 jest.mock('./axios');
@@ -22,7 +22,7 @@ describe('auth API', () => {
         email: 'test@example.com',
         username: 'testuser',
         password: 'Password123!',
-        role: 'candidate'
+        role: 'candidate',
       };
       const mockResponse = { data: { message: 'User registered' } };
       api.post.mockResolvedValue(mockResponse);
@@ -46,7 +46,7 @@ describe('auth API', () => {
     it('sends POST request to /auth/login with credentials', async () => {
       const credentials = {
         email: 'test@example.com',
-        password: 'password123'
+        password: 'password123',
       };
       const mockResponse = { data: { token: 'jwt-token', user: {} } };
       api.post.mockResolvedValue(mockResponse);
@@ -125,9 +125,9 @@ describe('auth API', () => {
           user: {
             id: 1,
             email: 'test@example.com',
-            username: 'testuser'
-          }
-        }
+            username: 'testuser',
+          },
+        },
       };
       api.get.mockResolvedValue(mockProfile);
 
@@ -149,7 +149,7 @@ describe('auth API', () => {
     it('sends PUT request to /auth/profile with profile data', async () => {
       const profileData = {
         username: 'newusername',
-        bio: 'New bio'
+        bio: 'New bio',
       };
       const mockResponse = { data: { user: { ...profileData } } };
       api.put.mockResolvedValue(mockResponse);

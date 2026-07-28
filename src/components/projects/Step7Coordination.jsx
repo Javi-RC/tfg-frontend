@@ -17,20 +17,24 @@ export default function Step7Coordination({ formData, onChange }) {
     onChange({
       followUpFrequency: {
         ...formData.followUpFrequency,
-        [type]: { frequency: value }
-      }
+        [type]: { frequency: value },
+      },
     });
   };
 
   const handleToolsChange = (field, value) => {
-    const tools = value.split(',').map(t => t.trim()).filter(t => t);
-    const textField = field === 'communicationTools'
-      ? 'communicationToolsText'
-      : field === 'taskManagementTools'
-        ? 'taskManagementToolsText'
-        : field === 'knowledgeManagementTools'
-          ? 'knowledgeManagementToolsText'
-          : null;
+    const tools = value
+      .split(',')
+      .map((t) => t.trim())
+      .filter((t) => t);
+    const textField =
+      field === 'communicationTools'
+        ? 'communicationToolsText'
+        : field === 'taskManagementTools'
+          ? 'taskManagementToolsText'
+          : field === 'knowledgeManagementTools'
+            ? 'knowledgeManagementToolsText'
+            : null;
 
     if (textField) {
       onChange({ [textField]: value, [field]: tools });
@@ -44,17 +48,15 @@ export default function Step7Coordination({ formData, onChange }) {
     onChange({
       documentationProcesses: {
         ...formData.documentationProcesses,
-        [field]: checked
-      }
+        [field]: checked,
+      },
     });
   };
 
   return (
     <div>
       <h2 style={styles.stepTitle}>{t('projects.steps.step7.title')}</h2>
-      <p style={styles.stepDescription}>
-        {t('projects.steps.step7.description')}
-      </p>
+      <p style={styles.stepDescription}>{t('projects.steps.step7.description')}</p>
 
       <FormSelect
         label={t('projects.steps.step7.managementMethod')}
@@ -67,7 +69,7 @@ export default function Step7Coordination({ formData, onChange }) {
           { value: MANAGEMENT_METHODS.KANBAN, label: t('projects.steps.step7.kanban') },
           { value: MANAGEMENT_METHODS.WATERFALL, label: t('projects.steps.step7.waterfall') },
           { value: MANAGEMENT_METHODS.HYBRID, label: t('projects.steps.step7.hybrid') },
-          { value: MANAGEMENT_METHODS.OTHER, label: t('projects.steps.step7.other') }
+          { value: MANAGEMENT_METHODS.OTHER, label: t('projects.steps.step7.other') },
         ]}
       />
 
@@ -83,7 +85,7 @@ export default function Step7Coordination({ formData, onChange }) {
             { value: FREQUENCY_OPTIONS.DAILY, label: t('projects.steps.step7.daily') },
             { value: FREQUENCY_OPTIONS.WEEKLY, label: t('projects.steps.step7.weekly') },
             { value: FREQUENCY_OPTIONS.BIWEEKLY, label: t('projects.steps.step7.biweekly') },
-            { value: FREQUENCY_OPTIONS.NONE, label: t('projects.steps.step7.none') }
+            { value: FREQUENCY_OPTIONS.NONE, label: t('projects.steps.step7.none') },
           ]}
         />
 
@@ -96,7 +98,7 @@ export default function Step7Coordination({ formData, onChange }) {
             { value: FREQUENCY_OPTIONS.WEEKLY, label: t('projects.steps.step7.weekly') },
             { value: FREQUENCY_OPTIONS.BIWEEKLY, label: t('projects.steps.step7.biweekly') },
             { value: FREQUENCY_OPTIONS.MONTHLY, label: t('projects.steps.step7.monthly') },
-            { value: FREQUENCY_OPTIONS.NONE, label: t('projects.steps.step7.none') }
+            { value: FREQUENCY_OPTIONS.NONE, label: t('projects.steps.step7.none') },
           ]}
         />
 
@@ -109,7 +111,7 @@ export default function Step7Coordination({ formData, onChange }) {
             { value: FREQUENCY_OPTIONS.WEEKLY, label: t('projects.steps.step7.weekly') },
             { value: FREQUENCY_OPTIONS.BIWEEKLY, label: t('projects.steps.step7.biweekly') },
             { value: FREQUENCY_OPTIONS.MONTHLY, label: t('projects.steps.step7.monthly') },
-            { value: FREQUENCY_OPTIONS.NONE, label: t('projects.steps.step7.none') }
+            { value: FREQUENCY_OPTIONS.NONE, label: t('projects.steps.step7.none') },
           ]}
         />
       </div>
@@ -142,7 +144,7 @@ export default function Step7Coordination({ formData, onChange }) {
 
       <div style={styles.section}>
         <h3 style={styles.sectionTitle}>{t('projects.steps.step7.knowledgeManagement')}</h3>
-        
+
         <FormInput
           label={t('projects.steps.step7.knowledgeManagementSystem')}
           name="knowledgeManagementSystem"
@@ -154,7 +156,11 @@ export default function Step7Coordination({ formData, onChange }) {
         <FormTextarea
           label={t('projects.steps.step7.knowledgeManagementTools')}
           name="knowledgeManagementTools"
-          value={formData.knowledgeManagementToolsText ?? formData.knowledgeManagementTools?.join(', ') ?? ''}
+          value={
+            formData.knowledgeManagementToolsText ??
+            formData.knowledgeManagementTools?.join(', ') ??
+            ''
+          }
           onChange={(e) => handleToolsChange('knowledgeManagementTools', e.target.value)}
           placeholder={t('projects.steps.step7.knowledgeManagementToolsPlaceholder')}
           rows={2}
@@ -204,7 +210,7 @@ export default function Step7Coordination({ formData, onChange }) {
         options={[
           { value: COMPLEXITY_LEVELS.HIGH, label: t('projects.levels.high') },
           { value: COMPLEXITY_LEVELS.MEDIUM, label: t('projects.levels.medium') },
-          { value: COMPLEXITY_LEVELS.LOW, label: t('projects.levels.low') }
+          { value: COMPLEXITY_LEVELS.LOW, label: t('projects.levels.low') },
         ]}
       />
     </div>
@@ -215,43 +221,43 @@ const styles = {
   stepTitle: {
     fontSize: '28px',
     fontWeight: '700',
-    color: '#111',
-    margin: '0 0 8px 0'
+    color: 'var(--color-text-primary)',
+    margin: '0 0 8px 0',
   },
   stepDescription: {
     fontSize: '15px',
-    color: '#6B7280',
-    marginBottom: '32px'
+    color: 'var(--color-text-muted)',
+    marginBottom: '32px',
   },
   section: {
     marginBottom: '32px',
     padding: '24px',
-    background: '#F9FAFB',
-    borderRadius: '12px'
+    background: 'var(--color-bg-muted)',
+    borderRadius: '12px',
   },
   sectionTitle: {
     fontSize: '18px',
     fontWeight: '600',
-    color: '#111',
-    marginBottom: '20px'
+    color: 'var(--color-text-primary)',
+    marginBottom: '20px',
   },
   checkboxGroup: {
     display: 'flex',
     flexDirection: 'column',
     gap: '12px',
-    marginTop: '20px'
+    marginTop: '20px',
   },
   checkboxLabel: {
     display: 'flex',
     alignItems: 'center',
     gap: '8px',
     fontSize: '14px',
-    color: '#374151',
-    cursor: 'pointer'
+    color: 'var(--color-text-strong)',
+    cursor: 'pointer',
   },
   checkbox: {
     width: '18px',
     height: '18px',
-    cursor: 'pointer'
-  }
+    cursor: 'pointer',
+  },
 };

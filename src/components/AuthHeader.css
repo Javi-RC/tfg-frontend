@@ -1,0 +1,77 @@
+.auth-header {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+  background: white;
+  border-bottom: 1px solid rgba(102, 102, 102, 0.12);
+}
+
+.auth-header-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.auth-header-logo img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.auth-header-logo span {
+  font-size: 28px;
+  font-weight: 400;
+  color: var(--color-primary);
+  font-family: 'Pacifico', cursive;
+}
+
+.auth-header-nav {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.auth-header-login-btn {
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  background: white;
+  border: 1px solid var(--color-text-primary);
+  color: var(--color-text-primary);
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.auth-header-login-btn:disabled {
+  cursor: not-allowed;
+}
+
+.auth-header-login-btn:not(:disabled) {
+  cursor: pointer;
+}
+
+.auth-header-signup-btn {
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  background: var(--color-primary);
+  color: white;
+  border: 1px solid var(--color-primary);
+  font-weight: 500;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.auth-header-signup-btn:disabled {
+  cursor: not-allowed;
+}
+
+.auth-header-signup-btn:not(:disabled) {
+  cursor: pointer;
+}

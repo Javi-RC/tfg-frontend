@@ -7,7 +7,7 @@ import QuestionCard from './QuestionCard';
 /**
  * BFI44QuestionnaireView Component
  * Displays the questionnaire with pagination
- * 
+ *
  * @param {Array} questions - All questions
  * @param {Object} responses - Current responses {questionId: value}
  * @param {Function} onResponseChange - Callback for response change
@@ -29,11 +29,11 @@ export default function BFI44QuestionnaireView({
   onSubmit,
   submitting,
   error,
-  questionsPerPage = 11
+  questionsPerPage = 11,
 }) {
   const { t } = useTranslation();
   const totalPages = Math.ceil(questions.length / questionsPerPage);
-  
+
   const getCurrentPageQuestions = () => {
     const start = currentPage * questionsPerPage;
     const end = start + questionsPerPage;
@@ -42,7 +42,7 @@ export default function BFI44QuestionnaireView({
 
   const canGoNext = () => {
     const pageQuestions = getCurrentPageQuestions();
-    return pageQuestions.every(q => responses[q.id] !== undefined);
+    return pageQuestions.every((q) => responses[q.id] !== undefined);
   };
 
   return (
@@ -97,7 +97,9 @@ export default function BFI44QuestionnaireView({
           <PrimaryButton
             onClick={onSubmit}
             disabled={submitting || Object.keys(responses).length < questions.length}
-            aria-label={submitting ? t('bfi44.submittingQuestionnaire') : t('bfi44.submitQuestionnaire')}
+            aria-label={
+              submitting ? t('bfi44.submittingQuestionnaire') : t('bfi44.submitQuestionnaire')
+            }
           >
             {submitting ? t('bfi44.submitting') : t('bfi44.submitQuestionnaire')}
           </PrimaryButton>
@@ -119,34 +121,34 @@ const styles = {
   errorBanner: {
     background: 'rgba(239, 68, 68, 0.1)',
     border: '1px solid rgba(239, 68, 68, 0.3)',
-    color: '#dc2626',
+    color: 'var(--color-danger)',
     padding: '12px 16px',
     borderRadius: '12px',
     marginBottom: '24px',
-    fontSize: '14px'
+    fontSize: '14px',
   },
   scaleLegend: {
     background: 'white',
     borderRadius: '12px',
     padding: '16px 24px',
     marginBottom: '24px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+    boxShadow: '0 2px 8px rgba(0,0,0,0.04)',
   },
   legendTitle: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#1a1a1a',
-    marginBottom: '12px'
+    color: 'var(--color-text-primary)',
+    marginBottom: '12px',
   },
   legendItems: {
     display: 'flex',
     flexWrap: 'wrap',
-    gap: '16px'
+    gap: '16px',
   },
   legendItem: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px'
+    gap: '8px',
   },
   legendNumber: {
     width: '24px',
@@ -158,27 +160,27 @@ const styles = {
     borderRadius: '6px',
     fontSize: '12px',
     fontWeight: '600',
-    color: '#4a5568'
+    color: 'var(--color-text-secondary)',
   },
   legendLabel: {
     fontSize: '13px',
-    color: '#666'
+    color: 'var(--color-text-muted)',
   },
   questionsContainer: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '16px'
+    gap: '16px',
   },
   pageIndicator: {
     textAlign: 'center',
     fontSize: '14px',
-    color: '#666',
-    marginBottom: '8px'
+    color: 'var(--color-text-muted)',
+    marginBottom: '8px',
   },
   navigationRow: {
     display: 'flex',
     justifyContent: 'space-between',
     marginTop: '32px',
-    gap: '16px'
-  }
+    gap: '16px',
+  },
 };

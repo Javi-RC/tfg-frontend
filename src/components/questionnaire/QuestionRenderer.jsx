@@ -16,7 +16,7 @@ const questionComponents = {
   boolean: BooleanQuestion,
   array: ArrayQuestion,
   select: BooleanQuestion,
-  textarea: TextAreaQuestion
+  textarea: TextAreaQuestion,
 };
 
 /**
@@ -27,20 +27,14 @@ const QuestionRenderer = ({ question, value, onChange, error }) => {
 
   return (
     <div className={`question-wrapper ${error ? 'has-error' : ''}`}>
-      <label className="question-label">
+      <label htmlFor={question.field || question.id} className="question-label">
         {question.question}
         {question.required && <span className="required">*</span>}
       </label>
-      
-      {question.description && (
-        <p className="question-description">{question.description}</p>
-      )}
 
-      <Component
-        question={question}
-        value={value}
-        onChange={onChange}
-      />
+      {question.description && <p className="question-description">{question.description}</p>}
+
+      <Component question={question} value={value} onChange={onChange} />
 
       {error && (
         <div className="error-message">

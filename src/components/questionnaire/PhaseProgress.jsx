@@ -13,16 +13,17 @@ const PhaseProgress = ({ currentPhase, totalPhases, completenessScore }) => {
     <div className="phase-progress">
       <div className="progress-header">
         <div className="phase-info">
-          <span className="phase-label">{t('questionnaire.phase', { current: currentPhase, total: totalPhases })}</span>
-          <span className="completeness-badge">{t('questionnaire.percentComplete', { percent: completenessScore })}</span>
+          <span className="phase-label">
+            {t('questionnaire.phase', { current: currentPhase, total: totalPhases })}
+          </span>
+          <span className="completeness-badge">
+            {t('questionnaire.percentComplete', { percent: completenessScore })}
+          </span>
         </div>
       </div>
-      
+
       <div className="progress-bar-container">
-        <div 
-          className="progress-bar-fill" 
-          style={{ width: `${progressPercentage}%` }}
-        />
+        <div className="progress-bar-fill" style={{ width: `${progressPercentage}%` }} />
       </div>
 
       <div className="phase-dots">

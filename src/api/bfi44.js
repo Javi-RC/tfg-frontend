@@ -1,19 +1,10 @@
 import api from './axios';
-import i18n from '../i18n';
+import { getCurrentLanguage } from '../utils/language';
 
 /**
  * BFI-44 API Service
  * Handles all Big Five Inventory (BFI-44) related API calls
  */
-
-/**
- * Get current language from i18n
- * @returns {string} Current language code ('en' or 'es')
- */
-const getCurrentLanguage = () => {
-  const rawLanguage = i18n.language || 'en';
-  return rawLanguage.split('-')[0]; // Extract base language
-};
 
 /**
  * Get all 44 questions with the Likert scale
@@ -22,11 +13,11 @@ const getCurrentLanguage = () => {
  */
 export const getQuestions = (language = null) => {
   const effectiveLanguage = language || getCurrentLanguage();
-  
+
   return api.get('/api/bfi-44/questions', {
     params: {
-      language: effectiveLanguage
-    }
+      lang: effectiveLanguage,
+    },
   });
 };
 
@@ -38,12 +29,16 @@ export const getQuestions = (language = null) => {
  */
 export const submitResponses = (responses, language = null) => {
   const effectiveLanguage = language || getCurrentLanguage();
-  
-  return api.post('/api/bfi-44/submit', { responses }, {
-    params: {
-      language: effectiveLanguage
+
+  return api.post(
+    '/api/bfi-44/submit',
+    { responses },
+    {
+      params: {
+        lang: effectiveLanguage,
+      },
     }
-  });
+  );
 };
 
 /**

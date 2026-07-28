@@ -16,8 +16,8 @@ describe('useManualRisks Hook', () => {
       severity: 'high',
       rootCause: 'Contract constraints',
       recommendations: ['Negotiate SLA'],
-      indicators: ['High dependency']
-    }
+      indicators: ['High dependency'],
+    },
   ];
 
   beforeEach(() => {
@@ -33,8 +33,8 @@ describe('useManualRisks Hook', () => {
       manualRisksApi.getAllProjectRisks.mockResolvedValueOnce({
         data: {
           success: true,
-          data: { risks: mockRisks }
-        }
+          data: { risks: mockRisks },
+        },
       });
 
       const { result } = renderHook(() => useManualRisks(projectId));
@@ -77,13 +77,13 @@ describe('useManualRisks Hook', () => {
         type: 'schedule_overrun',
         title: 'Schedule Risk',
         description: 'Risk of schedule overrun',
-        severity: 'medium'
+        severity: 'medium',
       };
 
       manualRisksApi.addManualRisk.mockResolvedValueOnce({
         data: {
-          data: { ...newRisk, _id: '507f1f77bcf86cd799439013' }
-        }
+          data: { ...newRisk, _id: '507f1f77bcf86cd799439013' },
+        },
       });
 
       const { result } = renderHook(() => useManualRisks(projectId));
@@ -111,7 +111,7 @@ describe('useManualRisks Hook', () => {
         addedRisk = await result.current.addRisk({
           type: 'schedule_overrun',
           title: 'Test Risk',
-          description: 'Test'
+          description: 'Test',
         });
       });
 
@@ -132,8 +132,8 @@ describe('useManualRisks Hook', () => {
       manualRisksApi.getAllProjectRisks.mockResolvedValueOnce({
         data: {
           success: true,
-          data: { risks: mockRisks }
-        }
+          data: { risks: mockRisks },
+        },
       });
 
       await act(async () => {
@@ -142,8 +142,8 @@ describe('useManualRisks Hook', () => {
 
       manualRisksApi.updateManualRisk.mockResolvedValueOnce({
         data: {
-          data: { ...mockRisks[0], ...updateData }
-        }
+          data: { ...mockRisks[0], ...updateData },
+        },
       });
 
       let updatedRisk;
@@ -154,9 +154,7 @@ describe('useManualRisks Hook', () => {
       await waitFor(() => {
         expect(updatedRisk).toEqual(expect.objectContaining({ _id: riskId, severity: 'critical' }));
         expect(result.current.manualRisks).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({ _id: riskId, severity: 'critical' })
-          ])
+          expect.arrayContaining([expect.objectContaining({ _id: riskId, severity: 'critical' })])
         );
       });
     });
@@ -171,8 +169,8 @@ describe('useManualRisks Hook', () => {
       manualRisksApi.getAllProjectRisks.mockResolvedValueOnce({
         data: {
           success: true,
-          data: { risks: mockRisks }
-        }
+          data: { risks: mockRisks },
+        },
       });
 
       await act(async () => {
@@ -180,7 +178,7 @@ describe('useManualRisks Hook', () => {
       });
 
       manualRisksApi.deleteManualRisk.mockResolvedValueOnce({
-        data: { success: true }
+        data: { success: true },
       });
 
       let result_;

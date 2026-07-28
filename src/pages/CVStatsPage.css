@@ -1,0 +1,216 @@
+.cv-stats-page {
+  min-height: 100vh;
+  background: var(--color-bg-muted);
+  padding: 124px 24px 60px;
+}
+
+.cv-stats-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.cv-stats-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 48px;
+}
+
+.cv-stats-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.cv-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 32px;
+  margin-bottom: 48px;
+}
+
+.cv-stats-section {
+  background: white;
+  border-radius: 16px;
+  padding: 40px 32px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 32px;
+}
+
+.cv-stats-section-title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 24px;
+  color: var(--color-text-primary);
+}
+
+.cv-stats-skills-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cv-stats-skill-item {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 14px;
+}
+
+.cv-stats-skill-item--top {
+  background: #e8f4f8;
+  border: 1px solid #0066cc;
+  font-weight: 600;
+  color: #0066cc;
+}
+
+.cv-stats-skill-item--normal {
+  background: var(--color-border);
+  font-weight: 400;
+  color: var(--color-text-body);
+}
+
+.cv-stats-footer {
+  background: white;
+  border-radius: 16px;
+  padding: 32px 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.cv-stats-footer-text {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+/* Loading & Error & Empty states */
+.cv-stats-loading,
+.cv-stats-empty {
+  min-height: 100vh;
+  background: var(--color-bg-muted);
+  padding: 40px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cv-stats-error {
+  min-height: 100vh;
+  background: var(--color-bg-muted);
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+
+.cv-stats-error-card {
+  max-width: 500px;
+  text-align: center;
+  padding: 40px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.cv-stats-error-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+  opacity: 0.3;
+}
+
+.cv-stats-error-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--color-text-primary);
+}
+
+.cv-stats-error-text {
+  font-size: 14px;
+  color: var(--color-text-muted);
+  margin-bottom: 24px;
+}
+
+.cv-stats-status-text {
+  font-size: 16px;
+  color: var(--color-text-muted);
+}
+
+/* StatCard */
+.cv-stats-card {
+  background: white;
+  border-radius: 16px;
+  padding: 32px 24px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s;
+  cursor: default;
+}
+
+.cv-stats-card:hover {
+  transform: translateY(-4px);
+}
+
+.cv-stats-card-icon {
+  font-size: 40px;
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+
+.cv-stats-card-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  margin-bottom: 8px;
+}
+
+.cv-stats-card-value {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.cv-stats-card-description {
+  font-size: 13px;
+  color: var(--color-text-muted);
+}
+
+.cv-stats-card-value--colored {
+  color: var(--card-color);
+}
+
+.cv-stats-skillbar-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.cv-stats-skillbar-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-body);
+}
+
+.cv-stats-skillbar-count {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.cv-stats-skillbar-track {
+  height: 8px;
+  background: var(--color-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cv-stats-skillbar-progress {
+  width: 100%;
+  height: 100%;
+  accent-color: var(--skillbar-color);
+  border-radius: 4px;
+  transition: transform 0.3s ease;
+  transform-origin: left;
+}

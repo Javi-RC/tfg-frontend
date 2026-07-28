@@ -21,8 +21,10 @@ export function getApiErrorMessage(error, fallbackMessage = i18n.t('common.reque
     // Validation arrays
     Array.isArray(data?.errors)
       ? data.errors
-          .map((e) => e?.message || e?.msg || e?.detail || e)
-          .filter(Boolean)
+          .flatMap((e) => {
+            const v = e?.message || e?.msg || e?.detail || e;
+            return v ? [v] : [];
+          })
           .join('\n')
       : undefined,
   ].filter(Boolean);

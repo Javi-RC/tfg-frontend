@@ -3,7 +3,7 @@ import {
   createOrganization,
   getOrganizationById,
   updateOrganization,
-  getMyOrganizations
+  getMyOrganizations,
 } from './organization';
 
 jest.mock('./axios');
@@ -18,12 +18,12 @@ describe('organization API', () => {
       const orgData = {
         name: 'Tech Corp',
         description: 'Technology company',
-        website: 'https://techcorp.com'
+        website: 'https://techcorp.com',
       };
       const mockResponse = {
         data: {
-          organization: { id: 1, ...orgData }
-        }
+          organization: { id: 1, ...orgData },
+        },
       };
       api.post.mockResolvedValue(mockResponse);
 
@@ -58,9 +58,9 @@ describe('organization API', () => {
           organization: {
             id: 123,
             name: 'Tech Corp',
-            members: []
-          }
-        }
+            members: [],
+          },
+        },
       };
       api.get.mockResolvedValue(mockResponse);
 
@@ -92,12 +92,12 @@ describe('organization API', () => {
       const orgId = '123';
       const updateData = {
         name: 'Updated Corp',
-        description: 'New description'
+        description: 'New description',
       };
       const mockResponse = {
         data: {
-          organization: { id: 123, ...updateData }
-        }
+          organization: { id: 123, ...updateData },
+        },
       };
       api.put.mockResolvedValue(mockResponse);
 
@@ -124,7 +124,9 @@ describe('organization API', () => {
       const mockError = new Error('Insufficient permissions');
       api.put.mockRejectedValue(mockError);
 
-      await expect(updateOrganization(orgId, updateData)).rejects.toThrow('Insufficient permissions');
+      await expect(updateOrganization(orgId, updateData)).rejects.toThrow(
+        'Insufficient permissions'
+      );
     });
   });
 
@@ -134,9 +136,9 @@ describe('organization API', () => {
         data: {
           organizations: [
             { id: 1, name: 'Org 1' },
-            { id: 2, name: 'Org 2' }
-          ]
-        }
+            { id: 2, name: 'Org 2' },
+          ],
+        },
       };
       api.get.mockResolvedValue(mockResponse);
 
@@ -166,7 +168,7 @@ describe('organization API', () => {
       const mockOrgs = [
         { id: 1, name: 'Org 1', role: 'admin' },
         { id: 2, name: 'Org 2', role: 'member' },
-        { id: 3, name: 'Org 3', role: 'viewer' }
+        { id: 3, name: 'Org 3', role: 'viewer' },
       ];
       const mockResponse = { data: { organizations: mockOrgs } };
       api.get.mockResolvedValue(mockResponse);

@@ -1,19 +1,27 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  Lightbulb, TrendingUp, AlertTriangle, CheckCircle, Star, 
-  Award, Clock, Brain, Target, Zap
+import {
+  Lightbulb,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  Star,
+  Award,
+  Clock,
+  Brain,
+  Target,
+  Zap,
 } from 'lucide-react';
 
 /**
  * QuickInsightsSection - Auto-generated key insights
- * 
+ *
  * Generates top 3-5 critical insights to help PM make quick decision:
  * - Match highlights
  * - Red flags/concerns
  * - Unique strengths
  * - Availability status
- * 
+ *
  * @param {Object} employee - Full employee data
  * @param {Object} project - Project requirements
  */
@@ -29,9 +37,7 @@ export default function QuickInsightsSection({ employee, project }) {
           <Lightbulb size={32} color="#ffc107" />
         </div>
         <h3 style={styles.heroTitle}>{t('team.quickInsights.heroTitle')}</h3>
-        <p style={styles.heroSubtitle}>
-          {t('team.quickInsights.heroSubtitle')}
-        </p>
+        <p style={styles.heroSubtitle}>{t('team.quickInsights.heroSubtitle')}</p>
       </div>
 
       {/* PM Notes Section */}
@@ -43,16 +49,14 @@ export default function QuickInsightsSection({ employee, project }) {
             </div>
             <span style={styles.notesTitle}>{t('team.quickInsights.pmNotesTitle')}</span>
           </div>
-          <p style={styles.notesContent}>
-            {employee.notes || employee.cv?.organizationNotes}
-          </p>
+          <p style={styles.notesContent}>{employee.notes || employee.cv?.organizationNotes}</p>
         </div>
       )}
 
       {/* Critical Insights */}
       <div style={styles.insightsGrid}>
-        {insights.map((insight, idx) => (
-          <InsightCard key={idx} insight={insight} />
+        {insights.map((insight) => (
+          <InsightCard key={insight.title} insight={insight} />
         ))}
       </div>
 
@@ -63,9 +67,7 @@ export default function QuickInsightsSection({ employee, project }) {
             <Target size={20} />
             <span style={styles.recTitle}>{t('team.quickInsights.overallAssessmentTitle')}</span>
           </div>
-          <p style={styles.recText}>
-            {generateOverallRecommendation(employee, insights, t)}
-          </p>
+          <p style={styles.recText}>{generateOverallRecommendation(employee, insights, t)}</p>
         </div>
       )}
     </div>
@@ -78,11 +80,16 @@ export default function QuickInsightsSection({ employee, project }) {
 function InsightCard({ insight }) {
   const getIcon = () => {
     switch (insight.type) {
-      case 'positive': return <CheckCircle size={20} />;
-      case 'warning': return <AlertTriangle size={20} />;
-      case 'critical': return <AlertTriangle size={20} />;
-      case 'neutral': return <Lightbulb size={20} />;
-      default: return <CheckCircle size={20} />;
+      case 'positive':
+        return <CheckCircle size={20} />;
+      case 'warning':
+        return <AlertTriangle size={20} />;
+      case 'critical':
+        return <AlertTriangle size={20} />;
+      case 'neutral':
+        return <Lightbulb size={20} />;
+      default:
+        return <CheckCircle size={20} />;
     }
   };
 
@@ -93,28 +100,28 @@ function InsightCard({ insight }) {
           ...styles.insightCard,
           backgroundColor: '#d4edda',
           borderColor: '#c3e6cb',
-          color: '#155724'
+          color: '#155724',
         };
       case 'warning':
         return {
           ...styles.insightCard,
           backgroundColor: '#fff3cd',
-          borderColor: '#ffc107',
-          color: '#856404'
+          borderColor: 'var(--color-warning)',
+          color: '#856404',
         };
       case 'critical':
         return {
           ...styles.insightCard,
           backgroundColor: '#f8d7da',
           borderColor: '#f5c6cb',
-          color: '#721c24'
+          color: '#721c24',
         };
       default:
         return {
           ...styles.insightCard,
           backgroundColor: '#e7f3ff',
           borderColor: '#007bff',
-          color: '#004085'
+          color: '#004085',
         };
     }
   };
@@ -163,9 +170,9 @@ function generateInsights(employee, project, t) {
       description: t('team.quickInsights.insights.skills.excellentDescription', {
         percent: safeMatchPercentage,
         matched: matchedSkillsCount,
-        total: totalRequiredSkillsCount
+        total: totalRequiredSkillsCount,
       }),
-      priority: 1
+      priority: 1,
     });
   } else if (safeMatchPercentage >= 60) {
     insights.push({
@@ -174,10 +181,10 @@ function generateInsights(employee, project, t) {
       title: t('team.quickInsights.insights.skills.gapsTitle'),
       description: t('team.quickInsights.insights.skills.gapsDescription', {
         percent: safeMatchPercentage,
-        missing: missingSkillsCount
+        missing: missingSkillsCount,
       }),
       action: t('team.quickInsights.insights.skills.gapsAction'),
-      priority: 2
+      priority: 2,
     });
   } else if (safeMatchPercentage < 60) {
     insights.push({
@@ -185,10 +192,10 @@ function generateInsights(employee, project, t) {
       category: t('team.quickInsights.categories.skills'),
       title: t('team.quickInsights.insights.skills.criticalTitle'),
       description: t('team.quickInsights.insights.skills.criticalDescription', {
-        percent: safeMatchPercentage
+        percent: safeMatchPercentage,
       }),
       action: t('team.quickInsights.insights.skills.criticalAction'),
-      priority: 1
+      priority: 1,
     });
   }
 
@@ -200,9 +207,9 @@ function generateInsights(employee, project, t) {
       category: t('team.quickInsights.categories.experience'),
       title: t('team.quickInsights.insights.experience.seniorTitle'),
       description: t('team.quickInsights.insights.experience.seniorDescription', {
-        years: t('team.quickInsights.common.years', { count: cv.yearsOfExperience })
+        years: t('team.quickInsights.common.years', { count: cv.yearsOfExperience }),
       }),
-      priority: 2
+      priority: 2,
     });
   } else if (cv?.yearsOfExperience >= 2) {
     insights.push({
@@ -210,9 +217,9 @@ function generateInsights(employee, project, t) {
       category: t('team.quickInsights.categories.experience'),
       title: t('team.quickInsights.insights.experience.midTitle'),
       description: t('team.quickInsights.insights.experience.midDescription', {
-        years: t('team.quickInsights.common.years', { count: cv.yearsOfExperience })
+        years: t('team.quickInsights.common.years', { count: cv.yearsOfExperience }),
       }),
-      priority: 3
+      priority: 3,
     });
   }
 
@@ -225,10 +232,10 @@ function generateInsights(employee, project, t) {
       title: t('team.quickInsights.insights.availability.overloadedTitle'),
       description: t('team.quickInsights.insights.availability.overloadedDescription', {
         projects: workload.concurrentProjects,
-        hours: workload.weeklyHours
+        hours: workload.weeklyHours,
       }),
       action: t('team.quickInsights.insights.availability.overloadedAction'),
-      priority: 1
+      priority: 1,
     });
   } else if (workload && workload.concurrentProjects === 0) {
     insights.push({
@@ -236,7 +243,7 @@ function generateInsights(employee, project, t) {
       category: t('team.quickInsights.categories.availability'),
       title: t('team.quickInsights.insights.availability.availableTitle'),
       description: t('team.quickInsights.insights.availability.availableDescription'),
-      priority: 2
+      priority: 2,
     });
   }
 
@@ -249,7 +256,7 @@ function generateInsights(employee, project, t) {
         category: t('team.quickInsights.categories.personality'),
         title: t('team.quickInsights.insights.personality.reliableTitle'),
         description: t('team.quickInsights.insights.personality.reliableDescription'),
-        priority: 3
+        priority: 3,
       });
     }
 
@@ -259,7 +266,7 @@ function generateInsights(employee, project, t) {
         category: t('team.quickInsights.categories.personality'),
         title: t('team.quickInsights.insights.personality.innovationTitle'),
         description: t('team.quickInsights.insights.personality.innovationDescription'),
-        priority: 3
+        priority: 3,
       });
     }
 
@@ -270,7 +277,7 @@ function generateInsights(employee, project, t) {
         title: t('team.quickInsights.insights.personality.stressTitle'),
         description: t('team.quickInsights.insights.personality.stressDescription'),
         action: t('team.quickInsights.insights.personality.stressAction'),
-        priority: 3
+        priority: 3,
       });
     }
   }
@@ -283,9 +290,9 @@ function generateInsights(employee, project, t) {
         category: t('team.quickInsights.categories.remoteWork'),
         title: t('team.quickInsights.insights.remoteWork.readyTitle'),
         description: t('team.quickInsights.insights.remoteWork.readyDescription', {
-          years: t('team.quickInsights.common.years', { count: cv.remoteWorkExperience.years })
+          years: t('team.quickInsights.common.years', { count: cv.remoteWorkExperience.years }),
         }),
-        priority: 3
+        priority: 3,
       });
     }
   }
@@ -301,7 +308,7 @@ function generateInsights(employee, project, t) {
         title: t('team.quickInsights.insights.location.timezoneChallengeTitle'),
         description: t('team.quickInsights.insights.location.timezoneChallengeDescription'),
         action: t('team.quickInsights.insights.location.timezoneChallengeAction'),
-        priority: 2
+        priority: 2,
       });
     } else if (user.flexibleSchedule) {
       insights.push({
@@ -309,7 +316,7 @@ function generateInsights(employee, project, t) {
         category: t('team.quickInsights.categories.location'),
         title: t('team.quickInsights.insights.location.flexibleScheduleTitle'),
         description: t('team.quickInsights.insights.location.flexibleScheduleDescription'),
-        priority: 3
+        priority: 3,
       });
     }
   }
@@ -321,15 +328,15 @@ function generateInsights(employee, project, t) {
       category: t('team.quickInsights.categories.credentials'),
       title: t('team.quickInsights.insights.credentials.strongTitle'),
       description: t('team.quickInsights.insights.credentials.strongDescription', {
-        count: cv.certifications.length
+        count: cv.certifications.length,
       }),
-      priority: 3
+      priority: 3,
     });
   }
 
   // 8. Language Skills
   if (cv?.languages && Array.isArray(cv.languages) && cv.languages.length > 2) {
-    const proficientLangs = cv.languages.filter(l => 
+    const proficientLangs = cv.languages.filter((l) =>
       ['fluido', 'avanzado', 'nativo', 'bilingue', 'C1', 'C2'].includes(l.level)
     );
     if (proficientLangs.length >= 2) {
@@ -338,68 +345,71 @@ function generateInsights(employee, project, t) {
         category: t('team.quickInsights.categories.communication'),
         title: t('team.quickInsights.insights.communication.multilingualTitle'),
         description: t('team.quickInsights.insights.communication.multilingualDescription', {
-          count: proficientLangs.length
+          count: proficientLangs.length,
         }),
-        priority: 3
+        priority: 3,
       });
     }
   }
 
   // Sort by priority and return top insights
-  return insights
-    .sort((a, b) => a.priority - b.priority)
-    .slice(0, 5);
+  return insights.sort((a, b) => a.priority - b.priority).slice(0, 5);
 }
 
 /**
  * Generate overall recommendation text
  */
 function generateOverallRecommendation(employee, insights, t) {
-  const positiveCount = insights.filter(i => i.type === 'positive').length;
-  const criticalCount = insights.filter(i => i.type === 'critical').length;
-  const warningCount = insights.filter(i => i.type === 'warning').length;
+  const positiveCount = insights.filter((i) => i.type === 'positive').length;
+  const criticalCount = insights.filter((i) => i.type === 'critical').length;
+  const warningCount = insights.filter((i) => i.type === 'warning').length;
 
   if (criticalCount >= 2) {
     return t('team.quickInsights.overall.criticalMany', {
       name: employee.user.name,
-      criticalCount
+      criticalCount,
     });
   }
 
   if (criticalCount === 1 && warningCount >= 1) {
     return t('team.quickInsights.overall.criticalAndWarning', {
-      name: employee.user.name
+      name: employee.user.name,
     });
   }
 
   if (positiveCount >= 3) {
     return t('team.quickInsights.overall.excellent', {
-      name: employee.user.name
+      name: employee.user.name,
     });
   }
 
   if (positiveCount >= 2) {
     return t('team.quickInsights.overall.solid', {
       name: employee.user.name,
-      positiveCount
+      positiveCount,
     });
   }
 
   return t('team.quickInsights.overall.basic', {
-    name: employee.user.name
+    name: employee.user.name,
   });
 }
-
-
 
 /**
  * Get timezone offset value (simplified)
  */
 function getTimezoneOffsetValue(timezone) {
   const offsetMap = {
-    'UTC': 0, 'GMT': 0,
-    'EST': -5, 'PST': -8, 'CST': -6, 'MST': -7,
-    'CET': 1, 'IST': 5.5, 'JST': 9, 'AEST': 10
+    UTC: 0,
+    GMT: 0,
+    EST: -5,
+    PST: -8,
+    CST: -6,
+    MST: -7,
+    CET: 1,
+    IST: 5.5,
+    JST: 9,
+    AEST: 10,
   };
   return offsetMap[timezone?.toUpperCase()] || 0;
 }
@@ -415,7 +425,7 @@ const styles = {
   hero: {
     textAlign: 'center',
     paddingBottom: '20px',
-    borderBottom: '2px solid #e1e4e8',
+    borderBottom: '2px solid var(--color-border)',
   },
   heroIcon: {
     display: 'inline-flex',
@@ -428,12 +438,12 @@ const styles = {
     margin: '0 0 8px 0',
     fontSize: '20px',
     fontWeight: '600',
-    color: '#24292e',
+    color: 'var(--color-text-primary)',
   },
   heroSubtitle: {
     margin: 0,
     fontSize: '14px',
-    color: '#586069',
+    color: 'var(--color-text-secondary)',
   },
 
   // PM Notes Section
@@ -521,9 +531,9 @@ const styles = {
   // Recommendation
   recommendationCard: {
     padding: '20px',
-    backgroundColor: '#f6f8fa',
+    backgroundColor: 'var(--color-bg-muted)',
     borderRadius: '12px',
-    border: '2px solid #e1e4e8',
+    border: '2px solid var(--color-border)',
   },
   recHeader: {
     display: 'flex',
@@ -534,12 +544,12 @@ const styles = {
   recTitle: {
     fontSize: '16px',
     fontWeight: '600',
-    color: '#24292e',
+    color: 'var(--color-text-primary)',
   },
   recText: {
     margin: 0,
     fontSize: '14px',
-    color: '#24292e',
+    color: 'var(--color-text-primary)',
     lineHeight: '1.6',
   },
 };

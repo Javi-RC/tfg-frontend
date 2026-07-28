@@ -4,7 +4,7 @@
 */
 :root{
   --dot-color: #333333;
-  --dot-inactive: #f0f0f0;
+  --dot-inactive: var(--color-border);
   --connector-inactive: rgba(51,51,51,0.12);
   --connector-active: rgba(51,51,51,0.35);
 }

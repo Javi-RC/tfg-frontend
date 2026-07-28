@@ -11,7 +11,7 @@ export default function FormField({
   label,
   value,
   onChange,
-  onKeyPress,
+  onKeyDown,
   placeholder,
   icon: Icon,
   required = false,
@@ -19,7 +19,7 @@ export default function FormField({
   error = null,
   autoFocus = false,
   autoComplete,
-  ariaDescribedBy
+  ariaDescribedBy,
 }) {
   const { t } = useTranslation();
   return (
@@ -27,7 +27,12 @@ export default function FormField({
       {label && (
         <label htmlFor={id} style={styles.label}>
           {label}
-          {required && <span style={styles.required} aria-label={t('form.required')}> *</span>}
+          {required && (
+            <span style={styles.required} aria-label={t('form.required')}>
+              {' '}
+              *
+            </span>
+          )}
         </label>
       )}
       <div style={styles.inputWrapper}>
@@ -42,21 +47,22 @@ export default function FormField({
           placeholder={placeholder}
           value={value}
           onChange={onChange}
-          onKeyPress={onKeyPress}
+          onKeyDown={onKeyDown}
           disabled={disabled}
           autoComplete={autoComplete}
           required={required}
           autoFocus={autoFocus}
           aria-required={required}
-          aria-invalid={error ? "true" : "false"}
+          aria-invalid={error ? 'true' : 'false'}
           aria-describedby={ariaDescribedBy}
           style={{
             ...styles.input,
             ...(Icon ? styles.inputWithIcon : {}),
-            ...(disabled ? styles.inputDisabled : {})
+            ...(disabled ? styles.inputDisabled : {}),
+            ...(error ? { border: '2px solid var(--color-error)' } : {}),
           }}
           onFocus={(e) => {
-            e.target.style.borderColor = '#111';
+            e.target.style.borderColor = error ? 'var(--color-error)' : 'var(--color-border-focus)';
             e.target.style.boxShadow = '0 0 0 3px rgba(17,17,17,0.1)';
           }}
           onBlur={(e) => {
@@ -65,6 +71,11 @@ export default function FormField({
           }}
         />
       </div>
+      {error && (
+        <p style={{ color: 'var(--color-error)', fontSize: '13px', marginTop: '6px', marginBottom: 0 }} role="alert">
+          {error}
+        </p>
+      )}
     </div>
   );
 }
@@ -73,21 +84,21 @@ const styles = {
   container: {
     width: '100%',
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   label: {
     display: 'block',
     marginBottom: '8px',
     fontSize: '14px',
     fontWeight: 500,
-    color: '#1a1a1a'
+    color: 'var(--color-text-primary)',
   },
   required: {
-    color: '#c0392b'
+    color: 'var(--color-error)',
   },
   inputWrapper: {
     position: 'relative',
-    width: '100%'
+    width: '100%',
   },
   iconWrapper: {
     position: 'absolute',
@@ -97,7 +108,7 @@ const styles = {
     pointerEvents: 'none',
     zIndex: 1,
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   input: {
     width: '100%',
@@ -110,13 +121,13 @@ const styles = {
     transition: 'all 0.15s',
     fontFamily: 'inherit',
     background: 'white',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
   },
   inputWithIcon: {
-    paddingLeft: '48px'
+    paddingLeft: '48px',
   },
   inputDisabled: {
     background: '#f5f5f5',
-    cursor: 'not-allowed'
-  }
+    cursor: 'not-allowed',
+  },
 };

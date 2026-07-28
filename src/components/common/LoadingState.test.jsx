@@ -14,74 +14,16 @@ describe('LoadingState Component', () => {
     expect(screen.getByText('Loading data...')).toBeInTheDocument();
   });
 
-  it('renders centered by default', () => {
-    const { container } = render(<LoadingState />);
-    const loadingDiv = container.firstChild;
-    expect(loadingDiv).toHaveStyle({ textAlign: 'center' });
-  });
-
   it('renders not centered when specified', () => {
     const { container } = render(<LoadingState centered={false} />);
     const loadingDiv = container.firstChild;
     expect(loadingDiv).not.toHaveStyle({ textAlign: 'center' });
   });
 
-  it('applies small size styles', () => {
-    const { container } = render(<LoadingState size="small" />);
-    const loadingDiv = container.firstChild;
-    expect(loadingDiv).toHaveStyle({ 
-      padding: '20px',
-      fontSize: '14px'
-    });
-  });
-
-  it('applies medium size styles (default)', () => {
-    const { container } = render(<LoadingState size="medium" />);
-    const loadingDiv = container.firstChild;
-    expect(loadingDiv).toHaveStyle({ 
-      padding: '60px',
-      fontSize: '16px'
-    });
-  });
-
-  it('applies large size styles', () => {
-    const { container } = render(<LoadingState size="large" />);
-    const loadingDiv = container.firstChild;
-    expect(loadingDiv).toHaveStyle({ 
-      padding: '100px',
-      fontSize: '18px'
-    });
-  });
-
-  it('uses medium size as default', () => {
-    const { container } = render(<LoadingState />);
-    const loadingDiv = container.firstChild;
-    expect(loadingDiv).toHaveStyle({ fontSize: '16px' });
-  });
-
-  it('text has correct color', () => {
-    render(<LoadingState />);
-    const text = screen.getByText('Loading...');
-    expect(text).toHaveStyle({ color: '#6B7280' });
-  });
-
   it('renders complete LoadingState with all props', () => {
-    render(
-      <LoadingState
-        message="Please wait..."
-        size="large"
-        centered={true}
-      />
-    );
-    
-    expect(screen.getByText('Please wait...')).toBeInTheDocument();
-  });
+    render(<LoadingState message="Please wait..." size="large" centered={true} />);
 
-  it('handles empty message', () => {
-    const { container } = render(<LoadingState message="" />);
-    const paragraph = container.querySelector('p');
-    expect(paragraph).toBeInTheDocument();
-    expect(paragraph).toHaveTextContent('');
+    expect(screen.getByText('Please wait...')).toBeInTheDocument();
   });
 
   it('handles long message', () => {

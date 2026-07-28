@@ -11,7 +11,8 @@ jest.mock('react-i18next', () => ({
         'risk.manual.title': `Manual Risks (${params?.count || 0})`,
         'risk.manual.subtitle': 'Risks discovered during project execution',
         'risk.manual.noRisks': 'No Manual Risks Yet',
-        'risk.manual.noRisksDescription': 'No manual risks have been added to this project. Risks will appear here as they are discovered during execution.',
+        'risk.manual.noRisksDescription':
+          'No manual risks have been added to this project. Risks will appear here as they are discovered during execution.',
         'risk.manual.loading': 'Loading manual risks...',
         'risk.manual.tryAgain': 'Try Again',
         'risk.manual.description': 'Description',
@@ -36,15 +37,15 @@ jest.mock('react-i18next', () => ({
         'projects.risks.types.vendorLockIn': 'Vendor Lock-in',
         'projects.risks.types.communicationBreakdown': 'Communication Breakdown',
         'teamAnalysis.cbr.technical': 'Technical',
-        'teamAnalysis.cbr.coordination': 'Coordination'
+        'teamAnalysis.cbr.coordination': 'Coordination',
       };
       return translations[key] || params?.defaultValue || key;
-    }
+    },
   }),
   initReactI18next: {
     type: '3rdParty',
-    init: () => {}
-  }
+    init: () => {},
+  },
 }));
 
 describe('ManualRisksList Component', () => {
@@ -66,7 +67,7 @@ describe('ManualRisksList Component', () => {
       recommendations: ['Implement cache', 'Research alternatives'],
       status: 'predicted',
       source: 'manual',
-      createdAt: '2026-01-20T10:30:00Z'
+      createdAt: '2026-01-20T10:30:00Z',
     },
     {
       _id: '507f1f77bcf86cd799439012',
@@ -78,8 +79,8 @@ describe('ManualRisksList Component', () => {
       category: 'coordination',
       status: 'predicted',
       source: 'manual',
-      createdAt: '2026-01-20T10:30:00Z'
-    }
+      createdAt: '2026-01-20T10:30:00Z',
+    },
   ];
 
   const defaultProps = {
@@ -89,7 +90,7 @@ describe('ManualRisksList Component', () => {
     onEdit: mockOnEdit,
     onDelete: mockOnDelete,
     onRefresh: mockOnRefresh,
-    canManage: true
+    canManage: true,
   };
 
   afterEach(() => {
@@ -118,12 +119,7 @@ describe('ManualRisksList Component', () => {
     });
 
     it('should show empty state when no risks', () => {
-      render(
-        <ManualRisksList
-          {...defaultProps}
-          risks={[]}
-        />
-      );
+      render(<ManualRisksList {...defaultProps} risks={[]} />);
 
       expect(screen.getByText(/No Manual Risks Yet/)).toBeInTheDocument();
       expect(
@@ -132,25 +128,14 @@ describe('ManualRisksList Component', () => {
     });
 
     it('should show loading state', () => {
-      render(
-        <ManualRisksList
-          {...defaultProps}
-          loading={true}
-        />
-      );
+      render(<ManualRisksList {...defaultProps} loading={true} />);
 
       expect(screen.getByText(/Loading manual risks/)).toBeInTheDocument();
     });
 
     it('should show error state with retry button', () => {
       const error = 'Failed to load risks';
-      render(
-        <ManualRisksList
-          {...defaultProps}
-          error={error}
-          risks={[]}
-        />
-      );
+      render(<ManualRisksList {...defaultProps} error={error} risks={[]} />);
 
       expect(screen.getByText(error)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /Try Again/i })).toBeInTheDocument();
@@ -222,13 +207,7 @@ describe('ManualRisksList Component', () => {
 
     it('should call onRefresh when retry button is clicked', async () => {
       const user = userEvent.setup();
-      render(
-        <ManualRisksList
-          {...defaultProps}
-          error="Failed to load"
-          risks={[]}
-        />
-      );
+      render(<ManualRisksList {...defaultProps} error="Failed to load" risks={[]} />);
 
       const retryButton = screen.getByRole('button', { name: /Try Again/i });
       await user.click(retryButton);
@@ -271,12 +250,7 @@ describe('ManualRisksList Component', () => {
 
   describe('Permission Handling', () => {
     it('should hide edit/delete buttons when canManage is false', () => {
-      const { container } = render(
-        <ManualRisksList
-          {...defaultProps}
-          canManage={false}
-        />
-      );
+      const { container } = render(<ManualRisksList {...defaultProps} canManage={false} />);
 
       const editButtons = container.querySelectorAll('[title="Edit risk"]');
       const deleteButtons = container.querySelectorAll('[title="Delete risk"]');
@@ -286,12 +260,7 @@ describe('ManualRisksList Component', () => {
     });
 
     it('should show edit/delete buttons when canManage is true', () => {
-      const { container } = render(
-        <ManualRisksList
-          {...defaultProps}
-          canManage={true}
-        />
-      );
+      const { container } = render(<ManualRisksList {...defaultProps} canManage={true} />);
 
       const editButtons = container.querySelectorAll('[title="Edit risk"]');
       const deleteButtons = container.querySelectorAll('[title="Delete risk"]');
@@ -305,15 +274,10 @@ describe('ManualRisksList Component', () => {
     it('should display different severity colors', () => {
       const risksWithVariousSeverities = [
         { ...mockRisks[0], severity: 'critical' },
-        { ...mockRisks[1], severity: 'low' }
+        { ...mockRisks[1], severity: 'low' },
       ];
 
-      render(
-        <ManualRisksList
-          {...defaultProps}
-          risks={risksWithVariousSeverities}
-        />
-      );
+      render(<ManualRisksList {...defaultProps} risks={risksWithVariousSeverities} />);
 
       expect(screen.getByText(/critical/i)).toBeInTheDocument();
       expect(screen.getByText(/low/i)).toBeInTheDocument();
@@ -326,15 +290,10 @@ describe('ManualRisksList Component', () => {
       const riskWithoutExtras = {
         ...mockRisks[0],
         indicators: [],
-        recommendations: []
+        recommendations: [],
       };
 
-      render(
-        <ManualRisksList
-          {...defaultProps}
-          risks={[riskWithoutExtras]}
-        />
-      );
+      render(<ManualRisksList {...defaultProps} risks={[riskWithoutExtras]} />);
 
       const riskTitle = screen.getByText('Vendor Lock-in Risk');
       await user.click(riskTitle.closest('div[style*="padding"]'));
@@ -349,23 +308,13 @@ describe('ManualRisksList Component', () => {
   });
 
   it('should handle null risks gracefully', () => {
-    render(
-      <ManualRisksList
-        {...defaultProps}
-        risks={null}
-      />
-    );
+    render(<ManualRisksList {...defaultProps} risks={null} />);
 
     expect(screen.getByText('No Manual Risks Yet')).toBeInTheDocument();
   });
 
   it('should handle undefined risks gracefully', () => {
-    render(
-      <ManualRisksList
-        {...defaultProps}
-        risks={undefined}
-      />
-    );
+    render(<ManualRisksList {...defaultProps} risks={undefined} />);
 
     expect(screen.getByText('No Manual Risks Yet')).toBeInTheDocument();
   });

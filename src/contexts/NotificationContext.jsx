@@ -1,7 +1,7 @@
-import { createContext, useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import notificationService from '../api/notificationService';
-
-export const NotificationContext = createContext(null);
+import { getUser } from '../api/tokenStore';
+import { NotificationContext } from './NotificationContextObj';
 
 // Intervalo de polling en milisegundos (30 segundos)
 const POLLING_INTERVAL = 30000;
@@ -10,9 +10,9 @@ const POLLING_INTERVAL = 30000;
  * NotificationProvider Component
  * Proveedor de contexto global para el sistema de notificaciones in-app
  * Gestiona el estado de las notificaciones, conteo de no leídas y operaciones CRUD
- * 
+ *
  * Consume la API: /api/notifications
- * 
+ *
  * Funcionalidades:
  * - Polling automático cada 30 segundos para actualizar el badge
  * - Carga de notificaciones al abrir el panel
@@ -24,29 +24,6 @@ export const NotificationProvider = ({ children }) => {
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
   const [pagination, setPagination] = useState({ page: 1, limit: 20, total: 0, pages: 0 });
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-
-  // Verificar autenticación
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    setIsAuthenticated(!!token);
-    
-    // Listener para cambios en localStorage (login/logout en otras pestañas)
-    const handleStorageChange = (e) => {
-      if (e.key === 'token') {
-        setIsAuthenticated(!!e.newValue);
-        if (!e.newValue) {
-          // Usuario cerró sesión, limpiar estado
-          setNotifications([]);
-          setUnreadCount(0);
-          setPagination({ page: 1, limit: 20, total: 0, pages: 0 });
-        }
-      }
-    };
-    
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
 
   /**
    * Obtener conteo de notificaciones no leídas (para el badge)
@@ -54,23 +31,23 @@ export const NotificationProvider = ({ children }) => {
    */
   const fetchUnreadCount = useCallback(async () => {
     // Solo ejecutar si hay token de autenticación
-    const token = localStorage.getItem('token');
-    if (!token) return;
-    
+    if (!getUser()) return;
+
     try {
       const responseData = await notificationService.getUnreadCount();
       // La respuesta del backend es: { success, data: { count } }
-      if (responseData?.success && responseData?.data && typeof responseData.data.count === 'number') {
+      if (
+        responseData?.success &&
+        responseData?.data &&
+        typeof responseData.data.count === 'number'
+      ) {
         setUnreadCount(responseData.data.count);
       } else if (responseData && typeof responseData.count === 'number') {
         // Fallback por si el backend devuelve directamente { count }
         setUnreadCount(responseData.count);
       }
-    } catch (error) {
-      // Silenciar errores 401 (sesión expirada)
-      if (error.response?.status !== 401) {
-        console.error('Error al obtener conteo de notificaciones:', error);
-      }
+    } catch {
+      // Silenciar errores (incluye 401 / sesión expirada)
     }
   }, []);
 
@@ -85,18 +62,17 @@ export const NotificationProvider = ({ children }) => {
    */
   const fetchNotifications = useCallback(async (options = {}) => {
     // Solo ejecutar si hay token de autenticación
-    const token = localStorage.getItem('token');
-    if (!token) return null;
-    
+    if (!getUser()) return null;
+
     setLoading(true);
     try {
       const responseData = await notificationService.getNotifications({
         page: options.page || 1,
         limit: options.limit || 20,
         unreadOnly: options.unreadOnly || false,
-        includeArchived: options.includeArchived || false
+        includeArchived: options.includeArchived || false,
       });
-      
+
       if (responseData?.success && responseData?.data) {
         // Estructura estándar del backend
         setNotifications(responseData.data.notifications || []);
@@ -113,11 +89,7 @@ export const NotificationProvider = ({ children }) => {
         return responseData;
       }
       return null;
-    } catch (error) {
-      // Silenciar errores 401 (sesión expirada)
-      if (error.response?.status !== 401) {
-        console.error('Error al obtener notificaciones:', error);
-      }
+    } catch {
       return null;
     } finally {
       setLoading(false);
@@ -132,13 +104,12 @@ export const NotificationProvider = ({ children }) => {
   const markAsRead = useCallback(async (notificationId) => {
     try {
       await notificationService.markAsRead(notificationId);
-      setNotifications(prev =>
-        prev.map(n => n._id === notificationId ? { ...n, readAt: new Date().toISOString() } : n)
+      setNotifications((prev) =>
+        prev.map((n) => (n._id === notificationId ? { ...n, readAt: new Date().toISOString() } : n))
       );
-      setUnreadCount(prev => Math.max(0, prev - 1));
+      setUnreadCount((prev) => Math.max(0, prev - 1));
       return true;
-    } catch (error) {
-      console.error('Error al marcar notificación como leída:', error);
+    } catch {
       return false;
     }
   }, []);
@@ -150,13 +121,12 @@ export const NotificationProvider = ({ children }) => {
   const markAllAsRead = useCallback(async () => {
     try {
       await notificationService.markAllAsRead();
-      setNotifications(prev =>
-        prev.map(n => ({ ...n, readAt: n.readAt || new Date().toISOString() }))
+      setNotifications((prev) =>
+        prev.map((n) => ({ ...n, readAt: n.readAt || new Date().toISOString() }))
       );
       setUnreadCount(0);
       return true;
-    } catch (error) {
-      console.error('Error al marcar todas las notificaciones como leídas:', error);
+    } catch {
       return false;
     }
   }, []);
@@ -166,50 +136,54 @@ export const NotificationProvider = ({ children }) => {
    * @param {string} notificationId - ID de la notificación
    * @returns {Promise<boolean>} - true si fue exitoso
    */
-  const deleteNotification = useCallback(async (notificationId) => {
-    try {
-      // Verificar si la notificación era no leída antes de eliminar
-      const notification = notifications.find(n => n._id === notificationId);
-      const wasUnread = notification && !notification.readAt;
-      
-      await notificationService.deleteNotification(notificationId);
-      setNotifications(prev => prev.filter(n => n._id !== notificationId));
-      
-      // Decrementar contador solo si era no leída
-      if (wasUnread) {
-        setUnreadCount(prev => Math.max(0, prev - 1));
+  const deleteNotification = useCallback(
+    async (notificationId) => {
+      try {
+        // Verificar si la notificación era no leída antes de eliminar
+        const notification = notifications.find((n) => n._id === notificationId);
+        const wasUnread = notification && !notification.readAt;
+
+        await notificationService.deleteNotification(notificationId);
+        setNotifications((prev) => prev.filter((n) => n._id !== notificationId));
+
+        // Decrementar contador solo si era no leída
+        if (wasUnread) {
+          setUnreadCount((prev) => Math.max(0, prev - 1));
+        }
+        return true;
+      } catch {
+        return false;
       }
-      return true;
-    } catch (error) {
-      console.error('Error al eliminar notificación:', error);
-      return false;
-    }
-  }, [notifications]);
+    },
+    [notifications]
+  );
 
   /**
    * Archivar una notificación
    * @param {string} notificationId - ID de la notificación
    * @returns {Promise<boolean>} - true si fue exitoso
    */
-  const archiveNotification = useCallback(async (notificationId) => {
-    try {
-      // Verificar si la notificación era no leída antes de archivar
-      const notification = notifications.find(n => n._id === notificationId);
-      const wasUnread = notification && !notification.readAt;
-      
-      await notificationService.archiveNotification(notificationId);
-      setNotifications(prev => prev.filter(n => n._id !== notificationId));
-      
-      // Decrementar contador solo si era no leída
-      if (wasUnread) {
-        setUnreadCount(prev => Math.max(0, prev - 1));
+  const archiveNotification = useCallback(
+    async (notificationId) => {
+      try {
+        // Verificar si la notificación era no leída antes de archivar
+        const notification = notifications.find((n) => n._id === notificationId);
+        const wasUnread = notification && !notification.readAt;
+
+        await notificationService.archiveNotification(notificationId);
+        setNotifications((prev) => prev.filter((n) => n._id !== notificationId));
+
+        // Decrementar contador solo si era no leída
+        if (wasUnread) {
+          setUnreadCount((prev) => Math.max(0, prev - 1));
+        }
+        return true;
+      } catch {
+        return false;
       }
-      return true;
-    } catch (error) {
-      console.error('Error al archivar notificación:', error);
-      return false;
-    }
-  }, [notifications]);
+    },
+    [notifications]
+  );
 
   /**
    * Refrescar el estado de notificaciones
@@ -221,16 +195,16 @@ export const NotificationProvider = ({ children }) => {
 
   // Cargar conteo inicial y configurar polling solo si está autenticado
   useEffect(() => {
-    if (!isAuthenticated) return;
-    
+    if (!getUser()) return;
+
     // Carga inicial
     fetchUnreadCount();
-    
+
     // Polling cada 30 segundos para actualizar el badge
     const interval = setInterval(fetchUnreadCount, POLLING_INTERVAL);
-    
+
     return () => clearInterval(interval);
-  }, [isAuthenticated, fetchUnreadCount]);
+  }, [fetchUnreadCount]);
 
   const value = {
     notifications,
@@ -243,14 +217,10 @@ export const NotificationProvider = ({ children }) => {
     markAllAsRead,
     deleteNotification,
     archiveNotification,
-    refresh
+    refresh,
   };
 
-  return (
-    <NotificationContext.Provider value={value}>
-      {children}
-    </NotificationContext.Provider>
-  );
+  return <NotificationContext.Provider value={value}>{children}</NotificationContext.Provider>;
 };
 
 export default NotificationProvider;

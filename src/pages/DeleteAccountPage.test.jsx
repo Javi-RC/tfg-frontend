@@ -3,31 +3,30 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import DeleteAccountPage from './DeleteAccountPage';
-import { AuthContext } from '../contexts/AuthContext';
+import { AuthContext } from '../contexts/AuthContextObj';
 import { getDeletionPrerequisites, deleteAccount } from '../api/account';
 
 jest.mock('react-i18next', () => ({
   useTranslation: () => ({
-    t: (key) => key
+    t: (key) => key,
   }),
   initReactI18next: {
     type: '3rdParty',
-    init: () => {}
-  }
+    init: () => {},
+  },
 }));
 
 jest.mock('../api/account', () => ({
   getDeletionPrerequisites: jest.fn(),
-  deleteAccount: jest.fn()
+  deleteAccount: jest.fn(),
 }));
 
-const renderWithProviders = (ui, { logout = jest.fn() } = {}) => render(
-  <AuthContext.Provider value={{ logout }}>
-    <MemoryRouter>
-      {ui}
-    </MemoryRouter>
-  </AuthContext.Provider>
-);
+const renderWithProviders = (ui, { logout = jest.fn() } = {}) =>
+  render(
+    <AuthContext.Provider value={{ logout }}>
+      <MemoryRouter>{ui}</MemoryRouter>
+    </AuthContext.Provider>
+  );
 
 describe('DeleteAccountPage', () => {
   beforeEach(() => {
@@ -38,8 +37,8 @@ describe('DeleteAccountPage', () => {
     getDeletionPrerequisites.mockResolvedValue({
       data: {
         requiresPassword: true,
-        blockers: [{ title: 'Pending CV submission', description: 'Finish your CV.' }]
-      }
+        blockers: [{ title: 'Pending CV submission', description: 'Finish your CV.' }],
+      },
     });
 
     renderWithProviders(<DeleteAccountPage />);
@@ -53,7 +52,9 @@ describe('DeleteAccountPage', () => {
 
     renderWithProviders(<DeleteAccountPage />);
 
-    const openButton = await screen.findByRole('button', { name: /accountDeletion\.actions\.openModal/i });
+    const openButton = await screen.findByRole('button', {
+      name: /accountDeletion\.actions\.openModal/i,
+    });
     fireEvent.click(openButton);
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
@@ -65,21 +66,31 @@ describe('DeleteAccountPage', () => {
 
     renderWithProviders(<DeleteAccountPage />);
 
-    fireEvent.click(await screen.findByRole('button', { name: /accountDeletion\.actions\.openModal/i }));
+    fireEvent.click(
+      await screen.findByRole('button', { name: /accountDeletion\.actions\.openModal/i })
+    );
 
-    fireEvent.change(screen.getByPlaceholderText(/accountDeletion\.confirmation\.passwordPlaceholder/i), {
-      target: { value: 'secret123' }
-    });
-    fireEvent.change(screen.getByPlaceholderText(/accountDeletion\.confirmation\.confirmationPlaceholder/i), {
-      target: { value: 'DELETE' }
-    });
+    fireEvent.change(
+      screen.getByPlaceholderText(/accountDeletion\.confirmation\.passwordPlaceholder/i),
+      {
+        target: { value: 'secret123' },
+      }
+    );
+    fireEvent.change(
+      screen.getByPlaceholderText(/accountDeletion\.confirmation\.confirmationPlaceholder/i),
+      {
+        target: { value: 'DELETE' },
+      }
+    );
 
-    fireEvent.click(screen.getByRole('button', { name: /accountDeletion\.actions\.confirmDelete/i }));
+    fireEvent.click(
+      screen.getByRole('button', { name: /accountDeletion\.actions\.confirmDelete/i })
+    );
 
     await waitFor(() => {
       expect(deleteAccount).toHaveBeenCalledWith({
         password: 'secret123',
-        confirmation: 'DELETE'
+        confirmation: 'DELETE',
       });
     });
   });
@@ -90,19 +101,28 @@ describe('DeleteAccountPage', () => {
 
     renderWithProviders(<DeleteAccountPage />);
 
-    fireEvent.click(await screen.findByRole('button', { name: /accountDeletion\.actions\.openModal/i }));
+    fireEvent.click(
+      await screen.findByRole('button', { name: /accountDeletion\.actions\.openModal/i })
+    );
 
-    expect(screen.queryByPlaceholderText(/accountDeletion\.confirmation\.passwordPlaceholder/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByPlaceholderText(/accountDeletion\.confirmation\.passwordPlaceholder/i)
+    ).not.toBeInTheDocument();
 
-    fireEvent.change(screen.getByPlaceholderText(/accountDeletion\.confirmation\.confirmationPlaceholder/i), {
-      target: { value: 'ELIMINAR' }
-    });
+    fireEvent.change(
+      screen.getByPlaceholderText(/accountDeletion\.confirmation\.confirmationPlaceholder/i),
+      {
+        target: { value: 'ELIMINAR' },
+      }
+    );
 
-    fireEvent.click(screen.getByRole('button', { name: /accountDeletion\.actions\.confirmDelete/i }));
+    fireEvent.click(
+      screen.getByRole('button', { name: /accountDeletion\.actions\.confirmDelete/i })
+    );
 
     await waitFor(() => {
       expect(deleteAccount).toHaveBeenCalledWith({
-        confirmation: 'ELIMINAR'
+        confirmation: 'ELIMINAR',
       });
     });
   });

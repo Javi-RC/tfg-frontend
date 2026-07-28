@@ -1,7 +1,8 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
+import { showSuccess, showError } from '../utils/toast';
 import {
   getProjectById,
   deleteProject,
@@ -9,7 +10,7 @@ import {
   completeProject,
   cancelProject,
   assignEmployeeToProject,
-  removeEmployeeFromProject
+  removeEmployeeFromProject,
 } from '../api/projects';
 import { PROJECT_STATUS } from '../types/projectTypes';
 
@@ -20,7 +21,7 @@ import { PROJECT_STATUS } from '../types/projectTypes';
 export function useProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const { t } = useTranslation();
 
   const [project, setProject] = useState(null);
@@ -29,13 +30,13 @@ export function useProjectDetail() {
   const [showAssignModal, setShowAssignModal] = useState(false);
 
   const isAdmin = user?.role === 'org_admin';
-  
+
   // Normalize user ID (can be id, _id, or userId depending on source)
   const userId = user?.userId || user?._id || user?.id;
-  
+
   // Normalize project manager ID (can be id or _id)
   const projectManagerId = project?.projectManager?._id || project?.projectManager?.id;
-  
+
   const isProjectManager = projectManagerId && userId && projectManagerId === userId;
   const canEdit = isProjectManager || isAdmin;
   const canDelete = isAdmin;
@@ -55,12 +56,12 @@ export function useProjectDetail() {
       if (!silent) setLoading(true);
       const res = await getProjectById(id, true);
       const data = res.data?.success ? res.data.data : res.data;
-      
+
       // Transform BFI-44 profile structure for assigned employees
       // Backend sends: user.bfi44Profile = { Extraversion: 36, ... }
       // Frontend expects: employee.bfi44Profile = { traits: { extraversion: 36, ... } }
       if (data.assignedEmployees && Array.isArray(data.assignedEmployees)) {
-        data.assignedEmployees = data.assignedEmployees.map(emp => {
+        data.assignedEmployees = data.assignedEmployees.map((emp) => {
           const backendProfile = emp.user?.bfi44Profile;
           if (!backendProfile) return emp;
 
@@ -76,15 +77,15 @@ export function useProjectDetail() {
                 agreeableness: backendProfile.Agreeableness ?? 0,
                 conscientiousness: backendProfile.Conscientiousness ?? 0,
                 neuroticism: backendProfile.Neuroticism ?? 0,
-                openness: backendProfile.Openness ?? 0
-              }
-            }
+                openness: backendProfile.Openness ?? 0,
+              },
+            },
           };
         });
       }
-      
+
       setProject(data);
-      
+
       // Set default tab based on project status
       if (data.status === PROJECT_STATUS.DRAFT && activeTab === 'overview') {
         setActiveTab('teamAnalysis');
@@ -92,7 +93,7 @@ export function useProjectDetail() {
         setActiveTab('overview');
       }
     } catch (error) {
-      alert(error.response?.data?.error || t('projects.messages.errorLoading'));
+      showError(error.response?.data?.error || t('projects.messages.errorLoading'));
       navigate('/projects');
     } finally {
       setLoading(false);
@@ -109,10 +110,10 @@ export function useProjectDetail() {
 
     try {
       await deleteProject(id);
-      alert(t('projects.projectDeleted'));
+      showSuccess(t('projects.projectDeleted'));
       navigate('/projects');
     } catch (error) {
-      alert(error.response?.data?.error || t('projects.messages.errorDeleting'));
+      showError(error.response?.data?.error || t('projects.messages.errorDeleting'));
     }
   };
 
@@ -122,10 +123,10 @@ export function useProjectDetail() {
   const handleActivate = async () => {
     try {
       await activateProject(id);
-      alert(t('projects.projectActivated'));
+      showSuccess(t('projects.projectActivated'));
       await loadProject({ silent: true });
     } catch (error) {
-      alert(error.response?.data?.error || t('projects.messages.errorActivating'));
+      showError(error.response?.data?.error || t('projects.messages.errorActivating'));
     }
   };
 
@@ -139,10 +140,10 @@ export function useProjectDetail() {
 
     try {
       await completeProject(id);
-      alert(t('projects.projectCompleted'));
+      showSuccess(t('projects.projectCompleted'));
       await loadProject({ silent: true });
     } catch (error) {
-      alert(error.response?.data?.error || t('projects.messages.errorCompleting'));
+      showError(error.response?.data?.error || t('projects.messages.errorCompleting'));
     }
   };
 
@@ -156,10 +157,10 @@ export function useProjectDetail() {
 
     try {
       await cancelProject(id);
-      alert(t('projects.projectCancelled'));
+      showSuccess(t('projects.projectCancelled'));
       await loadProject({ silent: true });
     } catch (error) {
-      alert(error.response?.data?.error || t('projects.messages.errorCancelling'));
+      showError(error.response?.data?.error || t('projects.messages.errorCancelling'));
     }
   };
 
@@ -172,7 +173,7 @@ export function useProjectDetail() {
       await loadProject({ silent: true });
       setShowAssignModal(false);
     } catch (error) {
-      alert(error.response?.data?.error || t('projects.messages.errorAssigning'));
+      showError(error.response?.data?.error || t('projects.messages.errorAssigning'));
     }
   };
 
@@ -188,7 +189,7 @@ export function useProjectDetail() {
       await removeEmployeeFromProject(id, employeeId);
       await loadProject({ silent: true });
     } catch (error) {
-      alert(error.response?.data?.error || t('projects.messages.errorRemoving'));
+      showError(error.response?.data?.error || t('projects.messages.errorRemoving'));
     }
   };
 
@@ -211,7 +212,8 @@ export function useProjectDetail() {
    */
   const canActivate = project?.status === PROJECT_STATUS.DRAFT && canEdit;
   const canCompleteProject = project?.status === PROJECT_STATUS.ACTIVE && canEdit;
-  const canCancelProject = [PROJECT_STATUS.DRAFT, PROJECT_STATUS.ACTIVE].includes(project?.status) && canEdit;
+  const canCancelProject =
+    [PROJECT_STATUS.DRAFT, PROJECT_STATUS.ACTIVE].includes(project?.status) && canEdit;
   const canEditProject = project?.status === PROJECT_STATUS.DRAFT && canEdit;
 
   return {
@@ -220,7 +222,7 @@ export function useProjectDetail() {
     loading,
     activeTab,
     showAssignModal,
-    
+
     // Permissions
     isAdmin,
     isProjectManager,
@@ -230,7 +232,7 @@ export function useProjectDetail() {
     canCompleteProject,
     canCancelProject,
     canEditProject,
-    
+
     // Actions
     setActiveTab,
     setShowAssignModal,
@@ -242,6 +244,6 @@ export function useProjectDetail() {
     handleRemoveEmployee,
     handleEdit,
     handleNavigateToComplete,
-    reloadProject: loadProject
+    reloadProject: loadProject,
   };
 }

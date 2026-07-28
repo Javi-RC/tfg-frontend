@@ -72,7 +72,10 @@
       "navigateTo": "Navegar a {{label}}",
       "goToHome": "Ir al inicio",
       "userMenu": "Menú de usuario",
-      "userMenuOptions": "Opciones del menú de usuario"
+      "userMenuOptions": "Opciones del menú de usuario",
+      "projectsNavigation": "Navegación de proyectos",
+      "projectsPagination": "Paginación de proyectos",
+      "employeesPagination": "Paginación de empleados"
     },
     "skipToMain": "Saltar al contenido principal",
     "mainNavigation": "Navegación principal",
@@ -340,6 +343,104 @@
     },
     "success": {
       "consentSaved": "Consentimiento guardado. Ya puedes subir CVs."
+    },
+    "dashboard": {
+      "greeting": "¡Hola, {{name}}! 👋",
+      "completionHint": "Completa tu perfil para obtener mejores recomendaciones",
+      "defaultJobTitle": "Software Engineer",
+      "defaultDepartment": "Engineering",
+      "company": "Empresa",
+      "department": "Departamento",
+      "editInfo": "Editar información",
+      "competencies": "Competencias",
+      "seeAllCompetencies": "Ver todas las competencias",
+      "about": "Sobre mí",
+      "aboutPlaceholder": "Apasionado por crear soluciones innovadoras y colaborar en equipos multidisciplinares.",
+      "edit": "Editar",
+      "recentActivity": "Actividad reciente",
+      "seeAll": "Ver todo",
+      "flexibleScheduleHint": "Te permite ajustar tu horario",
+      "notificationsHint": "Personaliza cómo quieres ser notificado",
+      "stats": {
+        "projects": "Proyectos",
+        "teams": "Equipos",
+        "compatibility": "Compatibilidad",
+        "recommendations": "Recomendaciones",
+        "average": "Promedio"
+      },
+      "channels": {
+        "email": "Email",
+        "app": "Aplicación",
+        "teams": "Teams"
+      },
+      "activity": {
+        "updatedProfile": "Actualizaste tu perfil",
+        "twoDaysAgo": "Hace 2 días"
+      }
+    }
+  },
+  "sidebar": {
+    "home": "Inicio",
+    "projects": "Proyectos",
+    "teams": "Equipos",
+    "cv": "CV",
+    "companies": "Empresas",
+    "profile": "Perfil",
+    "settings": "Ajustes",
+    "help": "Ayuda",
+    "comingSoon": "Próximamente",
+    "searchPlaceholder": "Buscar...",
+    "completeCard": {
+      "greeting": "¡Hola! 👋",
+      "text": "Tu perfil está al {{pct}}%. Completa tu perfil para obtener mejores recomendaciones.",
+      "button": "Completar perfil"
+    },
+    "aria": {
+      "main": "Barra lateral de navegación",
+      "primary": "Navegación principal",
+      "goHome": "Ir al inicio",
+      "close": "Cerrar menú",
+      "openMenu": "Abrir menú",
+      "topbar": "Barra superior",
+      "expand": "Expandir barra lateral",
+      "collapse": "Colapsar barra lateral"
+    }
+  },
+  "simplePages": {
+    "teams": {
+      "title": "Equipos",
+      "subtitle": "Los equipos con los que colaboras.",
+      "emptyTitle": "Aún no tienes equipos",
+      "emptyText": "Los equipos se forman a partir de tus proyectos. Crea o únete a un proyecto para empezar a colaborar.",
+      "goToProjects": "Ir a Proyectos"
+    },
+    "settings": {
+      "title": "Ajustes",
+      "subtitle": "Gestiona tus preferencias de la aplicación.",
+      "language": "Idioma",
+      "languageDesc": "Elige el idioma de la interfaz.",
+      "profile": "Perfil y notificaciones",
+      "profileDesc": "Edita tu información personal y tus preferencias de notificaciones.",
+      "editProfile": "Editar perfil",
+      "account": "Cuenta",
+      "accountDesc": "Acciones sensibles sobre tu cuenta.",
+      "deleteAccount": "Eliminar cuenta"
+    },
+    "help": {
+      "title": "Ayuda",
+      "subtitle": "Encuentra respuestas o contáctanos.",
+      "faqTitle": "Preguntas frecuentes",
+      "faq": {
+        "q1": "¿Cómo completo mi perfil?",
+        "a1": "Ve a tu Perfil desde el menú lateral y pulsa «Editar perfil» o «Completar perfil». Cuanta más información añadas, mejores serán tus recomendaciones.",
+        "q2": "¿Cómo funciona el Test de Personalidad?",
+        "a2": "El cuestionario BFI-44 evalúa cinco dimensiones de personalidad. Debes aceptar el consentimiento de datos una vez y responder las 44 preguntas.",
+        "q3": "¿Quién puede ver mis datos?",
+        "a3": "Tus datos se usan únicamente para mejorar tus recomendaciones y análisis de equipo. Puedes revisar o revocar tus consentimientos desde tu Perfil."
+      },
+      "contactTitle": "¿Necesitas más ayuda?",
+      "contactText": "Escríbenos y te responderemos lo antes posible.",
+      "contactButton": "Contactar con soporte"
     }
   },
   "team": {
@@ -2110,8 +2211,22 @@
       "overview": "Resumen",
       "employees": "Empleados",
       "projects": "Proyectos",
+      "riskAnalytics": "Análisis de riesgos",
       "cvs": "Currículos",
       "settings": "Configuración"
+    },
+    "riskAnalytics": {
+      "intro": "Datos de aprendizaje de riesgos que el sistema deriva de los proyectos completados (CBR).",
+      "loading": "Cargando análisis de riesgos…",
+      "loadError": "No se pudo cargar el análisis de riesgos.",
+      "empty": "Aún no hay análisis de riesgos",
+      "emptyDescription": "El análisis aparece cuando se completan proyectos y se capturan sus resultados.",
+      "stats": "Estadísticas de riesgos",
+      "accuracy": "Precisión de predicción",
+      "insights": "Perspectivas de riesgos",
+      "caseBase": "Base de casos",
+      "occurrences": "{{count}} ocurrencias",
+      "unnamedCase": "Caso sin nombre"
     },
     "employees": {
       "title": "Empleados",
@@ -2410,7 +2525,9 @@
         "recommendations": "Recomendaciones",
         "recommendationsPlaceholder": "Añadir una recomendación",
         "indicators": "Indicadores",
-        "indicatorsPlaceholder": "Añadir un indicador"
+        "indicatorsPlaceholder": "Añadir un indicador",
+        "close": "Cerrar",
+        "systemFallback": "Sistema"
       }
     },
     "results": {
@@ -2496,9 +2613,31 @@
     "na": "N/D",
     "charCount": "{{current}}/{{max}} caracteres",
     "unknownOrganization": "Organización desconocida",
-    "requestFailed": "La solicitud ha fallado"
+    "requestFailed": "La solicitud ha fallado",
+    "errorOccurred": "Ocurrió un error",
+    "retry": "Reintentar",
+    "show": "Mostrar",
+    "pageOf": "Página {{current}} de {{total}}",
+    "itemsPerPage": "Elementos por página",
+    "selectDefault": "Seleccionar...",
+    "emptyState": "Estado vacío",
+    "viewToggle": "Alternar vista",
+    "navigationTabs": "Pestañas de navegación",
+    "blockedItem": "Elemento bloqueado",
+    "accountCannotBeDeleted": "La cuenta no puede ser eliminada aún.",
+    "user": "Usuario",
+    "userAvatar": "Avatar del usuario",
+    "project": "Proyecto",
+    "unknownRisk": "Riesgo Desconocido",
+    "unnamed": "Sin nombre",
+    "selectOption": "Seleccionar una opción",
+    "system": "Sistema",
+    "caseFallback": "Caso {{id}}"
   },
   "errors": {
+    "title": "Algo salió mal",
+    "retry": "Reintentar",
+    "description": "Ocurrió un error inesperado. Por favor, intenta recargar la página.",
     "invalidEmail": "Dirección de correo electrónico inválida",
     "invalidPassword": "Contraseña inválida",
     "passwordsDoNotMatch": "Las contraseñas no coinciden",
@@ -3110,7 +3249,16 @@
     "finish": "Finalizar",
     "next": "Siguiente",
     "phase": "Fase {{current}} de {{total}}",
-    "percentComplete": "{{percent}}% Completo"
+    "percentComplete": "{{percent}}% Completo",
+    "aria": {
+      "selectDate": "Seleccionar fecha",
+      "response": "Respuesta",
+      "textResponse": "Respuesta de texto",
+      "selectOption": "Seleccionar una opción"
+    },
+    "errors": {
+      "submitPhase": "Error al enviar la fase"
+    }
   },
   "risk": {
     "phases": {
@@ -3151,7 +3299,10 @@
       "analysisFailedTitle": "Análisis Fallido",
       "analysisFailedMessage": "No se puede completar el análisis de riesgos en este momento.",
       "retryAnalysis": "Reintentar Análisis",
-      "checkData": "Verificar Datos del Proyecto"
+      "checkData": "Verificar Datos del Proyecto",
+      "defaultTitle": "Error",
+      "defaultMessage": "Algo salió mal.",
+      "defaultRetry": "Reintentar"
     },
     "stats": {
       "totalRisks": "Riesgos totales",
@@ -3203,21 +3354,34 @@
       "deleteRisk": "Eliminar Riesgo",
       "saving": "Guardando...",
       "updateRisk": "Actualizar Riesgo",
-      "addRiskButton": "Añadir Riesgo"
+      "addRiskButton": "Añadir Riesgo",
+      "riskTypeRequired": "El tipo de riesgo es obligatorio",
+      "titleRequired": "El título es obligatorio",
+      "descriptionRequired": "La descripción es obligatoria",
+      "invalidSeverity": "Severidad inválida (debe ser: low, medium, high, critical)",
+      "cannotBeNegative": "No puede ser negativo",
+      "cannotBeFutureDate": "No puede ser una fecha futura",
+      "cannotBeEarlierThanDetection": "No puede ser anterior a la fecha de detección"
+    },
+    "aria": {
+      "collapseDetails": "Contraer detalles",
+      "expandDetails": "Expandir detalles"
     },
     "dt": {
       "analyzing": "Analizando patrones del proyecto...",
       "noWarnings": "No se Detectaron Alertas Tempranas",
       "noWarningsDescription": "La configuración de tu proyecto se ve bien. No se detectaron patrones preocupantes aún.",
-      "title": "Alertas Tempranas (Reglas Expertas)",
+      "title": "Alertas Tempranas (Reglas de Expertos)",
       "detected": "{{count}} detectados",
       "description": "Estos son riesgos potenciales detectados al analizar la configuración de tu proyecto. Ningún proyecto similar ha experimentado estos problemas aún (no hay datos CBR disponibles).",
       "confidence": "Confianza",
       "confidenceText": "{{percent}}% - Este patrón indica un riesgo potencial",
       "detectedPatterns": "Patrones Detectados",
-      "statusBadge": "Alerta Temprana - No se han aprendido casos similares aún. Este riesgo será monitoreado mientras el sistema aprende de proyectos similares.",
+      "statusBadge": "Alerta Temprana - Aún no se han aprendido casos similares. Este riesgo será monitoreado a medida que el sistema aprenda de proyectos similares.",
       "tip": "Consejo",
-      "tipText": "Monitorea estos patrones durante la ejecución del proyecto. El sistema aprende de tus experiencias para mejorar predicciones futuras."
+      "tipText": "Monitorea estos patrones durante la ejecución del proyecto. El sistema aprende de tus experiencias para mejorar predicciones futuras.",
+      "tier1": "TIER 1",
+      "tier2": "TIER 2"
     },
     "cbr": {
       "learning": "Aprendiendo de proyectos similares...",
@@ -3331,45 +3495,13 @@
       "unnamedRisk": "Riesgo sin nombre"
     }
   },
-  "projectQuestionnaire": {
-    "title": "Feedback del Proyecto",
-    "subtitle": "Comparte tu experiencia trabajando en \"{{projectName}}\"",
-    "infoBanner": "Tu feedback ayuda a mejorar las asignaciones de equipo y la planificación de proyectos futuros",
-    "questions": {
-      "overallSatisfaction": "¿Qué tan satisfecho/a estás con el proyecto en general?",
-      "teamCollaboration": "¿Cómo calificarías la colaboración del equipo?",
-      "projectManagement": "¿Qué tan efectiva fue la gestión del proyecto?",
-      "communicationQuality": "¿Cómo fue la calidad de la comunicación?",
-      "wouldWorkAgain": "¿Trabajarías con este equipo de nuevo?",
-      "highlights": "¿Cuáles fueron los puntos destacados de este proyecto?",
-      "improvements": "¿Qué se podría haber mejorado?",
-      "additionalComments": "¿Algún comentario adicional?"
-    },
-    "options": {
-      "yes": "Sí",
-      "maybe": "Tal vez",
-      "no": "No"
-    },
-    "placeholders": {
-      "highlights": "Comparte lo que salió bien...",
-      "improvements": "Comparte áreas de mejora...",
-      "additionalComments": "Cualquier otro pensamiento..."
-    },
-    "errors": {
-      "ratingRequired": "Por favor proporciona una calificación",
-      "selectionRequired": "Por favor selecciona una opción"
-    },
-    "skipForNow": "Omitir por ahora",
-    "submit": "Enviar feedback",
-    "starRating": "Calificar {{rating}} de 5",
-    "successMessage": "¡Gracias por tu feedback!",
-    "errorMessage": "Error al enviar el feedback. Por favor intenta de nuevo.",
+  "projectRetrospective": {
     "banner": {
       "title": "¡Proyecto completado!",
-      "description": "Tu opinión es importante. Ayúdanos a mejorar completando el cuestionario de feedback.",
-      "action": "Completar cuestionario de feedback",
-      "completed": "Feedback enviado",
-      "completedDescription": "Gracias por compartir tu experiencia en este proyecto."
+      "description": "Registra cuáles de los riesgos predichos se materializaron para que el sistema aprenda de este proyecto.",
+      "action": "Completar retrospectiva de riesgos",
+      "completed": "Retrospectiva completada",
+      "completedDescription": "Gracias. Este proyecto se ha añadido a la base de casos de la organización."
     }
   },
   "personalityConsent": {
@@ -3397,6 +3529,24 @@
     "consentNeededDescription": "Necesitas aceptar el consentimiento de perfilado de personalidad antes de iniciar el cuestionario.",
     "mustAcceptBeforeQuestionnaire": "Para iniciar el cuestionario de personalidad BFI-44, primero debes revisar y aceptar el consentimiento de tratamiento de datos de personalidad.",
     "reviewAndAccept": "Revisar y Aceptar Consentimiento",
+    "gate": {
+      "consentRequired": "Consentimiento requerido",
+      "onlyOnce": "El consentimiento solo es necesario una vez.",
+      "features": {
+        "secure": {
+          "title": "Tus datos están seguros",
+          "desc": "Utilizamos cifrado y medidas de seguridad avanzadas."
+        },
+        "responsible": {
+          "title": "Uso responsable",
+          "desc": "Tus datos se utilizan únicamente para mejorar las recomendaciones."
+        },
+        "privacy": {
+          "title": "Privacidad garantizada",
+          "desc": "No compartimos tu información con terceros."
+        }
+      }
+    },
     "statusBadge": {
       "active": "Consentimiento activo",
       "inactive": "Consentimiento requerido",
@@ -3459,6 +3609,25 @@
     "ariaCloseDetails": "Cerrar detalles del riesgo"
   },
   "risks": {
+    "cbr": {
+      "title": "Análisis de riesgos con IA (CBR)",
+      "description": "Riesgos e indicadores inferidos de reglas expertas y proyectos pasados similares.",
+      "loadAction": "Ejecutar análisis",
+      "loading": "Analizando riesgos…",
+      "loadError": "No se pudo cargar el análisis de riesgos.",
+      "acceptError": "No se pudieron aceptar los riesgos seleccionados.",
+      "empty": "Aún no hay análisis disponible para este proyecto.",
+      "cbrRisks": "Riesgos de casos similares",
+      "noCbrRisks": "No se han inferido riesgos de casos similares.",
+      "indicators": "Indicadores de reglas expertas",
+      "noIndicators": "No se ha activado ningún indicador de reglas expertas.",
+      "similarCases": "Proyectos pasados similares",
+      "noSimilarCases": "No se han encontrado proyectos similares en la base de casos.",
+      "unnamedCase": "Caso sin nombre",
+      "similarity": "{{value}}% similar",
+      "selectRisk": "Seleccionar riesgo {{title}}",
+      "acceptAction": "Aceptar seleccionados ({{count}})"
+    },
     "errors": {
       "loadFailed": "Error al cargar los riesgos",
       "projectIdRequired": "El ID del proyecto es obligatorio",
@@ -3507,6 +3676,90 @@
       "loadOutcomeError": "Error al cargar el formulario de resultado",
       "submitOutcomeError": "Error al enviar el resultado",
       "projectNotCompleted": "El proyecto debe marcarse como completado primero. Inténtalo de nuevo."
+    }
+  },
+  "landing": {
+    "nav": {
+      "home": "Inicio",
+      "features": "Características",
+      "howItWorks": "Cómo funciona",
+      "about": "Sobre SARA",
+      "contact": "Contacto"
+    },
+    "actions": {
+      "try": "Probar SARA",
+      "login": "Iniciar sesión",
+      "start": "Comenzar ahora",
+      "seeHow": "Ver cómo funciona"
+    },
+    "aria": {
+      "home": "SARA, inicio",
+      "mainNav": "Navegación principal",
+      "footerNav": "Navegación del pie de página",
+      "openMenu": "Abrir menú",
+      "closeMenu": "Cerrar menú"
+    },
+    "hero": {
+      "badge": "IA al servicio de los equipos",
+      "title": "La herramienta inteligente para formar <hl>equipos</hl> de <hl>alto rendimiento</hl>",
+      "subtitle": "SARA analiza competencias, experiencia y personalidad, y las cruza con la modalidad de trabajo del proyecto —presencial, híbrida o remota— para recomendar el equipo ideal y anticipar sus riesgos."
+    },
+    "features": {
+      "eyebrow": "Características",
+      "title": "Todo lo que necesitas para crear equipos <hl>excepcionales</hl>",
+      "analysis": {
+        "title": "Análisis integral",
+        "description": "Evalúa competencias técnicas, experiencia y personalidad de cada candidato."
+      },
+      "bigFive": {
+        "title": "Modelo Big Five",
+        "description": "Utiliza el modelo de personalidad Big Five para entender la compatibilidad del equipo."
+      },
+      "recommendations": {
+        "title": "Recomendaciones inteligentes",
+        "description": "Algoritmos avanzados que sugieren los mejores equipos para tu proyecto."
+      },
+      "reports": {
+        "title": "Informes detallados",
+        "description": "Visualiza métricas y análisis detallados para tomar las mejores decisiones."
+      },
+      "workMode": {
+        "title": "Modalidad de trabajo",
+        "description": "Del modo presencial al totalmente remoto: cada recomendación se ajusta al modelo de trabajo, la distribución del equipo y sus zonas horarias."
+      },
+      "riskMonitoring": {
+        "title": "Riesgos anticipados",
+        "description": "Detecta riesgos propios del trabajo distribuido —aislamiento, quiebra de la comunicación asíncrona, desajuste horario— y los sigue durante el proyecto."
+      }
+    },
+    "steps": {
+      "eyebrow": "Cómo funciona",
+      "title": "Un proceso simple para resultados óptimos",
+      "define": {
+        "title": "1. Define tu proyecto",
+        "description": "Describe objetivos, competencias necesarias y cómo trabajará el equipo: modalidad, distribución geográfica y zonas horarias."
+      },
+      "evaluate": {
+        "title": "2. Evalúa candidatos",
+        "description": "SARA analiza los CVs y la personalidad mediante el modelo Big Five, junto a la experiencia de cada candidato en trabajo remoto."
+      },
+      "recommend": {
+        "title": "3. Obtén recomendaciones",
+        "description": "Recibe un equipo optimizado por compatibilidad, habilidades y encaje con la modalidad de trabajo del proyecto."
+      },
+      "decide": {
+        "title": "4. Toma mejores decisiones",
+        "description": "Consulta informes, métricas y los riesgos previstos para formar equipos equilibrados y de alto rendimiento."
+      }
+    },
+    "about": {
+      "title": "Equipos más fuertes, <hl>proyectos más exitosos.</hl>",
+      "description": "SARA te ayuda a tomar decisiones basadas en datos para formar equipos equilibrados, motivados y preparados para alcanzar grandes resultados."
+    },
+    "social": {
+      "linkedin": "LinkedIn",
+      "twitter": "Twitter",
+      "email": "Email"
     }
   }
 }

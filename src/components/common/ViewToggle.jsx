@@ -1,26 +1,25 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 /**
  * ViewToggle Component
  * Toggle between different view modes
  */
-export default function ViewToggle({
-  options,
-  activeView,
-  onChange,
-  ariaLabel = 'View toggle'
-}) {
+export default function ViewToggle({ options, activeView, onChange, ariaLabel }) {
+  const { t } = useTranslation();
+  const displayAriaLabel = ariaLabel ?? t('common.viewToggle');
   return (
-    <div style={styles.container} role="group" aria-label={ariaLabel}>
+    <div style={styles.container} role="group" aria-label={displayAriaLabel}>
       {options.map((option) => {
         const Icon = option.icon;
         return (
           <button
+            type="button"
             key={option.value}
             onClick={() => onChange(option.value)}
             style={{
               ...styles.button,
-              ...(activeView === option.value ? styles.buttonActive : {})
+              ...(activeView === option.value ? styles.buttonActive : {}),
             }}
             aria-pressed={activeView === option.value}
           >
@@ -38,8 +37,8 @@ const styles = {
     display: 'flex',
     gap: '8px',
     padding: '4px',
-    background: '#F3F4F6',
-    borderRadius: '8px'
+    background: 'var(--color-bg-subtle)',
+    borderRadius: '8px',
   },
   button: {
     display: 'flex',
@@ -52,12 +51,12 @@ const styles = {
     cursor: 'pointer',
     fontSize: '14px',
     fontWeight: '500',
-    color: '#6B7280',
-    transition: 'all 0.2s ease'
+    color: 'var(--color-text-muted)',
+    transition: 'all 0.2s ease',
   },
   buttonActive: {
     background: 'white',
-    color: '#2563EB',
-    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
-  }
+    color: 'var(--color-primary)',
+    boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+  },
 };

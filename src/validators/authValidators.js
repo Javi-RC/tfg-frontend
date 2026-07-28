@@ -17,11 +17,11 @@ export function validateEmail(email) {
   if (!email || !email.trim()) {
     return { isValid: false, error: i18n.t('validation.auth.emailRequired') };
   }
-  
+
   if (!EMAIL_REGEX.test(email)) {
     return { isValid: false, error: i18n.t('validation.auth.emailInvalid') };
   }
-  
+
   return { isValid: true, error: null };
 }
 
@@ -34,11 +34,14 @@ export function validatePassword(password) {
   if (!password) {
     return { isValid: false, error: i18n.t('validation.auth.passwordRequired') };
   }
-  
+
   if (password.length < MIN_PASSWORD_LENGTH) {
-    return { isValid: false, error: i18n.t('validation.auth.passwordMinLength', { min: MIN_PASSWORD_LENGTH }) };
+    return {
+      isValid: false,
+      error: i18n.t('validation.auth.passwordMinLength', { min: MIN_PASSWORD_LENGTH }),
+    };
   }
-  
+
   return { isValid: true, error: null };
 }
 
@@ -49,9 +52,12 @@ export function validatePassword(password) {
  */
 export function validateUsername(username) {
   if (!username || username.trim().length < MIN_USERNAME_LENGTH) {
-    return { isValid: false, error: i18n.t('validation.auth.usernameMinLength', { min: MIN_USERNAME_LENGTH }) };
+    return {
+      isValid: false,
+      error: i18n.t('validation.auth.usernameMinLength', { min: MIN_USERNAME_LENGTH }),
+    };
   }
-  
+
   return { isValid: true, error: null };
 }
 
@@ -64,7 +70,7 @@ export function validateRole(role) {
   if (!role) {
     return { isValid: false, error: i18n.t('validation.auth.userTypeRequired') };
   }
-  
+
   return { isValid: true, error: null };
 }
 
@@ -78,12 +84,12 @@ export function validateLoginForm(formData) {
   if (!emailValidation.isValid) {
     return emailValidation;
   }
-  
+
   const passwordValidation = validatePassword(formData.password);
   if (!passwordValidation.isValid) {
     return passwordValidation;
   }
-  
+
   return { isValid: true, error: null };
 }
 
@@ -98,7 +104,7 @@ export function getPasswordStrengthRules(password) {
     uppercase: /[A-Z]/.test(password),
     lowercase: /[a-z]/.test(password),
     number: /[0-9]/.test(password),
-    special: /[^A-Za-z0-9]/.test(password)
+    special: /[^A-Za-z0-9]/.test(password),
   };
 }
 
@@ -122,7 +128,7 @@ export function validatePasswordConfirmation(password, confirmPassword) {
   if (password !== confirmPassword) {
     return { isValid: false, error: i18n.t('validation.auth.passwordsDoNotMatch') };
   }
-  
+
   return { isValid: true, error: null };
 }
 
@@ -136,12 +142,12 @@ export function validateRegistrationStep1(formData) {
   if (!usernameValidation.isValid) {
     return usernameValidation;
   }
-  
+
   const roleValidation = validateRole(formData.role);
   if (!roleValidation.isValid) {
     return roleValidation;
   }
-  
+
   return { isValid: true, error: null };
 }
 
@@ -154,12 +160,12 @@ export function validateRegistrationStep2(formData) {
   if (!isPasswordStrong(formData.password)) {
     return { isValid: false, error: i18n.t('validation.auth.passwordRequirements') };
   }
-  
+
   const confirmValidation = validatePasswordConfirmation(formData.password, formData.confirm);
   if (!confirmValidation.isValid) {
     return confirmValidation;
   }
-  
+
   return { isValid: true, error: null };
 }
 

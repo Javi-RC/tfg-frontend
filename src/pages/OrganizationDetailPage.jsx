@@ -14,6 +14,7 @@ import EmployeesTab from '../components/organizations/tabs/EmployeesTab';
 import ProjectsTab from '../components/organizations/tabs/ProjectsTab';
 import CVsTab from '../components/organizations/tabs/CVsTab';
 import SettingsTab from '../components/organizations/tabs/SettingsTab';
+import RiskAnalyticsTab from '../components/organizations/tabs/RiskAnalyticsTab';
 import styles from './organizationDetailStyles';
 
 /**
@@ -23,7 +24,7 @@ import styles from './organizationDetailStyles';
 export default function OrganizationDetailPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  
+
   const {
     organization,
     stats,
@@ -34,7 +35,7 @@ export default function OrganizationDetailPage() {
     isAdmin,
     handleUpdateOrganization,
     reloadOrganization,
-    reloadStats
+    reloadStats,
   } = useOrganization();
 
   if (loading) {
@@ -65,12 +66,12 @@ export default function OrganizationDetailPage() {
       {/* Header */}
       <div style={styles.header}>
         <div style={styles.headerTop}>
-          <button style={styles.backButton} onClick={() => navigate('/organizations')}>
+          <button type="button" style={styles.backButton} onClick={() => navigate('/organizations')}>
             <ArrowLeft size={18} style={{ marginRight: '8px' }} />
             {t('organizations.back')}
           </button>
         </div>
-        
+
         <div style={styles.headerContent}>
           <div>
             <h1 style={styles.title}>{organization.name}</h1>
@@ -78,16 +79,14 @@ export default function OrganizationDetailPage() {
               <p style={styles.description}>{organization.description}</p>
             )}
             <div style={styles.badges}>
-              <Badge
-                variant={organization.status === 'active' ? 'success' : 'error'}
-              >
+              <Badge variant={organization.status === 'active' ? 'success' : 'error'}>
                 {organization.status === 'active' ? t('common.active') : t('common.inactive')}
               </Badge>
-              {organization.industry && (
-                <Badge variant="neutral">{organization.industry}</Badge>
-              )}
+              {organization.industry && <Badge variant="neutral">{organization.industry}</Badge>}
               {organization.size && (
-                <Badge variant="neutral">{t('organizations.employeesCount', { count: organization.size })}</Badge>
+                <Badge variant="neutral">
+                  {t('organizations.employeesCount', { count: organization.size })}
+                </Badge>
               )}
             </div>
           </div>
@@ -134,10 +133,13 @@ export default function OrganizationDetailPage() {
           { id: 'overview', label: t('organizations.tabs.overview') },
           { id: 'employees', label: t('organizations.tabs.employees') },
           { id: 'projects', label: t('organizations.tabs.projects') },
-          ...(isAdmin ? [
-            { id: 'cvs', label: t('organizations.tabs.cvs') },
-            { id: 'settings', label: t('organizations.tabs.settings') }
-          ] : [])
+          { id: 'riskAnalytics', label: t('organizations.tabs.riskAnalytics') },
+          ...(isAdmin
+            ? [
+                { id: 'cvs', label: t('organizations.tabs.cvs') },
+                { id: 'settings', label: t('organizations.tabs.settings') },
+              ]
+            : []),
         ]}
         activeTab={activeTab}
         onChange={setActiveTab}
@@ -155,33 +157,24 @@ export default function OrganizationDetailPage() {
           />
         )}
         {activeTab === 'employees' && (
-          <EmployeesTab 
-            organizationId={organization._id} 
+          <EmployeesTab
+            organizationId={organization._id}
             isAdmin={isAdmin}
             onUpdate={reloadStats}
             styles={styles}
           />
         )}
         {activeTab === 'projects' && (
-          <ProjectsTab 
-            organizationId={organization._id}
-            isAdmin={isAdmin}
-            styles={styles}
-          />
+          <ProjectsTab organizationId={organization._id} isAdmin={isAdmin} styles={styles} />
+        )}
+        {activeTab === 'riskAnalytics' && (
+          <RiskAnalyticsTab organizationId={organization._id} isAdmin={isAdmin} styles={styles} />
         )}
         {activeTab === 'cvs' && isAdmin && (
-          <CVsTab 
-            organizationId={organization._id}
-            onUpdate={reloadStats}
-            styles={styles}
-          />
+          <CVsTab organizationId={organization._id} onUpdate={reloadStats} styles={styles} />
         )}
         {activeTab === 'settings' && isAdmin && (
-          <SettingsTab 
-            organization={organization}
-            onUpdate={reloadOrganization}
-            styles={styles}
-          />
+          <SettingsTab organization={organization} onUpdate={reloadOrganization} styles={styles} />
         )}
       </div>
     </div>

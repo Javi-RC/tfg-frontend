@@ -1,20 +1,20 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { Languages } from 'lucide-react';
 import SectionHeader from './SectionHeader';
 import Field from './Field';
 import PrimaryButton from '../PrimaryButton';
+import './LanguagesSection.css';
 
-/**
- * LanguagesSection Component
- * Languages section with badges
- */
-export default function LanguagesSection({ 
+const LEVEL_ORDER = ['native', 'bilingual', 'fluent', 'advanced', 'intermediate', 'beginner'];
+
+export default function LanguagesSection({
   cv,
   editData,
   editMode,
   onLanguageChange,
   onAddLanguage,
-  onRemoveLanguage
+  onRemoveLanguage,
 }) {
   const { t } = useTranslation();
   const languages = editMode ? editData?.languages : cv?.languages;
@@ -22,126 +22,78 @@ export default function LanguagesSection({
 
   const formatLanguageLevel = (level) => {
     const mapping = {
-      'native': t('cv.native'),
-      'bilingual': t('cv.bilingual'),
-      'fluent': t('cv.fluent'),
-      'advanced': t('cv.advanced'),
-      'intermediate': t('cv.intermediate'),
-      'beginner': t('cv.beginner'),
-      // Legacy Spanish values for backward compatibility
-      'nativo': t('cv.native'),
-      'bilingüe': t('cv.bilingual'),
-      'bilingüé': t('cv.bilingual'),
-      'fluido': t('cv.fluent'),
-      'avanzado': t('cv.advanced'),
-      'intermedio': t('cv.intermediate'),
-      'básico': t('cv.beginner')
+      native: t('cv.native'),
+      bilingual: t('cv.bilingual'),
+      fluent: t('cv.fluent'),
+      advanced: t('cv.advanced'),
+      intermediate: t('cv.intermediate'),
+      beginner: t('cv.beginner'),
+      nativo: t('cv.native'),
+      bilingüe: t('cv.bilingual'),
+      bilingüé: t('cv.bilingual'),
+      fluido: t('cv.fluent'),
+      avanzado: t('cv.advanced'),
+      intermedio: t('cv.intermediate'),
+      básico: t('cv.beginner'),
     };
-
     return mapping[level] || level;
   };
 
-  return (
-    <section style={{ marginBottom: '56px' }} role="region" aria-labelledby="languages-heading">
-      <SectionHeader 
-        id="languages-heading" 
-        title={t('cv.languages')} 
-      />
-      {editMode ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {languages.map((lang, index) => {
-            const langObj = typeof lang === 'string' ? { language: lang, level: '' } : lang;
+  if (!editMode) {
+    const sorted = [...languages].sort((a, b) => {
+      const aLevel = typeof a === 'string' ? '' : a.level;
+      const bLevel = typeof b === 'string' ? '' : b.level;
+      return (LEVEL_ORDER.indexOf(aLevel) || 999) - (LEVEL_ORDER.indexOf(bLevel) || 999);
+    });
+
+    return (
+      <section className="languagessection-section" aria-labelledby="languages-heading">
+        <SectionHeader id="languages-heading" title={t('cv.languages')} />
+        <div className="languagessection-badge-list">
+          {sorted.map((lang) => {
+            const name = typeof lang === 'string' ? lang : lang.language;
+            const level = typeof lang === 'string' ? '' : lang.level;
             return (
-              <div key={lang._id || index} style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr auto',
-                gap: '12px',
-                alignItems: 'end',
-                padding: '12px',
-                background: '#f9f9f9',
-                borderRadius: '8px'
-              }}>
-                <Field
-                  editable={true}
-                  label={t('cv.language')}
-                  value={langObj.language}
-                  onChange={(value) => onLanguageChange(index, 'language', value)}
-                  placeholder={t('cv.editor.languages.fields.language.placeholder')}
-                  required
-                />
-                <Field
-                  editable={true}
-                  label={t('cv.level')}
-                  type="select"
-                  value={langObj.level}
-                  onChange={(value) => onLanguageChange(index, 'level', value)}
-                  placeholder={t('cv.editor.languages.fields.level.placeholder')}
-                  options={[
-                    { value: 'nativo', label: t('cv.native') },
-                    { value: 'bilingüé', label: t('cv.bilingual') },
-                    { value: 'fluido', label: t('cv.fluent') },
-                    { value: 'avanzado', label: t('cv.advanced') },
-                    { value: 'intermedio', label: t('cv.intermediate') },
-                    { value: 'básico', label: t('cv.beginner') },
-                    'A1',
-                    'A2',
-                    'B1',
-                    'B2',
-                    'C1',
-                    'C2'
-                  ]}
-                  required
-                />
-                <button
-                  onClick={() => onRemoveLanguage(index)}
-                  style={{
-                    padding: '8px 12px',
-                    background: '#fee',
-                    border: 'none',
-                    borderRadius: '6px',
-                    color: '#c33',
-                    cursor: 'pointer',
-                    fontSize: '13px',
-                    marginBottom: '2px'
-                  }}
-                  aria-label={t('cv.editor.languages.removeLabel', {
-                    language: langObj.language || t('cv.editor.entry')
-                  })}
-                >
-                  {t('common.remove')}
-                </button>
-              </div>
+              <span key={lang._id || lang} className="languagessection-badge">
+                <Languages size={14} />
+                {name}
+                {level && <span className="languagessection-level">{formatLanguageLevel(level)}</span>}
+              </span>
             );
           })}
         </div>
-      ) : (
-        <div style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          gap: '10px'
-        }}>
-          {languages.map((lang, index) => (
-            <span key={lang._id || index} style={{
-              padding: '8px 18px',
-              background: '#fef5e7',
-              borderRadius: '6px',
-              fontSize: '14px',
-              fontWeight: '500',
-              color: '#975a16',
-              border: '1px solid #f9e3b8'
-            }}>
-              {typeof lang === 'string' ? lang : `${lang.language} (${formatLanguageLevel(lang.level)})`}
-            </span>
-          ))}
-        </div>
-      )}
+      </section>
+    );
+  }
+
+  return (
+    <section className="languagessection-section" aria-labelledby="languages-heading">
+      <SectionHeader id="languages-heading" title={t('cv.languages')} />
+      <div className="languagessection-edit-list">
+        {languages.map((lang, index) => {
+          const langObj = typeof lang === 'string' ? { language: lang, level: '' } : lang;
+          return (
+            <div key={lang._id} className="languagessection-edit-row">
+              <Field editable label={t('cv.language')} value={langObj.language} onChange={(value) => onLanguageChange(index, 'language', value)} placeholder={t('cv.editor.languages.fields.language.placeholder')} required />
+              <Field editable label={t('cv.level')} type="select" value={langObj.level} onChange={(value) => onLanguageChange(index, 'level', value)} placeholder={t('cv.editor.languages.fields.level.placeholder')} options={[
+                { value: 'nativo', label: t('cv.native') },
+                { value: 'bilingüé', label: t('cv.bilingual') },
+                { value: 'fluido', label: t('cv.fluent') },
+                { value: 'avanzado', label: t('cv.advanced') },
+                { value: 'intermedio', label: t('cv.intermediate') },
+                { value: 'básico', label: t('cv.beginner') },
+                'A1', 'A2', 'B1', 'B2', 'C1', 'C2',
+              ]} required />
+              <button type="button" onClick={() => onRemoveLanguage(index)} className="languagessection-remove-btn" aria-label={t('cv.editor.languages.removeLabel', { language: langObj.language || t('cv.editor.entry') })}>
+                {t('common.remove')}
+              </button>
+            </div>
+          );
+        })}
+      </div>
       {editMode && (
-        <div style={{ marginTop: '20px', textAlign: 'center' }}>
-          <PrimaryButton 
-            onClick={onAddLanguage}
-            aria-label={t('cv.editor.languages.actions.addAria')}
-            style={{ padding: '12px 24px', fontSize: '14px', fontWeight: '600' }}
-          >
+        <div className="languagessection-add-wrapper">
+          <PrimaryButton onClick={onAddLanguage} aria-label={t('cv.editor.languages.actions.addAria')} style={{ padding: '10px 24px', fontSize: '14px', fontWeight: 600 }}>
             + {t('cv.addLanguage')}
           </PrimaryButton>
         </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Target, Clock, ClipboardList } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import CVQuestionnaire from '../../components/questionnaire/CVQuestionnaire';
-import { QuestionnaireProvider } from '../../components/questionnaire/QuestionnaireContext';
+import { QuestionnaireProvider } from '../../contexts/QuestionnaireContext';
 import './QuestionnaireModal.css';
 
 /**
@@ -20,7 +20,9 @@ const QuestionnaireModal = ({ initialData, onComplete, onSkip }) => {
             {t('questionnaire.modal.title')}
           </h2>
           <p className="modal-description">
-            {t('questionnaire.modal.cvProgress', { percent: initialData.currentPhase ? '45' : '0' })}
+            {t('questionnaire.modal.cvProgress', {
+              percent: initialData.currentPhase ? '45' : '0',
+            })}
             <br />
             {t('questionnaire.modal.description')}
           </p>
@@ -37,13 +39,11 @@ const QuestionnaireModal = ({ initialData, onComplete, onSkip }) => {
         </div>
 
         <QuestionnaireProvider initialSessionData={initialData}>
-          <CVQuestionnaire 
-            onComplete={onComplete}
-          />
+          <CVQuestionnaire onComplete={onComplete} />
         </QuestionnaireProvider>
 
         <div className="modal-footer">
-          <button onClick={onSkip} className="btn-skip">
+          <button type="button" onClick={onSkip} className="btn-skip">
             {t('questionnaire.modal.completeLater')}
           </button>
         </div>

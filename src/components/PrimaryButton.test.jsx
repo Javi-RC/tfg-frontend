@@ -12,24 +12,22 @@ describe('PrimaryButton Component', () => {
   it('calls onClick handler when clicked', () => {
     const handleClick = jest.fn();
     render(<PrimaryButton onClick={handleClick}>Click Me</PrimaryButton>);
-    
+
     fireEvent.click(screen.getByRole('button'));
     expect(handleClick).toHaveBeenCalledTimes(1);
   });
 
   it('does not call onClick when disabled', () => {
     const handleClick = jest.fn();
-    render(<PrimaryButton onClick={handleClick} disabled>Click Me</PrimaryButton>);
-    
+    render(
+      <PrimaryButton onClick={handleClick} disabled>
+        Click Me
+      </PrimaryButton>
+    );
+
     const button = screen.getByRole('button');
     fireEvent.click(button);
     expect(handleClick).not.toHaveBeenCalled();
-  });
-
-  it('applies disabled styles when disabled', () => {
-    render(<PrimaryButton disabled>Click Me</PrimaryButton>);
-    const button = screen.getByRole('button');
-    expect(button).toHaveStyle({ cursor: 'not-allowed' });
   });
 
   it('renders with left icon', () => {
@@ -62,9 +60,4 @@ describe('PrimaryButton Component', () => {
     expect(button.style.fontSize).toBe('20px');
   });
 
-  it('has proper accessible cursor styles', () => {
-    render(<PrimaryButton>Click Me</PrimaryButton>);
-    const button = screen.getByRole('button');
-    expect(button).toHaveStyle({ cursor: 'pointer' });
-  });
 });

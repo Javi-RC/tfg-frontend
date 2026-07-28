@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Plus } from 'lucide-react';
 import SecondaryButton from '../SecondaryButton';
+import './SectionHeader.css';
 
 /**
  * SectionHeader Component
@@ -11,35 +12,19 @@ export default function SectionHeader({ id, title, editMode, onAdd, addLabel }) 
   const { t } = useTranslation();
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'space-between', 
-      alignItems: 'center',
-      marginBottom: '28px',
-      gap: '20px'
-    }}>
-      <h2 id={id} style={{
-        fontSize: '18px',
-        fontWeight: '700',
-        color: '#2d3748',
-        borderBottom: '2px solid #e2e8f0',
-        paddingBottom: '10px',
-        letterSpacing: '0.5px',
-        textTransform: 'uppercase',
-        margin: 0
-      }}>
+    <div
+      className="sectionheader-container"
+    >
+      <h2
+        id={id}
+        className="sectionheader-title"
+      >
         {title}
       </h2>
       {editMode && onAdd && (
-        <SecondaryButton 
+        <SecondaryButton
           onClick={onAdd}
-          style={{ 
-            padding: '10px 20px', 
-            fontSize: '14px',
-            fontWeight: '600',
-            minWidth: '100px',
-            flexShrink: 0
-          }}
+          className="sectionheader-add-btn"
           aria-label={addLabel || t('cv.editor.sectionHeader.addEntryAria', { section: title })}
           leftIcon={<Plus size={16} />}
         >

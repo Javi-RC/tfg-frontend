@@ -5,7 +5,7 @@ import i18n from '../i18n';
  * NotificationService
  * Servicio para consumir la API de notificaciones in-app
  * Base URL: /api/notifications
- * 
+ *
  * Endpoints disponibles:
  * - GET /api/notifications - Obtener notificaciones paginadas
  * - GET /api/notifications/unread-count - Obtener conteo de no leídas
@@ -13,14 +13,14 @@ import i18n from '../i18n';
  * - PATCH /api/notifications/read-all - Marcar todas como leídas
  * - PATCH /api/notifications/:id/archive - Archivar notificación
  * - DELETE /api/notifications/:id - Eliminar notificación
- * 
+ *
  * Soporte de idioma:
  * El backend acepta el idioma mediante (en orden de prioridad):
  * 1. Query param: ?lang=en
  * 2. Usuario: req.user.preferredLanguage
  * 3. Organización: req.user.organization.defaultLanguage
  * 4. Header: Accept-Language
- * 
+ *
  * Este servicio envía tanto el query param como el header para máxima compatibilidad.
  */
 class NotificationService {
@@ -33,11 +33,6 @@ class NotificationService {
     const storedLanguage = localStorage.getItem('i18nextLng');
     const rawLanguage = storedLanguage || i18n.language || 'en';
     const lang = rawLanguage.split('-')[0]; // Extract base language (en, es)
-    console.log('[NotificationService] Getting language:', {
-      storedLanguage,
-      rawLanguage,
-      finalLang: lang
-    });
     return lang;
   }
 
@@ -60,9 +55,8 @@ class NotificationService {
       includeArchived: params.includeArchived || false,
       lang: this._getCurrentLanguage(),
       ...(params.type && { type: params.type }),
-      ...(params.priority && { priority: params.priority })
+      ...(params.priority && { priority: params.priority }),
     };
-    console.log('[NotificationService] getNotifications with params:', queryParams);
     const response = await api.get('/api/notifications', { params: queryParams });
     return response.data;
   }
@@ -73,7 +67,7 @@ class NotificationService {
    */
   async getUnreadCount() {
     const queryParams = {
-      lang: this._getCurrentLanguage()
+      lang: this._getCurrentLanguage(),
     };
     const response = await api.get('/api/notifications/unread-count', { params: queryParams });
     return response.data;
@@ -86,9 +80,11 @@ class NotificationService {
    */
   async markAsRead(notificationId) {
     const queryParams = {
-      lang: this._getCurrentLanguage()
+      lang: this._getCurrentLanguage(),
     };
-    const response = await api.patch(`/api/notifications/${notificationId}/read`, null, { params: queryParams });
+    const response = await api.patch(`/api/notifications/${notificationId}/read`, null, {
+      params: queryParams,
+    });
     return response.data;
   }
 
@@ -98,7 +94,7 @@ class NotificationService {
    */
   async markAllAsRead() {
     const queryParams = {
-      lang: this._getCurrentLanguage()
+      lang: this._getCurrentLanguage(),
     };
     const response = await api.patch('/api/notifications/read-all', null, { params: queryParams });
     return response.data;
@@ -111,9 +107,11 @@ class NotificationService {
    */
   async archiveNotification(notificationId) {
     const queryParams = {
-      lang: this._getCurrentLanguage()
+      lang: this._getCurrentLanguage(),
     };
-    const response = await api.patch(`/api/notifications/${notificationId}/archive`, null, { params: queryParams });
+    const response = await api.patch(`/api/notifications/${notificationId}/archive`, null, {
+      params: queryParams,
+    });
     return response.data;
   }
 
@@ -124,9 +122,11 @@ class NotificationService {
    */
   async deleteNotification(notificationId) {
     const queryParams = {
-      lang: this._getCurrentLanguage()
+      lang: this._getCurrentLanguage(),
     };
-    const response = await api.delete(`/api/notifications/${notificationId}`, { params: queryParams });
+    const response = await api.delete(`/api/notifications/${notificationId}`, {
+      params: queryParams,
+    });
     return response.data;
   }
 }

@@ -10,7 +10,12 @@ import SecondaryButton from '../components/SecondaryButton';
  * e.g. 'es', 'es-ES', 'es_MX' → 'es' ; anything else → 'en'
  */
 const resolveLocale = (lang = '') =>
-  lang.toLowerCase().replace(/[-_].*/, '').startsWith('es') ? 'es' : 'en';
+  lang
+    .toLowerCase()
+    .replace(/[-_].*/, '')
+    .startsWith('es')
+    ? 'es'
+    : 'en';
 
 export default function TermsPage() {
   const { t, i18n } = useTranslation();
@@ -64,7 +69,8 @@ export default function TermsPage() {
             <div>
               <h1 style={styles.title}>{t('legal.terms')}</h1>
               <p style={styles.subtitle}>
-                {t('legal.versionLabel')}: {doc?.version || '—'} · {t('legal.lastUpdatedLabel')}: {formatDateTime(doc?.lastUpdated)}
+                {t('legal.versionLabel')}: {doc?.version || '—'} · {t('legal.lastUpdatedLabel')}:{' '}
+                {formatDateTime(doc?.lastUpdated)}
               </p>
             </div>
           </div>
@@ -90,7 +96,7 @@ export default function TermsPage() {
                   <a {...props} target="_blank" rel="noreferrer" style={styles.link}>
                     {children}
                   </a>
-                )
+                ),
               }}
             >
               {doc?.content || ''}
@@ -105,71 +111,72 @@ export default function TermsPage() {
 const styles = {
   page: {
     minHeight: '100vh',
-    background: '#fafbfc',
+    background: 'var(--color-bg-muted)',
     padding: '104px 20px 40px',
-    fontFamily: 'Poppins, Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial'
+    fontFamily:
+      'Poppins, Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial',
   },
   container: {
     maxWidth: '980px',
     margin: '0 auto',
     background: 'white',
     borderRadius: '16px',
-    boxShadow: '0 2px 12px rgba(0,0,0,0.08)'
+    boxShadow: '0 2px 12px rgba(0,0,0,0.08)',
   },
   header: {
     padding: '22px 24px',
-    borderBottom: '1px solid #eee',
+    borderBottom: '1px solid var(--color-border)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'space-between',
     gap: '12px',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   iconWrap: {
     width: '34px',
     height: '34px',
     borderRadius: '10px',
-    background: '#f3f4f6',
+    background: 'var(--color-bg-subtle)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    flex: '0 0 auto'
+    flex: '0 0 auto',
   },
   title: {
     margin: 0,
     fontSize: '20px',
     fontWeight: '650',
-    color: '#111'
+    color: 'var(--color-text-primary)',
   },
   subtitle: {
     margin: '4px 0 0',
     fontSize: '13px',
-    color: '#666'
+    color: 'var(--color-text-muted)',
   },
   statusText: {
     padding: '18px 24px',
     margin: 0,
     fontSize: '14px',
-    color: '#666'
+    color: 'var(--color-text-muted)',
   },
   error: {
     margin: '18px 24px',
-    background: '#fee',
+    background: 'var(--color-danger-bg)',
     border: '1px solid #fcc',
     borderRadius: '10px',
-    color: '#c0392b',
+    color: 'var(--color-error)',
     padding: '12px 14px',
-    fontSize: '14px'
+    fontSize: '14px',
   },
   content: {
     margin: 0,
     padding: '18px 24px 24px',
     fontSize: '14px',
     lineHeight: '1.7',
-    color: '#111'
+    color: 'var(--color-text-primary)',
   },
   link: {
-    color: '#2563eb',
-    textDecoration: 'none'
-  }
+    color: 'var(--color-primary)',
+    textDecoration: 'none',
+  },
 };

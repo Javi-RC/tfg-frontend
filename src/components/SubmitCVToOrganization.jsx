@@ -29,7 +29,7 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
       setLoading(true);
       const params = searchQuery ? { name: searchQuery } : {};
       const res = await searchOrganizations(params);
-      
+
       // La API devuelve { success: true, data: { organizations: [...], pagination: {...} } }
       if (res.data?.success && res.data?.data?.organizations) {
         setOrganizations(res.data.data.organizations);
@@ -42,8 +42,7 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
       } else {
         setOrganizations([]);
       }
-    } catch (err) {
-      console.error('Error searching organizations:', err);
+    } catch {
       setOrganizations([]);
     } finally {
       setLoading(false);
@@ -60,7 +59,7 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
       setSubmitting(true);
       setError('');
       const response = await submitCVToOrganization(selectedOrg._id);
-      
+
       // Verificar respuesta exitosa según formato API
       if (response.data?.success || response.status === 201) {
         if (onSuccess) onSuccess();
@@ -81,29 +80,33 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
       <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div style={styles.header}>
           <h2 style={styles.title}>{t('cv.submitToOrg')}</h2>
-          <button style={styles.closeButton} onClick={onClose} aria-label={t('common.close')}>×</button>
+          <button type="button" style={styles.closeButton} onClick={onClose} aria-label={t('common.close')}>
+            ×
+          </button>
         </div>
 
-        {error && (
-          <div style={styles.errorBanner}>{error}</div>
-        )}
+        {error && <div style={styles.errorBanner}>{error}</div>}
 
         <div style={styles.searchSection}>
           <div style={{ position: 'relative' }}>
-            <Search size={18} color="#666" style={{
-              position: 'absolute',
-              left: '14px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              pointerEvents: 'none',
-              zIndex: 1
-            }} />
+            <Search
+              size={18}
+              color="#666"
+              style={{
+                position: 'absolute',
+                left: '14px',
+                top: '50%',
+                transform: 'translateY(-50%)',
+                pointerEvents: 'none',
+                zIndex: 1,
+              }}
+            />
             <input
               type="text"
               placeholder={t('organizations.searchOrganizations')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{...styles.searchInput, paddingLeft: '42px'}}
+              style={{ ...styles.searchInput, paddingLeft: '42px' }}
               aria-label={t('organizations.searchOrganizations')}
             />
           </div>
@@ -121,7 +124,7 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
                   key={org._id}
                   style={{
                     ...styles.orgItem,
-                    border: selectedOrg?._id === org._id ? '2px solid #2563eb' : '1px solid #ddd'
+                    border: selectedOrg?._id === org._id ? '2px solid var(--color-primary)' : '1px solid #ddd',
                   }}
                   onClick={() => setSelectedOrg(org)}
                   role="button"
@@ -133,20 +136,23 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
                     }
                   }}
                   aria-pressed={selectedOrg?._id === org._id}
-                  aria-label={t('organizations.selectOrganization', { name: org.name, defaultValue: `Select ${org.name}` })}
+                  aria-label={t('organizations.selectOrganization', {
+                    name: org.name,
+                    defaultValue: `Select ${org.name}`,
+                  })}
                 >
                   <div style={styles.orgInfo}>
                     <div style={styles.orgName}>{org.name}</div>
-                    {org.description && (
-                      <div style={styles.orgDescription}>{org.description}</div>
-                    )}
+                    {org.description && <div style={styles.orgDescription}>{org.description}</div>}
                     <div style={styles.orgMeta}>
                       {org.industry && <span style={styles.metaItem}>{org.industry}</span>}
                       {org.size && <span style={styles.metaItem}>{org.size}</span>}
                     </div>
                   </div>
                   {selectedOrg?._id === org._id && (
-                    <div style={styles.checkmark}><CheckCircle size={24} color="#10b981" /></div>
+                    <div style={styles.checkmark}>
+                      <CheckCircle size={24} color="#10b981" />
+                    </div>
                   )}
                 </div>
               ))}
@@ -158,7 +164,11 @@ export default function SubmitCVToOrganization({ onClose, onSuccess }) {
           <SecondaryButton onClick={onClose} leftIcon={<X size={16} />}>
             {t('common.cancel')}
           </SecondaryButton>
-          <PrimaryButton onClick={handleSubmit} disabled={!selectedOrg || submitting} leftIcon={<Send size={16} />}>
+          <PrimaryButton
+            onClick={handleSubmit}
+            disabled={!selectedOrg || submitting}
+            leftIcon={<Send size={16} />}
+          >
             {submitting ? t('common.submitting') : t('cv.submitToOrg')}
           </PrimaryButton>
         </div>
@@ -178,7 +188,7 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    zIndex: 1000
+    zIndex: 1000,
   },
   modal: {
     background: 'white',
@@ -188,43 +198,43 @@ const styles = {
     maxHeight: '80vh',
     display: 'flex',
     flexDirection: 'column',
-    boxShadow: '0 8px 32px rgba(0,0,0,0.12)'
+    boxShadow: '0 8px 32px rgba(0,0,0,0.12)',
   },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: '24px',
-    borderBottom: '1px solid #eee'
+    borderBottom: '1px solid var(--color-border)',
   },
   title: {
     fontSize: '24px',
     fontWeight: '600',
-    color: '#1a1a1a',
-    margin: 0
+    color: 'var(--color-text-primary)',
+    margin: 0,
   },
   closeButton: {
     background: 'none',
     border: 'none',
     fontSize: '32px',
-    color: '#666',
+    color: 'var(--color-text-muted)',
     cursor: 'pointer',
     padding: 0,
     width: '32px',
     height: '32px',
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   errorBanner: {
-    background: '#ffebee',
-    color: '#c62828',
+    background: 'var(--color-danger-bg)',
+    color: 'var(--color-danger)',
     padding: '12px 24px',
-    fontSize: '14px'
+    fontSize: '14px',
   },
   searchSection: {
     padding: '16px 24px',
-    borderBottom: '1px solid #eee'
+    borderBottom: '1px solid var(--color-border)',
   },
   searchInput: {
     width: '100%',
@@ -235,27 +245,27 @@ const styles = {
     fontFamily: 'inherit',
     outline: 'none',
     transition: 'border-color 0.2s',
-    boxSizing: 'border-box'
+    boxSizing: 'border-box',
   },
   listSection: {
     flex: 1,
     overflowY: 'auto',
-    padding: '16px 24px'
+    padding: '16px 24px',
   },
   loadingText: {
     textAlign: 'center',
-    color: '#666',
-    fontSize: '14px'
+    color: 'var(--color-text-muted)',
+    fontSize: '14px',
   },
   emptyText: {
     textAlign: 'center',
-    color: '#666',
-    fontSize: '14px'
+    color: 'var(--color-text-muted)',
+    fontSize: '14px',
   },
   orgList: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '12px'
+    gap: '12px',
   },
   orgItem: {
     padding: '16px',
@@ -266,55 +276,55 @@ const styles = {
     justifyContent: 'space-between',
     alignItems: 'center',
     ':hover': {
-      background: '#f8f9fa'
-    }
+      background: '#f8f9fa',
+    },
   },
   orgInfo: {
-    flex: 1
+    flex: 1,
   },
   orgName: {
     fontSize: '16px',
     fontWeight: '600',
-    color: '#1a1a1a',
-    marginBottom: '4px'
+    color: 'var(--color-text-primary)',
+    marginBottom: '4px',
   },
   orgDescription: {
     fontSize: '14px',
-    color: '#666',
+    color: 'var(--color-text-muted)',
     marginBottom: '8px',
     display: '-webkit-box',
     WebkitLineClamp: 2,
     WebkitBoxOrient: 'vertical',
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   orgMeta: {
     display: 'flex',
-    gap: '12px'
+    gap: '12px',
   },
   metaItem: {
     fontSize: '12px',
-    color: '#999',
-    background: '#f0f0f0',
+    color: 'var(--color-text-muted)',
+    background: 'var(--color-border)',
     padding: '4px 8px',
-    borderRadius: '4px'
+    borderRadius: '4px',
   },
   checkmark: {
     width: '24px',
     height: '24px',
     borderRadius: '50%',
-    background: '#2563eb',
+    background: 'var(--color-primary)',
     color: 'white',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     fontSize: '16px',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   actions: {
     display: 'flex',
     justifyContent: 'flex-end',
     gap: '12px',
     padding: '24px',
-    borderTop: '1px solid #eee'
-  }
+    borderTop: '1px solid var(--color-border)',
+  },
 };

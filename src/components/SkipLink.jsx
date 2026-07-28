@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
  */
 export default function SkipLink() {
   const { t } = useTranslation();
-  
+
   return (
     <div className="skip-links">
       <a href="#main-content" className="skip-link">

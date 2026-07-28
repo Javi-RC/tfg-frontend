@@ -40,17 +40,17 @@ export function useCVEditor(initialCV) {
               ...prev[parent],
               [child]: {
                 ...prev[parent]?.[child],
-                [field]: value
-              }
-            }
+                [field]: value,
+              },
+            },
           };
         }
         return {
           ...prev,
           [parent]: {
             ...prev[parent],
-            [field]: value
-          }
+            [field]: value,
+          },
         };
       });
     };
@@ -63,7 +63,7 @@ export function useCVEditor(initialCV) {
     return () => {
       setEditData((prev) => ({
         ...prev,
-        [section]: [...(prev[section] || []), defaultItem]
+        [section]: [...(prev[section] || []), defaultItem],
       }));
     };
   }, []);
@@ -75,7 +75,7 @@ export function useCVEditor(initialCV) {
     return (index) => {
       setEditData((prev) => ({
         ...prev,
-        [section]: prev[section].filter((_, i) => i !== index)
+        [section]: prev[section].filter((_, i) => i !== index),
       }));
     };
   }, []);
@@ -84,7 +84,7 @@ export function useCVEditor(initialCV) {
   const handleContactChange = createNestedFieldHandler('contact');
   const handleContactLocationChange = createNestedFieldHandler('contact', 'location');
   const handleContactLinksChange = createNestedFieldHandler('contact', 'links');
-  
+
   const handleContactPhoneChange = useCallback((value) => {
     setEditData((prev) => {
       const phones = prev.contact?.phones || [{ number: '', type: 'mobile' }];
@@ -93,8 +93,8 @@ export function useCVEditor(initialCV) {
         ...prev,
         contact: {
           ...prev.contact,
-          phones
-        }
+          phones,
+        },
       };
     });
   }, []);
@@ -107,8 +107,8 @@ export function useCVEditor(initialCV) {
         ...prev,
         contact: {
           ...prev.contact,
-          phones
-        }
+          phones,
+        },
       };
     });
   }, []);
@@ -123,7 +123,7 @@ export function useCVEditor(initialCV) {
     current: false,
     description: '',
     responsibilities: [],
-    technologies: []
+    technologies: [],
   });
   const removeExperience = createRemoveItemHandler('experience');
 
@@ -136,7 +136,7 @@ export function useCVEditor(initialCV) {
     startDate: '',
     endDate: '',
     current: false,
-    achievements: []
+    achievements: [],
   });
   const removeEducation = createRemoveItemHandler('education');
 
@@ -147,7 +147,7 @@ export function useCVEditor(initialCV) {
       updated[index] = { ...updated[index], [field]: value };
       return {
         ...prev,
-        skills: { ...prev.skills, technical: updated }
+        skills: { ...prev.skills, technical: updated },
       };
     });
   }, []);
@@ -157,8 +157,8 @@ export function useCVEditor(initialCV) {
       ...prev,
       skills: {
         ...prev.skills,
-        technical: [...(prev.skills?.technical || []), { name: '', level: '', category: '' }]
-      }
+        technical: [...(prev.skills?.technical || []), { name: '', level: '', category: '' }],
+      },
     }));
   }, []);
 
@@ -167,8 +167,8 @@ export function useCVEditor(initialCV) {
       ...prev,
       skills: {
         ...prev.skills,
-        technical: (prev.skills?.technical || []).filter((_, i) => i !== index)
-      }
+        technical: (prev.skills?.technical || []).filter((_, i) => i !== index),
+      },
     }));
   }, []);
 
@@ -193,7 +193,7 @@ export function useCVEditor(initialCV) {
     name: '',
     description: '',
     technologies: '',
-    url: ''
+    url: '',
   });
   const removeProject = createRemoveItemHandler('projects');
 
@@ -203,7 +203,7 @@ export function useCVEditor(initialCV) {
     name: '',
     issuer: '',
     dateObtained: '',
-    credentialId: ''
+    credentialId: '',
   });
   const removeCertification = createRemoveItemHandler('certifications');
 
@@ -225,47 +225,47 @@ export function useCVEditor(initialCV) {
     editData,
     saving,
     setSaving,
-    
+
     // Mode control
     startEditing,
     cancelEditing,
     updateEditData,
-    
+
     // Contact
     handleContactChange,
     handleContactLocationChange,
     handleContactLinksChange,
     handleContactPhoneChange,
     handleContactPhoneTypeChange,
-    
+
     // Experience
     handleExperienceChange,
     addExperience,
     removeExperience,
-    
+
     // Education
     handleEducationChange,
     addEducation,
     removeEducation,
-    
+
     // Skills
     handleSkillChange,
     addSkill,
     removeSkill,
-    
+
     // Languages
     handleLanguageChange,
     addLanguage,
     removeLanguage,
-    
+
     // Projects
     handleProjectChange,
     addProject,
     removeProject,
-    
+
     // Certifications
     handleCertificationChange,
     addCertification,
-    removeCertification
+    removeCertification,
   };
 }

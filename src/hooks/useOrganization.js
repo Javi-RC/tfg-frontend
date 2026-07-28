@@ -1,7 +1,7 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import {
   getOrganizationById,
   getOrganizationStats,
@@ -10,7 +10,7 @@ import {
   addEmployee,
   removeEmployee,
   updateEmployeeStatus,
-  updateCVStatus
+  updateCVStatus,
 } from '../api/organization';
 
 /**
@@ -20,9 +20,9 @@ import {
 export function useOrganization() {
   const { id } = useParams();
   const { t } = useTranslation();
-  const { user } = useContext(AuthContext);
+  const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   const [organization, setOrganization] = useState(null);
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,16 +30,19 @@ export function useOrganization() {
   const [error, setError] = useState('');
 
   // Check if current user is admin of THIS specific organization
-  const isAdmin = user && organization && (
+  const isAdmin =
+    user &&
+    organization &&
     // User has org_admin role (organization administrators have full access)
-    user.role === 'org_admin' ||
-    // Or user is the creator of the organization
-    (organization.createdBy === user._id || organization.createdBy?._id === user._id) ||
-    // Or user is in the admins array
-    (organization.admins && organization.admins.some(admin => 
-      (typeof admin === 'string' ? admin : admin._id) === user._id
-    ))
-  );
+    (user.role === 'org_admin' ||
+      // Or user is the creator of the organization
+      organization.createdBy === user._id ||
+      organization.createdBy?._id === user._id ||
+      // Or user is in the admins array
+      (organization.admins &&
+        organization.admins.some(
+          (admin) => (typeof admin === 'string' ? admin : admin._id) === user._id
+        )));
 
   useEffect(() => {
     loadOrganization();
@@ -61,7 +64,7 @@ export function useOrganization() {
     try {
       setLoading(true);
       const res = await getOrganizationById(id);
-      
+
       if (res.data?.success && res.data?.data) {
         setOrganization(res.data.data);
       } else if (res.data && !res.data.success) {
@@ -202,10 +205,10 @@ export function useOrganization() {
     loading,
     activeTab,
     error,
-    
+
     // Permissions
     isAdmin,
-    
+
     // Actions
     setActiveTab,
     handleUpdateSettings,
@@ -218,6 +221,6 @@ export function useOrganization() {
     handleViewProject,
     clearError,
     reloadOrganization: loadOrganization,
-    reloadStats: loadStats
+    reloadStats: loadStats,
   };
 }

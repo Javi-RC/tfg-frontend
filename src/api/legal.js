@@ -19,10 +19,8 @@ export const getTerms = ({ locale, format } = {}) => {
 
   return api.get('/api/legal/terms', {
     params,
-    responseType
+    responseType,
   });
 };
 
-export default {
-  getTerms
-};
+

@@ -1,19 +1,10 @@
 import api from './axios';
-import i18n from '../i18n';
+import { getCurrentLanguage } from '../utils/language';
 
 /**
  * CV API service
  * Handles all CV-related operations following RESTful principles
  */
-
-/**
- * Get current language from i18n
- * @returns {string} Current language code ('en' or 'es')
- */
-const getCurrentLanguage = () => {
-  const rawLanguage = i18n.language || 'en';
-  return rawLanguage.split('-')[0]; // Extract base language
-};
 
 /**
  * Upload and process a CV file
@@ -24,14 +15,14 @@ const getCurrentLanguage = () => {
 export const uploadCV = (file, language = null) => {
   const formData = new FormData();
   const effectiveLanguage = language || getCurrentLanguage();
-  
+
   formData.append('cv', file);
   formData.append('language', effectiveLanguage);
-  
+
   return api.post('/api/cv/upload', formData, {
     headers: {
-      'Content-Type': 'multipart/form-data'
-    }
+      'Content-Type': 'multipart/form-data',
+    },
   });
 };
 
@@ -80,7 +71,7 @@ export const searchCVs = (searchParams) => api.post('/api/cv/admin/search', sear
  * @param {string} organizationId - Organization ID
  * @returns {Promise} API response
  */
-export const submitCVToOrganization = (organizationId) => 
+export const submitCVToOrganization = (organizationId) =>
   api.post('/api/cv/submit-to-organization', { organizationId });
 
 /**
@@ -94,26 +85,20 @@ export const submitCVToOrganization = (organizationId) =>
  */
 export const submitPhaseResponses = (sessionId, currentPhase, responses, language = null) => {
   const effectiveLanguage = language || getCurrentLanguage();
-  
-  return api.post('/api/cv/questionnaire/next', {
-    sessionId,
-    currentPhase,
-    responses
-  }, {
-    params: {
-      language: effectiveLanguage
+
+  return api.post(
+    '/api/cv/questionnaire/next',
+    {
+      sessionId,
+      currentPhase,
+      responses,
+    },
+    {
+      params: {
+        lang: effectiveLanguage,
+      },
     }
-  });
+  );
 };
 
-export default {
-  uploadCV,
-  getMyCV,
-  getCVStats,
-  updateCV,
-  deleteCV,
-  getAllCVs,
-  searchCVs,
-  submitCVToOrganization,
-  submitPhaseResponses
-};
+

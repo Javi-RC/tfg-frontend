@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Users } from 'lucide-react';
 
@@ -6,17 +6,19 @@ import { Users } from 'lucide-react';
  * Phase 2 Configuration Form
  * Controls synergy weights (backend: phase2.synergyWeights as decimals 0-1)
  */
+const getTotalDecimal = (weights) => {
+  return (
+    (weights.roleDiversityWeight || 0) +
+    (weights.projectFitWeight || 0) +
+    (weights.previousCollaborationsWeight || 0)
+  );
+};
+
 export default function Phase2ConfigForm({ config, onChange, errors = {} }) {
   const { t } = useTranslation();
 
   const enabled = config?.enabled ?? true;
   const synergyWeights = config?.synergyWeights || {};
-
-  const getTotalDecimal = (weights) => {
-    return (weights.roleDiversityWeight || 0) +
-      (weights.projectFitWeight || 0) +
-      (weights.previousCollaborationsWeight || 0);
-  };
 
   const total = getTotalDecimal(synergyWeights);
   const isTotalOk = Math.abs(total - 1.0) <= 0.01;
@@ -24,30 +26,30 @@ export default function Phase2ConfigForm({ config, onChange, errors = {} }) {
   const handleEnabledChange = (checked) => {
     onChange({
       ...config,
-      enabled: checked
+      enabled: checked,
     });
   };
 
   const handleWeightChange = (field, nextValue) => {
     const parsed = parseFloat(nextValue) || 0;
-    
+
     // Calculate the sum of other weights (excluding the current field)
     const otherWeightsSum = Object.keys(synergyWeights)
-      .filter(key => key !== field)
+      .filter((key) => key !== field)
       .reduce((sum, key) => sum + (synergyWeights[key] || 0), 0);
-    
+
     // Maximum allowed for this field is what remains to reach 1.0 (100%)
     const maxAllowed = 1.0 - otherWeightsSum;
-    
+
     // Clamp the value between 0 and maxAllowed
     const clamped = Math.max(0, Math.min(maxAllowed, parsed));
-    
+
     onChange({
       ...config,
       synergyWeights: {
         ...synergyWeights,
-        [field]: clamped
-      }
+        [field]: clamped,
+      },
     });
   };
 
@@ -57,10 +59,8 @@ export default function Phase2ConfigForm({ config, onChange, errors = {} }) {
         <Users size={20} color="#8B5CF6" />
         <h3 style={styles.title}>{t('teamConfig.phase2.title')}</h3>
       </div>
-      
-      <p style={styles.description}>
-        {t('teamConfig.phase2.description')}
-      </p>
+
+      <p style={styles.description}>{t('teamConfig.phase2.description')}</p>
 
       <div style={styles.toggleRow}>
         <label style={styles.toggleLabel}>
@@ -75,23 +75,29 @@ export default function Phase2ConfigForm({ config, onChange, errors = {} }) {
         <span style={styles.toggleHint}>{t('teamConfig.phase2.enabledHint')}</span>
       </div>
 
-      <div style={{
-        ...styles.totalBar,
-        ...(!enabled ? styles.totalBarDisabled : (isTotalOk ? styles.totalBarSuccess : styles.totalBarError))
-      }}>
+      <div
+        style={{
+          ...styles.totalBar,
+          ...(!enabled
+            ? styles.totalBarDisabled
+            : isTotalOk
+              ? styles.totalBarSuccess
+              : styles.totalBarError),
+        }}
+      >
         <span style={styles.totalLabel}>{t('teamConfig.totalWeight')}:</span>
         <span style={styles.totalValue}>{(total * 100).toFixed(1)}%</span>
         {enabled && !isTotalOk && (
-          <span style={styles.totalError}>
-            {t('teamConfig.mustEqual100')}
-          </span>
+          <span style={styles.totalError}>{t('teamConfig.mustEqual100')}</span>
         )}
       </div>
 
-      <div style={{
-        ...styles.formGroup,
-        ...(enabled ? {} : styles.formGroupDisabled)
-      }}>
+      <div
+        style={{
+          ...styles.formGroup,
+          ...(enabled ? {} : styles.formGroupDisabled),
+        }}
+      >
         <WeightSlider
           label={t('teamConfig.phase2.roleDiversityWeight')}
           value={synergyWeights.roleDiversityWeight || 0}
@@ -99,7 +105,7 @@ export default function Phase2ConfigForm({ config, onChange, errors = {} }) {
           error={errors.roleDiversityWeight}
           disabled={!enabled}
         />
-        
+
         <WeightSlider
           label={t('teamConfig.phase2.projectFitWeight')}
           value={synergyWeights.projectFitWeight || 0}
@@ -121,14 +127,16 @@ export default function Phase2ConfigForm({ config, onChange, errors = {} }) {
 }
 
 function WeightSlider({ label, value, onChange, error, disabled = false, inverted = false }) {
+  const sliderId = useId();
   return (
     <div style={styles.sliderContainer}>
       <div style={styles.sliderHeader}>
-        <label style={styles.label}>{label}</label>
+        <label htmlFor={sliderId} style={styles.label}>{label}</label>
         <span style={styles.valueDisplay}>{(value * 100).toFixed(0)}%</span>
       </div>
-      
+
       <input
+        id={sliderId}
         type="range"
         min="0"
         max="1"
@@ -139,15 +147,15 @@ function WeightSlider({ label, value, onChange, error, disabled = false, inverte
         style={{
           ...styles.slider,
           ...(disabled ? styles.sliderDisabled : {}),
-          ...(inverted ? styles.sliderInverted : {})
+          ...(inverted ? styles.sliderInverted : {}),
         }}
       />
-      
+
       <div style={styles.sliderLabels}>
         <span>0%</span>
         <span>100%</span>
       </div>
-      
+
       {error && <div style={styles.error}>{error}</div>}
     </div>
   );
@@ -157,41 +165,41 @@ const styles = {
   container: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '20px'
+    gap: '20px',
   },
   header: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px'
+    gap: '8px',
   },
   title: {
     margin: 0,
     fontSize: '18px',
     fontWeight: '600',
-    color: '#111827'
+    color: 'var(--color-text-heading)',
   },
   description: {
     margin: 0,
     fontSize: '14px',
-    color: '#6B7280',
-    lineHeight: 1.5
+    color: 'var(--color-text-muted)',
+    lineHeight: 1.5,
   },
   formGroup: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '24px'
+    gap: '24px',
   },
   formGroupDisabled: {
-    opacity: 0.6
+    opacity: 0.6,
   },
   toggleRow: {
     display: 'flex',
     flexDirection: 'column',
     gap: '6px',
     padding: '12px 14px',
-    backgroundColor: '#F9FAFB',
-    border: '1px solid #E5E7EB',
-    borderRadius: '10px'
+    backgroundColor: 'var(--color-bg-muted)',
+    border: '1px solid var(--color-border)',
+    borderRadius: '10px',
   },
   toggleLabel: {
     display: 'flex',
@@ -199,71 +207,71 @@ const styles = {
     gap: '10px',
     fontSize: '14px',
     fontWeight: '600',
-    color: '#111827',
-    cursor: 'pointer'
+    color: 'var(--color-text-heading)',
+    cursor: 'pointer',
   },
   toggleHint: {
     fontSize: '13px',
-    color: '#6B7280',
+    color: 'var(--color-text-muted)',
     lineHeight: 1.4,
-    paddingLeft: '28px'
+    paddingLeft: '28px',
   },
   checkbox: {
     width: '18px',
     height: '18px',
-    cursor: 'pointer'
+    cursor: 'pointer',
   },
   sliderContainer: {
     display: 'flex',
     flexDirection: 'column',
-    gap: '8px'
+    gap: '8px',
   },
   sliderHeader: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   label: {
     fontSize: '14px',
     fontWeight: '500',
-    color: '#374151'
+    color: 'var(--color-text-strong)',
   },
   valueDisplay: {
     fontSize: '14px',
     fontWeight: '600',
-    color: '#8B5CF6',
+    color: 'var(--color-accent-purple)',
     padding: '2px 8px',
     backgroundColor: '#F5F3FF',
-    borderRadius: '4px'
+    borderRadius: '4px',
   },
   slider: {
     width: '100%',
     height: '6px',
     borderRadius: '3px',
     outline: 'none',
-    backgroundColor: '#E5E7EB',
+    backgroundColor: 'var(--color-border)',
     appearance: 'none',
     WebkitAppearance: 'none',
-    cursor: 'pointer'
+    cursor: 'pointer',
   },
   sliderDisabled: {
     cursor: 'not-allowed',
-    opacity: 0.8
+    opacity: 0.8,
   },
   // purely visual hint (conflict risk is "inverted" meaning lower is better)
   sliderInverted: {
-    filter: 'hue-rotate(200deg)'
+    filter: 'hue-rotate(200deg)',
   },
   sliderLabels: {
     display: 'flex',
     justifyContent: 'space-between',
     fontSize: '12px',
-    color: '#9CA3AF'
+    color: 'var(--color-text-muted)',
   },
   error: {
     fontSize: '13px',
-    color: '#EF4444',
-    marginTop: '4px'
+    color: 'var(--color-danger-icon)',
+    marginTop: '4px',
   },
   totalBar: {
     padding: '12px 16px',
@@ -271,33 +279,33 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    border: '2px solid'
+    border: '2px solid',
   },
   totalBarSuccess: {
-    backgroundColor: '#D1FAE5',
-    borderColor: '#10B981',
-    color: '#065F46'
+    backgroundColor: 'var(--color-success-bg)',
+    borderColor: 'var(--color-success)',
+    color: 'var(--color-success-dark)',
   },
   totalBarError: {
-    backgroundColor: '#FEE2E2',
-    borderColor: '#EF4444',
-    color: '#991B1B'
+    backgroundColor: 'var(--color-danger-bg)',
+    borderColor: 'var(--color-danger-icon)',
+    color: 'var(--color-danger-strong)',
   },
   totalBarDisabled: {
-    backgroundColor: '#F3F4F6',
-    borderColor: '#D1D5DB',
-    color: '#6B7280'
+    backgroundColor: 'var(--color-bg-subtle)',
+    borderColor: 'var(--color-border-strong)',
+    color: 'var(--color-text-muted)',
   },
   totalLabel: {
     fontSize: '14px',
-    fontWeight: '600'
+    fontWeight: '600',
   },
   totalValue: {
     fontSize: '16px',
-    fontWeight: '700'
+    fontWeight: '700',
   },
   totalError: {
     fontSize: '13px',
-    marginLeft: 'auto'
-  }
+    marginLeft: 'auto',
+  },
 };

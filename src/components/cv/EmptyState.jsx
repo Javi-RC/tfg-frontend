@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { FileText, Upload, ArrowLeft } from 'lucide-react';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
+import './EmptyState.css';
 
 /**
  * EmptyState Component
@@ -18,19 +19,12 @@ export default function EmptyState({ error, onUpload }) {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#fafbfc',
-      padding: '40px 20px',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: '20px'
-    }}>
+    <div
+      className="emptystate-container"
+    >
       {/* Back button at the top */}
-      <div style={{ position: 'fixed', top: '80px', left: '24px', zIndex: 10 }}>
-        <SecondaryButton 
+      <div className="emptystate-back-btn">
+        <SecondaryButton
           onClick={handleBack}
           aria-label={t('cv.backToDashboard')}
           leftIcon={<ArrowLeft size={18} />}
@@ -39,25 +33,28 @@ export default function EmptyState({ error, onUpload }) {
         </SecondaryButton>
       </div>
 
-      <div style={{
-        maxWidth: '500px',
-        textAlign: 'center',
-        padding: '40px',
-        background: 'white',
-        borderRadius: '16px',
-        boxShadow: '0 2px 12px rgba(0,0,0,0.08)'
-      }} role="alert">
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '16px', opacity: 0.3 }} aria-hidden="true">
+      <div
+        className="emptystate-card"
+        role="alert"
+      >
+        <div
+          className="emptystate-icon-wrapper"
+          aria-hidden="true"
+        >
           <FileText size={64} color="#666" />
         </div>
-        <h2 style={{ fontSize: '24px', fontWeight: '600', marginBottom: '12px', color: '#1a1a1a' }}>
+        <h2 className="emptystate-title">
           {t('cv.noCVFound')}
         </h2>
-        <p style={{ fontSize: '14px', color: '#666', marginBottom: '24px' }}>
+        <p className="emptystate-message">
           {error || t('cv.uploadToGetStarted')}
         </p>
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
-          <PrimaryButton onClick={onUpload} aria-label={t('cv.aria.openUploadDialog')} leftIcon={<Upload size={18} />}>
+        <div className="emptystate-action">
+          <PrimaryButton
+            onClick={onUpload}
+            aria-label={t('cv.aria.openUploadDialog')}
+            leftIcon={<Upload size={18} />}
+          >
             {t('cv.uploadCV')}
           </PrimaryButton>
         </div>

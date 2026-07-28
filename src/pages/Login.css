@@ -1,0 +1,124 @@
+.login-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  justify-content: center;
+}
+
+.login-title {
+  color: var(--color-text-primary);
+  font-size: 32px;
+  font-weight: 500;
+  text-align: center;
+  margin: 0;
+}
+
+.login-subtitle {
+  color: var(--color-text-primary);
+  font-size: 15px;
+  margin: 0;
+}
+
+.login-register-link {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font: inherit;
+  color: #0369a1;
+  text-decoration: underline;
+}
+
+.login-divider {
+  align-self: stretch;
+  height: 1px;
+  background: #d9d9d9;
+  outline: 1px #0f172a solid;
+  outline-offset: -0.5px;
+  margin: 16px 0;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.login-oauth-section {
+  margin: 24px 0;
+}
+
+.login-oauth-divider {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+  color: var(--color-text-primary);
+  font-size: 14px;
+}
+
+.login-oauth-divider-line {
+  flex: 1;
+  border-bottom: 1px solid rgba(102, 102, 102, 0.25);
+}
+
+.login-oauth-divider-text {
+  padding: 0 16px;
+}
+
+.login-oauth-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.login-google-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: 1px solid rgba(102, 102, 102, 0.25);
+  border-radius: 12px;
+  background: white;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.login-google-btn:hover:not(:disabled) {
+  border-color: var(--color-text-primary);
+  background: #f8f9fa;
+}
+
+.login-google-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.login-sr-only {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.login-fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.login-btn-flex {
+  flex: 1;
+}

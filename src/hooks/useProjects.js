@@ -1,22 +1,32 @@
-import { useState, useEffect, useContext } from 'react';
-import { useTranslation } from 'react-i18next';
-import { AuthContext } from '../contexts/AuthContext';
-import {
-  getMyProjects,
-  getAssignedProjects,
-  deleteProject,
-  getProjectById
-} from '../api/projects';
+import { useState, useEffect } from 'react';
+import { useAuth } from '../hooks/useAuth';
+import { unwrapData } from '../api/responseAdapter';
+import { getMyProjects, getAssignedProjects, deleteProject, getProjectById } from '../api/projects';
 import { getMyOrganizations } from '../api/organization';
+
+/**
+ * Populate project manager data if needed
+ */
+const populateProjectManager = async (project) => {
+  if (typeof project.projectManager === 'string') {
+    try {
+      const fullProject = await getProjectById(project._id, false);
+      const fullData = unwrapData(fullProject);
+      return fullData;
+    } catch {
+      return project;
+    }
+  }
+  return project;
+};
 
 /**
  * Custom hook for Projects business logic
  * Manages project loading, filtering, and user permissions
  */
 export function useProjects() {
-  const { user } = useContext(AuthContext);
-  const { t } = useTranslation();
-  
+  const { user } = useAuth();
+
   const [myProjects, setMyProjects] = useState([]);
   const [assignedProjects, setAssignedProjects] = useState([]);
   const [organizations, setOrganizations] = useState([]);
@@ -49,16 +59,16 @@ export function useProjects() {
    */
   const checkProjectManagerStatus = (orgsData) => {
     const userId = user?.userId || user?._id || user?.id;
-    
-    const isPM = orgsData.some(org => {
-      const employee = org.employees?.find(emp => {
+
+    const isPM = orgsData.some((org) => {
+      const employee = org.employees?.find((emp) => {
         const empUserId = emp.user?._id || emp.user;
         return empUserId === userId;
       });
-      
+
       return employee?.isProjectManager === true;
     });
-    
+
     return isPM;
   };
 
@@ -68,35 +78,17 @@ export function useProjects() {
   const loadOrganizations = async () => {
     try {
       const orgsRes = await getMyOrganizations();
-      const orgsData = orgsRes.data?.success ? orgsRes.data.data : orgsRes.data;
+      const orgsData = unwrapData(orgsRes);
       setOrganizations(orgsData || []);
-      
+
       const isPM = checkProjectManagerStatus(orgsData || []);
       setIsProjectManager(isPM);
-      
+
       return orgsData || [];
-    } catch (error) {
-      console.error('Error loading organizations:', error);
+    } catch {
       setOrganizations([]);
       return [];
     }
-  };
-
-  /**
-   * Populate project manager data if needed
-   */
-  const populateProjectManager = async (project) => {
-    if (typeof project.projectManager === 'string') {
-      try {
-        const fullProject = await getProjectById(project._id, false);
-        const fullData = fullProject.data?.success ? fullProject.data.data : fullProject.data;
-        return fullData;
-      } catch (err) {
-        console.error('Error fetching project details:', err);
-        return project;
-      }
-    }
-    return project;
   };
 
   /**
@@ -107,17 +99,14 @@ export function useProjects() {
       const params = {};
       if (filterStatus !== 'all') params.status = filterStatus;
       if (filterOrg !== 'all') params.organizationId = filterOrg;
-      
+
       const res = await getMyProjects(params);
-      const data = res.data?.success ? res.data.data : res.data;
-      
-      const projectsWithPM = await Promise.all(
-        (data || []).map(populateProjectManager)
-      );
-      
+      const data = unwrapData(res);
+
+      const projectsWithPM = await Promise.all((data || []).map(populateProjectManager));
+
       setMyProjects(projectsWithPM);
-    } catch (error) {
-      console.error('Error loading my projects:', error);
+    } catch {
       setMyProjects([]);
     }
   };
@@ -128,15 +117,12 @@ export function useProjects() {
   const loadAssignedProjects = async () => {
     try {
       const res = await getAssignedProjects();
-      const data = res.data?.success ? res.data.data : res.data;
-      
-      const projectsWithPM = await Promise.all(
-        (data || []).map(populateProjectManager)
-      );
-      
+      const data = unwrapData(res);
+
+      const projectsWithPM = await Promise.all((data || []).map(populateProjectManager));
+
       setAssignedProjects(projectsWithPM);
-    } catch (error) {
-      console.error('Error loading assigned projects:', error);
+    } catch {
       setAssignedProjects([]);
     }
   };
@@ -148,12 +134,7 @@ export function useProjects() {
     try {
       setLoading(true);
       await loadOrganizations();
-      await Promise.all([
-        loadMyProjects(),
-        loadAssignedProjects()
-      ]);
-    } catch (error) {
-      console.error('Error loading data:', error);
+      await Promise.all([loadMyProjects(), loadAssignedProjects()]);
     } finally {
       setLoading(false);
     }
@@ -163,24 +144,13 @@ export function useProjects() {
    * Delete a project
    */
   const handleDeleteProject = async (projectId) => {
-    if (!window.confirm(t('projects.confirmDelete'))) {
-      return false;
-    }
+    await deleteProject(projectId);
 
-    try {
-      await deleteProject(projectId);
-      
-      // Remove from appropriate list
-      if (activeTab === 'my-projects') {
-        setMyProjects(prev => prev.filter(p => p._id !== projectId));
-      } else {
-        setAssignedProjects(prev => prev.filter(p => p._id !== projectId));
-      }
-      
-      return true;
-    } catch (error) {
-      console.error('Error deleting project:', error);
-      throw error;
+    // Remove from appropriate list
+    if (activeTab === 'my-projects') {
+      setMyProjects((prev) => prev.filter((p) => p._id !== projectId));
+    } else {
+      setAssignedProjects((prev) => prev.filter((p) => p._id !== projectId));
     }
   };
 
@@ -196,11 +166,11 @@ export function useProjects() {
     let filtered = currentProjects;
 
     if (filterStatus !== 'all') {
-      filtered = filtered.filter(p => p.status === filterStatus);
+      filtered = filtered.filter((p) => p.status === filterStatus);
     }
 
     if (filterOrg !== 'all') {
-      filtered = filtered.filter(p => {
+      filtered = filtered.filter((p) => {
         const orgId = p.organization?._id || p.organization;
         return orgId === filterOrg;
       });
@@ -220,15 +190,15 @@ export function useProjects() {
     filterOrg,
     isProjectManager,
     currentProjects,
-    
+
     // Computed
     filteredProjects: getFilteredProjects(),
-    
+
     // Actions
     setActiveTab,
     setFilterStatus,
     setFilterOrg,
     handleDeleteProject,
-    reloadProjects: loadData
+    reloadProjects: loadData,
   };
 }

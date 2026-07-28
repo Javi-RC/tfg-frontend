@@ -1,0 +1,49 @@
+/* ========================================
+   DASHBOARD THEME (Sara)
+   Purple/lilac tokens for the app shell + profile dashboard.
+   Scoped with the --sara- prefix so they never clash with the
+   existing blue design tokens in tokens.css.
+   ======================================== */
+
+:root {
+  /* Layout */
+  --sara-sidebar-width: 260px;
+  --sara-sidebar-collapsed: 72px;
+  --sara-topbar-height: 76px;
+
+  /* Purple accent */
+  --sara-purple: #7c5cff;
+  --sara-purple-strong: #6a45f0;
+  --sara-purple-soft: #f3f0ff;
+  --sara-purple-soft-2: #ece7ff;
+  --sara-purple-ring: rgba(124, 92, 255, 0.18);
+
+  /* Accent colours for stat tiles / icons */
+  --sara-green: #16a34a;
+  --sara-green-soft: #e7f7ee;
+  --sara-orange: #f59e0b;
+  --sara-orange-soft: #fdf1de;
+  --sara-blue: #3b82f6;
+  --sara-blue-soft: #e7f0fe;
+  --sara-avatar-bg: #dbeafe;
+
+  /* Surfaces */
+  --sara-page-bg: #f7f6fb;
+  --sara-card-bg: #ffffff;
+  --sara-hero-from: #f5f2ff;
+  --sara-hero-to: #fbfaff;
+
+  /* Text */
+  --sara-text: #232838;
+  --sara-text-strong: #171b26;
+  --sara-text-muted: #8a90a2;
+  --sara-text-soft: #a7adbd;
+
+  /* Lines & shadows */
+  --sara-border: #eef0f5;
+  --sara-border-strong: #e6e8ef;
+  --sara-shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06), 0 1px 3px rgba(16, 24, 40, 0.04);
+  --sara-shadow-md: 0 4px 16px rgba(16, 24, 40, 0.06);
+  --sara-radius: 18px;
+  --sara-radius-sm: 12px;
+}

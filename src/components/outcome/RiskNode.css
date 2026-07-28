@@ -1,0 +1,111 @@
+.risk-node-root {
+  padding: 16px 24px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--color-accent-gradient-start) 0%, var(--color-accent-gradient-end) 100%);
+  color: white;
+  font-weight: bold;
+  font-size: 16px;
+  border: 3px solid #5a67d8;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  min-width: 200px;
+  text-align: center;
+}
+
+.risk-node-category {
+  padding: 12px 20px;
+  border-radius: 10px;
+  background: var(--color-bg-muted);
+  border: 2px solid var(--color-border-strong);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-text-strong);
+  min-width: 150px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+}
+
+.risk-node-risk {
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 13px;
+  min-width: 180px;
+  max-width: 220px;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, opacity 0.2s ease;
+  position: relative;
+}
+
+.risk-node-risk--occurred {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.risk-node-risk--not-occurred {
+  opacity: 0.5;
+}
+
+.risk-node-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.risk-node-label {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.risk-node-severity {
+  font-size: 12px;
+  opacity: 0.8;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.risk-node-severity-badge {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+.risk-node-status {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: white;
+  border-radius: 50%;
+  padding: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.risk-node-root-handle {
+  background: #5a67d8;
+}
+
+.risk-node-category-handle {
+  background: var(--color-text-disabled);
+}
+
+.risk-node-risk-handle {
+  background: var(--risk-handle-color, var(--color-text-muted));
+  width: 8px;
+  height: 8px;
+}
+
+.risk-node-risk--dynamic {
+  background: var(--risk-bg);
+  border: 3px solid var(--risk-border);
+  color: var(--risk-text);
+  box-shadow: var(--risk-shadow);
+}
+
+.risk-node-risk-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.risk-node-risk-body {
+  flex: 1;
+}

@@ -22,23 +22,27 @@ export default function OrganizationCard({ organization, isAdmin, onClick, style
   }, [organization._id, isAdmin]);
 
   return (
-    <div style={styles.card} onClick={onClick}>
+    <button
+      type="button"
+      style={{ ...styles.card, textAlign: 'left', cursor: 'pointer' }}
+      onClick={onClick}
+    >
       <div style={styles.cardHeader}>
         <h3 style={styles.cardTitle}>{organization.name}</h3>
         <span
           style={{
             ...styles.badge,
             background: organization.status === 'active' ? '#e8f5e9' : '#ffebee',
-            color: organization.status === 'active' ? '#2e7d32' : '#c62828'
+            color: organization.status === 'active' ? '#2e7d32' : '#c62828',
           }}
         >
-          {organization.status === 'active' ? t('organization.status.active') : t('organization.status.inactive')}
+          {organization.status === 'active'
+            ? t('organization.status.active')
+            : t('organization.status.inactive')}
         </span>
       </div>
 
-      {organization.description && (
-        <p style={styles.cardDescription}>{organization.description}</p>
-      )}
+      {organization.description && <p style={styles.cardDescription}>{organization.description}</p>}
 
       <div style={styles.cardInfo}>
         <div style={styles.infoItem}>
@@ -83,6 +87,6 @@ export default function OrganizationCard({ organization, isAdmin, onClick, style
           )}
         </span>
       </div>
-    </div>
+    </button>
   );
 }

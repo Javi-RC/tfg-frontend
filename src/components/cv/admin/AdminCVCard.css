@@ -1,0 +1,84 @@
+.admin-cv-card-item {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.admin-cv-card-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: box-shadow 0.2s, border-color 0.2s;
+  border: 2px solid transparent;
+}
+
+.admin-cv-card-btn:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.admin-cv-card-btn--selected {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  border: 2px solid var(--color-text-primary);
+}
+
+.admin-cv-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+.admin-cv-card-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.admin-cv-card-email {
+  font-size: 14px;
+  color: var(--color-text-muted);
+}
+
+.admin-cv-card-location {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-cv-card-badge {
+  padding: 4px 12px;
+  background: #d4edda;
+  color: #155724;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.admin-cv-card-meta {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.admin-cv-card-meta-item {
+  font-size: 13px;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-cv-card-date {
+  font-size: 12px;
+  color: var(--color-text-muted);
+}

@@ -15,9 +15,9 @@ describe('legal API', () => {
           document: {
             version: '1.0',
             lastUpdated: '2024-01-01',
-            content: '# Terms of Service\n\n...'
-          }
-        }
+            content: '# Terms of Service\n\n...',
+          },
+        },
       };
       api.get.mockResolvedValue(mockResponse);
 
@@ -25,7 +25,7 @@ describe('legal API', () => {
 
       expect(api.get).toHaveBeenCalledWith('/api/legal/terms', {
         params: {},
-        responseType: 'json'
+        responseType: 'json',
       });
       expect(result).toEqual(mockResponse);
     });
@@ -38,7 +38,7 @@ describe('legal API', () => {
 
       expect(api.get).toHaveBeenCalledWith('/api/legal/terms', {
         params: { locale: 'es' },
-        responseType: 'json'
+        responseType: 'json',
       });
     });
 
@@ -50,7 +50,7 @@ describe('legal API', () => {
 
       expect(api.get).toHaveBeenCalledWith('/api/legal/terms', {
         params: { format: 'markdown' },
-        responseType: 'text'
+        responseType: 'text',
       });
     });
 
@@ -98,7 +98,7 @@ describe('legal API', () => {
 
       expect(api.get).toHaveBeenCalledWith('/api/legal/terms', {
         params: { locale: 'es', format: 'markdown' },
-        responseType: 'text'
+        responseType: 'text',
       });
     });
 
@@ -110,7 +110,7 @@ describe('legal API', () => {
 
       expect(api.get).toHaveBeenCalledWith('/api/legal/terms', {
         params: { locale: 'en' },
-        responseType: 'json'
+        responseType: 'json',
       });
     });
 
@@ -133,7 +133,7 @@ describe('legal API', () => {
       const mockDocument = {
         version: '2.0',
         lastUpdated: '2024-03-15',
-        content: '# Updated Terms\n\nContent here...'
+        content: '# Updated Terms\n\nContent here...',
       };
       const mockResponse = { data: { document: mockDocument } };
       api.get.mockResolvedValue(mockResponse);
@@ -174,7 +174,7 @@ describe('legal API', () => {
 
       expect(api.get).toHaveBeenCalledWith('/api/legal/terms', {
         params: {},
-        responseType: 'json'
+        responseType: 'json',
       });
     });
 
@@ -186,7 +186,7 @@ describe('legal API', () => {
 
       expect(api.get).toHaveBeenCalledWith('/api/legal/terms', {
         params: {},
-        responseType: 'json'
+        responseType: 'json',
       });
     });
 
@@ -212,9 +212,9 @@ describe('legal API', () => {
           document: {
             version: '3.1.0',
             lastUpdated: '2024-06-01',
-            content: 'Content'
-          }
-        }
+            content: 'Content',
+          },
+        },
       };
       api.get.mockResolvedValue(mockResponse);
 
@@ -229,9 +229,9 @@ describe('legal API', () => {
           document: {
             version: '1.0',
             lastUpdated: '2024-01-15T10:30:00Z',
-            content: 'Content'
-          }
-        }
+            content: 'Content',
+          },
+        },
       };
       api.get.mockResolvedValue(mockResponse);
 

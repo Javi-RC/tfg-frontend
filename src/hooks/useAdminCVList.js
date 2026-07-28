@@ -1,7 +1,7 @@
-import { useState, useEffect, useContext } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getAllCVs } from '../api/cv';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 import i18n from '../i18n';
 
 /**
@@ -10,8 +10,8 @@ import i18n from '../i18n';
  */
 export function useAdminCVList() {
   const navigate = useNavigate();
-  const { user } = useContext(AuthContext);
-  
+  const { user } = useAuth();
+
   const [cvs, setCVs] = useState([]);
   const [filteredCVs, setFilteredCVs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -66,7 +66,7 @@ export function useAdminCVList() {
    * Toggle search panel visibility
    */
   const toggleSearch = () => {
-    setShowSearch(prev => !prev);
+    setShowSearch((prev) => !prev);
   };
 
   /**
@@ -84,7 +84,7 @@ export function useAdminCVList() {
     error,
     selectedCV,
     showSearch,
-    
+
     // Actions
     setSelectedCV,
     setShowSearch,
@@ -92,6 +92,6 @@ export function useAdminCVList() {
     handleSearchResults,
     handleResetSearch,
     toggleSearch,
-    navigateToCVDetail
+    navigateToCVDetail,
   };
 }

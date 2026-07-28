@@ -12,43 +12,24 @@ describe('StatCard Component', () => {
   });
 
   it('renders with icon', () => {
-    const { container } = render(
-      <StatCard
-        value="75"
-        label="Sales"
-        icon={TrendingUp}
-      />
-    );
+    const { container } = render(<StatCard value="75" label="Sales" icon={TrendingUp} />);
     expect(container.querySelector('svg')).toBeInTheDocument();
   });
 
   it('renders without icon', () => {
-    const { container } = render(
-      <StatCard value="100" label="Items" />
-    );
+    const { container } = render(<StatCard value="100" label="Items" />);
     expect(container.querySelector('svg')).not.toBeInTheDocument();
   });
 
   it('applies custom border color', () => {
-    const { container } = render(
-      <StatCard
-        value="50"
-        label="Score"
-        borderColor="#FF0000"
-      />
-    );
+    const { container } = render(<StatCard value="50" label="Score" borderColor="#FF0000" />);
     const card = container.firstChild;
     expect(card).toHaveStyle({ borderLeft: '4px solid #FF0000' });
   });
 
   it('applies custom icon color', () => {
     const { container } = render(
-      <StatCard
-        value="25"
-        label="Count"
-        icon={TrendingUp}
-        iconColor="#00FF00"
-      />
+      <StatCard value="25" label="Count" icon={TrendingUp} iconColor="#00FF00" />
     );
     // Icon receives color prop, verify it's present
     expect(container.querySelector('svg')).toBeInTheDocument();
@@ -56,12 +37,7 @@ describe('StatCard Component', () => {
 
   it('applies custom background color', () => {
     const { container } = render(
-      <StatCard
-        value="10"
-        label="Items"
-        icon={TrendingUp}
-        backgroundColor="#F0F0F0"
-      />
+      <StatCard value="10" label="Items" icon={TrendingUp} backgroundColor="#F0F0F0" />
     );
     // Background color is applied to icon wrapper
     const iconWrapper = container.querySelector('div[style*="48px"]');
@@ -69,25 +45,13 @@ describe('StatCard Component', () => {
   });
 
   it('applies custom value color', () => {
-    render(
-      <StatCard
-        value="999"
-        label="Total"
-        valueColor="#0000FF"
-      />
-    );
+    render(<StatCard value="999" label="Total" valueColor="#0000FF" />);
     const value = screen.getByText('999');
     expect(value).toHaveStyle({ color: '#0000FF' });
   });
 
   it('applies custom label color', () => {
-    render(
-      <StatCard
-        value="42"
-        label="Answer"
-        labelColor="#FF00FF"
-      />
-    );
+    render(<StatCard value="42" label="Answer" labelColor="#FF00FF" />);
     const label = screen.getByText('Answer');
     expect(label).toHaveStyle({ color: '#FF00FF' });
   });
@@ -113,7 +77,7 @@ describe('StatCard Component', () => {
         labelColor="#4B5563"
       />
     );
-    
+
     expect(screen.getByText('500')).toBeInTheDocument();
     expect(screen.getByText('Premium Users')).toBeInTheDocument();
   });
@@ -129,13 +93,7 @@ describe('StatCard Component', () => {
   });
 
   it('icon has correct size', () => {
-    const { container } = render(
-      <StatCard
-        value="10"
-        label="Test"
-        icon={TrendingUp}
-      />
-    );
+    const { container } = render(<StatCard value="10" label="Test" icon={TrendingUp} />);
     const svg = container.querySelector('svg');
     expect(svg).toHaveAttribute('width', '24');
   });

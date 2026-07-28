@@ -1,92 +1,32 @@
 import React from 'react';
 import AuthHeader from './AuthHeader';
 import AuthImage from './AuthImage';
+import './AuthLayout.css';
 
 export default function AuthLayout({ children, onLoginClick, onSignupClick }) {
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#fafbfc',
-      fontFamily: 'Poppins, Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial',
-      color: '#222',
-      display: 'flex',
-      flexDirection: 'column'
-    }}>
+    <div className="auth-layout">
       <AuthHeader onLoginClick={onLoginClick} onSignupClick={onSignupClick} />
 
-      <main role="main" style={{
-        flex: 1,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '40px 20px',
-        minHeight: 'calc(100vh - 72px)',
-        position: 'relative',
-        overflow: 'hidden'
-      }}>
+      <main className="auth-layout-main">
         {/* Decorative dot pattern background */}
-        <div aria-hidden="true" style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundImage: 'radial-gradient(circle, #e5e7eb 1px, transparent 1px)',
-          backgroundSize: '24px 24px',
-          opacity: 0.4,
-          zIndex: 0
-        }} />
+        <div
+          aria-hidden="true"
+          className="auth-layout-dot-pattern"
+        />
 
-        <div style={{
-          width: '100%',
-          maxWidth: '1400px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '80px',
-          position: 'relative',
-          zIndex: 1
-        }}>
+        <div className="auth-layout-content">
           {/* Image section - Left */}
-          <div style={{ flex: '0 0 auto', maxWidth: '500px' }}>
+          <div className="auth-layout-image-section">
             <AuthImage />
           </div>
 
           {/* Form section - Center */}
-          <div style={{
-            flex: '0 1 520px',
-            width: '100%',
-            background: '#ffffff',
-            padding: '48px',
-            borderRadius: '20px',
-            boxShadow: '0 8px 32px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04)',
-            border: '1px solid rgba(0, 0, 0, 0.06)'
-          }}>
+          <div className="auth-layout-form-section">
             {children}
           </div>
         </div>
       </main>
-
-      <style>{`
-        @media (max-width: 1200px) {
-          main > div {
-            flex-direction: column !important;
-            gap: 40px !important;
-          }
-          main > div > div:first-child {
-            order: 1;
-            max-width: 450px;
-          }
-          main > div > div:last-child {
-            order: 2;
-          }
-        }
-        @media (max-width: 640px) {
-          main > div > div:last-child {
-            padding: 32px !important;
-          }
-        }
-      `}</style>
     </div>
   );
 }

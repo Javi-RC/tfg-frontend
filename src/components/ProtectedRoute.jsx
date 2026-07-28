@@ -1,14 +1,18 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../hooks/useAuth';
 
-/**
- * ProtectedRoute Component
- * Redirects to /login if user is not authenticated
- */
-const ProtectedRoute = ({ children }) => {
-  const { token } = useContext(AuthContext);
-  if (!token) return <Navigate to="/login" replace />;
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  // Auth lives in an httpOnly cookie, so the session is represented by `user`,
+  // not by a token readable from JS.
+  const { user } = useAuth();
+
+  if (!user) return <Navigate to="/login" replace />;
+
+  if (allowedRoles && !allowedRoles.includes(user?.role)) {
+    return <Navigate to="/" replace />;
+  }
+
   return children;
 };
 

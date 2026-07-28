@@ -5,12 +5,12 @@ import {
   getMyProfile,
   hasProfile,
   getProfileByUserId,
-  recalculateProfile
+  recalculateProfile,
 } from './bfi44';
 
 jest.mock('./axios');
 jest.mock('../i18n', () => ({
-  language: 'en'
+  language: 'en',
 }));
 
 describe('bfi44 API', () => {
@@ -24,17 +24,17 @@ describe('bfi44 API', () => {
         data: {
           questions: [
             { id: 1, text: 'Question 1' },
-            { id: 2, text: 'Question 2' }
+            { id: 2, text: 'Question 2' },
           ],
-          scale: [1, 2, 3, 4, 5]
-        }
+          scale: [1, 2, 3, 4, 5],
+        },
       };
       api.get.mockResolvedValue(mockResponse);
 
       const result = await getQuestions();
 
       expect(api.get).toHaveBeenCalledWith('/api/bfi-44/questions', {
-        params: { language: 'en' }
+        params: { lang: 'en' },
       });
       expect(result).toEqual(mockResponse);
     });
@@ -49,7 +49,7 @@ describe('bfi44 API', () => {
     it('returns all 44 questions', async () => {
       const mockQuestions = Array.from({ length: 44 }, (_, i) => ({
         id: i + 1,
-        text: `Question ${i + 1}`
+        text: `Question ${i + 1}`,
       }));
       const mockResponse = { data: { questions: mockQuestions } };
       api.get.mockResolvedValue(mockResponse);
@@ -65,7 +65,7 @@ describe('bfi44 API', () => {
       const responses = {
         1: 4,
         2: 3,
-        3: 5
+        3: 5,
       };
       const mockResponse = {
         data: {
@@ -74,17 +74,21 @@ describe('bfi44 API', () => {
             conscientiousness: 4.0,
             extraversion: 3.0,
             agreeableness: 4.5,
-            neuroticism: 2.5
-          }
-        }
+            neuroticism: 2.5,
+          },
+        },
       };
       api.post.mockResolvedValue(mockResponse);
 
       const result = await submitResponses(responses);
 
-      expect(api.post).toHaveBeenCalledWith('/api/bfi-44/submit', { responses }, {
-        params: { language: 'en' }
-      });
+      expect(api.post).toHaveBeenCalledWith(
+        '/api/bfi-44/submit',
+        { responses },
+        {
+          params: { lang: 'en' },
+        }
+      );
       expect(result).toEqual(mockResponse);
     });
 
@@ -97,17 +101,19 @@ describe('bfi44 API', () => {
     });
 
     it('submits all 44 responses', async () => {
-      const responses = Object.fromEntries(
-        Array.from({ length: 44 }, (_, i) => [i + 1, 3])
-      );
+      const responses = Object.fromEntries(Array.from({ length: 44 }, (_, i) => [i + 1, 3]));
       const mockResponse = { data: { results: {} } };
       api.post.mockResolvedValue(mockResponse);
 
       await submitResponses(responses);
 
-      expect(api.post).toHaveBeenCalledWith('/api/bfi-44/submit', { responses }, {
-        params: { language: 'en' }
-      });
+      expect(api.post).toHaveBeenCalledWith(
+        '/api/bfi-44/submit',
+        { responses },
+        {
+          params: { lang: 'en' },
+        }
+      );
     });
 
     it('handles empty responses', async () => {
@@ -128,9 +134,9 @@ describe('bfi44 API', () => {
             conscientiousness: 3.5,
             extraversion: 4.5,
             agreeableness: 4.0,
-            neuroticism: 2.0
-          }
-        }
+            neuroticism: 2.0,
+          },
+        },
       };
       api.get.mockResolvedValue(mockProfile);
 
@@ -199,9 +205,9 @@ describe('bfi44 API', () => {
         data: {
           profile: {
             userId: '123',
-            openness: 4.0
-          }
-        }
+            openness: 4.0,
+          },
+        },
       };
       api.get.mockResolvedValue(mockProfile);
 
@@ -245,9 +251,9 @@ describe('bfi44 API', () => {
         data: {
           recalculated: true,
           profile: {
-            openness: 3.8
-          }
-        }
+            openness: 3.8,
+          },
+        },
       };
       api.post.mockResolvedValue(mockResponse);
 
@@ -280,9 +286,9 @@ describe('bfi44 API', () => {
           recalculated: true,
           profile: {
             openness: 4.2,
-            conscientiousness: 3.9
-          }
-        }
+            conscientiousness: 3.9,
+          },
+        },
       };
       api.post.mockResolvedValue(mockResponse);
 

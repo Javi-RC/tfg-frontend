@@ -1,6 +1,7 @@
 import { useContext } from 'react';
-import { QuestionnaireContext } from './QuestionnaireContext';
+import { QuestionnaireContext } from '../../contexts/QuestionnaireContextObj';
 import { submitPhaseResponses } from '../../api/cv';
+import i18n from '../../i18n';
 
 /**
  * Custom hook for managing questionnaire state and operations
@@ -8,7 +9,7 @@ import { submitPhaseResponses } from '../../api/cv';
  */
 export const useQuestionnaire = () => {
   const context = useContext(QuestionnaireContext);
-  
+
   if (!context) {
     throw new Error('useQuestionnaire must be used within QuestionnaireProvider');
   }
@@ -23,7 +24,7 @@ export const useQuestionnaire = () => {
   const updateResponse = (field, value) => {
     dispatch({
       type: 'UPDATE_RESPONSE',
-      payload: { field, value }
+      payload: { field, value },
     });
   };
 
@@ -34,61 +35,38 @@ export const useQuestionnaire = () => {
    */
   const submitPhase = async () => {
     dispatch({ type: 'SET_LOADING', payload: true });
-    
-    try {
-      console.log('========== SUBMITTING PHASE ==========');
-      console.log('SessionId:', state.sessionId);
-      console.log('Current Phase ID:', state.currentPhase.id);
-      console.log('Responses (current phase only):', state.responses);
-      console.log('=====================================');
 
-      // Send ONLY current phase responses - backend accumulates them
+    try {
       const response = await submitPhaseResponses(
         state.sessionId,
         state.currentPhase.id,
         state.responses
       );
 
-      console.log('========== PHASE SUBMISSION RESPONSE ==========');
-      console.log('Full Response:', response);
-      console.log('Response Data:', response.data);
-      console.log('==============================================');
-
       const data = response.data;
 
       if (data.isComplete) {
-        // Backend indicates questionnaire is complete
-        console.log('✓ Questionnaire completed! Completeness:', data.completenessScore);
-        dispatch({ 
+        dispatch({
           type: 'COMPLETE',
-          payload: { completenessScore: data.completenessScore }
+          payload: { completenessScore: data.completenessScore },
         });
         return { isComplete: true, completenessScore: data.completenessScore };
       }
 
-      // Load next phase
-      console.log('→ Loading next phase:', data.phase?.id);
       dispatch({
         type: 'LOAD_NEXT_PHASE',
-        payload: data
+        payload: data,
       });
 
       return { isComplete: false, nextPhase: data.phase };
-
     } catch (error) {
-      console.error('========== PHASE SUBMISSION ERROR ==========');
-      console.error('Error:', error);
-      console.error('Error Response:', error.response);
-      console.error('Error Data:', error.response?.data);
-      console.error('Request URL:', error.config?.url);
-      console.error('Request Method:', error.config?.method);
-      console.error('Request Data:', error.config?.data);
-      console.error('==========================================');
-      
-      const errorMessage = error.response?.data?.message || error.message || 'Error submitting phase';
-      dispatch({ 
-        type: 'SET_ERROR', 
-        payload: errorMessage
+      console.error('Error submitting phase:', error);
+
+      const errorMessage =
+        error.response?.data?.message || error.message || i18n.t('questionnaire.errors.submitPhase');
+      dispatch({
+        type: 'SET_ERROR',
+        payload: errorMessage,
       });
       throw error;
     }
@@ -97,6 +75,6 @@ export const useQuestionnaire = () => {
   return {
     state,
     updateResponse,
-    submitPhase
+    submitPhase,
   };
 };

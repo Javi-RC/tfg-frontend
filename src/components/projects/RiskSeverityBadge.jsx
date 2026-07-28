@@ -15,46 +15,42 @@ export default function RiskSeverityBadge({ severity }) {
       fontSize: '12px',
       fontWeight: '700',
       textTransform: 'uppercase',
-      letterSpacing: '0.5px'
+      letterSpacing: '0.5px',
     };
 
     switch (severity) {
       case 'high':
         return {
           ...baseStyle,
-          background: '#FEE2E2',
-          color: '#DC2626'
+          background: 'var(--color-danger-bg)',
+          color: 'var(--color-danger)',
         };
       case 'medium-high':
         return {
           ...baseStyle,
           background: '#FED7AA',
-          color: '#EA580C'
+          color: '#EA580C',
         };
       case 'medium':
         return {
           ...baseStyle,
-          background: '#FEF3C7',
-          color: '#D97706'
+          background: 'var(--color-warning-bg)',
+          color: '#D97706',
         };
       case 'low':
         return {
           ...baseStyle,
-          background: '#D1FAE5',
-          color: '#059669'
+          background: 'var(--color-success-bg)',
+          color: '#059669',
         };
       default:
         return {
           ...baseStyle,
-          background: '#F3F4F6',
-          color: '#6B7280'
+          background: 'var(--color-bg-subtle)',
+          color: 'var(--color-text-muted)',
         };
     }
   };
 
-  return (
-    <span style={getBadgeStyle()}>
-      {t(`riskSeverity.${severity}`) || severity}
-    </span>
-  );
+  return <span style={getBadgeStyle()}>{t(`riskSeverity.${severity}`) || severity}</span>;
 }

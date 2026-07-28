@@ -6,7 +6,7 @@ import {
   validateRegistrationStep2,
   validateRegistrationStep3,
   getPasswordStrengthRules,
-  isPasswordStrong
+  isPasswordStrong,
 } from '../validators/authValidators';
 
 /**
@@ -19,9 +19,9 @@ export function useRegister() {
     username: '',
     role: '',
     password: '',
-    confirm: ''
+    confirm: '',
   });
-  
+
   const [step, setStep] = useState(1);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -41,7 +41,7 @@ export function useRegister() {
    * Update a form field
    */
   const updateField = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   /**
@@ -49,7 +49,7 @@ export function useRegister() {
    */
   const validateCurrentStep = () => {
     setError('');
-    
+
     switch (step) {
       case 1: {
         const validation = validateRegistrationStep1(formData);
@@ -59,7 +59,7 @@ export function useRegister() {
         }
         return true;
       }
-      
+
       case 2: {
         const validation = validateRegistrationStep2(formData);
         if (!validation.isValid) {
@@ -68,7 +68,7 @@ export function useRegister() {
         }
         return true;
       }
-      
+
       case 3: {
         const validation = validateRegistrationStep3(formData);
         if (!validation.isValid) {
@@ -77,7 +77,7 @@ export function useRegister() {
         }
         return true;
       }
-      
+
       default:
         return true;
     }
@@ -105,9 +105,9 @@ export function useRegister() {
         username: formData.username,
         role: formData.role,
         password: formData.password,
-        name: formData.username
+        name: formData.username,
       };
-      
+
       const res = await apiRegister(payload);
       setRegistered(true);
       setResendMessage(res.data?.message || i18n.t('auth.register.accountCreated'));
@@ -142,18 +142,18 @@ export function useRegister() {
    */
   const handleResend = async () => {
     setResendMessage('');
-    
+
     if (!formData.email) {
       setResendMessage(i18n.t('auth.register.provideEmail'));
       return;
     }
-    
+
     try {
       setResendLoading(true);
       const res = await resendConfirmation({
         email: formData.email,
         name: formData.username,
-        role: formData.role
+        role: formData.role,
       });
       setResendMessage(res.data?.message || i18n.t('auth.register.emailResent'));
     } catch (err) {
@@ -167,14 +167,14 @@ export function useRegister() {
    * Toggle password visibility
    */
   const togglePasswordVisibility = () => {
-    setShowPassword(prev => !prev);
+    setShowPassword((prev) => !prev);
   };
 
   /**
    * Toggle confirm password visibility
    */
   const toggleConfirmVisibility = () => {
-    setShowConfirm(prev => !prev);
+    setShowConfirm((prev) => !prev);
   };
 
   return {
@@ -190,7 +190,7 @@ export function useRegister() {
     showConfirm,
     passwordRules,
     isPasswordValid,
-    
+
     // Actions
     updateField,
     handleNext,
@@ -198,6 +198,6 @@ export function useRegister() {
     handleKeyPress,
     handleResend,
     togglePasswordVisibility,
-    toggleConfirmVisibility
+    toggleConfirmVisibility,
   };
 }

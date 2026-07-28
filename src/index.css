@@ -1,3 +1,5 @@
+@import './styles/tokens.css';
+
 /* Global Styles */
 body {
   margin: 0;
@@ -25,7 +27,7 @@ code {
 }
 
 a {
-  color: #007bff;
+  color: var(--color-primary);
   text-decoration: none;
 }
 
@@ -44,8 +46,8 @@ a:hover {
 }
 
 *:focus-visible {
-  outline: 3px solid #2563eb;
-  outline-offset: 2px;
+  outline: 3px solid var(--focus-color);
+  outline-offset: var(--focus-outline-offset);
   border-radius: 2px;
 }
 
@@ -61,9 +63,9 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible,
 [role="button"]:focus-visible {
-  outline: 3px solid #2563eb;
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+  outline: 3px solid var(--focus-color);
+  outline-offset: var(--focus-outline-offset);
+  box-shadow: 0 0 0 4px var(--color-primary-ring);
 }
 
 /* Skip to main content link */
@@ -116,10 +118,18 @@ textarea:focus-visible,
   border-width: 0;
 }
 
-/* Ensure proper color contrast - adjust as needed */
-:root {
-  --focus-color: #2563eb;
-  --focus-outline-width: 3px;
-  --focus-outline-offset: 2px;
+/* Responsive breakpoints */
+@media (max-width: 768px) {
+  :root {
+    --spacing-xl: 24px;
+    --spacing-2xl: 40px;
+  }
 }
 
+@media (max-width: 480px) {
+  :root {
+    --font-size-3xl: 24px;
+    --spacing-xl: 16px;
+    --spacing-2xl: 32px;
+  }
+}

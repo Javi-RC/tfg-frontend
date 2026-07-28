@@ -2,8 +2,45 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FileText } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import { showError } from '../../../utils/toast';
 import SecondaryButton from '../../SecondaryButton';
 import { getOrganizationCVs, updateCVStatus } from '../../../api/organization';
+import i18n from '../../../i18n';
+
+const formatSkills = (skills) => {
+  const na = i18n.t('common.notAvailable');
+  if (!skills) return na;
+  if (Array.isArray(skills)) {
+    const values = skills.flatMap((s) => {
+      const v = typeof s === 'string' ? s : s?.name;
+      return v ? [v] : [];
+    });
+    return values.length ? values.join(', ') : na;
+  }
+  if (typeof skills === 'object') {
+    const buckets = Object.values(skills).flat();
+    const values = buckets.flatMap((s) => {
+      const v = typeof s === 'string' ? s : s?.name;
+      return v ? [v] : [];
+    });
+    return values.length ? values.join(', ') : na;
+  }
+  return na;
+};
+
+const formatLanguages = (languages) => {
+  const na = i18n.t('common.notAvailable');
+  if (!languages) return na;
+  if (Array.isArray(languages)) {
+    const values = languages
+      .flatMap((l) => {
+        const v = typeof l === 'string' ? l : l?.language || l?.name;
+        return v ? [v] : [];
+      });
+    return values.length ? values.join(', ') : na;
+  }
+  return na;
+};
 
 /**
  * CVsTab (Admin only)
@@ -48,7 +85,7 @@ export default function CVsTab({ organizationId, onUpdate, styles }) {
       loadCVs();
       if (onUpdate) onUpdate();
     } catch (err) {
-      alert(err.response?.data?.error || err.message || t('organization.cvs.errorUpdating'));
+      showError(err.response?.data?.error || err.message || t('organization.cvs.errorUpdating'));
     }
   };
 
@@ -56,46 +93,33 @@ export default function CVsTab({ organizationId, onUpdate, styles }) {
     return <p style={styles.loadingText}>{t('organization.cvs.loading')}</p>;
   }
 
-  const formatSkills = (skills) => {
-    if (!skills) return 'N/A';
-    if (Array.isArray(skills)) {
-      const values = skills.map((s) => (typeof s === 'string' ? s : s?.name)).filter(Boolean);
-      return values.length ? values.join(', ') : 'N/A';
-    }
-    if (typeof skills === 'object') {
-      const buckets = Object.values(skills).flat();
-      const values = buckets.map((s) => (typeof s === 'string' ? s : s?.name)).filter(Boolean);
-      return values.length ? values.join(', ') : 'N/A';
-    }
-    return 'N/A';
-  };
-
-  const formatLanguages = (languages) => {
-    if (!languages) return 'N/A';
-    if (Array.isArray(languages)) {
-      const values = languages
-        .map((l) => (typeof l === 'string' ? l : l?.language || l?.name))
-        .filter(Boolean);
-      return values.length ? values.join(', ') : 'N/A';
-    }
-    return 'N/A';
-  };
-
   return (
     <div style={styles.card}>
       <div style={styles.cardHeader}>
         <h2 style={styles.cardTitle}>{t('organization.cvs.title')}</h2>
         <div style={styles.filterButtons}>
-          <button style={filter === 'pending' ? styles.filterActive : styles.filterButton} onClick={() => setFilter('pending')}>
+          <button type="button"
+            style={filter === 'pending' ? styles.filterActive : styles.filterButton}
+            onClick={() => setFilter('pending')}
+          >
             {t('organization.cvs.pending')}
           </button>
-          <button style={filter === 'reviewed' ? styles.filterActive : styles.filterButton} onClick={() => setFilter('reviewed')}>
+          <button type="button"
+            style={filter === 'reviewed' ? styles.filterActive : styles.filterButton}
+            onClick={() => setFilter('reviewed')}
+          >
             {t('organization.cvs.reviewed')}
           </button>
-          <button style={filter === 'accepted' ? styles.filterActive : styles.filterButton} onClick={() => setFilter('accepted')}>
+          <button type="button"
+            style={filter === 'accepted' ? styles.filterActive : styles.filterButton}
+            onClick={() => setFilter('accepted')}
+          >
             {t('organization.cvs.accepted')}
           </button>
-          <button style={filter === 'rejected' ? styles.filterActive : styles.filterButton} onClick={() => setFilter('rejected')}>
+          <button type="button"
+            style={filter === 'rejected' ? styles.filterActive : styles.filterButton}
+            onClick={() => setFilter('rejected')}
+          >
             {t('organization.cvs.rejected')}
           </button>
         </div>
@@ -103,7 +127,7 @@ export default function CVsTab({ organizationId, onUpdate, styles }) {
 
       {cvs.length === 0 ? (
         <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-          <FileText size={48} color="#999" style={{ marginBottom: '16px', opacity: 0.5 }} />
+          <FileText size={48} color="#6B7280" style={{ marginBottom: '16px', opacity: 0.5 }} />
           <p style={styles.emptyText}>{t('organization.cvs.noCVs')}</p>
         </div>
       ) : (
@@ -112,7 +136,9 @@ export default function CVsTab({ organizationId, onUpdate, styles }) {
             <div key={cv._id} style={styles.cvCard}>
               <div style={styles.cvHeader}>
                 <div>
-                  <h3 style={styles.cvName}>{cv.userId?.name || cv.userId?.username || t('common.unknown')}</h3>
+                  <h3 style={styles.cvName}>
+                    {cv.userId?.name || cv.userId?.username || t('common.unknown')}
+                  </h3>
                   <p style={styles.cvEmail}>{cv.userId?.email}</p>
                 </div>
                 <span
@@ -133,7 +159,7 @@ export default function CVsTab({ organizationId, onUpdate, styles }) {
                           ? '#c62828'
                           : cv.organizationStatus === 'reviewed'
                             ? '#1565c0'
-                            : '#f57c00'
+                            : '#f57c00',
                   }}
                 >
                   {t(`organization.cvs.${cv.organizationStatus}`)}
@@ -145,11 +171,14 @@ export default function CVsTab({ organizationId, onUpdate, styles }) {
                   <strong>{t('organization.cvs.skills')}:</strong> {formatSkills(cv.skills)}
                 </div>
                 <div>
-                  <strong>{t('organization.cvs.languages')}:</strong> {formatLanguages(cv.languages)}
+                  <strong>{t('organization.cvs.languages')}:</strong>{' '}
+                  {formatLanguages(cv.languages)}
                 </div>
                 <div>
                   <strong>{t('organization.cvs.submitted')}:</strong>{' '}
-                  {cv.submittedToOrganizationAt ? new Date(cv.submittedToOrganizationAt).toLocaleDateString(i18n.language) : 'N/A'}
+                  {cv.submittedToOrganizationAt
+                    ? new Date(cv.submittedToOrganizationAt).toLocaleDateString(i18n.language)
+                    : 'N/A'}
                 </div>
               </div>
 
@@ -169,10 +198,13 @@ export default function CVsTab({ organizationId, onUpdate, styles }) {
                 </SecondaryButton>
                 {cv.organizationStatus === 'pending' && (
                   <>
-                    <button style={styles.actionButton} onClick={() => handleStatusChange(cv._id, 'reviewed')}>
+                    <button type="button"
+                      style={styles.actionButton}
+                      onClick={() => handleStatusChange(cv._id, 'reviewed')}
+                    >
                       {t('organization.cvs.markReviewed')}
                     </button>
-                    <button
+                    <button type="button"
                       style={{ ...styles.actionButton, background: '#4caf50' }}
                       onClick={() => {
                         const notes = prompt(t('organization.cvs.addNotesOptional'));
@@ -181,7 +213,7 @@ export default function CVsTab({ organizationId, onUpdate, styles }) {
                     >
                       {t('organization.cvs.accept')}
                     </button>
-                    <button
+                    <button type="button"
                       style={{ ...styles.actionButton, background: '#f44336' }}
                       onClick={() => {
                         const notes = prompt(t('organization.cvs.addRejectionReason'));

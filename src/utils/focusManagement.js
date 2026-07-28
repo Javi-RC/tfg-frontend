@@ -12,9 +12,11 @@ export function trapFocus(container) {
   if (!container) return () => {};
 
   const getFocusableElements = () => {
-    return Array.from(container.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-    )).filter(el => !el.disabled && el.offsetParent !== null);
+    return Array.from(
+      container.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )
+    ).filter((el) => !el.disabled && el.offsetParent !== null);
   };
 
   const handleTabKey = (e) => {
@@ -68,28 +70,8 @@ export function createFocusManager() {
       if (previousFocus && previousFocus.focus) {
         previousFocus.focus();
       }
-    }
+    },
   };
 }
 
-/**
- * Checks if element is keyboard focusable
- * @param {HTMLElement} element
- * @returns {boolean}
- */
-export function isFocusable(element) {
-  if (!element) return false;
-  
-  const tabindex = element.getAttribute('tabindex');
-  if (tabindex !== null && parseInt(tabindex) < 0) return false;
 
-  if (element.disabled) return false;
-
-  // Check if anchor has href attribute
-  if (element.tagName === 'A') {
-    return element.hasAttribute('href');
-  }
-
-  const focusableTags = ['BUTTON', 'INPUT', 'SELECT', 'TEXTAREA'];
-  return focusableTags.includes(element.tagName) || (tabindex !== null && tabindex !== '');
-}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { showSuccess } from '../utils/toast';
 import CVUpload from '../components/CVUpload';
 import CVHeader from '../components/cv/CVHeader';
 import CVErrorBanner from '../components/cv/CVErrorBanner';
@@ -34,19 +35,19 @@ export default function MyCVPage() {
     handleSaveCV,
     toggleUploadModal,
     toggleSubmitToOrgModal,
-    clearError
+    clearError,
   } = useMyCVPage();
 
   const cvEditor = useCVEditor(cv);
-  const { 
-    editMode, 
-    editData, 
-    saving, 
+  const {
+    editMode,
+    editData,
+    saving,
     setSaving,
     startEditing,
     cancelEditing,
     updateEditData,
-    ...handlers 
+    ...handlers
   } = cvEditor;
 
   const handleStartEditing = () => {
@@ -63,7 +64,7 @@ export default function MyCVPage() {
     setSaving(true);
     const result = await handleSaveCV(editData);
     setSaving(false);
-    
+
     if (result.success) {
       updateEditData(cv);
       cancelEditing(cv);
@@ -79,15 +80,14 @@ export default function MyCVPage() {
 
   if (showUpload) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        background: '#fafbfc',
-        padding: '40px 20px'
-      }}>
-        <CVUpload
-          onUploadSuccess={handleUploadSuccess}
-          onCancel={toggleUploadModal}
-        />
+      <div
+        style={{
+          minHeight: '100vh',
+          background: 'var(--color-bg-muted)',
+          padding: '40px 20px',
+        }}
+      >
+        <CVUpload onUploadSuccess={handleUploadSuccess} onCancel={toggleUploadModal} />
       </div>
     );
   }
@@ -97,13 +97,15 @@ export default function MyCVPage() {
   }
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      background: '#f5f7fa',
-      display: 'flex',
-      paddingTop: '64px',
-      marginTop: '32px' // Added margin to provide space at the top
-    }} role="main" aria-label={t('cv.aria.myCvPage')}>
+    <main
+      style={{
+        minHeight: '100vh',
+        background: 'var(--color-bg-page)',
+        display: 'flex',
+        paddingTop: '64px',
+      }}
+      aria-label={t('cv.aria.myCvPage')}
+    >
       <CVHeader
         editMode={editMode}
         saving={saving}
@@ -114,84 +116,88 @@ export default function MyCVPage() {
         onDelete={handleDelete}
         onSubmitToOrg={toggleSubmitToOrgModal}
       />
-      
-      <div style={{
-        marginLeft: '280px',
-        width: 'calc(100% - 280px)',
-        padding: '40px 24px'
-      }}>
-        <div style={{
-          maxWidth: '1100px',
-          margin: '0 auto'
-        }}>
+
+      <div
+        style={{
+          marginLeft: '260px',
+          width: 'calc(100% - 260px)',
+          padding: '28px 32px 48px',
+        }}
+      >
+        <div
+          style={{
+            maxWidth: '1400px',
+            margin: '0 auto',
+          }}
+        >
           <CVErrorBanner error={error} />
 
-        <CVWrapper>
-          <ContactSection
-            cv={cv}
-            editData={editData}
-            editMode={editMode}
-            onContactChange={handlers.handleContactChange}
-            onContactLocationChange={handlers.handleContactLocationChange}
-            onContactLinksChange={handlers.handleContactLinksChange}
-            onContactPhoneChange={handlers.handleContactPhoneChange}
-            onContactPhoneTypeChange={handlers.handleContactPhoneTypeChange}
-          />
+          <CVWrapper>
+            <ContactSection
+              cv={cv}
+              editData={editData}
+              editMode={editMode}
+              onContactChange={handlers.handleContactChange}
+              onContactLocationChange={handlers.handleContactLocationChange}
+              onContactLinksChange={handlers.handleContactLinksChange}
+              onContactPhoneChange={handlers.handleContactPhoneChange}
+              onContactPhoneTypeChange={handlers.handleContactPhoneTypeChange}
+            />
 
-          <ExperienceSection
-            cv={cv}
-            editData={editData}
-            editMode={editMode}
-            onExperienceChange={handlers.handleExperienceChange}
-            onAddExperience={handlers.addExperience}
-            onRemoveExperience={handlers.removeExperience}
-          />
+            <ExperienceSection
+              cv={cv}
+              editData={editData}
+              editMode={editMode}
+              onExperienceChange={handlers.handleExperienceChange}
+              onAddExperience={handlers.addExperience}
+              onRemoveExperience={handlers.removeExperience}
+            />
 
-          <EducationSection
-            cv={cv}
-            editData={editData}
-            editMode={editMode}
-            onEducationChange={handlers.handleEducationChange}
-            onAddEducation={handlers.addEducation}
-            onRemoveEducation={handlers.removeEducation}
-          />
+            <EducationSection
+              cv={cv}
+              editData={editData}
+              editMode={editMode}
+              onEducationChange={handlers.handleEducationChange}
+              onAddEducation={handlers.addEducation}
+              onRemoveEducation={handlers.removeEducation}
+            />
 
-          <SkillsSection
-            cv={cv}
-            editData={editData}
-            editMode={editMode}
-            onSkillChange={handlers.handleSkillChange}
-            onAddSkill={handlers.addSkill}
-            onRemoveSkill={handlers.removeSkill}
-          />
+            <SkillsSection
+              cv={cv}
+              editData={editData}
+              editMode={editMode}
+              onSkillChange={handlers.handleSkillChange}
+              onAddSkill={handlers.addSkill}
+              onRemoveSkill={handlers.removeSkill}
+            />
 
-          <LanguagesSection
-            cv={cv}
-            editData={editData}
-            editMode={editMode}
-            onLanguageChange={handlers.handleLanguageChange}
-            onAddLanguage={handlers.addLanguage}
-            onRemoveLanguage={handlers.removeLanguage}
-          />
+            <LanguagesSection
+              cv={cv}
+              editData={editData}
+              editMode={editMode}
+              onLanguageChange={handlers.handleLanguageChange}
+              onAddLanguage={handlers.addLanguage}
+              onRemoveLanguage={handlers.removeLanguage}
+            />
 
-          <ProjectsSection
-            cv={cv}
-            editData={editData}
-            editMode={editMode}
-            onProjectChange={handlers.handleProjectChange}
-            onAddProject={handlers.addProject}
-            onRemoveProject={handlers.removeProject}
-          />
+            <ProjectsSection
+              cv={cv}
+              editData={editData}
+              editMode={editMode}
+              onProjectChange={handlers.handleProjectChange}
+              onAddProject={handlers.addProject}
+              onRemoveProject={handlers.removeProject}
+            />
 
-          <CertificationsSection
-            cv={cv}
-            editData={editData}
-            editMode={editMode}
-            onCertificationChange={handlers.handleCertificationChange}
-            onAddCertification={handlers.addCertification}
-            onRemoveCertification={handlers.removeCertification}
-          />
-        </CVWrapper>
+            <CertificationsSection
+              cv={cv}
+              editData={editData}
+              editMode={editMode}
+              onCertificationChange={handlers.handleCertificationChange}
+              onAddCertification={handlers.addCertification}
+              onRemoveCertification={handlers.removeCertification}
+            />
+          </CVWrapper>
         </div>
       </div>
 
@@ -201,10 +207,10 @@ export default function MyCVPage() {
           onSuccess={() => {
             toggleSubmitToOrgModal();
             clearError();
-            alert(t('cv.cvSubmittedSuccess'));
+            showSuccess(t('cv.cvSubmittedSuccess'));
           }}
         />
       )}
-    </div>
+    </main>
   );
 }

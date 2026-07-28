@@ -10,26 +10,26 @@ i18n
   .init({
     resources: {
       en: {
-        translation: enTranslations
+        translation: enTranslations,
       },
       es: {
-        translation: esTranslations
-      }
+        translation: esTranslations,
+      },
     },
     fallbackLng: 'en',
     debug: false,
     interpolation: {
-      escapeValue: false
+      escapeValue: false,
     },
     detection: {
       order: ['localStorage', 'navigator'],
       caches: ['localStorage'],
-      lookupLocalStorage: 'i18nextLng'
+      lookupLocalStorage: 'i18nextLng',
     },
     // Ensure language changes are reflected immediately
     react: {
-      useSuspense: false
-    }
+      useSuspense: false,
+    },
   });
 
 export default i18n;

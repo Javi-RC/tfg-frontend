@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { showSuccess, showError } from '../../../utils/toast';
 import PrimaryButton from '../../PrimaryButton';
 import { updateOrganizationSettings } from '../../../api/organization';
 
@@ -12,7 +13,7 @@ export default function SettingsTab({ organization, onUpdate, styles }) {
     allowPublicSubmission: organization.settings?.allowPublicSubmission || false,
     requireApproval: organization.settings?.requireApproval || false,
     notifyOnCVSubmission: organization.settings?.notifyOnCVSubmission || true,
-    autoProcessCVs: organization.settings?.autoProcessCVs || false
+    autoProcessCVs: organization.settings?.autoProcessCVs || false,
   });
   const [saving, setSaving] = useState(false);
 
@@ -20,10 +21,10 @@ export default function SettingsTab({ organization, onUpdate, styles }) {
     try {
       setSaving(true);
       await updateOrganizationSettings(organization._id, settings);
-      alert(t('organization.settings.updateSuccess'));
+      showSuccess(t('organization.settings.updateSuccess'));
       if (onUpdate) onUpdate();
     } catch (err) {
-      alert(err.response?.data?.message || t('organization.settings.updateError'));
+      showError(err.response?.data?.message || t('organization.settings.updateError'));
     } finally {
       setSaving(false);
     }
@@ -42,8 +43,12 @@ export default function SettingsTab({ organization, onUpdate, styles }) {
             style={styles.checkbox}
           />
           <div>
-            <div style={styles.settingLabel}>{t('organization.settings.allowPublicSubmission')}</div>
-            <div style={styles.settingDescription}>{t('organization.settings.allowPublicSubmissionDesc')}</div>
+            <div style={styles.settingLabel}>
+              {t('organization.settings.allowPublicSubmission')}
+            </div>
+            <div style={styles.settingDescription}>
+              {t('organization.settings.allowPublicSubmissionDesc')}
+            </div>
           </div>
         </label>
 
@@ -71,7 +76,9 @@ export default function SettingsTab({ organization, onUpdate, styles }) {
           />
           <div>
             <div style={styles.settingLabel}>{t('organization.settings.notifyOnCVSubmission')}</div>
-            <div style={styles.settingDescription}>{t('organization.settings.notifyOnCVSubmissionDesc')}</div>
+            <div style={styles.settingDescription}>
+              {t('organization.settings.notifyOnCVSubmissionDesc')}
+            </div>
           </div>
         </label>
 
@@ -84,7 +91,9 @@ export default function SettingsTab({ organization, onUpdate, styles }) {
           />
           <div>
             <div style={styles.settingLabel}>{t('organization.settings.autoProcessCVs')}</div>
-            <div style={styles.settingDescription}>{t('organization.settings.autoProcessCVsDesc')}</div>
+            <div style={styles.settingDescription}>
+              {t('organization.settings.autoProcessCVsDesc')}
+            </div>
           </div>
         </label>
       </div>

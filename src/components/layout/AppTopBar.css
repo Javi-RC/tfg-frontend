@@ -1,0 +1,99 @@
+.sara-topbar {
+  position: fixed;
+  top: 0;
+  left: var(--sara-sidebar-width);
+  right: 0;
+  height: var(--sara-topbar-height);
+  background: var(--sara-page-bg);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 32px;
+  z-index: 900;
+  font-family: Poppins, Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  transition: left 0.25s ease;
+}
+
+.sidebar-collapsed .sara-topbar {
+  left: var(--sara-sidebar-collapsed);
+}
+
+.sara-topbar-hamburger {
+  display: none;
+  background: var(--sara-card-bg);
+  border: 1px solid var(--sara-border);
+  border-radius: 12px;
+  color: var(--sara-text);
+  cursor: pointer;
+  padding: 9px;
+  align-items: center;
+  justify-content: center;
+}
+
+.sara-topbar-search {
+  position: relative;
+  flex: 1;
+  max-width: 420px;
+}
+
+.sara-topbar-search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--sara-text-soft);
+  pointer-events: none;
+}
+
+.sara-topbar-search-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 16px 0 44px;
+  border: 1px solid var(--sara-border-strong);
+  border-radius: 12px;
+  background: var(--sara-card-bg);
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--sara-text);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.sara-topbar-search-input::placeholder {
+  color: var(--sara-text-soft);
+}
+
+.sara-topbar-search-input:focus {
+  border-color: var(--sara-purple);
+  box-shadow: 0 0 0 3px var(--sara-purple-ring);
+}
+
+.sara-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+}
+
+@media (max-width: 1024px) {
+  .sara-topbar {
+    left: 0;
+    padding: 0 16px;
+    background: var(--sara-card-bg);
+    border-bottom: 1px solid var(--sara-border);
+  }
+
+  .sidebar-collapsed .sara-topbar {
+    left: 0;
+  }
+
+  .sara-topbar-hamburger {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 560px) {
+  .sara-topbar-search {
+    max-width: none;
+  }
+}

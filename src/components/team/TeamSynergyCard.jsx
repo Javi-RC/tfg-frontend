@@ -27,7 +27,8 @@ export default function TeamSynergyCard({ synergy, compact = false }) {
   }
 
   const overallScore = typeof synergy.overallScore === 'number' ? synergy.overallScore : 0;
-  const coveragePercentage = typeof synergy.coveragePercentage === 'number' ? synergy.coveragePercentage : null;
+  const coveragePercentage =
+    typeof synergy.coveragePercentage === 'number' ? synergy.coveragePercentage : null;
 
   return (
     <div style={styles.card}>
@@ -55,11 +56,16 @@ export default function TeamSynergyCard({ synergy, compact = false }) {
         <div>
           <div style={styles.metaLabel}>{t('team.synergy.profileCoverage')}</div>
           <div style={styles.metaValue}>
-            {coveragePercentage === null ? t('common.notAvailable') : `${Math.round(coveragePercentage)}%`}
+            {coveragePercentage === null
+              ? t('common.notAvailable')
+              : `${Math.round(coveragePercentage)}%`}
           </div>
           {typeof synergy.profilesCovered === 'number' && typeof synergy.teamSize === 'number' && (
             <div style={styles.metaHint}>
-              {t('team.synergy.membersCount', { covered: synergy.profilesCovered, total: synergy.teamSize })}
+              {t('team.synergy.membersCount', {
+                covered: synergy.profilesCovered,
+                total: synergy.teamSize,
+              })}
             </div>
           )}
         </div>
@@ -73,9 +79,18 @@ export default function TeamSynergyCard({ synergy, compact = false }) {
 
       {!compact && synergy.metrics && (
         <div style={styles.metrics}>
-          <MetricBar label={t('team.synergy.metrics.roleDiversity')} score={synergy.metrics.roleDiversity?.score ?? 0} />
-          <MetricBar label={t('team.synergy.metrics.projectFit')} score={synergy.metrics.projectFit?.score ?? 0} />
-          <MetricBar label={t('team.synergy.metrics.previousCollaborations')} score={synergy.metrics.previousCollaborations?.score ?? 0} />
+          <MetricBar
+            label={t('team.synergy.metrics.roleDiversity')}
+            score={synergy.metrics.roleDiversity?.score ?? 0}
+          />
+          <MetricBar
+            label={t('team.synergy.metrics.projectFit')}
+            score={synergy.metrics.projectFit?.score ?? 0}
+          />
+          <MetricBar
+            label={t('team.synergy.metrics.previousCollaborations')}
+            score={synergy.metrics.previousCollaborations?.score ?? 0}
+          />
         </div>
       )}
 
@@ -83,8 +98,10 @@ export default function TeamSynergyCard({ synergy, compact = false }) {
         <div style={styles.recs}>
           <div style={styles.recsTitle}>{t('team.synergy.topRecommendations')}</div>
           <ul style={styles.recsList}>
-            {synergy.recommendations.slice(0, 3).map((rec, idx) => (
-              <li key={idx} style={styles.recsItem}>{rec.title}</li>
+            {synergy.recommendations.slice(0, 3).map((rec) => (
+              <li key={rec.title} style={styles.recsItem}>
+                {rec.title}
+              </li>
             ))}
           </ul>
         </div>
@@ -107,16 +124,16 @@ const getScoreLevelKey = (score) => {
   return 'team.synergy.level.needsImprovement';
 };
 
+const getMetricColor = (s) => {
+  if (s >= 80) return '#2da44e';
+  if (s >= 60) return '#0969da';
+  if (s >= 40) return '#d4a72c';
+  return '#cf222e';
+};
+
 const MetricBar = ({ label, score, inverted = false }) => {
   const normalized = Math.max(0, Math.min(100, Number(score) || 0));
   const effective = inverted ? 100 - normalized : normalized;
-
-  const getColor = (s) => {
-    if (s >= 80) return '#2da44e';
-    if (s >= 60) return '#0969da';
-    if (s >= 40) return '#d4a72c';
-    return '#cf222e';
-  };
 
   return (
     <div style={styles.metricRow}>
@@ -125,7 +142,13 @@ const MetricBar = ({ label, score, inverted = false }) => {
         <span style={styles.metricScore}>{Math.round(normalized)}</span>
       </div>
       <div style={styles.metricTrack}>
-        <div style={{ ...styles.metricFill, width: `${normalized}%`, backgroundColor: getColor(effective) }} />
+        <div
+          style={{
+            ...styles.metricFill,
+            width: `${normalized}%`,
+            backgroundColor: getMetricColor(effective),
+          }}
+        />
       </div>
     </div>
   );
@@ -160,13 +183,7 @@ const CircularProgress = ({ value, size = 110 }) => {
         strokeLinecap="round"
         transform={`rotate(-90 ${size / 2} ${size / 2})`}
       />
-      <text
-        x="50%"
-        y="50%"
-        textAnchor="middle"
-        dy=".35em"
-        style={styles.progressText}
-      >
+      <text x="50%" y="50%" textAnchor="middle" dy=".35em" style={styles.progressText}>
         {Math.round(safeValue)}
       </text>
     </svg>
@@ -176,7 +193,7 @@ const CircularProgress = ({ value, size = 110 }) => {
 const styles = {
   card: {
     backgroundColor: '#fff',
-    border: '1px solid #e1e4e8',
+    border: '1px solid var(--color-border)',
     borderRadius: '12px',
     padding: '16px',
     boxShadow: '0 2px 10px rgba(0,0,0,0.06)',
@@ -197,7 +214,7 @@ const styles = {
     margin: 0,
     fontSize: '16px',
     fontWeight: 700,
-    color: '#24292f',
+    color: 'var(--color-text-primary)',
   },
   profileChip: {
     fontSize: '12px',
@@ -221,7 +238,7 @@ const styles = {
   scoreText: {
     fontSize: '22px',
     fontWeight: 800,
-    color: '#24292f',
+    color: 'var(--color-text-primary)',
     lineHeight: 1.1,
   },
   levelText: {
@@ -236,17 +253,17 @@ const styles = {
   },
   metaLabel: {
     fontSize: '12px',
-    color: '#57606a',
+    color: 'var(--color-text-secondary)',
     marginBottom: '4px',
   },
   metaValue: {
     fontSize: '14px',
     fontWeight: 700,
-    color: '#24292f',
+    color: 'var(--color-text-primary)',
   },
   metaHint: {
     fontSize: '12px',
-    color: '#57606a',
+    color: 'var(--color-text-secondary)',
     marginTop: '2px',
   },
   metrics: {
@@ -269,12 +286,12 @@ const styles = {
   },
   metricLabel: {
     fontSize: '12px',
-    color: '#57606a',
+    color: 'var(--color-text-secondary)',
   },
   metricScore: {
     fontSize: '12px',
     fontWeight: 700,
-    color: '#24292f',
+    color: 'var(--color-text-primary)',
   },
   metricTrack: {
     height: '8px',
@@ -295,13 +312,13 @@ const styles = {
   recsTitle: {
     fontSize: '12px',
     fontWeight: 700,
-    color: '#57606a',
+    color: 'var(--color-text-secondary)',
     marginBottom: '6px',
   },
   recsList: {
     margin: 0,
     paddingLeft: '18px',
-    color: '#24292f',
+    color: 'var(--color-text-primary)',
   },
   recsItem: {
     fontSize: '12px',
@@ -316,7 +333,7 @@ const styles = {
     fill: '#24292f',
   },
   naCard: {
-    backgroundColor: '#f6f8fa',
+    backgroundColor: 'var(--color-bg-muted)',
     border: '1px solid #d0d7de',
     borderRadius: '12px',
     padding: '14px',
@@ -329,11 +346,11 @@ const styles = {
   naTitle: {
     fontSize: '13px',
     fontWeight: 700,
-    color: '#24292f',
+    color: 'var(--color-text-primary)',
     marginBottom: '2px',
   },
   naText: {
     fontSize: '12px',
-    color: '#57606a',
+    color: 'var(--color-text-secondary)',
   },
 };
