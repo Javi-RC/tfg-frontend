@@ -32,7 +32,6 @@ export default function SkillsSection({
 }) {
   const { t } = useTranslation();
   const skills = editMode ? editData?.skills?.technical : cv?.skills?.technical;
-  if (!skills) return null;
 
   const formatSkillLevel = (level) => {
     const mapping = {
@@ -49,7 +48,7 @@ export default function SkillsSection({
   };
 
   const groupedSkills = useMemo(() => {
-    if (editMode) return null;
+    if (editMode || !skills) return null;
     const groups = {};
     skills.forEach((skill) => {
       const cat = skill.category || 'other';
@@ -59,6 +58,8 @@ export default function SkillsSection({
     const ORDER = ['language', 'framework', 'database', 'cloud', 'tool', 'other'];
     return ORDER.filter(c => groups[c]).map(c => ({ category: c, skills: groups[c], ...CATEGORY_CONFIG[c] }));
   }, [skills, editMode]);
+
+  if (!skills) return null;
 
   if (!editMode) {
     return (
