@@ -7,7 +7,7 @@ import {
   completeProfile as apiCompleteProfile,
 } from '../api/auth';
 import { unwrapUser } from '../api/responseAdapter';
-import { setUser, clearStoredUser, USER_STORAGE_KEY } from '../api/tokenStore';
+import { setUser, clearStoredUser, setToken, USER_STORAGE_KEY } from '../api/tokenStore';
 import { isPublicRoute } from '../constants/routes';
 import { AuthContext } from './AuthContextObj';
 
@@ -56,8 +56,9 @@ export const AuthProvider = ({ children }) => {
       });
   }, [authenticated]);
 
-  const setSession = useCallback((_tokenValue, userData) => {
+  const setSession = useCallback((tokenValue, userData) => {
     const normalizedUser = { ...userData, role: normalizeRole(userData.role) };
+    if (tokenValue) setToken(tokenValue);
     setAuth({ authenticated: true, user: normalizedUser });
     setUser(normalizedUser);
     localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(normalizedUser));
@@ -66,7 +67,7 @@ export const AuthProvider = ({ children }) => {
   const login = useCallback(
     async (credentials) => {
       const res = await apiLogin(credentials);
-      setSession(null, res.data.user);
+      setSession(res.data.token, res.data.user);
       return res.data;
     },
     [setSession]

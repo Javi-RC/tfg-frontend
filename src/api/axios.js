@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { isPublicRoute } from '../constants/routes';
-import { getUser, clearStoredUser } from './tokenStore';
+import { getUser, clearStoredUser, getToken } from './tokenStore';
 import i18n from '../i18n';
 
 // If VITE_API_URL is not set, use relative URLs and rely on Vite dev proxy
@@ -21,6 +21,12 @@ api.interceptors.request.use((config) => {
   const rawLanguage = storedLanguage || i18n.language || 'en';
   const currentLanguage = rawLanguage.split('-')[0];
   config.headers['Accept-Language'] = currentLanguage;
+
+  // Fallback auth for browsers that block the httpOnly cookie cross-site
+  const token = getToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
 
   return config;
 });

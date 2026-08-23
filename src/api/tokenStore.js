@@ -1,6 +1,8 @@
-// Auth lives in an httpOnly cookie; this only mirrors the user the app renders,
-// so non-React code (the axios interceptor) can read it synchronously.
+// Auth lives primarily in an httpOnly cookie, with the JWT mirrored here as a
+// fallback for browsers that block third-party cookies (Brave, Safari). This
+// also lets non-React code (the axios interceptor) read it synchronously.
 export const USER_STORAGE_KEY = 'user:v1';
+export const TOKEN_STORAGE_KEY = 'token:v1';
 
 let currentUser = null;
 
@@ -9,8 +11,14 @@ export const setUser = (user) => {
   currentUser = user;
 };
 
-/** Forgets the cached user, in memory and on disk. */
+export const getToken = () => localStorage.getItem(TOKEN_STORAGE_KEY);
+export const setToken = (token) => {
+  if (token) localStorage.setItem(TOKEN_STORAGE_KEY, token);
+};
+
+/** Forgets the cached session — user and fallback token — in memory and on disk. */
 export const clearStoredUser = () => {
   currentUser = null;
   localStorage.removeItem(USER_STORAGE_KEY);
+  localStorage.removeItem(TOKEN_STORAGE_KEY);
 };

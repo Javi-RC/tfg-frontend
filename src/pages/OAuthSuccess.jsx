@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../hooks/useAuth';
 import { getProfile } from '../api/auth';
 import { unwrapUser } from '../api/responseAdapter';
+import { setToken } from '../api/tokenStore';
 
 export default function OAuthSuccess() {
   const { t } = useTranslation();
@@ -11,7 +12,19 @@ export default function OAuthSuccess() {
   const { user, setSession } = useAuth();
 
   useEffect(() => {
-    if (user) {
+    // OAuth backends that cannot rely on cross-site cookies deliver the JWT
+    // in the URL fragment. Store it before any request so the axios
+    // interceptor attaches it as a Bearer header.
+    const hash = window.location.hash?.startsWith('#')
+      ? window.location.hash.slice(1)
+      : '';
+    const urlToken = new URLSearchParams(hash).get('token');
+    if (urlToken) {
+      setToken(urlToken);
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+
+    if (user && !urlToken) {
       if (user.role === 'unassigned') {
         navigate('/complete-profile', { replace: true });
       } else {
@@ -27,7 +40,7 @@ export default function OAuthSuccess() {
         if (cancelled) return;
         const rawUser = unwrapUser(res);
         if (rawUser) {
-          setSession(null, rawUser);
+          setSession(urlToken || null, rawUser);
           if (rawUser.role === 'unassigned') {
             navigate('/complete-profile', { replace: true });
           } else {
