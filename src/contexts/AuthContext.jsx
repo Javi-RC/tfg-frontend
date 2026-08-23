@@ -73,7 +73,11 @@ export const AuthProvider = ({ children }) => {
   );
 
   const loginWithOAuth = useCallback(async (provider) => {
-    const apiUrl = import.meta.env.VITE_API_URL || '';
+    const apiUrl = import.meta.env.VITE_API_URL;
+    if (!apiUrl) {
+      console.error('VITE_API_URL is not configured. OAuth login will not work.');
+      return;
+    }
     window.location.href = `${apiUrl}/auth/${provider}`;
   }, []);
 

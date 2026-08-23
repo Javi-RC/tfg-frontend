@@ -587,16 +587,9 @@ describe('AuthProvider', () => {
       });
     });
 
-    const expectNoApiUrlErrors = (consoleSpy) => {
-      const appErrors = consoleSpy.mock.calls.filter(
-        (call) => typeof call[0] === 'string' && call[0].includes('VITE_API_URL')
-      );
-      expect(appErrors).toHaveLength(0);
-    };
-
     it('redirects to correct OAuth URL', async () => {
-      Object.defineProperty(import.meta.env, 'VITE_API_URL', {
-        value: 'https://api.example.com',
+      Object.defineProperty(import.meta, 'env', {
+        value: { VITE_API_URL: 'https://api.example.com' },
         configurable: true,
         writable: true,
       });
@@ -612,33 +605,35 @@ describe('AuthProvider', () => {
         result.current.loginWithOAuth('google');
       });
 
-      expectNoApiUrlErrors(consoleSpy);
+      const appErrors = consoleSpy.mock.calls.filter(
+        (call) => typeof call[0] === 'string' && call[0].includes('VITE_API_URL')
+      );
+      expect(appErrors).toHaveLength(0);
       consoleSpy.mockRestore();
 
       await resolveInitialProfile();
     });
 
-    it('navigates to relative /auth/:provider when VITE_API_URL is not set', async () => {
-      Object.defineProperty(import.meta.env, 'VITE_API_URL', {
-        value: undefined,
+    it('logs error when VITE_API_URL is not set', async () => {
+      Object.defineProperty(import.meta, 'env', {
+        value: {},
         configurable: true,
         writable: true,
       });
+      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
 
       const { result } = renderHook(
         () => React.useContext(AuthContext),
         { wrapper }
       );
 
-      const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+      await act(async () => {
+        await result.current.loginWithOAuth('google');
+      });
 
-      expect(() =>
-        act(() => {
-          result.current.loginWithOAuth('google');
-        })
-      ).not.toThrow();
-
-      expectNoApiUrlErrors(consoleSpy);
+      expect(consoleSpy).toHaveBeenCalledWith(
+        'VITE_API_URL is not configured. OAuth login will not work.'
+      );
       consoleSpy.mockRestore();
 
       await resolveInitialProfile();
