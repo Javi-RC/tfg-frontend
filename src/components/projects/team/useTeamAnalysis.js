@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useConfirm } from '../../../hooks/useConfirm';
 import {
   getTeamAnalysis,
   predictProjectRisks,
@@ -8,7 +9,23 @@ import {
   removeEmployeeFromProject,
 } from '../../../api/projects';
 import { showSuccess, showError } from '../../../utils/toast';
+import { getApiErrorMessage } from '../../../utils/getApiErrorMessage';
 import { getOrganizationEmployees } from '../../../api/organization';
+
+/**
+ * Role sent with every assignment.
+ *
+ * The UI has no role picker yet, so this is the same for everyone. Named rather
+ * than inlined so it is visible that the client is choosing it, not the user —
+ * whether the server stores or ignores it is worth confirming.
+ */
+const DEFAULT_ASSIGNED_ROLE = 'Developer';
+
+/**
+ * Delay before asking the parent to refetch after an optimistic change, giving
+ * the server a moment to commit so the refetch does not undo what we just drew.
+ */
+const PROJECT_REFRESH_DELAY_MS = 800;
 
 /**
  * Normalize skills array from backend format.
@@ -29,6 +46,7 @@ const normalizeSkillsArray = (skills) => {
 export default function useTeamAnalysis({ project, onProjectUpdate, activeTab }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const confirm = useConfirm();
   const notAvailableLabel = t('common.notAvailable');
 
   // Data State
@@ -130,19 +148,6 @@ export default function useTeamAnalysis({ project, onProjectUpdate, activeTab })
 
       const orgEmployeeByUserId = new Map(allOrgEmployees.map((emp) => [emp.user._id, emp]));
 
-      new Set(
-        project.assignedEmployees
-          ?.flatMap((emp) => {
-            if (typeof emp === 'string') return [emp];
-            if (emp.user) {
-              if (typeof emp.user === 'string') return [emp.user];
-              if (emp.user._id) return [emp.user._id];
-            }
-            if (emp._id) return [emp._id];
-            return [];
-          }) || []
-      );
-
       const suggestions = teamData.suggestions || [];
       const currentTeam = teamData.currentTeam || [];
       const availableFromBackend = teamData.availableEmployees || [];
@@ -201,6 +206,21 @@ export default function useTeamAnalysis({ project, onProjectUpdate, activeTab })
   }, []);
 
   /**
+   * Asks the parent to refetch the project shortly after an optimistic change.
+   * Extracted because assignment and removal had identical copies of it.
+   */
+  const scheduleProjectRefresh = useCallback(() => {
+    if (!onProjectUpdate) return;
+
+    isOptimisticUpdateRef.current = true;
+    clearTimeout(reloadTimeoutRef.current);
+    reloadTimeoutRef.current = setTimeout(() => {
+      onProjectUpdate();
+      isOptimisticUpdateRef.current = false;
+    }, PROJECT_REFRESH_DELAY_MS);
+  }, [onProjectUpdate]);
+
+  /**
    * Load risk analysis for current team
    */
   const loadRiskAnalysis = useCallback(async () => {
@@ -239,48 +259,76 @@ export default function useTeamAnalysis({ project, onProjectUpdate, activeTab })
 
     const selectedSet = new Set(selectedEmployees);
     const employeesToAdd = allEmployees.filter((emp) => selectedSet.has(emp.user._id));
+    if (employeesToAdd.length === 0) return;
+
+    setAssignLoading(true);
+
+    // Optimistic: move everyone across first, then undo only what the server rejects.
+    setCurrentTeamEmployees((prev) => [...prev, ...employeesToAdd]);
+    setAllEmployees((prev) => prev.filter((emp) => !selectedSet.has(emp.user._id)));
+    setSelectedEmployees([]);
 
     try {
-      setAssignLoading(true);
-
-      setCurrentTeamEmployees((prev) => [...prev, ...employeesToAdd]);
-      setAllEmployees((prev) => prev.filter((emp) => !selectedSet.has(emp.user._id)));
-      setSelectedEmployees([]);
-
-      await Promise.all(
-        selectedEmployees.map((empId) =>
+      // allSettled, not all: `all` rejects on the first failure, which used to
+      // roll back every assignment in the batch — including the ones the server
+      // had already accepted — and told the user nothing was assigned.
+      const results = await Promise.allSettled(
+        employeesToAdd.map((employee) =>
           assignEmployeeToProject(project._id, {
-            employeeId: empId,
-            assignedRole: 'Developer',
+            employeeId: employee.user._id,
+            assignedRole: DEFAULT_ASSIGNED_ROLE,
           })
         )
       );
 
-      isOptimisticUpdateRef.current = true;
-      clearTimeout(reloadTimeoutRef.current);
-      reloadTimeoutRef.current = setTimeout(() => {
-        if (onProjectUpdate) {
-          onProjectUpdate();
-        }
-        isOptimisticUpdateRef.current = false;
-      }, 800);
+      const rejected = employeesToAdd.filter((_, index) => results[index].status === 'rejected');
+      const assignedCount = employeesToAdd.length - rejected.length;
 
-      showSuccess(t('draftTeamAnalysis.alerts.assigned', { count: selectedEmployees.length }));
+      if (rejected.length > 0) {
+        const rejectedIds = new Set(rejected.map((employee) => employee.user._id));
+        setCurrentTeamEmployees((prev) =>
+          prev.filter((emp) => !rejectedIds.has(emp.user._id))
+        );
+        setAllEmployees((prev) => [...prev, ...rejected]);
+
+        const firstError = results.find((result) => result.status === 'rejected')?.reason;
+        showError(
+          `⚠ ${getApiErrorMessage(firstError, t('draftTeamAnalysis.alerts.assignErrorFallback'))}`
+        );
+      }
+
+      if (assignedCount > 0) {
+        showSuccess(t('draftTeamAnalysis.alerts.assigned', { count: assignedCount }));
+        scheduleProjectRefresh();
+      }
     } catch (err) {
+      // Only reachable if the optimistic bookkeeping itself throws; the server
+      // errors are already handled above.
       await loadAnalysis();
-      showError(`⚠ ${err.response?.data?.error || t('draftTeamAnalysis.alerts.assignErrorFallback')}`);
+      showError(`⚠ ${getApiErrorMessage(err, t('draftTeamAnalysis.alerts.assignErrorFallback'))}`);
     } finally {
       setAssignLoading(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedEmployees, allEmployees, project._id, onProjectUpdate, t]);
+  }, [
+    selectedEmployees,
+    allEmployees,
+    project._id,
+    scheduleProjectRefresh,
+    loadAnalysis,
+    t,
+  ]);
 
   /**
    * Remove employee from project
    */
   const handleRemoveEmployee = useCallback(
     async (employeeId) => {
-      if (!window.confirm(t('draftTeamAnalysis.confirmRemoveEmployee'))) return;
+      const accepted = await confirm({
+        message: t('draftTeamAnalysis.confirmRemoveEmployee'),
+        confirmLabel: t('common.remove'),
+        destructive: true,
+      });
+      if (!accepted) return;
 
       const employeeToRemove = currentTeamEmployees.find((emp) => emp.user._id === employeeId);
 
@@ -293,24 +341,16 @@ export default function useTeamAnalysis({ project, onProjectUpdate, activeTab })
 
         await removeEmployeeFromProject(project._id, employeeId);
 
-        isOptimisticUpdateRef.current = true;
-        clearTimeout(reloadTimeoutRef.current);
-        reloadTimeoutRef.current = setTimeout(() => {
-          if (onProjectUpdate) {
-            onProjectUpdate();
-          }
-          isOptimisticUpdateRef.current = false;
-        }, 800);
-
+        scheduleProjectRefresh();
         showSuccess(t('draftTeamAnalysis.alerts.removedOne'));
       } catch (err) {
         await loadAnalysis();
         showError(
-          `⚠ ${err.response?.data?.error || t('draftTeamAnalysis.alerts.removeErrorFallback')}`
+          `⚠ ${getApiErrorMessage(err, t('draftTeamAnalysis.alerts.removeErrorFallback'))}`
         );
       }
     },
-    [currentTeamEmployees, project._id, onProjectUpdate, t, loadAnalysis]
+    [currentTeamEmployees, project._id, scheduleProjectRefresh, t, loadAnalysis, confirm]
   );
 
   /**

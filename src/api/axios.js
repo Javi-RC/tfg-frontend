@@ -7,9 +7,33 @@ import i18n from '../i18n';
 // (and in production, same-origin deployments).
 const baseURL = import.meta.env.VITE_API_URL || '';
 
+/**
+ * Ceiling for ordinary CRUD calls. Without one, a request that never gets an
+ * answer leaves its spinner up forever and the user with no way to tell a slow
+ * network from a dead one.
+ */
+export const DEFAULT_TIMEOUT_MS = 20_000;
+
+/**
+ * Ceiling for endpoints whose server-side work is inference, not a lookup:
+ * risk prediction, team analysis, CV parsing. They legitimately outlast the
+ * default, but they are not allowed to hang either.
+ */
+export const LONG_RUNNING_TIMEOUT_MS = 120_000;
+
+/**
+ * Request config for a long-running endpoint, preserving anything the caller
+ * already passed (`params`, `signal`).
+ *
+ * @param {import('axios').AxiosRequestConfig} [config]
+ * @returns {import('axios').AxiosRequestConfig}
+ */
+export const longRunning = (config = {}) => ({ ...config, timeout: LONG_RUNNING_TIMEOUT_MS });
+
 const api = axios.create({
   baseURL,
   withCredentials: true,
+  timeout: DEFAULT_TIMEOUT_MS,
   headers: {
     'Content-Type': 'application/json',
   },

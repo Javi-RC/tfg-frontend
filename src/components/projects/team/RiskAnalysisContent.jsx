@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertTriangle, Lightbulb, CheckCircle } from 'lucide-react';
 import RiskFlowMap from '../../outcome/RiskFlowMap';
 import RiskPredictionMetadata from '../../risk/RiskPredictionMetadata';
 import RiskFilters from '../../risk/RiskFilters';
 import SeparatedRisksView from '../../risk/SeparatedRisksView';
+import { getRiskStableId } from '../../../utils/riskFlowUtils';
 
 export default function RiskAnalysisContent({
   viewMode,
@@ -22,6 +23,19 @@ export default function RiskAnalysisContent({
 }) {
   const { t } = useTranslation();
 
+  // Built once per risk list rather than per render. The previous inline
+  // `Math.random()` fallback minted a new id on every repaint, so React Flow saw
+  // a brand-new node, re-ran the Dagre layout and reset the user's pan and zoom.
+  const flowRisks = useMemo(
+    () =>
+      risks.map((risk, index) => ({
+        ...risk,
+        id: getRiskStableId(risk, index),
+        type: risk.type || risk.name || t('common.unknownRisk'),
+      })),
+    [risks, t]
+  );
+
   if (viewMode === 'flow') {
     return (
       <div style={styles.flowMapSection}>
@@ -34,11 +48,7 @@ export default function RiskAnalysisContent({
         </div>
         <div style={styles.flowMapContainer} className="flowMapContainer">
           <RiskFlowMap
-            predictedRisks={risks.map((risk) => ({
-              ...risk,
-              id: risk.id || risk.type || `risk-${Math.random()}`,
-              type: risk.type || risk.name || t('common.unknownRisk'),
-            }))}
+            predictedRisks={flowRisks}
             actualizedRisks={[]}
             projectName={project.projectName || t('common.project')}
           />

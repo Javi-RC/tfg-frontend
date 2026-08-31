@@ -47,9 +47,12 @@ export function useMyCVPage() {
   const handleDelete = async () => {
     if (!cv?._id) return;
 
-    if (!window.confirm(t('cv.confirmDeleteCV'))) {
-      return;
-    }
+    const accepted = await confirm({
+      message: t('cv.confirmDeleteCV'),
+      confirmLabel: t('common.delete'),
+      destructive: true,
+    });
+    if (!accepted) return;
 
     try {
       await deleteCV(cv._id);

@@ -98,30 +98,30 @@ function InsightCard({ insight }) {
       case 'positive':
         return {
           ...styles.insightCard,
-          backgroundColor: '#d4edda',
-          borderColor: '#c3e6cb',
-          color: '#155724',
+          backgroundColor: 'var(--color-success-bg)',
+          borderColor: 'var(--color-success)',
+          color: 'var(--color-success-dark)',
         };
       case 'warning':
         return {
           ...styles.insightCard,
-          backgroundColor: '#fff3cd',
+          backgroundColor: 'var(--color-warning-bg)',
           borderColor: 'var(--color-warning)',
-          color: '#856404',
+          color: 'var(--color-warning-dark)',
         };
       case 'critical':
         return {
           ...styles.insightCard,
-          backgroundColor: '#f8d7da',
-          borderColor: '#f5c6cb',
-          color: '#721c24',
+          backgroundColor: 'var(--color-danger-bg)',
+          borderColor: 'var(--color-danger)',
+          color: 'var(--color-danger-dark)',
         };
       default:
         return {
           ...styles.insightCard,
-          backgroundColor: '#e7f3ff',
-          borderColor: '#007bff',
-          color: '#004085',
+          backgroundColor: 'var(--color-primary-light)',
+          borderColor: 'var(--color-primary)',
+          color: 'var(--color-primary-hover)',
         };
     }
   };
@@ -425,33 +425,33 @@ const styles = {
   hero: {
     textAlign: 'center',
     paddingBottom: '20px',
-    borderBottom: '2px solid var(--color-border)',
+    borderBottom: '1px solid var(--color-border)',
   },
   heroIcon: {
     display: 'inline-flex',
     padding: '16px',
-    backgroundColor: '#fff3cd',
+    backgroundColor: 'var(--color-warning-bg)',
     borderRadius: '50%',
     marginBottom: '12px',
   },
   heroTitle: {
     margin: '0 0 8px 0',
     fontSize: '20px',
-    fontWeight: '600',
-    color: 'var(--color-text-primary)',
+    fontWeight: '700',
+    color: 'var(--color-text-heading)',
   },
   heroSubtitle: {
     margin: 0,
     fontSize: '14px',
-    color: 'var(--color-text-secondary)',
+    color: 'var(--color-text-muted)',
   },
 
   // PM Notes Section
   notesSection: {
     padding: '16px',
-    backgroundColor: '#fff9db',
-    borderRadius: '8px',
-    border: '2px solid #ffd700',
+    backgroundColor: 'var(--color-warning-bg)',
+    borderRadius: '12px',
+    border: '1px solid var(--color-warning)',
   },
   notesHeader: {
     display: 'flex',
@@ -462,18 +462,18 @@ const styles = {
   notesIcon: {
     display: 'flex',
     alignItems: 'center',
-    color: '#856404',
+    color: 'var(--color-warning-dark)',
   },
   notesTitle: {
     fontSize: '14px',
-    fontWeight: '600',
-    color: '#856404',
+    fontWeight: '700',
+    color: 'var(--color-warning-dark)',
     textTransform: 'uppercase',
   },
   notesContent: {
     margin: 0,
     fontSize: '14px',
-    color: '#6c5800',
+    color: 'var(--color-warning-dark)',
     lineHeight: '1.6',
     whiteSpace: 'pre-wrap',
   },
@@ -485,8 +485,8 @@ const styles = {
   },
   insightCard: {
     padding: '16px',
-    borderRadius: '8px',
-    border: '2px solid',
+    borderRadius: '12px',
+    border: '1px solid',
   },
   insightHeader: {
     display: 'flex',
@@ -500,15 +500,15 @@ const styles = {
   },
   insightBadge: {
     padding: '3px 10px',
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
-    borderRadius: '12px',
+    backgroundColor: 'rgba(0, 0, 0, 0.08)',
+    borderRadius: '999px',
     fontSize: '11px',
     fontWeight: '600',
     textTransform: 'uppercase',
   },
   insightTitle: {
     fontSize: '15px',
-    fontWeight: '600',
+    fontWeight: '700',
     marginBottom: '6px',
   },
   insightDesc: {
@@ -525,7 +525,7 @@ const styles = {
     fontStyle: 'italic',
     marginTop: '10px',
     paddingTop: '10px',
-    borderTop: '1px solid rgba(0, 0, 0, 0.1)',
+    borderTop: '1px solid rgba(0, 0, 0, 0.08)',
   },
 
   // Recommendation
@@ -533,7 +533,7 @@ const styles = {
     padding: '20px',
     backgroundColor: 'var(--color-bg-muted)',
     borderRadius: '12px',
-    border: '2px solid var(--color-border)',
+    border: '1px solid var(--color-border)',
   },
   recHeader: {
     display: 'flex',
@@ -543,13 +543,13 @@ const styles = {
   },
   recTitle: {
     fontSize: '16px',
-    fontWeight: '600',
-    color: 'var(--color-text-primary)',
+    fontWeight: '700',
+    color: 'var(--color-text-heading)',
   },
   recText: {
     margin: 0,
     fontSize: '14px',
-    color: 'var(--color-text-primary)',
+    color: 'var(--color-text-strong)',
     lineHeight: '1.6',
   },
 };

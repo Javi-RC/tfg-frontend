@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import CVConsentModal from '../components/cv/CVConsentModal';
 import PersonalityConsentModal from '../components/personality/PersonalityConsentModal';
 import { useProfile } from '../hooks/useProfile';
+import { useProfileDashboard } from '../hooks/useProfileDashboard';
 import { computeProfileCompletion } from '../utils/profileCompletion';
 import ProfileHero from '../components/profile/dashboard/ProfileHero';
 import StatsRow from '../components/profile/dashboard/StatsRow';
@@ -18,28 +19,6 @@ import PersonalityConsentSection from '../components/profile/PersonalityConsentS
 import CVManagementSection from '../components/profile/CVManagementSection';
 import DangerZone from '../components/account/DangerZone';
 import '../components/profile/dashboard/ProfileDashboard.css';
-
-// --- Placeholder data ---------------------------------------------------
-// These mirror the reference design. They are static until the matching
-// backend endpoints exist; swap the arrays below for real data when ready.
-const PLACEHOLDER_STATS = [
-  { key: 'projects', value: 8, labelKey: 'profile.dashboard.stats.projects', linkKey: 'profile.dashboard.seeAll', color: 'purple', path: '/projects' },
-  { key: 'teams', value: 15, labelKey: 'profile.dashboard.stats.teams', linkKey: 'profile.dashboard.seeAll', color: 'green', path: '/projects' },
-  { key: 'compatibility', value: '94%', labelKey: 'profile.dashboard.stats.compatibility', subKey: 'profile.dashboard.stats.average', color: 'orange' },
-  { key: 'recommendations', value: 12, labelKey: 'profile.dashboard.stats.recommendations', linkKey: 'profile.dashboard.seeAll', color: 'blue', path: '/' },
-];
-
-const PLACEHOLDER_SKILLS = [
-  { name: 'Java', level: 90 },
-  { name: 'Spring Boot', level: 75 },
-  { name: 'React', level: 82 },
-  { name: 'TypeScript', level: 70 },
-  { name: 'Docker', level: 65 },
-];
-
-const PLACEHOLDER_ACTIVITY = [
-  { titleKey: 'profile.dashboard.activity.updatedProfile', timeKey: 'profile.dashboard.activity.twoDaysAgo' },
-];
 
 export default function Profile() {
   const { t } = useTranslation();
@@ -99,6 +78,8 @@ export default function Profile() {
 
   const completion = useMemo(() => computeProfileCompletion(profileUser), [profileUser]);
 
+  const { stats, skills, activity } = useProfileDashboard({ profileUser });
+
   const organizationDisplay = useMemo(() => {
     if (resolvingOrganization) return t('profile.loading');
     return resolvedOrganizationName || '';
@@ -148,7 +129,7 @@ export default function Profile() {
         onSaveProfile={saveProfile}
       />
 
-      <StatsRow stats={PLACEHOLDER_STATS} onNavigate={(path) => path && navigate(path)} />
+      <StatsRow stats={stats.filter(s => s.key === 'projects' || s.key === 'teams')} onNavigate={(path) => path && navigate(path)} />
 
       {editMode ? (
         <section className="sara-card sara-edit-panel">
@@ -178,11 +159,11 @@ export default function Profile() {
             notifications={profileUser?.notificationPreferences}
           />
 
-          <CompetenciasCard skills={PLACEHOLDER_SKILLS} onSeeAll={navigateToCV} />
+          <CompetenciasCard skills={skills} onSeeAll={navigateToCV} />
 
           <AboutCard bio={bio} onEdit={startEditing} />
 
-          <RecentActivityCard items={PLACEHOLDER_ACTIVITY} />
+          <RecentActivityCard items={activity} />
         </div>
       )}
 

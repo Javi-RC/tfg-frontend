@@ -41,7 +41,18 @@ export const getRiskTypeLabel = (type) => {
   );
 };
 
-const getRiskStableId = (risk, index) => {
+/**
+ * A risk id that survives re-renders.
+ *
+ * Every fallback is derived from the risk itself or its position, never from a
+ * random value: a fresh id on each render makes React Flow treat the node as new,
+ * which re-runs the Dagre layout and drops the view state on every repaint.
+ *
+ * @param {object} risk
+ * @param {number} index Position within its list, used as the last resort.
+ * @returns {string}
+ */
+export const getRiskStableId = (risk, index) => {
   const candidate = risk?.id ?? risk?._id;
   if (candidate) return String(candidate);
   if (risk?.type) return `${String(risk.type)}-${index}`;

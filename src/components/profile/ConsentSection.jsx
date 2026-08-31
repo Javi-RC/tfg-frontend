@@ -98,7 +98,10 @@ export default function ConsentSection({
             type="button"
             className="sara-btn-outline"
             onClick={async () => {
-              const confirmed = window.confirm(t('profile.consentSection.revokeConfirm'));
+              const confirmed = await confirm({
+                message: t('profile.consentSection.revokeConfirm'),
+                destructive: true,
+              });
               if (!confirmed) return;
               await onRevokeConsent();
             }}

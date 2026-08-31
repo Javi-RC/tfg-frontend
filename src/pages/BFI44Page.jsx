@@ -480,21 +480,6 @@ const styles = {
   },
 };
 
-// Add keyframes for spinner animation
-const styleSheet = document.createElement('style');
-styleSheet.textContent = `
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-  @keyframes slideIn {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-`;
-document.head.appendChild(styleSheet);
+// `spin` and `slideIn` are declared once in src/index.css. They used to be
+// injected into <head> from this module, which meant importing the page had the
+// side effect of mutating the document.

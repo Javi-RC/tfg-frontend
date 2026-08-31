@@ -347,8 +347,8 @@
     "dashboard": {
       "greeting": "¡Hola, {{name}}! 👋",
       "completionHint": "Completa tu perfil para obtener mejores recomendaciones",
-      "defaultJobTitle": "Software Engineer",
-      "defaultDepartment": "Engineering",
+      "defaultJobTitle": "Ingeniero de software",
+      "defaultDepartment": "Ingeniería",
       "company": "Empresa",
       "department": "Departamento",
       "editInfo": "Editar información",
@@ -366,7 +366,9 @@
         "teams": "Equipos",
         "compatibility": "Compatibilidad",
         "recommendations": "Recomendaciones",
-        "average": "Promedio"
+        "average": "Promedio",
+        "viewProjects": "Ver proyectos",
+        "viewTeams": "Ver equipos"
       },
       "channels": {
         "email": "Email",
@@ -3280,14 +3282,14 @@
       "label": "Severidad"
     },
     "source": {
-      "expertRules": "Reglas Expertas",
-      "expertRulesDesc": "Riesgo identificado por reglas expertas del árbol de decisión",
-      "experience": "Experiencia",
-      "cbrDesc": "Riesgo aprendido de casos históricos similares ({{similarity}}% similitud)",
+      "expertRules": "Alertas del sistema",
+      "expertRulesDesc": "Riesgo detectado por indicadores y patrones del sistema",
+      "experience": "Experiencia previa",
+      "cbrDesc": "Riesgo identificado analizando proyectos anteriores similares ({{similarity}}% similitud)",
       "priority": "Prioritario",
       "prioritizedPhase": "priorizadas en esta fase",
-      "expertRulesIdentified": "Riesgo identificado por reglas expertas{{priority}}",
-      "cbrLearnedDesc": "Riesgo aprendido de casos históricos ({{similarity}}% similitud){{priority}}",
+      "expertRulesIdentified": "Riesgo detectado por el sistema{{priority}}",
+      "cbrLearnedDesc": "Riesgo identificado de proyectos similares anteriores ({{similarity}}% similitud){{priority}}",
       "hybrid": "Sistema Híbrido"
     },
     "errors": {
@@ -3371,9 +3373,9 @@
       "analyzing": "Analizando patrones del proyecto...",
       "noWarnings": "No se Detectaron Alertas Tempranas",
       "noWarningsDescription": "La configuración de tu proyecto se ve bien. No se detectaron patrones preocupantes aún.",
-      "title": "Alertas Tempranas (Reglas de Expertos)",
+      "title": "Alertas del sistema",
       "detected": "{{count}} detectados",
-      "description": "Estos son riesgos potenciales detectados al analizar la configuración de tu proyecto. Ningún proyecto similar ha experimentado estos problemas aún (no hay datos CBR disponibles).",
+      "description": "Estos son riesgos potenciales detectados al analizar la configuración de tu proyecto. Ningún proyecto similar ha experimentado estos problemas aún (no hay datos de experiencia previa disponibles).",
       "confidence": "Confianza",
       "confidenceText": "{{percent}}% - Este patrón indica un riesgo potencial",
       "detectedPatterns": "Patrones Detectados",
@@ -3384,19 +3386,19 @@
       "tier2": "TIER 2"
     },
     "cbr": {
-      "learning": "Aprendiendo de proyectos similares...",
-      "noLearnedRisks": "Sin Riesgos Aprendidos",
-      "noLearnedRisksDescription": "El sistema aprenderá de proyectos similares a medida que tu empresa acumule datos de casos.",
-      "title": "Riesgos Aprendidos (Basados en Proyectos Similares)",
+      "learning": "Analizando proyectos similares...",
+      "noLearnedRisks": "Sin riesgos basados en experiencia previa",
+      "noLearnedRisksDescription": "El sistema analizará proyectos similares a medida que tu organización acumule más datos.",
+      "title": "Riesgos basados en experiencia previa",
       "identified": "{{count}} identificados",
-      "description": "Estos riesgos fueron identificados en proyectos similares de la base de casos de la empresa. La probabilidad representa con qué frecuencia ocurrió este riesgo en proyectos con características similares.",
+      "description": "Estos riesgos se identificaron en proyectos anteriores similares a este. La probabilidad indica con qué frecuencia ocurrió este riesgo en proyectos con características parecidas.",
       "basedOn": "Basado en {{count}} proyecto similar",
       "basedOn_plural": "Basado en {{count}} proyectos similares",
       "similarityBreakdown": "Desglose de Similitud",
       "recommendations": "Recomendaciones",
-      "learningBadge": "Este riesgo fue aprendido del historial de proyectos de tu empresa.",
+      "learningBadge": "Este riesgo se identificó analizando el historial de proyectos de tu organización.",
       "tip": "Consejo",
-      "tipText": "Puedes seleccionar riesgos de esta lista para monitorearlos activamente a lo largo del ciclo de vida de tu proyecto."
+      "tipText": "Puedes seleccionar riesgos de esta lista para monitorearlos activamente durante el proyecto."
     },
     "maturity": {
       "title": "Madurez del Sistema",
@@ -3445,20 +3447,17 @@
     "separatedView": {
       "noRisksTitle": "No se Detectaron Riesgos",
       "noRisksDescription": "El sistema aún no ha identificado ningún riesgo para este proyecto.",
-      "cbrTitle": "Riesgos Aprendidos por CBR",
-      "cbrDescription": "Estos riesgos fueron aprendidos de proyectos similares en la base de casos de la empresa.",
-      "expertRulesTitle": "Riesgos de Reglas Expertas",
-      "expertRulesDescription": "Estos riesgos fueron detectados por reglas expertas basadas en la configuración del proyecto. Representan patrones que el conocimiento experto ha identificado como potencialmente problemáticos.",
-      "cbrFooterLabel": "CBR (Razonamiento Basado en Casos):",
-      "cbrFooterDescription": "Riesgos aprendidos del análisis de proyectos pasados similares",
-      "expertRulesFooterLabel": "Reglas Expertas:",
-      "expertRulesFooterDescription": "Riesgos detectados analizando la configuración del proyecto"
+      "cbrTitle": "Riesgos basados en experiencia previa",
+      "cbrDescription": "Riesgos detectados analizando proyectos anteriores con características similares a este.",
+      "expertRulesTitle": "Alertas del sistema",
+      "expertRulesDescription": "Riesgos detectados por indicadores y patrones automáticos basados en la configuración del proyecto.",
+      "footerDescription": "El sistema analiza proyectos anteriores y patrones para detectar estos riesgos."
     },
     "selection": {
       "title": "Selección de Riesgos para Monitoreo",
-      "subtitle": "Ajusta el umbral de similitud para filtrar qué riesgos aprendidos monitorear",
+      "subtitle": "Ajusta el umbral de similitud para filtrar qué riesgos monitorear",
       "similarityThreshold": "Umbral de Similitud",
-      "showingRisks": "Mostrando {{shown}} de {{total}} riesgos aprendidos",
+      "showingRisks": "Mostrando {{shown}} de {{total}} riesgos",
       "selectedCount": "Seleccionados: {{selected}} / {{total}}",
       "selectAll": "Seleccionar Todos",
       "deselectAll": "Deseleccionar Todos",
@@ -3610,21 +3609,21 @@
   },
   "risks": {
     "cbr": {
-      "title": "Análisis de riesgos con IA (CBR)",
-      "description": "Riesgos e indicadores inferidos de reglas expertas y proyectos pasados similares.",
+      "title": "Análisis del sistema",
+      "description": "Riesgos, alertas e indicadores detectados automáticamente por el sistema.",
       "loadAction": "Ejecutar análisis",
       "loading": "Analizando riesgos…",
       "loadError": "No se pudo cargar el análisis de riesgos.",
       "acceptError": "No se pudieron aceptar los riesgos seleccionados.",
       "empty": "Aún no hay análisis disponible para este proyecto.",
-      "cbrRisks": "Riesgos de casos similares",
-      "noCbrRisks": "No se han inferido riesgos de casos similares.",
-      "indicators": "Indicadores de reglas expertas",
-      "noIndicators": "No se ha activado ningún indicador de reglas expertas.",
-      "similarCases": "Proyectos pasados similares",
-      "noSimilarCases": "No se han encontrado proyectos similares en la base de casos.",
+      "cbrRisks": "Riesgos detectados",
+      "noCbrRisks": "No se han detectado riesgos basados en experiencia previa.",
+      "indicators": "Indicadores y alertas",
+      "noIndicators": "No se han detectado alertas ni indicadores.",
+      "similarCases": "Proyectos similares analizados",
+      "noSimilarCases": "No se han encontrado proyectos similares en el historial.",
       "unnamedCase": "Caso sin nombre",
-      "similarity": "{{value}}% similar",
+      "similarity": "{{value}}% de similitud",
       "selectRisk": "Seleccionar riesgo {{title}}",
       "acceptAction": "Aceptar seleccionados ({{count}})"
     },
@@ -3665,7 +3664,7 @@
       "excellent": "¡Excelente! Todos los datos disponibles para predicciones de alta confianza"
     },
     "workflow": {
-      "predictionComplete": "Predicción completada: {{warnings}} alertas de reglas, {{cbr}} riesgos CBR",
+      "predictionComplete": "Predicción completada: {{warnings}} alertas, {{cbr}} riesgos detectados",
       "predictionError": "Error al ejecutar la predicción de riesgos",
       "risksAccepted": "{{count}} riesgos aceptados para seguimiento",
       "acceptError": "Error al aceptar los riesgos"

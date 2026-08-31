@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { GitBranch, RotateCcw } from 'lucide-react';
-import { getDefaultConfig } from '../../../utils/decisionTreeValidation';
 import DTPreview from './DTPreview';
 import DTResultEditor from './DTResultEditor';
 
@@ -12,7 +11,7 @@ import DTResultEditor from './DTResultEditor';
  */
 const EMPTY_ERRORS = {};
 
-export default function DecisionTreeConfigForm({ config, onChange, errors = EMPTY_ERRORS }) {
+export default function DecisionTreeConfigForm({ config, onChange, onReset, errors = EMPTY_ERRORS }) {
   const { t } = useTranslation();
   const [expandedSections, setExpandedSections] = useState({
     skillGap: true,
@@ -26,12 +25,8 @@ export default function DecisionTreeConfigForm({ config, onChange, errors = EMPT
     personality: false,
   });
 
-  const defaults = getDefaultConfig();
-  const riskThresholds = { ...defaults.riskThresholds, ...(config?.riskThresholds || {}) };
-  const personalityRiskThresholds = {
-    ...defaults.personalityRiskThresholds,
-    ...(config?.personalityRiskThresholds || {}),
-  };
+  const riskThresholds = config?.riskThresholds || {};
+  const personalityRiskThresholds = config?.personalityRiskThresholds || {};
 
   const handleRiskThresholdChange = (field, value) => {
     const parsed = parseFloat(value) || 0;
@@ -56,8 +51,7 @@ export default function DecisionTreeConfigForm({ config, onChange, errors = EMPT
   };
 
   const handleReset = () => {
-    const resetDefaults = getDefaultConfig();
-    onChange(resetDefaults);
+    if (onReset) onReset();
   };
 
   const toggleSection = (section) => {

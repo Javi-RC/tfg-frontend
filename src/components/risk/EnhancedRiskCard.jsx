@@ -8,32 +8,32 @@ const severityConfig = {
   critical: {
     color: 'var(--color-danger)',
     labelKey: 'risk.severity.critical',
-    bgColor: '#FEE2E2',
+    bgColor: 'var(--color-danger-bg)',
   },
   high: {
     color: '#fd7e14',
     labelKey: 'risk.severity.high',
-    bgColor: '#FED7AA',
+    bgColor: 'var(--color-warning-bg)',
   },
   'medium-high': {
     color: 'var(--color-warning)',
     labelKey: 'risk.severity.mediumHigh',
-    bgColor: '#FEF3C7',
+    bgColor: 'var(--color-warning-bg)',
   },
   medium: {
     color: 'var(--color-warning)',
     labelKey: 'risk.severity.medium',
-    bgColor: '#FEF9C3',
+    bgColor: 'var(--color-warning-bg)',
   },
   low: {
     color: 'var(--color-success)',
     labelKey: 'risk.severity.low',
-    bgColor: '#D1FAE5',
+    bgColor: 'var(--color-success-bg)',
   },
   emerging: {
     color: 'var(--color-accent-gradient-start)',
     labelKey: 'risk.severity.emerging',
-    bgColor: '#E0E7FF',
+    bgColor: 'var(--color-primary-light)',
   },
 };
 
@@ -60,8 +60,6 @@ export default function EnhancedRiskCard({ risk, isExpanded, onToggle, metadata 
         ...styles.riskCard,
         borderLeftColor: config.color,
       }}
-      onMouseEnter={(e) => (e.currentTarget.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.12)')}
-      onMouseLeave={(e) => (e.currentTarget.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.05)')}
     >
       <div style={styles.riskHeaderRow}>
         <RiskCardHeader risk={risk} config={config} severityLabel={severityLabel} metadata={metadata} />

@@ -13,6 +13,7 @@ import {
   removeEmployeeFromProject,
 } from '../api/projects';
 import { PROJECT_STATUS } from '../types/projectTypes';
+import { ADMIN_ROLES } from '../constants/routes';
 
 /**
  * Custom hook for Project Detail business logic
@@ -21,7 +22,7 @@ import { PROJECT_STATUS } from '../types/projectTypes';
 export function useProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, hasRole } = useAuth();
   const { t } = useTranslation();
 
   const [project, setProject] = useState(null);
@@ -29,7 +30,9 @@ export function useProjectDetail() {
   const [activeTab, setActiveTab] = useState('overview');
   const [showAssignModal, setShowAssignModal] = useState(false);
 
-  const isAdmin = user?.role === 'org_admin';
+  // Server-confirmed only: a role read straight off `user` would also be true
+  // for a role forged in localStorage before the session probe answers.
+  const isAdmin = hasRole(ADMIN_ROLES);
 
   // Normalize user ID (can be id, _id, or userId depending on source)
   const userId = user?.userId || user?._id || user?.id;
@@ -104,9 +107,12 @@ export function useProjectDetail() {
    * Delete project
    */
   const handleDelete = async () => {
-    if (!window.confirm(t('projects.messages.confirmDelete', { name: project.projectName }))) {
-      return;
-    }
+    const accepted = await confirm({
+      message: t('projects.messages.confirmDelete', { name: project.projectName }),
+      confirmLabel: t('common.delete'),
+      destructive: true,
+    });
+    if (!accepted) return;
 
     try {
       await deleteProject(id);
@@ -134,9 +140,7 @@ export function useProjectDetail() {
    * Complete project
    */
   const handleComplete = async () => {
-    if (!window.confirm(t('projects.messages.confirmComplete'))) {
-      return;
-    }
+    if (!(await confirm(t('projects.messages.confirmComplete')))) return;
 
     try {
       await completeProject(id);
@@ -151,9 +155,11 @@ export function useProjectDetail() {
    * Cancel project
    */
   const handleCancel = async () => {
-    if (!window.confirm(t('projects.messages.confirmCancel'))) {
-      return;
-    }
+    const accepted = await confirm({
+      message: t('projects.messages.confirmCancel'),
+      destructive: true,
+    });
+    if (!accepted) return;
 
     try {
       await cancelProject(id);
@@ -181,9 +187,12 @@ export function useProjectDetail() {
    * Remove employee from project
    */
   const handleRemoveEmployee = async (employeeId) => {
-    if (!window.confirm(t('projects.messages.confirmRemoveEmployee'))) {
-      return;
-    }
+    const accepted = await confirm({
+      message: t('projects.messages.confirmRemoveEmployee'),
+      confirmLabel: t('common.remove'),
+      destructive: true,
+    });
+    if (!accepted) return;
 
     try {
       await removeEmployeeFromProject(id, employeeId);

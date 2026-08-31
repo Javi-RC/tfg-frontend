@@ -220,9 +220,7 @@ export default function TeamConfigModal({ projectId, onClose, onSave }) {
   };
 
   const handleReset = async () => {
-    if (!window.confirm(t('teamConfig.reset.confirm'))) {
-      return;
-    }
+    if (!(await confirm(t('teamConfig.reset.confirm')))) return;
 
     try {
       setSaving(true);
@@ -340,6 +338,7 @@ export default function TeamConfigModal({ projectId, onClose, onSave }) {
             <DecisionTreeConfigForm
               config={config.decisionTree}
               onChange={handleDecisionTreeChange}
+              onReset={() => handleDecisionTreeChange(null)}
               errors={errors.decisionTree || {}}
             />
           )}

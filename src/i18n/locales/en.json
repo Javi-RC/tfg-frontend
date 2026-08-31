@@ -366,7 +366,9 @@
         "teams": "Teams",
         "compatibility": "Compatibility",
         "recommendations": "Recommendations",
-        "average": "Average"
+        "average": "Average",
+        "viewProjects": "View projects",
+        "viewTeams": "View teams"
       },
       "channels": {
         "email": "Email",
@@ -3280,14 +3282,14 @@
       "label": "Severity"
     },
     "source": {
-      "expertRules": "Expert Rules",
-      "expertRulesDesc": "Risk identified by expert decision tree rules",
-      "experience": "Experience",
-      "cbrDesc": "Risk learned from similar historical cases ({{similarity}}% similarity)",
+      "expertRules": "System alerts",
+      "expertRulesDesc": "Risk detected by system indicators and patterns",
+      "experience": "Past experience",
+      "cbrDesc": "Risk identified by analyzing similar past projects ({{similarity}}% similarity)",
       "priority": "Priority",
       "prioritizedPhase": "prioritized in this phase",
-      "expertRulesIdentified": "Risk identified by expert rules{{priority}}",
-      "cbrLearnedDesc": "Risk learned from historical cases ({{similarity}}% similarity){{priority}}",
+      "expertRulesIdentified": "Risk detected by the system{{priority}}",
+      "cbrLearnedDesc": "Risk identified from similar past projects ({{similarity}}% similarity){{priority}}",
       "hybrid": "Hybrid System"
     },
     "errors": {
@@ -3371,9 +3373,9 @@
       "analyzing": "Analyzing project patterns...",
       "noWarnings": "No Early Warnings Detected",
       "noWarningsDescription": "Your project configuration looks good. No concerning patterns detected yet.",
-      "title": "Early Warnings (Expert Rules)",
+      "title": "System alerts",
       "detected": "{{count}} detected",
-      "description": "These are potential risks detected by analyzing your project configuration. No similar projects have experienced these issues yet (no CBR data available).",
+      "description": "These are potential risks detected by analyzing your project configuration. No similar projects have experienced these issues yet (no past experience data available).",
       "confidence": "Confidence",
       "confidenceText": "{{percent}}% - This pattern indicates a potential risk",
       "detectedPatterns": "Detected Patterns",
@@ -3384,19 +3386,19 @@
       "tier2": "TIER 2"
     },
     "cbr": {
-      "learning": "Learning from similar projects...",
-      "noLearnedRisks": "No Learned Risks",
-      "noLearnedRisksDescription": "The system will learn from similar projects as your organization accumulates case data.",
-      "title": "Learned Risks (Based on Similar Projects)",
+      "learning": "Analyzing similar projects...",
+      "noLearnedRisks": "No past-experience risks",
+      "noLearnedRisksDescription": "The system will analyze similar projects as your organization accumulates more data.",
+      "title": "Risks based on past experience",
       "identified": "{{count}} identified",
-      "description": "These risks were identified in similar projects from the organization's case base. The probability represents how often this risk occurred in projects with similar characteristics.",
+      "description": "These risks were identified in similar past projects. The probability indicates how often this risk occurred in projects with similar characteristics.",
       "basedOn": "Based on {{count}} similar project",
       "basedOn_plural": "Based on {{count}} similar projects",
       "similarityBreakdown": "Similarity Breakdown",
       "recommendations": "Recommendations",
-      "learningBadge": "This risk was learned from your organization's project history.",
+      "learningBadge": "This risk was identified by analyzing your organization's project history.",
       "tip": "Tip",
-      "tipText": "You can select risks from this list to actively monitor them throughout your project lifecycle."
+      "tipText": "You can select risks from this list to actively monitor them throughout your project."
     },
     "maturity": {
       "title": "System Maturity",
@@ -3445,20 +3447,17 @@
     "separatedView": {
       "noRisksTitle": "No Risks Detected",
       "noRisksDescription": "The system has not identified any risks for this project yet.",
-      "cbrTitle": "CBR Learned Risks",
-      "cbrDescription": "These risks were learned from similar projects in the organization's case base.",
-      "expertRulesTitle": "Expert Rules Risks",
-      "expertRulesDescription": "These risks were detected by expert rules based on your project configuration. They represent patterns that expert knowledge has identified as potentially problematic.",
-      "cbrFooterLabel": "CBR (Case-Based Reasoning):",
-      "cbrFooterDescription": "Risks learned from analyzing similar past projects",
-      "expertRulesFooterLabel": "Expert Rules:",
-      "expertRulesFooterDescription": "Risks detected by analyzing your project configuration"
+      "cbrTitle": "Risks based on past experience",
+      "cbrDescription": "Risks detected by analyzing past projects with similar characteristics to this one.",
+      "expertRulesTitle": "System alerts",
+      "expertRulesDescription": "Risks detected by automatic indicators and patterns based on the project configuration.",
+      "footerDescription": "The system analyzes past projects and patterns to detect these risks."
     },
     "selection": {
       "title": "Risk Selection for Monitoring",
-      "subtitle": "Adjust the similarity threshold to filter which learned risks to monitor",
+      "subtitle": "Adjust the similarity threshold to filter which risks to monitor",
       "similarityThreshold": "Similarity Threshold",
-      "showingRisks": "Showing {{shown}} of {{total}} learned risks",
+      "showingRisks": "Showing {{shown}} of {{total}} risks",
       "selectedCount": "Selected: {{selected}} / {{total}}",
       "selectAll": "Select All",
       "deselectAll": "Deselect All",
@@ -3610,21 +3609,21 @@
   },
   "risks": {
     "cbr": {
-      "title": "AI risk analysis (CBR)",
-      "description": "Risks and indicators inferred from expert rules and similar past projects.",
+      "title": "System analysis",
+      "description": "Risks, alerts and indicators automatically detected by the system.",
       "loadAction": "Run analysis",
       "loading": "Analysing risks…",
       "loadError": "Could not load the risk analysis.",
       "acceptError": "Could not accept the selected risks.",
       "empty": "No analysis available for this project yet.",
-      "cbrRisks": "Risks from similar cases",
-      "noCbrRisks": "No risks inferred from similar cases.",
-      "indicators": "Expert-rule indicators",
-      "noIndicators": "No expert-rule indicators triggered.",
-      "similarCases": "Similar past projects",
-      "noSimilarCases": "No similar projects found in the case base.",
+      "cbrRisks": "Detected risks",
+      "noCbrRisks": "No risks detected based on past experience.",
+      "indicators": "Indicators and alerts",
+      "noIndicators": "No alerts or indicators detected.",
+      "similarCases": "Similar past projects analyzed",
+      "noSimilarCases": "No similar projects found in the history.",
       "unnamedCase": "Unnamed case",
-      "similarity": "{{value}}% similar",
+      "similarity": "{{value}}% similarity",
       "selectRisk": "Select risk {{title}}",
       "acceptAction": "Accept selected ({{count}})"
     },
@@ -3665,7 +3664,7 @@
       "excellent": "Excellent! All data available for high-confidence predictions"
     },
     "workflow": {
-      "predictionComplete": "Prediction complete: {{warnings}} expert-rule warnings, {{cbr}} CBR risks",
+      "predictionComplete": "Prediction complete: {{warnings}} alerts, {{cbr}} detected risks",
       "predictionError": "Error running risk prediction",
       "risksAccepted": "{{count}} risks accepted for monitoring",
       "acceptError": "Error accepting risks"

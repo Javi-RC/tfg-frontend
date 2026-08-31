@@ -5,6 +5,7 @@ import { AuthProvider } from './AuthContext';
 import * as authApi from '../api/auth';
 import * as tokenStore from '../api/tokenStore';
 import { isPublicRoute } from '../constants/routes';
+import { SESSION_STATUS } from '../constants/session';
 
 jest.mock('../api/auth');
 jest.mock('../constants/routes');
@@ -65,13 +66,39 @@ describe('AuthProvider', () => {
         { wrapper }
       );
 
-      expect(result.current.user).toEqual(validUser);
+      // Display fields come straight from the cache so the shell paints at once.
+      expect(result.current.user).toEqual(
+        expect.objectContaining({ _id: '1', name: 'Test User', email: 'test@example.com' })
+      );
 
       await waitFor(() => {
         expect(authApi.getProfile).toHaveBeenCalled();
       });
 
       await resolveInitialProfile();
+    });
+
+    it('never trusts the role held in localStorage', async () => {
+      // Anyone can write this from the browser console.
+      localStorage.setItem('user:v1', JSON.stringify({ ...validUser, role: 'org_admin' }));
+
+      const { result } = renderHook(
+        () => React.useContext(AuthContext),
+        { wrapper }
+      );
+
+      expect(result.current.user.role).toBe('unassigned');
+      expect(result.current.sessionStatus).toBe(SESSION_STATUS.CHECKING);
+      expect(result.current.hasRole(['org_admin'])).toBe(false);
+
+      // Only the server's answer establishes a role.
+      await resolveInitialProfile({ ...validUser, role: 'employee' });
+
+      await waitFor(() => {
+        expect(result.current.sessionStatus).toBe(SESSION_STATUS.AUTHENTICATED);
+      });
+      expect(result.current.user.role).toBe('employee');
+      expect(result.current.hasRole(['org_admin'])).toBe(false);
     });
 
     it('handles missing localStorage values gracefully', async () => {
@@ -86,12 +113,18 @@ describe('AuthProvider', () => {
       await resolveInitialProfile();
     });
 
-    it('handles corrupted JSON in localStorage', () => {
+    it('recovers from corrupted JSON in localStorage instead of crashing the shell', async () => {
       localStorage.setItem('user:v1', 'not-valid-json');
 
+      let result;
       expect(() => {
-        renderHook(() => React.useContext(AuthContext), { wrapper });
-      }).toThrow();
+        ({ result } = renderHook(() => React.useContext(AuthContext), { wrapper }));
+      }).not.toThrow();
+
+      expect(result.current.user).toBeNull();
+      expect(localStorage.getItem('user:v1')).toBeNull();
+
+      await resolveInitialProfile();
     });
   });
 
@@ -764,11 +797,16 @@ describe('AuthProvider', () => {
 
       authApi.getProfile.mockRejectedValueOnce(new Error('Network error'));
 
-      await act(async () => {
-        await result.current.refreshProfile();
-      });
+      // The failure surfaces to the caller rather than being swallowed...
+      await expect(
+        act(async () => {
+          await result.current.refreshProfile();
+        })
+      ).rejects.toThrow('Network error');
 
+      // ...and the session already in hand survives it.
       expect(result.current.user).toEqual(validUser);
+      expect(result.current.sessionStatus).toBe(SESSION_STATUS.AUTHENTICATED);
     });
   });
 
@@ -877,7 +915,40 @@ describe('AuthProvider', () => {
       expect(result.current).toHaveProperty('updateProfile');
       expect(result.current).toHaveProperty('completeOAuthProfile');
       expect(result.current).toHaveProperty('refreshProfile');
+      expect(result.current).toHaveProperty('sessionStatus');
+      expect(result.current).toHaveProperty('authenticated');
+      expect(result.current).toHaveProperty('hasRole');
       expect(result.current.token).toBeNull();
+    });
+
+    it('reports a confirmed session through sessionStatus and hasRole', async () => {
+      authApi.getProfile.mockResolvedValue({
+        data: { user: { ...validUser, role: 'org_admin' } },
+      });
+
+      const { result } = renderHook(() => React.useContext(AuthContext), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.sessionStatus).toBe(SESSION_STATUS.AUTHENTICATED);
+      });
+
+      expect(result.current.authenticated).toBe(true);
+      expect(result.current.hasRole()).toBe(true);
+      expect(result.current.hasRole(['org_admin'])).toBe(true);
+      expect(result.current.hasRole(['employee'])).toBe(false);
+    });
+
+    it('reports an anonymous session after the probe fails', async () => {
+      authApi.getProfile.mockRejectedValue(new Error('Network error'));
+
+      const { result } = renderHook(() => React.useContext(AuthContext), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.sessionStatus).toBe(SESSION_STATUS.ANONYMOUS);
+      });
+
+      expect(result.current.authenticated).toBe(false);
+      expect(result.current.hasRole()).toBe(false);
     });
 
     it('provides null context outside of provider', () => {

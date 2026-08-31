@@ -12,16 +12,16 @@
 export const getStrategyLabel = (strategy, lang = 'es') => {
   const labels = {
     es: {
-      dt_only: 'Solo Reglas Expertas',
-      dt_priority: 'Reglas Expertas + CBR (Reglas prioritarias)',
-      cbr_priority: 'CBR + Reglas Expertas (CBR prioritario)',
-      cbr_only: 'Solo Experiencia Histórica',
+      dt_only: 'Solo alertas del sistema',
+      dt_priority: 'Alertas del sistema + Experiencia previa (Alertas prioritarias)',
+      cbr_priority: 'Experiencia previa + Alertas del sistema (Experiencia prioritaria)',
+      cbr_only: 'Solo experiencia previa',
     },
     en: {
-      dt_only: 'Expert Rules Only',
-      dt_priority: 'Expert Rules + CBR (Rules priority)',
-      cbr_priority: 'CBR + Expert Rules (CBR priority)',
-      cbr_only: 'Historical Experience Only',
+      dt_only: 'System alerts only',
+      dt_priority: 'System alerts + Past experience (Alerts priority)',
+      cbr_priority: 'Past experience + System alerts (Experience priority)',
+      cbr_only: 'Past experience only',
     },
   };
   return labels[lang]?.[strategy] || strategy;

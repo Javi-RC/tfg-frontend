@@ -135,9 +135,12 @@ export function useOrganization() {
    * Remove employee from organization
    */
   const handleRemoveEmployee = async (employeeId) => {
-    if (!window.confirm(t('organization.errors.confirmRemoveEmployee'))) {
-      return false;
-    }
+    const accepted = await confirm({
+      message: t('organization.errors.confirmRemoveEmployee'),
+      confirmLabel: t('common.remove'),
+      destructive: true,
+    });
+    if (!accepted) return false;
 
     try {
       await removeEmployee(id, employeeId);

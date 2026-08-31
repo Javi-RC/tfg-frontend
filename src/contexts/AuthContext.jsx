@@ -9,24 +9,67 @@ import {
 import { unwrapUser } from '../api/responseAdapter';
 import { setUser, clearStoredUser, setToken, USER_STORAGE_KEY } from '../api/tokenStore';
 import { isPublicRoute } from '../constants/routes';
+import { SESSION_STATUS } from '../constants/session';
+import { canAccess } from '../utils/authorization';
 import { AuthContext } from './AuthContextObj';
 
 const ALLOWED_ROLES = new Set(['employee', 'org_admin', 'unassigned']);
 const normalizeRole = (r) => (ALLOWED_ROLES.has(r) ? r : 'unassigned');
 
+/**
+ * Reads the cached user kept for first paint.
+ *
+ * Two rules make this safe to trust for rendering and unsafe to trust for
+ * authorization, which is exactly the distinction we want:
+ *
+ *  1. `role` is dropped. localStorage is writable from the console, so a cached
+ *     role is an attacker-controlled value. It is re-read from the server on
+ *     every load and never survives from disk. Until then the user holds
+ *     `unassigned`, which grants nothing.
+ *  2. Corrupt JSON yields null instead of throwing. A bad entry should log the
+ *     user out, not crash the application shell on boot.
+ *
+ * @returns {object|null}
+ */
+function readCachedUser() {
+  try {
+    const stored = localStorage.getItem(USER_STORAGE_KEY);
+    if (!stored) return null;
+
+    const parsed = JSON.parse(stored);
+    if (!parsed || typeof parsed !== 'object') return null;
+
+    return { ...parsed, role: 'unassigned' };
+  } catch {
+    localStorage.removeItem(USER_STORAGE_KEY);
+    return null;
+  }
+}
+
 export const AuthProvider = ({ children }) => {
   const [auth, setAuth] = useState(() => {
-    const storedUser = localStorage.getItem(USER_STORAGE_KEY);
-    const parsedUser = storedUser ? JSON.parse(storedUser) : null;
-    setUser(parsedUser);
+    const cachedUser = readCachedUser();
+    setUser(cachedUser);
+
+    // A public route never probes, so it is anonymous straight away rather than
+    // leaving guards waiting on an answer that will not come.
+    const willProbe =
+      typeof window !== 'undefined' && !isPublicRoute(window.location.pathname);
+
     return {
-      authenticated: false,
-      user: parsedUser,
+      status: willProbe ? SESSION_STATUS.CHECKING : SESSION_STATUS.ANONYMOUS,
+      user: cachedUser,
     };
   });
   const isLoadingProfile = useRef(false);
 
-  const { authenticated, user } = auth;
+  const { status, user } = auth;
+  const authenticated = status === SESSION_STATUS.AUTHENTICATED;
+
+  const persistUser = useCallback((nextUser) => {
+    setUser(nextUser);
+    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(nextUser));
+  }, []);
 
   useEffect(() => {
     if (isPublicRoute(window.location.pathname)) return;
@@ -39,30 +82,31 @@ export const AuthProvider = ({ children }) => {
         const rawUser = unwrapUser(res);
         if (rawUser) {
           const normalized = { ...rawUser, role: normalizeRole(rawUser.role) };
-          setAuth({ authenticated: true, user: normalized });
-          setUser(normalized);
-          localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(normalized));
+          setAuth({ status: SESSION_STATUS.AUTHENTICATED, user: normalized });
+          persistUser(normalized);
         } else {
-          setAuth({ authenticated: false, user: null });
+          setAuth({ status: SESSION_STATUS.ANONYMOUS, user: null });
           clearStoredUser();
         }
       })
       .catch(() => {
-        setAuth({ authenticated: false, user: null });
+        setAuth({ status: SESSION_STATUS.ANONYMOUS, user: null });
         clearStoredUser();
       })
       .finally(() => {
         isLoadingProfile.current = false;
       });
-  }, [authenticated]);
+  }, [authenticated, persistUser]);
 
-  const setSession = useCallback((tokenValue, userData) => {
-    const normalizedUser = { ...userData, role: normalizeRole(userData.role) };
-    if (tokenValue) setToken(tokenValue);
-    setAuth({ authenticated: true, user: normalizedUser });
-    setUser(normalizedUser);
-    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(normalizedUser));
-  }, []);
+  const setSession = useCallback(
+    (tokenValue, userData) => {
+      const normalizedUser = { ...userData, role: normalizeRole(userData.role) };
+      if (tokenValue) setToken(tokenValue);
+      setAuth({ status: SESSION_STATUS.AUTHENTICATED, user: normalizedUser });
+      persistUser(normalizedUser);
+    },
+    [persistUser]
+  );
 
   const login = useCallback(
     async (credentials) => {
@@ -82,18 +126,20 @@ export const AuthProvider = ({ children }) => {
     window.location.href = `${apiUrl}/auth/${provider}`;
   }, []);
 
-  const updateProfile = useCallback(async (profileData) => {
-    const payload = { ...profileData };
-    if (payload.role) payload.role = normalizeRole(payload.role);
+  const updateProfile = useCallback(
+    async (profileData) => {
+      const payload = { ...profileData };
+      if (payload.role) payload.role = normalizeRole(payload.role);
 
-    const res = await apiPatchProfile(payload);
-    const rawUser = unwrapUser(res) || {};
-    const updatedUser = { ...rawUser, role: normalizeRole(rawUser?.role) };
-    setAuth((prev) => ({ ...prev, user: updatedUser }));
-    setUser(updatedUser);
-    localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(updatedUser));
-    return res.data;
-  }, []);
+      const res = await apiPatchProfile(payload);
+      const rawUser = unwrapUser(res) || {};
+      const updatedUser = { ...rawUser, role: normalizeRole(rawUser?.role) };
+      setAuth((prev) => ({ ...prev, user: updatedUser }));
+      persistUser(updatedUser);
+      return res.data;
+    },
+    [persistUser]
+  );
 
   const completeOAuthProfile = useCallback(
     async (profileData) => {
@@ -121,12 +167,11 @@ export const AuthProvider = ({ children }) => {
       const refreshed = { ...rawUser, role: normalizeRole(rawUser.role) };
       const merged = { ...user, ...refreshed };
       setAuth((prev) => ({ ...prev, user: merged }));
-      setUser(merged);
-      localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(merged));
+      persistUser(merged);
       return merged;
     }
     return user;
-  }, [authenticated, user]);
+  }, [authenticated, user, persistUser]);
 
   const logout = useCallback(async () => {
     try {
@@ -134,13 +179,30 @@ export const AuthProvider = ({ children }) => {
     } catch {
       // Proceed with local cleanup even if backend call fails
     }
-    setAuth({ authenticated: false, user: null });
+    setAuth({ status: SESSION_STATUS.ANONYMOUS, user: null });
     clearStoredUser();
   }, []);
+
+  /**
+   * The single authorization predicate for the client.
+   *
+   * It answers false while the session is still CHECKING, so a caller can never
+   * act on a role the server has not confirmed. Client-side checks remain
+   * cosmetic — the server is the real boundary — but this keeps them honest.
+   *
+   * @param {string[]} [roles] Roles that grant access. Omit to require only a session.
+   */
+  const hasRole = useCallback(
+    (roles) => canAccess({ sessionStatus: status, role: user?.role, allowedRoles: roles }),
+    [status, user]
+  );
 
   const value = useMemo(
     () => ({
       user,
+      sessionStatus: status,
+      authenticated,
+      hasRole,
       token: null,
       login,
       logout,
@@ -152,6 +214,9 @@ export const AuthProvider = ({ children }) => {
     }),
     [
       user,
+      status,
+      authenticated,
+      hasRole,
       login,
       logout,
       setSession,

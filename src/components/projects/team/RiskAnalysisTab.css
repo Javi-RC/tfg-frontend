@@ -1,0 +1,45 @@
+/* Responsive rules for the risk analysis tab.
+ *
+ * These used to be injected into <head> from the module body, which also shipped
+ * two unscoped rules — `button:hover` and `button:active` — that moved every
+ * button in the application as soon as this chunk loaded. Scoped here to
+ * `.risk-analysis-tab`, they affect only this view.
+ *
+ * `@keyframes spin` and `.sr-only` are not redefined: both already live in
+ * src/index.css. */
+
+@media (max-width: 768px) {
+  .risk-analysis-tab .summaryHeader {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .risk-analysis-tab .summaryRight {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .risk-analysis-tab .riskCounts {
+    justify-content: space-between;
+  }
+
+  .risk-analysis-tab .flowMapContainer {
+    height: clamp(400px, 60vh, 600px);
+  }
+}
+
+@media (max-width: 480px) {
+  .risk-analysis-tab .summaryRight {
+    flex-wrap: wrap;
+  }
+
+  .risk-analysis-tab .riskHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .risk-analysis-tab .viewToggle {
+    order: -1;
+    width: 100%;
+  }
+}

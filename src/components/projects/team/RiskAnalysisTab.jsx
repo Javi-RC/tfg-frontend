@@ -1,10 +1,14 @@
-import React, { useState, useMemo, useEffect, useRef } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import RiskErrorMessage from '../../risk/RiskErrorMessage';
 import CompletenessIndicator from '../../risk/CompletenessIndicator';
 import RiskAnalysisHeader from './RiskAnalysisHeader';
 import RiskAnalysisContent from './RiskAnalysisContent';
 import RiskAnalysisEmpty from './RiskAnalysisEmpty';
+import { SEVERITY, OVERALL_RISK, normalizeSeverity, deriveOverallRisk } from '../../../utils/riskSeverity';
+import { toCsv } from '../../../utils/csv';
+import { downloadBlob, toSafeFilename } from '../../../utils/downloadFile';
+import './RiskAnalysisTab.css';
 
 /**
  * RiskAnalysisTab - Risk analysis and predictions interface
@@ -17,29 +21,31 @@ import RiskAnalysisEmpty from './RiskAnalysisEmpty';
  * - Data completeness tracking
  * - Export functionality
  * - Responsive design
+ *
+ * Severity normalization and the overall-risk thresholds live in
+ * utils/riskSeverity so they can be asserted without rendering this component.
  */
-const normalizeSeverity = (severity) => {
-  const value = String(severity ?? '')
-    .trim()
-    .toLowerCase();
-  if (!value) return 'medium';
 
-  if (value === 'critical' || value === 'crit' || value === 'severe') return 'critical';
-  if (value === 'high' || value === 'alto' || value === 'alta') return 'high';
-  if (
-    value === 'medium' ||
-    value === 'med' ||
-    value === 'moderate' ||
-    value === 'medio' ||
-    value === 'media'
-  ) {
-    return 'medium';
-  }
-  if (value === 'low' || value === 'bajo' || value === 'baja' || value === 'minor') return 'low';
+/** Badge colour per headline level. Presentation only. */
+const OVERALL_RISK_COLORS = Object.freeze({
+  [OVERALL_RISK.CRITICAL]: '#dc3545',
+  [OVERALL_RISK.HIGH]: '#fd7e14',
+  [OVERALL_RISK.MEDIUM]: '#ffc107',
+  [OVERALL_RISK.LOW]: '#28a745',
+});
 
-  // Fail-safe: keep UI stable by treating unknown severities as medium.
-  return 'medium';
-};
+/** Byte order mark, so Excel opens the export as UTF-8 instead of mangling accents. */
+const UTF8_BOM = '\uFEFF';
+
+/** Fields exported to CSV, in column order. */
+const CSV_COLUMNS = [
+  { headerKey: 'projects.riskAnalysisTab.csvName', fallback: 'Name' },
+  { headerKey: 'projects.riskAnalysisTab.csvSeverity', fallback: 'Severity' },
+  { headerKey: 'projects.riskAnalysisTab.csvType', fallback: 'Type' },
+  { headerKey: 'projects.riskAnalysisTab.csvDescription', fallback: 'Description' },
+  { headerKey: 'projects.riskAnalysisTab.impact', fallback: 'Impact' },
+  { headerKey: 'projects.riskAnalysisTab.csvMitigation', fallback: 'Mitigation' },
+];
 
 export default function RiskAnalysisTab({
   project,
@@ -77,12 +83,10 @@ export default function RiskAnalysisTab({
   const risks = useMemo(() => {
     const rawRisks = riskAnalysis?.risks || [];
 
-    const processedRisks = rawRisks.map((risk) => ({
+    return rawRisks.map((risk) => ({
       ...risk,
       severity: normalizeSeverity(risk.severity),
     }));
-
-    return processedRisks;
   }, [riskAnalysis]);
 
   // Get available risk types for filters
@@ -119,6 +123,60 @@ export default function RiskAnalysisTab({
     });
   }, [risks, searchTerm, selectedSeverities, selectedTypes]);
 
+  // One pass over the risks instead of four independent filters per render.
+  const bySeverity = useMemo(
+    () => ({
+      critical: risks.filter((r) => r.severity === SEVERITY.CRITICAL),
+      high: risks.filter((r) => r.severity === SEVERITY.HIGH),
+      medium: risks.filter((r) => r.severity === SEVERITY.MEDIUM),
+      low: risks.filter((r) => r.severity === SEVERITY.LOW),
+    }),
+    [risks]
+  );
+
+  const overallRisk = useMemo(() => deriveOverallRisk(risks), [risks]);
+
+  const exportFilename = useCallback(
+    (extension) =>
+      `${toSafeFilename(
+        'risk-analysis',
+        project.projectName || 'project',
+        new Date().toISOString().split('T')[0]
+      )}.${extension}`,
+    [project.projectName]
+  );
+
+  const handleExport = useCallback(
+    (format) => {
+      if (format === 'csv') {
+        const headers = CSV_COLUMNS.map((column) => t(column.headerKey, column.fallback));
+        const rows = risks.map((risk) => [
+          risk.name || risk.title || t('common.unnamed'),
+          risk.severity || t('common.notAvailable'),
+          risk.type || t('common.notAvailable'),
+          risk.description || '',
+          risk.impact || '',
+          risk.mitigation || '',
+        ]);
+
+        // A BOM keeps Excel from mangling accented characters on open.
+        const blob = new Blob([UTF8_BOM + toCsv(headers, rows)], {
+          type: 'text/csv;charset=utf-8;',
+        });
+        downloadBlob(blob, exportFilename('csv'));
+        return;
+      }
+
+      if (format === 'json') {
+        const blob = new Blob([JSON.stringify(riskAnalysis, null, 2)], {
+          type: 'application/json',
+        });
+        downloadBlob(blob, exportFilename('json'));
+      }
+    },
+    [risks, riskAnalysis, exportFilename, t]
+  );
+
   // Show loading state with accessibility
   if (riskLoading) {
     return (
@@ -146,73 +204,6 @@ export default function RiskAnalysisTab({
     return <RiskAnalysisEmpty />;
   }
 
-  const criticalRisks = risks.filter((r) => r.severity === 'critical');
-  const highRisks = risks.filter((r) => r.severity === 'high');
-  const mediumRisks = risks.filter((r) => r.severity === 'medium');
-  const lowRisks = risks.filter((r) => r.severity === 'low');
-
-  // Determine overall risk level
-  let overallRisk = 'LOW';
-  let overallColor = '#28a745';
-  if (criticalRisks.length > 0) {
-    overallRisk = 'CRITICAL';
-    overallColor = '#dc3545';
-  } else if (highRisks.length > 2) {
-    overallRisk = 'HIGH';
-    overallColor = '#fd7e14';
-  } else if (highRisks.length > 0) {
-    overallRisk = 'MEDIUM';
-    overallColor = '#ffc107';
-  }
-
-  // Export functionality
-  const handleExport = (format) => {
-    if (format === 'csv') {
-      exportToCSV(risks);
-    } else if (format === 'json') {
-      exportToJSON(riskAnalysis);
-    }
-  };
-
-  const exportToCSV = (risks) => {
-    const headers = [
-      t('projects.riskAnalysisTab.csvName', 'Name'),
-      t('projects.riskAnalysisTab.csvSeverity', 'Severity'),
-      t('projects.riskAnalysisTab.csvType', 'Type'),
-      t('projects.riskAnalysisTab.csvDescription', 'Description'),
-      t('projects.riskAnalysisTab.impact'),
-      t('projects.riskAnalysisTab.csvMitigation', 'Mitigation'),
-    ];
-    const rows = risks.map((risk) => [
-      risk.name || risk.title || t('common.unnamed'),
-      risk.severity || t('common.notAvailable'),
-      risk.type || t('common.notAvailable'),
-      (risk.description || '').replace(/,/g, ';'),
-      (risk.impact || '').replace(/,/g, ';'),
-      (risk.mitigation || '').replace(/,/g, ';'),
-    ]);
-
-    const csvContent = [
-      headers.join(','),
-      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(',')),
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `risk-analysis-${project.projectName || 'project'}-${new Date().toISOString().split('T')[0]}.csv`;
-    link.click();
-  };
-
-  const exportToJSON = (data) => {
-    const jsonContent = JSON.stringify(data, null, 2);
-    const blob = new Blob([jsonContent], { type: 'application/json' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `risk-analysis-${project.projectName || 'project'}-${new Date().toISOString().split('T')[0]}.json`;
-    link.click();
-  };
-
   return (
     <div style={styles.container} className="risk-analysis-tab">
       {riskAnalysis.dataCompleteness !== undefined && (
@@ -235,11 +226,11 @@ export default function RiskAnalysisTab({
 
       <RiskAnalysisHeader
         overallRisk={overallRisk}
-        overallColor={overallColor}
-        criticalRisks={criticalRisks}
-        highRisks={highRisks}
-        mediumRisks={mediumRisks}
-        lowRisks={lowRisks}
+        overallColor={OVERALL_RISK_COLORS[overallRisk]}
+        criticalRisks={bySeverity.critical}
+        highRisks={bySeverity.high}
+        mediumRisks={bySeverity.medium}
+        lowRisks={bySeverity.low}
         teamCount={teamCount}
         risksLength={risks.length}
         viewMode={viewMode}
@@ -295,84 +286,3 @@ const styles = {
     margin: 0,
   },
 };
-
-// Add keyframes for spinner animation
-if (typeof document !== 'undefined') {
-  const styleSheet = document.createElement('style');
-  styleSheet.textContent = `
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border-width: 0;
-    }
-
-    /* Responsive styles */
-    @media (max-width: 768px) {
-      .risk-analysis-tab .summaryHeader {
-        flex-direction: column;
-        gap: 16px;
-      }
-
-      .risk-analysis-tab .summaryRight {
-        width: 100%;
-        justify-content: space-between;
-      }
-
-      .risk-analysis-tab .riskCounts {
-        justify-content: space-between;
-      }
-
-      .risk-analysis-tab .flowMapContainer {
-        height: clamp(400px, 60vh, 600px) !important;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .risk-analysis-tab .summaryRight {
-        flex-wrap: wrap;
-      }
-
-      .risk-analysis-tab .riskHeader {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .risk-analysis-tab .viewToggle {
-        order: -1;
-        width: 100%;
-      }
-    }
-
-    /* Focus styles for accessibility */
-    button:focus-visible,
-    input:focus-visible {
-      outline: 2px solid #3B82F6;
-      outline-offset: 2px;
-    }
-
-    /* Hover effects */
-    button:hover:not(:disabled) {
-      transform: translateY(-1px);
-    }
-
-    button:active:not(:disabled) {
-      transform: translateY(0);
-    }
-  `;
-
-  if (!document.head.querySelector('#risk-analysis-styles')) {
-    styleSheet.id = 'risk-analysis-styles';
-    document.head.appendChild(styleSheet);
-  }
-}

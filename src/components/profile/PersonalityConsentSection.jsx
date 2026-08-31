@@ -91,7 +91,10 @@ export default function PersonalityConsentSection({
             type="button"
             className="sara-btn-outline"
             onClick={async () => {
-              const confirmed = window.confirm(t('profile.personalityConsent.revokeConfirm'));
+              const confirmed = await confirm({
+                message: t('profile.personalityConsent.revokeConfirm'),
+                destructive: true,
+              });
               if (!confirmed) return;
               await onRevokeConsent();
             }}

@@ -72,6 +72,23 @@ export const getOrganizationStats = (id) => api.get(`/api/organizations/${id}/st
 export const updateOrganizationSettings = (id, settings) =>
   api.patch(`/api/organizations/${id}/settings`, settings);
 
+/**
+ * Get organization expert rules configuration (29 decision tree thresholds)
+ * @param {string} id - Organization ID
+ * @returns {Promise} API response with expert rules config
+ */
+export const getExpertRulesConfig = (id) =>
+  api.get(`/api/organizations/${id}/expert-rules/config`);
+
+/**
+ * Update organization expert rules configuration
+ * @param {string} id - Organization ID
+ * @param {Object} config - Expert rules configuration { riskThresholds, personalityRiskThresholds, preset }
+ * @returns {Promise} API response
+ */
+export const updateExpertRulesConfig = (id, config) =>
+  api.put(`/api/organizations/${id}/expert-rules/config`, config);
+
 // ==================== Employee Management ====================
 
 /**

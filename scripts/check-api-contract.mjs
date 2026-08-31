@@ -7,7 +7,7 @@
  * compares the two repositories instead.
  *
  * Usage:  node scripts/check-api-contract.mjs [--json]
- *         BACKEND_PATH=/path/to/tfg-backend node scripts/check-api-contract.mjs
+ *         BACKEND_PATH=/path/to/saraplatformapi node scripts/check-api-contract.mjs
  *
  * Exits 1 if a frontend call has no matching backend route.
  */
@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 
 const FRONTEND_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const BACKEND_ROOT = resolve(
-  process.env.BACKEND_PATH || join(FRONTEND_ROOT, '..', '..', 'BACKEND', 'tfg-backend')
+  process.env.BACKEND_PATH || join(FRONTEND_ROOT, '..', '..', 'BACKEND', 'tfg-backend') // keep local folder name; only Vercel project name changed
 );
 
 const METHODS = ['get', 'post', 'put', 'patch', 'delete'];
@@ -81,7 +81,7 @@ function collect() {
   const appFile = join(BACKEND_ROOT, 'src', 'app.js');
   if (!existsSync(appFile)) {
     console.error(`Backend not found at ${BACKEND_ROOT}`);
-    console.error('Set its location with BACKEND_PATH=/path/to/tfg-backend');
+    console.error('Set its location with BACKEND_PATH=/path/to/saraplatformapi');
     process.exit(2);
   }
 

@@ -38,9 +38,12 @@ export default function ProjectsPage() {
   } = useProjects();
 
   const handleDelete = async (project) => {
-    if (!window.confirm(t('projects.confirmDelete'))) {
-      return;
-    }
+    const accepted = await confirm({
+      message: t('projects.confirmDelete'),
+      confirmLabel: t('common.delete'),
+      destructive: true,
+    });
+    if (!accepted) return;
     try {
       await handleDeleteProject(project._id);
       await reloadProjects();

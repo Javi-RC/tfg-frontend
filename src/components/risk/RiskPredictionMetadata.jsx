@@ -24,7 +24,7 @@ export default function RiskPredictionMetadata({ metadata }) {
 
   const sanitizedPhaseDescription =
     typeof phaseDescription === 'string'
-      ? phaseDescription.replace(/\bDT\b/g, 'reglas expertas')
+      ? phaseDescription.replace(/\bDT\b/g, 'alertas del sistema')
       : phaseDescription;
 
   return (

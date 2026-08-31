@@ -94,10 +94,7 @@ export default function RiskSourceBadge({ risk, strategy, size = 'md' }) {
           }}
         >
           <AlertTriangle size={currentSize.iconSize} />
-          <span>
-            {t('risk.source.expertRules')}
-            {priorityText}
-          </span>
+          <span>{t('risk.source.expertRules')}{priorityText}</span>
         </div>
       </Tooltip>
     );
@@ -125,7 +122,7 @@ export default function RiskSourceBadge({ risk, strategy, size = 'md' }) {
         >
           <Database size={currentSize.iconSize} />
           <span>
-            CBR ({similarity}%){priorityText}
+            {t('risk.source.experience')} ({similarity}%){priorityText}
           </span>
         </div>
       </Tooltip>

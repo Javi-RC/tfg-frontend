@@ -2,40 +2,17 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { BookOpen, AlertTriangle, Info } from 'lucide-react';
 import EnhancedRiskCard from './EnhancedRiskCard';
+import { partitionRisksBySource } from '../../utils/riskSource';
+import { compareBySeverity } from '../../utils/riskSeverity';
 
 /**
  * Separated Risks View Component
  * Displays CBR risks and Expert Rules risks in separate sections
+ *
+ * Engine classification lives in utils/riskSource and severity ordering in
+ * utils/riskSeverity; both used to be inline tables here that had drifted from
+ * the enums in types/riskTypes.js.
  */
-const normalizeSource = (source) => (typeof source === 'string' ? source.toLowerCase() : '');
-
-const inferSource = (risk) => {
-  const src = normalizeSource(risk?.source);
-  if (src) return src;
-
-  // Heuristics for legacy/partial payloads
-  if (
-    risk?.basedOnCases?.length ||
-    risk?.similarityBreakdown ||
-    typeof risk?.similarity === 'number'
-  ) {
-    return 'cbr';
-  }
-  if (risk?.indicators?.length) {
-    return 'expert_rules';
-  }
-
-  return '';
-};
-
-const isCbrRisk = (risk) => inferSource(risk) === 'cbr';
-const isExpertRisk = (risk) => {
-  const src = inferSource(risk);
-  return (
-    src === 'expert_rules' || src === 'decision_tree' || src === 'expert_rules_early_warning'
-  );
-};
-
 export default function SeparatedRisksView({
   cbrRisks = [],
   dtRisks = [],
@@ -61,8 +38,7 @@ export default function SeparatedRisksView({
   // when backend or upstream logic accidentally places an expert risk inside the CBR list.
   const baseRisks = allRisks.length > 0 ? allRisks : [...cbrRisks, ...dtRisks];
 
-  const cbrRisksList = baseRisks.filter(isCbrRisk);
-  const dtRisksList = baseRisks.filter(isExpertRisk);
+  const { cbr: cbrRisksList, expertRules: dtRisksList } = partitionRisksBySource(baseRisks);
 
   const hasCbrRisks = cbrRisksList.length > 0;
   const hasDtRisks = dtRisksList.length > 0;
@@ -139,21 +115,9 @@ export default function SeparatedRisksView({
           </div>
 
           <div style={styles.risksList}>
+            {/* toSorted, not sort: the latter would mutate the caller's array. */}
             {dtRisksList
-              .sort((a, b) => {
-                // Sort by severity
-                const severityOrder = {
-                  critical: 0,
-                  high: 1,
-                  'medium-high': 2,
-                  medium: 3,
-                  low: 4,
-                  emerging: 5,
-                };
-                const severityA = severityOrder[a.severity] ?? 3;
-                const severityB = severityOrder[b.severity] ?? 3;
-                return severityA - severityB;
-              })
+              .toSorted(compareBySeverity)
               .map((risk) => {
                 const riskId = risk.id;
                 return (
@@ -172,20 +136,8 @@ export default function SeparatedRisksView({
 
       {/* Info Footer */}
       <div style={styles.infoFooter}>
-        <div style={styles.infoItem}>
-          <BookOpen size={16} color="#10B981" />
-          <span style={styles.infoText}>
-            <strong>{t('risk.separatedView.cbrFooterLabel')}</strong>{' '}
-            {t('risk.separatedView.cbrFooterDescription')}
-          </span>
-        </div>
-        <div style={styles.infoItem}>
-          <AlertTriangle size={16} color="#667EEA" />
-          <span style={styles.infoText}>
-            <strong>{t('risk.separatedView.expertRulesFooterLabel')}</strong>{' '}
-            {t('risk.separatedView.expertRulesFooterDescription')}
-          </span>
-        </div>
+        <Info size={16} color="#667EEA" />
+        <span style={styles.infoText}>{t('risk.separatedView.footerDescription')}</span>
       </div>
     </div>
   );
@@ -268,21 +220,16 @@ const styles = {
   },
   infoFooter: {
     display: 'flex',
-    flexDirection: 'column',
-    gap: '12px',
-    padding: '20px',
+    alignItems: 'center',
+    gap: '10px',
+    padding: '16px',
     backgroundColor: 'var(--color-bg-muted)',
     borderRadius: '12px',
     border: '1px solid var(--color-border)',
   },
-  infoItem: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '10px',
-  },
   infoText: {
     fontSize: '13px',
-    color: 'var(--color-text-strong)',
-    lineHeight: '1.6',
+    color: 'var(--color-text-muted)',
+    lineHeight: '1.5',
   },
 };

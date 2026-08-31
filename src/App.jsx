@@ -3,6 +3,7 @@ import './components/SkipLink.css';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { NotificationProvider } from './contexts/NotificationContext';
+import { ConfirmDialogProvider } from './contexts/ConfirmDialogProvider';
 import { useLanguagePreference } from './hooks/useLanguagePreference';
 import AppShell from './components/layout/AppShell';
 import SkipLink from './components/SkipLink';
@@ -255,12 +256,14 @@ function App() {
   return (
     <AuthProvider>
       <NotificationProvider>
-        <ToastProvider />
-        <BrowserRouter>
-          <ErrorBoundary>
-            <AppRoutes />
-          </ErrorBoundary>
-        </BrowserRouter>
+        <ConfirmDialogProvider>
+          <ToastProvider />
+          <BrowserRouter>
+            <ErrorBoundary>
+              <AppRoutes />
+            </ErrorBoundary>
+          </BrowserRouter>
+        </ConfirmDialogProvider>
       </NotificationProvider>
     </AuthProvider>
   );

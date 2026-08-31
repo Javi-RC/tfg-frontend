@@ -3,15 +3,37 @@ import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import ProtectedRoute from './ProtectedRoute';
 import { AuthContext } from '../contexts/AuthContextObj';
+import { SESSION_STATUS } from '../constants/session';
+import { canAccess } from '../utils/authorization';
 
 const ProtectedContent = () => <div>Protected Content</div>;
 const LoginPage = () => <div>Login Page</div>;
 const HomePage = () => <div>Home Page</div>;
 
+/**
+ * Builds a context value the same way AuthProvider does, so these tests exercise
+ * the real authorization predicate instead of a lookalike that could drift.
+ */
+const makeAuthValue = (user, sessionStatus) => ({
+  user,
+  sessionStatus,
+  authenticated: sessionStatus === SESSION_STATUS.AUTHENTICATED,
+  hasRole: (roles) =>
+    canAccess({ sessionStatus, role: user?.role, allowedRoles: roles }),
+  token: null,
+});
+
 describe('ProtectedRoute', () => {
-  const renderProtectedRoute = (user = null, { allowedRoles, route = '/protected' } = {}) => {
+  const renderProtectedRoute = (
+    user = null,
+    {
+      allowedRoles,
+      route = '/protected',
+      sessionStatus = user ? SESSION_STATUS.AUTHENTICATED : SESSION_STATUS.ANONYMOUS,
+    } = {}
+  ) => {
     return render(
-      <AuthContext.Provider value={{ user, token: null }}>
+      <AuthContext.Provider value={makeAuthValue(user, sessionStatus)}>
         <MemoryRouter initialEntries={[route]}>
           <Routes>
             <Route
@@ -30,7 +52,7 @@ describe('ProtectedRoute', () => {
     );
   };
 
-  it('renders children when there is an authenticated user', () => {
+  it('renders children for a server-confirmed session', () => {
     renderProtectedRoute({ role: 'employee' });
 
     expect(screen.getByText('Protected Content')).toBeInTheDocument();
@@ -65,7 +87,9 @@ describe('ProtectedRoute', () => {
     const ChildWithProps = ({ testProp }) => <div>Child: {testProp}</div>;
 
     render(
-      <AuthContext.Provider value={{ user: { role: 'employee' } }}>
+      <AuthContext.Provider
+        value={makeAuthValue({ role: 'employee' }, SESSION_STATUS.AUTHENTICATED)}
+      >
         <MemoryRouter>
           <ProtectedRoute>
             <ChildWithProps testProp="test-value" />
@@ -79,7 +103,9 @@ describe('ProtectedRoute', () => {
 
   it('works with multiple children', () => {
     render(
-      <AuthContext.Provider value={{ user: { role: 'employee' } }}>
+      <AuthContext.Provider
+        value={makeAuthValue({ role: 'employee' }, SESSION_STATUS.AUTHENTICATED)}
+      >
         <MemoryRouter>
           <ProtectedRoute>
             <div>Child 1</div>
@@ -96,8 +122,8 @@ describe('ProtectedRoute', () => {
   });
 
   it('handles session changes reactively', async () => {
-    const renderWith = (user) => (
-      <AuthContext.Provider value={{ user }}>
+    const renderWith = (user, sessionStatus) => (
+      <AuthContext.Provider value={makeAuthValue(user, sessionStatus)}>
         <MemoryRouter initialEntries={['/protected']}>
           <Routes>
             <Route
@@ -114,14 +140,80 @@ describe('ProtectedRoute', () => {
       </AuthContext.Provider>
     );
 
-    const { rerender } = render(renderWith({ role: 'employee' }));
+    const { rerender } = render(
+      renderWith({ role: 'employee' }, SESSION_STATUS.AUTHENTICATED)
+    );
 
     expect(screen.getByText('Protected Content')).toBeInTheDocument();
 
-    rerender(renderWith(null));
+    rerender(renderWith(null, SESSION_STATUS.ANONYMOUS));
 
     await waitFor(() => {
       expect(screen.getByText('Login Page')).toBeInTheDocument();
+    });
+  });
+
+  describe('while the session is being checked', () => {
+    it('decides nothing and shows a loading state', () => {
+      renderProtectedRoute(null, { sessionStatus: SESSION_STATUS.CHECKING });
+
+      expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
+      expect(screen.queryByText('Login Page')).not.toBeInTheDocument();
+    });
+
+    it('does not admit a cached user before the server has confirmed it', () => {
+      renderProtectedRoute(
+        { role: 'employee' },
+        { sessionStatus: SESSION_STATUS.CHECKING }
+      );
+
+      expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
+    });
+
+    it('admits once the probe resolves to an authenticated session', async () => {
+      const { rerender } = render(
+        <AuthContext.Provider value={makeAuthValue(null, SESSION_STATUS.CHECKING)}>
+          <MemoryRouter initialEntries={['/protected']}>
+            <Routes>
+              <Route
+                path="/protected"
+                element={
+                  <ProtectedRoute>
+                    <ProtectedContent />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/login" element={<LoginPage />} />
+            </Routes>
+          </MemoryRouter>
+        </AuthContext.Provider>
+      );
+
+      expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
+
+      rerender(
+        <AuthContext.Provider
+          value={makeAuthValue({ role: 'employee' }, SESSION_STATUS.AUTHENTICATED)}
+        >
+          <MemoryRouter initialEntries={['/protected']}>
+            <Routes>
+              <Route
+                path="/protected"
+                element={
+                  <ProtectedRoute>
+                    <ProtectedContent />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/login" element={<LoginPage />} />
+            </Routes>
+          </MemoryRouter>
+        </AuthContext.Provider>
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Protected Content')).toBeInTheDocument();
+      });
     });
   });
 
@@ -170,6 +262,31 @@ describe('ProtectedRoute', () => {
       await waitFor(() => {
         expect(screen.getByText('Home Page')).toBeInTheDocument();
       });
+    });
+  });
+
+  describe('a role forged in localStorage', () => {
+    it('does not open an admin route while the session is unconfirmed', () => {
+      // What a tampered `user:v1` looks like on first paint.
+      renderProtectedRoute(
+        { role: 'org_admin' },
+        { allowedRoles: ['org_admin'], sessionStatus: SESSION_STATUS.CHECKING }
+      );
+
+      expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
+    });
+
+    it('does not open an admin route once the probe comes back anonymous', async () => {
+      renderProtectedRoute(
+        { role: 'org_admin' },
+        { allowedRoles: ['org_admin'], sessionStatus: SESSION_STATUS.ANONYMOUS }
+      );
+
+      await waitFor(() => {
+        expect(screen.getByText('Login Page')).toBeInTheDocument();
+      });
+
+      expect(screen.queryByText('Protected Content')).not.toBeInTheDocument();
     });
   });
 });

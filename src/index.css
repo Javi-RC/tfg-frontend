@@ -21,6 +21,18 @@ code {
   100% { transform: rotate(360deg); }
 }
 
+/* Entrance animation shared by panels that appear after data loads */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Smooth transitions */
 * {
   box-sizing: border-box;

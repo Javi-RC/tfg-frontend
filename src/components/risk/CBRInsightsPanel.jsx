@@ -93,10 +93,10 @@ export default function CBRInsightsPanel({ projectId, canEdit }) {
         </SecondaryButton>
       </div>
 
-      {/* CBR-inferred risks */}
+      {/* System-detected risks */}
       <section style={styles.section}>
         <h5 style={styles.sectionTitle}>
-          <Sparkles size={16} color="#6366F1" /> {t('risks.cbr.cbrRisks')}
+          <Sparkles size={16} color="var(--color-primary)" /> {t('risks.cbr.cbrRisks')}
         </h5>
         {cbrRisks && cbrRisks.length > 0 ? (
           <ul style={styles.list}>
@@ -146,7 +146,7 @@ export default function CBRInsightsPanel({ projectId, canEdit }) {
         )}
       </section>
 
-      {/* Decision-tree indicators */}
+      {/* System indicators and alerts */}
       <section style={styles.section}>
         <h5 style={styles.sectionTitle}>{t('risks.cbr.indicators')}</h5>
         {indicators && indicators.length > 0 ? (
@@ -166,10 +166,10 @@ export default function CBRInsightsPanel({ projectId, canEdit }) {
         )}
       </section>
 
-      {/* Similar historical cases */}
+      {/* Similar past projects */}
       <section style={styles.section}>
         <h5 style={styles.sectionTitle}>
-          <GitCompare size={16} color="#6366F1" /> {t('risks.cbr.similarCases')}
+          <GitCompare size={16} color="var(--color-primary)" /> {t('risks.cbr.similarCases')}
         </h5>
         {similarCases && similarCases.length > 0 ? (
           <ul style={styles.list}>
@@ -205,7 +205,7 @@ const styles = {
     padding: '20px',
     border: '1px solid var(--color-border)',
     borderRadius: '12px',
-    backgroundColor: '#FAFAFF',
+    backgroundColor: 'var(--color-bg-white)',
   },
   header: { display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' },
   headerText: { flex: 1 },
@@ -227,8 +227,8 @@ const styles = {
     alignItems: 'flex-start',
     gap: '10px',
     padding: '12px',
-    backgroundColor: '#FFFFFF',
-    border: '1px solid #EEF0F4',
+    backgroundColor: 'var(--color-bg-white)',
+    border: '1px solid var(--color-border)',
     borderRadius: '8px',
   },
   itemBody: { display: 'flex', flexDirection: 'column', gap: '4px', flex: 1 },
@@ -241,8 +241,8 @@ const styles = {
     textTransform: 'uppercase',
     padding: '2px 8px',
     borderRadius: '999px',
-    backgroundColor: '#EEF2FF',
-    color: '#4338CA',
+    backgroundColor: 'var(--color-primary-light)',
+    color: 'var(--color-primary)',
     alignSelf: 'flex-start',
   },
   badgeMuted: {

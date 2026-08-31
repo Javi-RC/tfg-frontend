@@ -99,6 +99,7 @@ export default function UserMenu({ user, onLogout, isAdmin }) {
 
   const isActive = (path) => location.pathname === path;
   const displayName = user?.username || user?.name || user?.email || t('navigation.user');
+  const avatarInitial = displayName.trim().charAt(0).toUpperCase();
 
   return (
     <div className="usermenu-wrapper">
@@ -112,7 +113,16 @@ export default function UserMenu({ user, onLogout, isAdmin }) {
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <User size={18} aria-hidden="true" />
+        {user?.avatar ? (
+          <img
+            src={user.avatar}
+            alt=""
+            className="usermenu-avatar"
+            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+          />
+        ) : (
+          <span className="usermenu-avatar usermenu-avatar-initial">{avatarInitial}</span>
+        )}
         <span>{displayName}</span>
         <ChevronDown
           size={16}

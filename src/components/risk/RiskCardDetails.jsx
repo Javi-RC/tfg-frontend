@@ -353,7 +353,7 @@ const styles = {
   warningItem: {
     padding: '10px',
     backgroundColor: 'var(--color-warning-bg)',
-    border: '1px solid var(--color-warning-bg)',
+    border: '1px solid var(--color-warning)',
     borderRadius: '6px',
   },
   warningSignal: {
@@ -367,7 +367,7 @@ const styles = {
     alignItems: 'center',
     gap: '6px',
     fontSize: '12px',
-    color: '#78350F',
+    color: 'var(--color-warning-dark)',
   },
   warningLabel: {
     fontWeight: '600',
@@ -376,7 +376,7 @@ const styles = {
     fontWeight: '400',
   },
   warningSeparator: {
-    color: '#D97706',
+    color: 'var(--color-warning)',
   },
   actualImpactBox: {
     padding: '12px',
