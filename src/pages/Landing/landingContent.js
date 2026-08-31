@@ -43,9 +43,8 @@ export const STEPS = Object.freeze([
 ]);
 
 export const SOCIAL_LINKS = Object.freeze([
-  { id: 'linkedin', icon: Linkedin, href: '#contact' },
-  { id: 'twitter', icon: Twitter, href: '#contact' },
-  { id: 'email', icon: Mail, href: 'mailto:hola@sara.app' },
+  { id: 'linkedin', icon: Linkedin, href: 'https://www.linkedin.com/in/javier-rodr%C3%ADguez-castellano-a25b6123b/' },
+  { id: 'email', icon: Mail, href: 'mailto:rodriguezcastellanojavier@gmail.com' },
 ]);
 
 // The product name is a proper noun and the tagline spells out the acronym, so

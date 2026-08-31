@@ -63,10 +63,7 @@ export default function HeroSection() {
               <UserPlus size={18} aria-hidden="true" />
               {t('landing.actions.start')}
             </Link>
-            <a className="landing-btn landing-btn--ghost" href="#how-it-works">
-              <PlayCircle size={18} aria-hidden="true" />
-              {t('landing.actions.seeHow')}
-            </a>
+            
           </div>
         </div>
 
