@@ -91,6 +91,8 @@ describe('useProfileEdit', () => {
 
       expect(result.current.draft).toEqual({
         name: 'Alice',
+        jobTitle: '',
+        bio: '',
         country: 'Spain',
         timezone: 'Europe/Madrid',
         flexibleSchedule: true,
@@ -437,6 +439,8 @@ describe('useProfileEdit', () => {
 
       expect(mockUpdateProfile).toHaveBeenCalledWith({
         name: 'Alice',
+        jobTitle: '',
+        bio: '',
         flexibleSchedule: true,
         notificationPreferences: { email: false, inApp: true },
         country: 'Spain',
@@ -655,6 +659,8 @@ describe('useProfileEdit', () => {
       expect(result.current.editMode).toBe(false);
       expect(result.current.draft).toEqual({
         name: '',
+        jobTitle: '',
+        bio: '',
         country: '',
         timezone: '',
         flexibleSchedule: false,
@@ -734,6 +740,8 @@ describe('useProfileEdit', () => {
       await waitFor(() => {
         expect(result.current.draft).toEqual({
           name: 'Minimal',
+          jobTitle: '',
+          bio: '',
           country: '',
           timezone: '',
           flexibleSchedule: false,
