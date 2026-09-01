@@ -2,16 +2,14 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { UserRound, Building2, Users, MapPin, Clock } from 'lucide-react';
 
-/**
- * PersonalInfoCard
- * Read-only view of company / department / location / timezone.
- * Department is a placeholder until the backend exposes it.
- */
 export default function PersonalInfoCard({
   organization,
   department,
   country,
   timezone,
+  editMode,
+  draft,
+  onUpdateDraftField,
   onEdit,
 }) {
   const { t } = useTranslation();
@@ -20,8 +18,6 @@ export default function PersonalInfoCard({
   const rows = [
     { icon: Building2, label: t('profile.dashboard.company'), value: dash(organization) },
     { icon: Users, label: t('profile.dashboard.department'), value: dash(department) },
-    { icon: MapPin, label: t('profile.location'), value: dash(country) },
-    { icon: Clock, label: t('profile.timezone'), value: dash(timezone) },
   ];
 
   return (
@@ -44,11 +40,51 @@ export default function PersonalInfoCard({
             </div>
           );
         })}
+
+        <div className="sara-info-row">
+          <span className="sara-info-icon"><MapPin size={18} aria-hidden="true" /></span>
+          <div style={{ flex: 1 }}>
+            <div className="sara-info-label">{t('profile.location')}</div>
+            {editMode ? (
+              <input
+                type="text"
+                className="sara-inline-input sara-inline-input--value"
+                value={draft?.country || ''}
+                onChange={(e) => onUpdateDraftField?.('country', e.target.value)}
+                placeholder={t('profile.preferencesSection.fields.country.placeholder')}
+                aria-label={t('profile.country')}
+              />
+            ) : (
+              <div className="sara-info-value">{dash(country)}</div>
+            )}
+          </div>
+        </div>
+
+        <div className="sara-info-row">
+          <span className="sara-info-icon"><Clock size={18} aria-hidden="true" /></span>
+          <div style={{ flex: 1 }}>
+            <div className="sara-info-label">{t('profile.timezone')}</div>
+            {editMode ? (
+              <input
+                type="text"
+                className="sara-inline-input sara-inline-input--value"
+                value={draft?.timezone || ''}
+                onChange={(e) => onUpdateDraftField?.('timezone', e.target.value)}
+                placeholder={t('profile.preferencesSection.fields.timezone.placeholder')}
+                aria-label={t('profile.timezone')}
+              />
+            ) : (
+              <div className="sara-info-value">{dash(timezone)}</div>
+            )}
+          </div>
+        </div>
       </div>
 
-      <button type="button" className="sara-btn-ghost" style={{ marginTop: '20px' }} onClick={onEdit}>
-        {t('profile.dashboard.editInfo')}
-      </button>
+      {!editMode && (
+        <button type="button" className="sara-btn-ghost" style={{ marginTop: '20px' }} onClick={onEdit}>
+          {t('profile.dashboard.editInfo')}
+        </button>
+      )}
     </section>
   );
 }

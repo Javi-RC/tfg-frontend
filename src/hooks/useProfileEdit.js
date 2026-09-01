@@ -9,6 +9,8 @@ const buildDraftFromUser = (u) => {
 
   return {
     name: u?.name || u?.username || '',
+    jobTitle: u?.jobTitle || '',
+    bio: u?.bio || u?.about || '',
     country: u?.country || '',
     timezone: u?.timezone || '',
     flexibleSchedule: Boolean(u?.flexibleSchedule),
@@ -40,6 +42,8 @@ export function useProfileEdit({ profileUser, onProfileUpdated }) {
 
   const [draft, setDraft] = useState({
     name: '',
+    jobTitle: '',
+    bio: '',
     country: '',
     timezone: '',
     flexibleSchedule: false,
@@ -142,6 +146,8 @@ export function useProfileEdit({ profileUser, onProfileUpdated }) {
 
     const payload = {
       name: (effectiveDraft.name || '').trim(),
+      jobTitle: (effectiveDraft.jobTitle || '').trim(),
+      bio: (effectiveDraft.bio || '').trim(),
       flexibleSchedule: Boolean(effectiveDraft.flexibleSchedule),
       notificationPreferences: {
         email: Boolean(effectiveDraft.notificationPreferences?.email),

@@ -681,6 +681,117 @@
 
 .sara-edit-panel .sara-legacy-section { border-bottom: none; padding: 28px; }
 
+/* ---------- Inline edit inputs ---------- */
+.sara-inline-input {
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.sara-inline-input:focus {
+  border-color: var(--sara-purple);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
+.sara-inline-input--value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--sara-text-strong);
+  padding: 6px 10px;
+  border: 1.5px solid var(--sara-border-strong);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.sara-inline-textarea {
+  font-size: 14.5px;
+  line-height: 1.7;
+  color: var(--sara-text-muted);
+  padding: 10px 12px;
+  border: 1.5px solid var(--sara-border-strong);
+  border-radius: 8px;
+  background: #fff;
+  resize: vertical;
+  min-height: 80px;
+}
+
+.sara-inline-input--time {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sara-text);
+  padding: 5px 8px;
+  border: 1.5px solid var(--sara-border-strong);
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.sara-about-text--placeholder {
+  font-style: italic;
+  color: var(--sara-text-soft);
+}
+
+/* Toggle wrapper for edit mode */
+.sara-inline-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.sara-inline-toggle-input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Working hours row */
+.sara-inline-hours-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sara-inline-hours-sep {
+  color: var(--sara-text-muted);
+  font-size: 14px;
+}
+
+/* Notification checkboxes in edit mode */
+.sara-inline-notif-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.sara-inline-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1.5px solid var(--sara-border-strong);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--sara-text);
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.sara-inline-checkbox-label:hover {
+  border-color: var(--sara-purple);
+}
+
+.sara-inline-checkbox-label input[type="checkbox"] {
+  accent-color: var(--sara-purple);
+}
+
 /* ---------- Responsive ---------- */
 @media (max-width: 1100px) {
   .sara-cards-grid { grid-template-columns: repeat(2, 1fr); }

@@ -9,6 +9,7 @@ import { FileText, Database } from 'lucide-react';
 export default function CVManagementSection({
   isAdmin,
   onNavigateToCV,
+  onNavigateToUploadCV,
   onNavigateToCVStats,
   onNavigateToAdminCVs,
 }) {
@@ -31,6 +32,14 @@ export default function CVManagementSection({
             aria-label={t('profile.cvManagementSection.aria.goToMyCv')}
           >
             {t('cv.myCV')}
+          </button>
+          <button
+            type="button"
+            className="sara-btn-outline"
+            onClick={onNavigateToUploadCV}
+            aria-label={t('profile.cvManagementSection.aria.uploadMyCv')}
+          >
+            {t('profile.cvManagementSection.uploadMyCv')}
           </button>
           <button
             type="button"

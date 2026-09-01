@@ -148,9 +148,10 @@ export const AuthProvider = ({ children }) => {
       const payload = { ...profileData, role: backendRole };
 
       const res = await apiCompleteProfile(payload);
+      const rawUser = unwrapUser(res);
 
-      if (res.data.user) {
-        setSession(null, res.data.user);
+      if (rawUser) {
+        setSession(null, rawUser);
       }
 
       return res.data;

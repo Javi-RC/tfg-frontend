@@ -290,11 +290,13 @@
     "cvManagementSection": {
       "description": "Quick access to your CV and statistics.",
       "viewStatistics": "View Statistics",
+      "uploadMyCv": "Upload CV",
       "adminPanelTitle": "Administrator Panel",
       "adminDescription": "As an organization administrator, you can view and manage all CVs.",
       "viewAllCvs": "View All CVs",
       "aria": {
         "goToMyCv": "Go to my CV",
+        "uploadMyCv": "Upload my CV",
         "viewCvStatistics": "View CV statistics",
         "viewAllCvsAdmin": "View all CVs (administrator)"
       }
@@ -781,6 +783,7 @@
     "noProjects": "No projects found",
     "noProjectsDesc": "There are no projects available.",
     "createFirstProject": "Create your first project",
+    "onlyProjectManagersCanCreate": "Only the project managers assigned by the administrator can create projects.",
     "loadingProjects": "Loading projects...",
     "loadingProject": "Loading project...",
     "manageTrackProjects": "Manage and track your projects",

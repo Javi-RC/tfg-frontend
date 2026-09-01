@@ -97,12 +97,13 @@ export default function MyCVPage() {
   }
 
   return (
-    <main
+    <div
       style={{
         minHeight: '100vh',
         background: 'var(--color-bg-page)',
-        display: 'flex',
-        paddingTop: '64px',
+        maxWidth: '1400px',
+        margin: '0 auto',
+        padding: 'calc(var(--sara-topbar-height, 76px) + 20px) 32px 48px',
       }}
       aria-label={t('cv.aria.myCvPage')}
     >
@@ -117,89 +118,74 @@ export default function MyCVPage() {
         onSubmitToOrg={toggleSubmitToOrgModal}
       />
 
-      <div
-        style={{
-          marginLeft: '260px',
-          width: 'calc(100% - 260px)',
-          padding: '28px 32px 48px',
-        }}
-      >
-        <div
-          style={{
-            maxWidth: '1400px',
-            margin: '0 auto',
-          }}
-        >
-          <CVErrorBanner error={error} />
+      <CVErrorBanner error={error} />
 
-          <CVWrapper>
-            <ContactSection
-              cv={cv}
-              editData={editData}
-              editMode={editMode}
-              onContactChange={handlers.handleContactChange}
-              onContactLocationChange={handlers.handleContactLocationChange}
-              onContactLinksChange={handlers.handleContactLinksChange}
-              onContactPhoneChange={handlers.handleContactPhoneChange}
-              onContactPhoneTypeChange={handlers.handleContactPhoneTypeChange}
-            />
+      <CVWrapper>
+        <ContactSection
+          cv={cv}
+          editData={editData}
+          editMode={editMode}
+          onContactChange={handlers.handleContactChange}
+          onContactLocationChange={handlers.handleContactLocationChange}
+          onContactLinksChange={handlers.handleContactLinksChange}
+          onContactPhoneChange={handlers.handleContactPhoneChange}
+          onContactPhoneTypeChange={handlers.handleContactPhoneTypeChange}
+        />
 
-            <ExperienceSection
-              cv={cv}
-              editData={editData}
-              editMode={editMode}
-              onExperienceChange={handlers.handleExperienceChange}
-              onAddExperience={handlers.addExperience}
-              onRemoveExperience={handlers.removeExperience}
-            />
+        <ExperienceSection
+          cv={cv}
+          editData={editData}
+          editMode={editMode}
+          onExperienceChange={handlers.handleExperienceChange}
+          onAddExperience={handlers.addExperience}
+          onRemoveExperience={handlers.removeExperience}
+        />
 
-            <EducationSection
-              cv={cv}
-              editData={editData}
-              editMode={editMode}
-              onEducationChange={handlers.handleEducationChange}
-              onAddEducation={handlers.addEducation}
-              onRemoveEducation={handlers.removeEducation}
-            />
+        <EducationSection
+          cv={cv}
+          editData={editData}
+          editMode={editMode}
+          onEducationChange={handlers.handleEducationChange}
+          onAddEducation={handlers.addEducation}
+          onRemoveEducation={handlers.removeEducation}
+        />
 
-            <SkillsSection
-              cv={cv}
-              editData={editData}
-              editMode={editMode}
-              onSkillChange={handlers.handleSkillChange}
-              onAddSkill={handlers.addSkill}
-              onRemoveSkill={handlers.removeSkill}
-            />
+        <SkillsSection
+          cv={cv}
+          editData={editData}
+          editMode={editMode}
+          onSkillChange={handlers.handleSkillChange}
+          onAddSkill={handlers.addSkill}
+          onRemoveSkill={handlers.removeSkill}
+        />
 
-            <LanguagesSection
-              cv={cv}
-              editData={editData}
-              editMode={editMode}
-              onLanguageChange={handlers.handleLanguageChange}
-              onAddLanguage={handlers.addLanguage}
-              onRemoveLanguage={handlers.removeLanguage}
-            />
+        <LanguagesSection
+          cv={cv}
+          editData={editData}
+          editMode={editMode}
+          onLanguageChange={handlers.handleLanguageChange}
+          onAddLanguage={handlers.addLanguage}
+          onRemoveLanguage={handlers.removeLanguage}
+        />
 
-            <ProjectsSection
-              cv={cv}
-              editData={editData}
-              editMode={editMode}
-              onProjectChange={handlers.handleProjectChange}
-              onAddProject={handlers.addProject}
-              onRemoveProject={handlers.removeProject}
-            />
+        <ProjectsSection
+          cv={cv}
+          editData={editData}
+          editMode={editMode}
+          onProjectChange={handlers.handleProjectChange}
+          onAddProject={handlers.addProject}
+          onRemoveProject={handlers.removeProject}
+        />
 
-            <CertificationsSection
-              cv={cv}
-              editData={editData}
-              editMode={editMode}
-              onCertificationChange={handlers.handleCertificationChange}
-              onAddCertification={handlers.addCertification}
-              onRemoveCertification={handlers.removeCertification}
-            />
-          </CVWrapper>
-        </div>
-      </div>
+        <CertificationsSection
+          cv={cv}
+          editData={editData}
+          editMode={editMode}
+          onCertificationChange={handlers.handleCertificationChange}
+          onAddCertification={handlers.addCertification}
+          onRemoveCertification={handlers.removeCertification}
+        />
+      </CVWrapper>
 
       {showSubmitToOrg && (
         <SubmitCVToOrganization
@@ -211,6 +197,6 @@ export default function MyCVPage() {
           }}
         />
       )}
-    </main>
+    </div>
   );
 }

@@ -290,11 +290,13 @@
     "cvManagementSection": {
       "description": "Accede rápidamente a tu currículo y estadísticas.",
       "viewStatistics": "Ver Estadísticas",
+      "uploadMyCv": "Subir CV",
       "adminPanelTitle": "Panel de Administrador",
       "adminDescription": "Como administrador de empresa, puedes ver y gestionar todos los currículos.",
       "viewAllCvs": "Ver Todos los Currículos",
       "aria": {
         "goToMyCv": "Ir a mi currículo",
+        "uploadMyCv": "Subir mi currículo",
         "viewCvStatistics": "Ver estadísticas del currículo",
         "viewAllCvsAdmin": "Ver todos los currículos (administrador)"
       }
@@ -781,6 +783,7 @@
     "noProjects": "No se encontraron proyectos",
     "noProjectsDesc": "No hay proyectos disponibles.",
     "createFirstProject": "Crea tu primer proyecto",
+    "onlyProjectManagersCanCreate": "Solo los jefes de proyectos asignados por el administrador pueden crear proyectos.",
     "loadingProjects": "Cargando proyectos...",
     "loadingProject": "Cargando proyecto...",
     "manageTrackProjects": "Gestiona y rastrea tus proyectos",

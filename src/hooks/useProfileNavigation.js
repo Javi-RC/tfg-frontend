@@ -11,6 +11,10 @@ export function useProfileNavigation({ navigate }) {
     navigate('/my-cv');
   };
 
+  const navigateToUploadCV = () => {
+    navigate('/my-cv?upload=true');
+  };
+
   const navigateToCVStats = () => {
     navigate('/cv-stats');
   };
@@ -21,6 +25,7 @@ export function useProfileNavigation({ navigate }) {
 
   return {
     navigateToCV,
+    navigateToUploadCV,
     navigateToCVStats,
     navigateToAdminCVs,
   };

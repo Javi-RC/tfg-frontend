@@ -13,7 +13,6 @@ import PreferencesCard from '../components/profile/dashboard/PreferencesCard';
 import CompetenciasCard from '../components/profile/dashboard/CompetenciasCard';
 import AboutCard from '../components/profile/dashboard/AboutCard';
 import RecentActivityCard from '../components/profile/dashboard/RecentActivityCard';
-import PreferencesSection from '../components/profile/PreferencesSection';
 import ConsentSection from '../components/profile/ConsentSection';
 import PersonalityConsentSection from '../components/profile/PersonalityConsentSection';
 import CVManagementSection from '../components/profile/CVManagementSection';
@@ -51,6 +50,7 @@ export default function Profile() {
     handleConsentAccepted,
     revokeConsent,
     navigateToCV,
+    navigateToUploadCV,
     navigateToCVStats,
     navigateToAdminCVs,
     loadConsent,
@@ -131,41 +131,52 @@ export default function Profile() {
 
       <StatsRow stats={stats.filter(s => s.key === 'projects' || s.key === 'teams')} onNavigate={(path) => path && navigate(path)} />
 
-      {editMode ? (
-        <section className="sara-card sara-edit-panel">
-          <PreferencesSection
-            profileUser={profileUser}
-            editMode={editMode}
-            draft={draft}
-            saveError={saveError}
-            saveSuccess={saveSuccess}
-            onUpdateDraftField={updateDraftField}
-            onUpdateNestedField={updateNestedField}
-          />
-        </section>
-      ) : (
-        <div className="sara-cards-grid">
-          <PersonalInfoCard
-            organization={organizationDisplay}
-            department={department}
-            country={profileUser?.country}
-            timezone={profileUser?.timezone}
-            onEdit={startEditing}
-          />
-
-          <PreferencesCard
-            flexibleSchedule={Boolean(profileUser?.flexibleSchedule)}
-            workingHours={profileUser?.preferredWorkingHours}
-            notifications={profileUser?.notificationPreferences}
-          />
-
-          <CompetenciasCard skills={skills} onSeeAll={navigateToCV} />
-
-          <AboutCard bio={bio} onEdit={startEditing} />
-
-          <RecentActivityCard items={activity} />
+      {saveError && (
+        <div className="sara-alert error" role="alert" aria-live="assertive" style={{ marginBottom: 20 }}>
+          {saveError}
         </div>
       )}
+
+      {saveSuccess && (
+        <div className="sara-alert success" role="status" aria-live="polite" style={{ marginBottom: 20 }}>
+          {saveSuccess}
+        </div>
+      )}
+
+      <div className="sara-cards-grid">
+        <PersonalInfoCard
+          organization={organizationDisplay}
+          department={department}
+          country={profileUser?.country}
+          timezone={profileUser?.timezone}
+          editMode={editMode}
+          draft={draft}
+          onUpdateDraftField={updateDraftField}
+          onEdit={startEditing}
+        />
+
+        <PreferencesCard
+          flexibleSchedule={Boolean(profileUser?.flexibleSchedule)}
+          workingHours={profileUser?.preferredWorkingHours}
+          notifications={profileUser?.notificationPreferences}
+          editMode={editMode}
+          draft={draft}
+          onUpdateDraftField={updateDraftField}
+          onUpdateNestedField={updateNestedField}
+        />
+
+        <CompetenciasCard skills={skills} onSeeAll={navigateToCV} />
+
+        <AboutCard
+          bio={bio}
+          editMode={editMode}
+          draft={draft}
+          onUpdateDraftField={updateDraftField}
+          onEdit={startEditing}
+        />
+
+        <RecentActivityCard items={activity} />
+      </div>
 
       {/* Functional sections, restyled as dashboard cards. */}
       <div className="sara-cards-grid">
@@ -194,6 +205,7 @@ export default function Profile() {
         <CVManagementSection
           isAdmin={isAdmin}
           onNavigateToCV={navigateToCV}
+          onNavigateToUploadCV={navigateToUploadCV}
           onNavigateToCVStats={navigateToCVStats}
           onNavigateToAdminCVs={navigateToAdminCVs}
         />

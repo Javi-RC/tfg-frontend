@@ -125,7 +125,9 @@ export default function ProjectsPage() {
           description={
             activeTab === 'my-projects' && isProjectManager
               ? t('projects.createFirstProject')
-              : t('projects.noProjectsDesc')
+              : activeTab === 'my-projects'
+                ? t('projects.onlyProjectManagersCanCreate')
+                : t('projects.noProjectsDesc')
           }
         />
       ) : (

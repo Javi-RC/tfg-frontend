@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { getMyCV, deleteCV, updateCV } from '../api/cv';
 import { validateCV } from '../services/cvService';
 
@@ -9,11 +10,23 @@ import { validateCV } from '../services/cvService';
  */
 export function useMyCVPage() {
   const { t } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [cv, setCV] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showUpload, setShowUpload] = useState(false);
   const [showSubmitToOrg, setShowSubmitToOrg] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('upload') === 'true') {
+      setShowUpload(true);
+      params.delete('upload');
+      navigate({ pathname: location.pathname, search: params.toString() }, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   /**
    * Load user's CV
