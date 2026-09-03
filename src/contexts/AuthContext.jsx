@@ -157,7 +157,11 @@ export const AuthProvider = ({ children }) => {
       const rawUser = unwrapUser(res);
 
       if (rawUser) {
-        setSession(null, rawUser);
+        // Completar el perfil cambia el rol, y el rol vive dentro del JWT. El
+        // backend rota el token; quedarse con el anterior deja al cliente
+        // enviando `unassigned` en cada petición aunque la UI ya muestre el rol
+        // nuevo. Sólo importa cuando la cookie no es utilizable.
+        setSession(res.data?.token ?? null, rawUser);
       }
 
       return res.data;

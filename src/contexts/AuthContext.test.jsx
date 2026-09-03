@@ -873,6 +873,25 @@ describe('AuthProvider', () => {
       expect(result.current.user.name).toBe('OAuth User');
     });
 
+    it('stores the rotated token so the fallback header stops claiming "unassigned"', async () => {
+      authApi.completeProfile.mockResolvedValueOnce({
+        data: { user: validUser, token: 'rotated-jwt' },
+      });
+
+      const { result } = renderHook(
+        () => React.useContext(AuthContext),
+        { wrapper }
+      );
+
+      await resolveInitialProfile();
+
+      await act(async () => {
+        await result.current.completeOAuthProfile({ role: 'employee' });
+      });
+
+      expect(tokenStore.getToken()).toBe('rotated-jwt');
+    });
+
     it('returns response data', async () => {
       const responseData = { user: validUser };
       authApi.completeProfile.mockResolvedValueOnce({ data: responseData });
