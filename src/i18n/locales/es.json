@@ -3763,5 +3763,16 @@
       "twitter": "Twitter",
       "email": "Email"
     }
+  },
+  "warmup": {
+    "stage": {
+      "connecting": "Conectando con Sara…",
+      "starting": "Iniciando los servicios…",
+      "slow": "Esto está tardando más de lo normal…"
+    },
+    "hint": "El servidor se suspende cuando nadie lo usa. La primera visita lo despierta.",
+    "failedTitle": "No se ha podido conectar con Sara",
+    "failedHint": "El servidor no ha respondido a tiempo. Comprueba tu conexión e inténtalo de nuevo.",
+    "retry": "Reintentar"
   }
 }

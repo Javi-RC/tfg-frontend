@@ -22,3 +22,18 @@ export const clearStoredUser = () => {
   localStorage.removeItem(USER_STORAGE_KEY);
   localStorage.removeItem(TOKEN_STORAGE_KEY);
 };
+
+/**
+ * Whether a previous visit cached a session on disk.
+ *
+ * Reads localStorage directly because this is called before AuthProvider
+ * mounts, when the in-memory copy above is still null. Never trust it for
+ * authorization — all it decides is whether boot should wait for the backend.
+ */
+export const hasStoredUser = () => {
+  try {
+    return Boolean(localStorage.getItem(USER_STORAGE_KEY));
+  } catch {
+    return false;
+  }
+};

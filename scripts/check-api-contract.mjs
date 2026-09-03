@@ -47,6 +47,18 @@ function readRoutes(source) {
   return found;
 }
 
+/**
+ * Extracts `app.<method>('<path>')` declarations made straight on the Express app
+ * rather than on a mounted router — /health is the current example. Only literal
+ * paths count, so Express's config getter (`app.get('someSetting')`) is ignored.
+ */
+function readAppRoutes(source) {
+  const found = [];
+  const re = new RegExp(`app\\.(${METHODS.join('|')})\\(\\s*['"\`](/[^'"\`]*)['"\`]`, 'g');
+  for (const m of source.matchAll(re)) found.push({ method: m[1].toUpperCase(), path: m[2] });
+  return found;
+}
+
 /** Extracts api.<method>('<url>') / api.<method>(`<url>`) calls from the frontend. */
 function readCalls(source, file) {
   const found = [];
@@ -85,8 +97,14 @@ function collect() {
     process.exit(2);
   }
 
-  const mounts = readMountPoints(readFileSync(appFile, 'utf8'));
+  const appSource = readFileSync(appFile, 'utf8');
+  const mounts = readMountPoints(appSource);
   const backend = []; // { method, path, key, file }
+
+  for (const r of readAppRoutes(appSource)) {
+    backend.push({ method: r.method, path: r.path, key: `${r.method} ${toRegex(r.path)}`, file: 'app.js' });
+  }
+
   const routesDir = join(BACKEND_ROOT, 'src', 'routes');
   for (const file of readdirSync(routesDir).filter((f) => f.endsWith('.js'))) {
     const prefixes = mounts.get(file);

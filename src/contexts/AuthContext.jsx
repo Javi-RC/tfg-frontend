@@ -89,9 +89,15 @@ export const AuthProvider = ({ children }) => {
           clearStoredUser();
         }
       })
-      .catch(() => {
+      .catch((error) => {
         setAuth({ status: SESSION_STATUS.ANONYMOUS, user: null });
-        clearStoredUser();
+        // Only a 401 proves the session is gone. A timeout, a 503 from a
+        // serverless backend still waking, or a dropped connection all mean we
+        // could not ask — wiping the cache there makes a transport problem look
+        // like an expiry and forces a needless sign-in. The status is anonymous
+        // either way, so guards stay strict; the cache just survives to be
+        // re-validated on the next load.
+        if (error?.response?.status === 401) clearStoredUser();
       })
       .finally(() => {
         isLoadingProfile.current = false;

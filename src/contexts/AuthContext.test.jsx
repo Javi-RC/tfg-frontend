@@ -951,6 +951,37 @@ describe('AuthProvider', () => {
       expect(result.current.hasRole()).toBe(false);
     });
 
+    it('keeps the cached session when the probe fails for transport reasons', async () => {
+      localStorage.setItem('user:v1', JSON.stringify(validUser));
+      authApi.getProfile.mockRejectedValue(new Error('Network Error'));
+
+      const { result } = renderHook(() => React.useContext(AuthContext), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.sessionStatus).toBe(SESSION_STATUS.ANONYMOUS);
+      });
+
+      // Guards still refuse — but the session survives to be re-validated on the
+      // next load, instead of a timeout looking like an expiry.
+      expect(result.current.hasRole()).toBe(false);
+      expect(localStorage.getItem('user:v1')).not.toBeNull();
+    });
+
+    it('forgets the cached session when the probe comes back 401', async () => {
+      localStorage.setItem('user:v1', JSON.stringify(validUser));
+      const expired = new Error('Unauthorized');
+      expired.response = { status: 401 };
+      authApi.getProfile.mockRejectedValue(expired);
+
+      const { result } = renderHook(() => React.useContext(AuthContext), { wrapper });
+
+      await waitFor(() => {
+        expect(result.current.sessionStatus).toBe(SESSION_STATUS.ANONYMOUS);
+      });
+
+      expect(localStorage.getItem('user:v1')).toBeNull();
+    });
+
     it('provides null context outside of provider', () => {
       const { result } = renderHook(() => React.useContext(AuthContext));
 

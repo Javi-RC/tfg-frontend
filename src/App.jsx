@@ -11,6 +11,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import LoadingState from './components/common/LoadingState';
 import ErrorBoundary from './components/common/ErrorBoundary';
 import ToastProvider from './components/common/ToastProvider';
+import WarmupGate from './components/boot/WarmupGate';
 import { isNoNavBarRoute, isLandingRoot, HOME_ROUTE, ADMIN_ROLES } from './constants/routes';
 import { useAuth } from './hooks/useAuth';
 
@@ -254,18 +255,24 @@ function AppRoutes() {
 
 function App() {
   return (
-    <AuthProvider>
-      <NotificationProvider>
-        <ConfirmDialogProvider>
-          <ToastProvider />
-          <BrowserRouter>
-            <ErrorBoundary>
-              <AppRoutes />
-            </ErrorBoundary>
-          </BrowserRouter>
-        </ConfirmDialogProvider>
-      </NotificationProvider>
-    </AuthProvider>
+    // Above AuthProvider on purpose: AuthContext probes /api/profile on mount
+    // and turns any rejection into an anonymous session, so a cold-start timeout
+    // there signs the user out in silence. Nothing below this line runs until
+    // the backend has answered.
+    <WarmupGate>
+      <AuthProvider>
+        <NotificationProvider>
+          <ConfirmDialogProvider>
+            <ToastProvider />
+            <BrowserRouter>
+              <ErrorBoundary>
+                <AppRoutes />
+              </ErrorBoundary>
+            </BrowserRouter>
+          </ConfirmDialogProvider>
+        </NotificationProvider>
+      </AuthProvider>
+    </WarmupGate>
   );
 }
 

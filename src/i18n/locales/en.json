@@ -3763,5 +3763,16 @@
       "twitter": "Twitter",
       "email": "Email"
     }
+  },
+  "warmup": {
+    "stage": {
+      "connecting": "Connecting to Sara…",
+      "starting": "Starting up the services…",
+      "slow": "This is taking longer than usual…"
+    },
+    "hint": "The server goes to sleep when nobody is using it. The first visit wakes it up.",
+    "failedTitle": "Could not reach Sara",
+    "failedHint": "The server did not answer in time. Check your connection and try again.",
+    "retry": "Try again"
   }
 }
